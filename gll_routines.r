@@ -26,7 +26,7 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 ]
 
 do [ ; inclusion du pilote postgresql de Nenad: {{{
-
+;TODO forker ce pilote, et l'inclure ici par un do %
 REBOL [
 	Title: "PostgresQL Protocol"
     Author: "SOFTINNOV"
