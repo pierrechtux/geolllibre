@@ -5,10 +5,10 @@ rebol [
 	Date:    "21-Aug-2013/16:25:11+2:00"
 	Author:  "Pierre Chevalier"
 	]
-; routines appelées par les programmes rebol de geolllibre
+; routines appelï¿½es par les programmes rebol de geolllibre
 
 
-; Récupération des préférences (dbname dbhost user passw opid tmp_schema):
+; RÃ©cupï¿½ration des prï¿½fï¿½rences (dbname dbhost user passw opid tmp_schema):
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
@@ -567,7 +567,7 @@ make root-protocol [
 ] ;}}}
 
 connection_db: does [ ;{{{ } } }
-	; on fait une connexion à la base de données:
+	; on fait une connexion ï¿½ la base de donnï¿½es:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname ]
 
@@ -575,7 +575,7 @@ connection_db: does [ ;{{{ } } }
 run_query: func ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
 	insert db sql  ; send a SQL query
 	sql_result: copy db
-	; TODO prendre en compte le résultat de requêtes de type UPDATE ou DELETE
+	; TODO prendre en compte le rï¿½sultat de requï¿½tes de type UPDATE ou DELETE
 	;either requete_select: [][]
 	sql_result_fields: make block! []
 	foreach champ db/locals/columns [ append sql_result_fields champ/name ]
@@ -583,9 +583,9 @@ run_query: func ["Utility function: sends a SQL query, returns the result as a b
 ] ; }}}
 
 ; des fonctions:
-do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
+do_psql: func ["Prend du SQL en entrï¿½e, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
-	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
+	;TODO: pouvoir choisir psql (pour les plateformes ï¿½ la noix qui l'ont pas dans le $PATH...)
 	cmd: rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost]
 	tt:  copy ""
 	err: copy ""
@@ -633,7 +633,7 @@ test_datasource_available: func ["Teste si new_datasource_id est libre dans la b
 	] ;}}}
 get_new_datasource_id: does [ ;{{{ } } }
 	; 2013_07_09__09_13_51
-	; récupère le premier datasource_id libre
+	; rï¿½cupï¿½re le premier datasource_id libre
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
 	sql_string: rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
 	run_query sql_string
@@ -647,7 +647,7 @@ generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO 
 get_datasource_dependant_information: func [ ;{{{ } } }
 	"Returns the list of tables where a given datasource is mentioned in the current opid, with the count of records concerned" datasource] [
 	tables: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> 'postgres';"
-	; ôt des tables inutiles, où datasource n'est pas référencé:
+	; ï¿½t des tables inutiles, oï¿½ datasource n'est pas rï¿½fï¿½rencï¿½:
 	;length? tables
 	; == 43
 	tables_inutiles: [
@@ -666,11 +666,11 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 	;== 34
 	sort tables
 	
-	; vérifions en premier lieu que le datasource demandé existe bien dans lex_datasource:
+	; vï¿½rifions en premier lieu que le datasource demandï¿½ existe bien dans lex_datasource:
 	lex_datasource_record: run_query rejoin ["SELECT * FROM public.lex_datasource WHERE opid = "opid " AND datasource_id = " datasource ";"]
 	if ((length? lex_datasource_record) = 0) [
-		print rejoin ["-- Attention! datasource " datasource " introuvable dans public.lex_datasource pour l'opération " opid ", pas d'arrêt néanmoins."]
-		;return none 	; on laisse aller, pour pouvoir traiter des cas improbables où des datasources "fantômes" se promènent
+		print rejoin ["-- Attention! datasource " datasource " introuvable dans public.lex_datasource pour l'opï¿½ration " opid ", pas d'arrï¿½t nï¿½anmoins."]
+		;return none 	; on laisse aller, pour pouvoir traiter des cas improbables oï¿½ des datasources "fantï¿½mes" se promï¿½nent
 	]
 	output: make block! []
 	foreach t tables [
@@ -682,7 +682,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 			print rejoin ["-- Erreur (certainement: pas de champ datasource dans la table " t "); continue"]
 		] [
 			either ((to-integer nb_records_du_datasource) = 0) [
-				;print rejoin ["-- Table " t ": datasource " datasource " non mentionné pour opération " opid]
+				;print rejoin ["-- Table " t ": datasource " datasource " non mentionnï¿½ pour opï¿½ration " opid]
 			] [
 				print rejoin ["-- Table " t " contient " nb_records_du_datasource " enregistrements correspondant au datasource " datasource " pour l'opid " opid ]
 				append/only output reduce [t nb_records_du_datasource]
@@ -695,40 +695,40 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 ;get_datasource_dependant_information 912
 ;== [["lab_ana_results" 207.0]]
 ;>> get_datasource_dependant_information 912
-;-- Table ancient_workings: datasource 912 non mentionné pour opération 18
-;-- Table baselines: datasource 912 non mentionné pour opération 18
-;-- Table dh_core_boxes: datasource 912 non mentionné pour opération 18
-;-- Table dh_density: datasource 912 non mentionné pour opération 18
-;-- Table dh_devia: datasource 912 non mentionné pour opération 18
-;-- Table dh_litho: datasource 912 non mentionné pour opération 18
-;-- Table dh_quicklog: datasource 912 non mentionné pour opération 18
-;-- Table dh_sampling_bottle_roll: datasource 912 non mentionné pour opération 18
-;-- Table dh_sampling_grades: datasource 912 non mentionné pour opération 18
-;-- Table dh_struct_measures: datasource 912 non mentionné pour opération 18
-;-- Table dh_tech: datasource 912 non mentionné pour opération 18
-;-- Table dh_thinsections: datasource 912 non mentionné pour opération 18
-;-- Table field_observations: datasource 912 non mentionné pour opération 18
-;-- Table field_observations_struct_measures: datasource 912 non mentionné pour opération 18
-;-- Table field_photos: datasource 912 non mentionné pour opération 18
-;-- Table geoch_ana: datasource 912 non mentionné pour opération 18
-;-- Table geoch_sampling: datasource 912 non mentionné pour opération 18
-;-- Table geoch_sampling_grades: datasource 912 non mentionné pour opération 18
-;-- Table gpy_mag_ground: datasource 912 non mentionné pour opération 18
-;-- Table grade_ctrl: datasource 912 non mentionné pour opération 18
-;-- Table index_geo_documentation: datasource 912 non mentionné pour opération 18
-;-- Table lab_ana_batches_reception: datasource 912 non mentionné pour opération 18
-;-- Table lab_ana_qaqc_results: datasource 912 non mentionné pour opération 18
-;-- **Table lab_ana_results contient 207.0 enregistrements correspondant au datasource 912 pour l'opération 18
-;-- Table lex_codes: datasource 912 non mentionné pour opération 18
-;-- Table lex_standard: datasource 912 non mentionné pour opération 18
-;-- Table licences: datasource 912 non mentionné pour opération 18
-;-- Table mag_declination: datasource 912 non mentionné pour opération 18
-;-- Table occurrences: datasource 912 non mentionné pour opération 18
-;-- Table qc_sampling: datasource 912 non mentionné pour opération 18
-;-- Table qc_standards: datasource 912 non mentionné pour opération 18
-;-- Table shift_reports: datasource 912 non mentionné pour opération 18
-;-- Table surface_samples_grades: datasource 912 non mentionné pour opération 18
-;-- Table topo_points: datasource 912 non mentionné pour opération 18
+;-- Table ancient_workings: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table baselines: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_core_boxes: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_density: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_devia: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_litho: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_quicklog: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_sampling_bottle_roll: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_sampling_grades: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_struct_measures: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_tech: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table dh_thinsections: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table field_observations: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table field_observations_struct_measures: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table field_photos: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table geoch_ana: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table geoch_sampling: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table geoch_sampling_grades: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table gpy_mag_ground: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table grade_ctrl: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table index_geo_documentation: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table lab_ana_batches_reception: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table lab_ana_qaqc_results: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- **Table lab_ana_results contient 207.0 enregistrements correspondant au datasource 912 pour l'opï¿½ration 18
+;-- Table lex_codes: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table lex_standard: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table licences: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table mag_declination: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table occurrences: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table qc_sampling: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table qc_standards: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table shift_reports: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table surface_samples_grades: datasource 912 non mentionnï¿½ pour opï¿½ration 18
+;-- Table topo_points: datasource 912 non mentionnï¿½ pour opï¿½ration 18
 ;== [["lab_ana_results" 207.0]]
 ;}}}
 delete_datasource_and_dependant_information: func ["Delete a datasource from all tables from bdexplo where its datasource_id is mentioned" datasource] [ ; {{{ } } }
@@ -742,17 +742,17 @@ delete_datasource_and_dependant_information: func ["Delete a datasource from all
 		t: i/1
 		n: i/2
 		print rejoin ["-- "t tab n]
-		;prin rejoin ["-- DÉTRUIRE LES " i/2 "ENREGISTREMENTS DANS " i/1 " (yYoO/nN)? "]
+		;prin rejoin ["-- Dï¿½TRUIRE LES " i/2 "ENREGISTREMENTS DANS " i/1 " (yYoO/nN)? "]
 		;r: input
 		;either any [(r = 'y') (r = 'Y') (r = 'o') (r = 'O')]  [
 			sql: rejoin ["DELETE FROM public." t " WHERE opid = "opid " AND datasource = " datasource "; -- (" n " records should be deleted)"]
 			print sql
-			;print "--on est timide pour le moment, on ne fait qu'afficher le SQL qui fera le boulot: à vous de le coller où il convient"
+			;print "--on est timide pour le moment, on ne fait qu'afficher le SQL qui fera le boulot: ï¿½ vous de le coller oï¿½ il convient"
 		;] [
 		;print " Records kept"
 		;]
 	]
-	; éliminons de lex_datasource, bien sûr:
+	; ï¿½liminons de lex_datasource, bien sï¿½r:
 	sql: rejoin ["DELETE FROM public.lex_datasource WHERE opid = " opid " AND datasource_id = " datasource ";"]
 	print sql
 ] ;}}}
@@ -808,7 +808,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 
 
 
-; on se met dans le répertoire courant
+; on se met dans le rï¿½pertoire courant
 change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
