@@ -1,0 +1,24 @@
+dbname:	"bdexplo"			; PostgreSQL database name: default is bdexplo
+dbhost:	"geolllibre.org"		; machine hosting the bdexplo database
+user:	"visit"				; username
+passw:	reverse decompress #{789C2B492D4A4E2D2EC94BCD4DCD484E2C0300327306420F000000}
+					; TODO better crypt/scramble/obfuscate password
+opid:		0			; default operation id (opid)
+					; (opid 0 is a fake dataset)
+tmp_schema:	"tmp_imports"		; schema where temporary imports tables go
+working_directory: %~/geolllibre/bdexplo/ 
+
+
+; Si des variables d'environnement	; If environment variables are set,
+; sont settées, elles remplacent 	; they replace those already defined
+; les variables définies plus haut	; (which are still valid, for machines
+; (qui restent valables pour les 	; without defined environment variables)
+; machines sans variables 		; variables).
+; d'environnement définies).
+
+comment [	; disabled now TODO rework
+if not error? try [varenv_dbhost: get-env "GLL_BD_HOST"][
+		dbhost: varenv_dbhost			]
+if not error? try [varenv_dbname: get-env "GLL_BD_NAME"][
+		dbname: varenv_dbname			]
+]
