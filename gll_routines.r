@@ -744,6 +744,12 @@ pad: func [ ;{{{ } } }
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
+; continue: as in python; to use in a loop, do: "loop [catch[...]]"/*{{{*/ } } }
+continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
+
+throw 'continue]
+;/*}}}*/
+
 
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
@@ -753,9 +759,8 @@ test_datasource_available: func ["Teste si new_datasource_id est libre dans la b
 	 ;print probe res
 	 either ( res = "") [ return true ] [return false ]
 	] ;}}}
-get_new_datasource_id: does [ ;{{{ } } }
+get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } }
 	; 2013_07_09__09_13_51
-	; récupère le premier datasource_id libre
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
 	sql_string: rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
 	run_query sql_string
@@ -877,7 +882,6 @@ delete_datasource_and_dependant_information: func ["Delete a datasource from all
 	sql: rejoin ["DELETE FROM public.lex_datasource WHERE opid = " opid " AND datasource_id = " datasource ";"]
 	print sql
 ] ;}}}
-
 
 
 ; on se met dans le répertoire courant

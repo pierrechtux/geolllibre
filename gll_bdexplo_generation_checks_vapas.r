@@ -317,7 +317,6 @@ alafin: does [ ; {{{ } } }
 requetes: copy []
 requete:  copy [] ; juste pour éviter une erreur lors du premier appel de alafin
 num_ligne: 0
-continue: does [throw 'continue] ;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
 while [not (alafin)] [ catch [ ;{{{ } } }
 	;#on initie un objet ensemble-requête:
 	requete: make ensb_requete []
