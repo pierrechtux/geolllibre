@@ -1,14 +1,34 @@
-rebol [
-	Title:   "Routines called by gll_bdexplo* programs"
-	Name:    gll_routines
-	Version: 1.0.1
-	Date:    "21-Aug-2013/16:25:11+2:00"
+rebol [ ;{{{ } } }
+	Title:   "Rebol routines called by gll_bdexplo* programs"
+	Name:    gll_routines.r
+	Version: 1.0.2
+	Date:   22-Sep-2013/10:31:32+2:00
 	Author:  "Pierre Chevalier"
-	]
-; routines appelées par les programmes rebol de geolllibre
+	Licence: {
+		  Copyright 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
+		  
+		  This program is free software; you can redistribute it and/or modify
+		  it under the terms of the GNU General Public License as published by
+		  the Free Software Foundation; either version 2 of the License, or
+		  (at your option) any later version.
+		  
+		  This program is distributed in the hope that it will be useful,
+		  but WITHOUT ANY WARRANTY; without even the implied warranty of
+		  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		  GNU General Public License for more details.
+		  
+		  You should have received a copy of the GNU General Public License
+		  along with this program; if not, write to the Free Software
+		  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+		  MA 02110-1301, USA.
+		}
+	History: [
+	1.0.1	[21-Aug-2013/16:25:11+2:00 {Ajout d'utilitaires, de fonctions communes, etc.}]
+	1.0.2	[22-Sep-2013/10:31:32+2:00 {Mise au point de la comparaison de structures de bases}]
+]	]
+;}}}
 
-
-; Récupération des préférences (dbname dbhost user passw opid tmp_schema):
+; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
@@ -23,7 +43,7 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 	do load to-file %.gll_preferences		; modif chez Corentin sur windows 7
 		throw {.gll_preferences loaded from "system/options/home/"}	]
 	[print "- No .gll_preferences file found."]
-]
+] ;}}}
 
 do [ ; inclusion du pilote postgresql de Nenad: {{{
 
@@ -570,8 +590,9 @@ connection_db: does [ ;{{{ } } }
 	; on fait une connexion à la base de données:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname ]
+] ;}}}
 
-	] ;}}}
+; functions related to database:
 run_query: func ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
 	insert db sql  ; send a SQL query
 	sql_result: copy db
@@ -581,8 +602,12 @@ run_query: func ["Utility function: sends a SQL query, returns the result as a b
 	foreach champ db/locals/columns [ append sql_result_fields champ/name ]
 	return sql_result
 ] ; }}}
-
-; des fonctions:
+run_sql_string_update: does [ ;{{{ } } }
+	append journal_sql rejoin ["--" now ]
+	append journal_sql sql_string_update
+	insert db sql_string_update
+	?? journal_sql
+	] ;}}}
 do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
@@ -592,6 +617,113 @@ do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant 
 	call/wait/output/error cmd tt err
 	return tt
 	] ;}}}
+compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }
+	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
+	;TODO à déplacer dans un module utilitaire plus général, à distribuer hors gll, pour tout postgresql
+	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin"]
+
+	; première solution: on fait un pg_dump de la base
+	;   => 	abandonné, le résultat n'est pas trié, et incomparable,
+	;	même avec le secours de pg_dump_splitsort.py	{{{ } } }
+	;fabrique_cmd: does [
+	;	cmd: rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres"]
+	;	foreach s schemas_exclus [
+	;		append cmd rejoin [ " -N " to-string s]
+	;		]
+	;	append cmd "> tmp_schema"
+	;]
+	
+	;dbhost: dbhost1
+	;dbname: dbname1
+	;fabrique_cmd
+	;cmd1: rejoin [cmd "1.sql"]
+	;
+	;dbhost: dbhost2
+	;dbname: dbname2
+	;fabrique_cmd
+	;cmd2: rejoin [cmd "2.sql"]
+	;
+	;tt:  copy ""
+	;err: copy ""
+	;call/wait/output/error cmd1 tt err
+	;call/wait/output/error cmd2 tt err
+	;cmd: {pg_dump_splitsort.py tmp_schema1.sql
+	;mv 0000_prologue.sql tmp_schema1_0000_prologue.sql
+	;pg_dump_splitsort.py tmp_schema2.sql
+	;mv 0000_prologue.sql tmp_schema2_0000_prologue.sql
+	;#vimdiff tmp_schema1_0000_prologue.sql tmp_schema2_0000_prologue.sql
+	;}
+	;call/wait cmd
+	;print cmd1
+	;print cmd2
+	;print cmd
+	
+	comment [ ; {{{ } } }
+	;pg_dump -s -h autan bdexplo -N amc -N  amc                -N  backups             -N  bof                -N information_schema  -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  smi                 -N  tanguy              -N  tmp_a_traiter       -N  tmp_imports         -N  tmp_ntoto           -N  zz_poubelle        > schema_bdexplo_autan_.sql
+	;pg_dump -U postgres -s -h duran bdexplo -N information_schema -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  tanguy              -N  tmp_imports         -N  zz_poubelle        > schema_bdexplo_duran_.sql
+	;#vimdiff schema_bdexplo_autan_.sql schema_bdexplo_duran_.sql 
+	;grep -v '^--' < schema_bdexplo_autan_.sql | grep -v '^$' > schema_bdexplo_autan_nocomment_.sql
+	;grep -v '^--' < schema_bdexplo_duran_.sql | grep -v '^$' > schema_bdexplo_duran_nocomment_.sql
+	;vimdiff schema_bdexplo_autan_nocomment_.sql schema_bdexplo_duran_nocomment_.sql
+	] ; }}}
+	;}}}
+
+	; seconde solution: on fait pour chaque table un pg_dump, qu'on agrège au fur et à mesure
+	fabrique_cmd: does [ ;{{{ } } }
+		write to-file filename rejoin ["-- bdexplo dump generated by gll_routines.r/compare_schemas_2_bdexplos: " newline "-- host:" dbhost " dbname: " dbname newline "-- " now]
+		; la liste des tables avec leurs schémas:
+		tables: run_query "SELECT schemaname, tablename FROM pg_tables WHERE tableowner <> 'postgres' ORDER BY schemaname, tablename;"
+		cmd: copy {}
+		foreach t tables [	; pour chaque table
+			;print "----------------------"	DEBUG
+			;?? t
+			;print t/1
+			;print t/2
+			if not (find schemas_exclus t/1) [ ; si le schéma n'est pas dans la liste des schémas exclus, on procède:
+				;filename: rejoin ["tt_" dbhost "_" dbname "_" t/1 "_" t/2]
+				;?? filename
+				append cmd rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres -t " t/1 "." t/2 { | grep -v "^^--" >> } filename newline]
+		]	]
+		;print cmd
+	] ; }}}
+	
+	dbhost: dbhost1
+	dbname: dbname1
+	filename: "tt_gll_1.sql"
+	filename1: copy filename
+	close db
+	connection_db
+	fabrique_cmd
+	err: copy ""
+	call/wait/error cmd err
+	if err [print rejoin ["Error while dumping database structure: " newline err]]
+	
+	dbhost: dbhost2
+	dbname: dbname2
+	filename: "tt_gll_2.sql"
+	filename2: copy filename
+	close db
+	connection_db
+	fabrique_cmd
+	err: copy ""
+	call/wait/error cmd err
+	if err [print rejoin ["Error while dumping database structure: " newline err]]
+
+	; les dumps sont générés, on les compare:
+	print "Structure dumps generated, comparison: "
+	cmd: rejoin ["diff " filename1 " " filename2]
+	print cmd
+	tt: copy ""
+	call/wait/output/error cmd1 tt err
+	if err [print "Error while running diff"]
+	print "diff output:"
+	print tt
+
+	return tt
+]; }}}
+
+
+; fonctions utilitaires:
 chk_file_exists: func ["Simply checks for the existence of a file" file_in] [ ;{{{ } } }
 	if error? try [
 	file_in_reader: open/string/lines/read to-file file_in
@@ -606,22 +738,12 @@ trim_last_char: func ["Trims last character from a given string" txt] [ ;{{{ } }
 substring: func ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{ } } }
     copy/part at string offset length
 ];}}}
-
-run_sql_string_update: does [ ;{{{ } } }
-	append journal_sql rejoin ["--" now ]
-	append journal_sql sql_string_update
-	insert db sql_string_update
-	?? journal_sql
-	] ;}}}
-
 pad: func [ ;{{{ } } }
  "Pads a value with leading zeroes or a specified fill character."
   val [string! number!] n [integer!]
   /with c [char!] "Optional Fill Character"
 ][
-  head insert/dup val: form val any [all [with c] #"0"] n - length? val
-] ;}}}
-
+  head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
 
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
@@ -643,7 +765,6 @@ get_new_datasource_id: does [ ;{{{ } } }
 generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{ } } }
 	sql_string_update: rejoin [ "INSERT INTO public.lex_datasource (opid, filename, datasource_id) VALUES (" opid ", '" file_in "', " new_datasource_id ");" ]
 	] ;}}}
-
 get_datasource_dependant_information: func [ ;{{{ } } }
 	"Returns the list of tables where a given datasource is mentioned in the current opid, with the count of records concerned" datasource] [
 	tables: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> 'postgres';"
@@ -756,55 +877,6 @@ delete_datasource_and_dependant_information: func ["Delete a datasource from all
 	sql: rejoin ["DELETE FROM public.lex_datasource WHERE opid = " opid " AND datasource_id = " datasource ";"]
 	print sql
 ] ;}}}
-
-; fonctions utilitaires:
-compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbhost2 dbname1 dbname2][][ ; {{{ } } }
-	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
-	schemas_exclus: [amc backups bof information_schemainput pg_catalogpg_toastpg_toast_temp_1 smi tanguytmp_a_traiter tmp_imports tmp_ntoto zz_poubelle tmp_a_traiter pierre input marie_cecile tanguy kalvin]
-	
-	fabrique_cmd: does [
-		cmd: rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres"]
-		foreach s schemas_exclus [
-			append cmd rejoin [ " -N " to-string s]
-			]
-		append cmd "> tmp_schema"
-	]
-	
-	dbhost: dbhost1
-	dbname: dbname1
-	fabrique_cmd
-	cmd1: rejoin [cmd "1.sql"]
-	
-	dbhost: dbhost2
-	dbname: dbname2
-	fabrique_cmd
-	cmd2: rejoin [cmd "2.sql"]
-	
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd1 tt err
-	call/wait/output/error cmd2 tt err
-	cmd: {pg_dump_splitsort.py tmp_schema1.sql
-	mv 0000_prologue.sql tmp_schema1_0000_prologue.sql
-	pg_dump_splitsort.py tmp_schema2.sql
-	mv 0000_prologue.sql tmp_schema2_0000_prologue.sql
-	vimdiff tmp_schema1_0000_prologue.sql tmp_schema2_0000_prologue.sql
-	}
-	call/wait cmd
-	print cmd1
-	print cmd2
-	print cmd
-
-	comment [ ; {{{ } } }
-	;pg_dump -s -h autan bdexplo -N amc -N  amc                -N  backups             -N  bof                -N information_schema  -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  smi                 -N  tanguy              -N  tmp_a_traiter       -N  tmp_imports         -N  tmp_ntoto           -N  zz_poubelle        > schema_bdexplo_autan_.sql
-	;pg_dump -U postgres -s -h duran bdexplo -N information_schema -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  tanguy              -N  tmp_imports         -N  zz_poubelle        > schema_bdexplo_duran_.sql
-	;#vimdiff schema_bdexplo_autan_.sql schema_bdexplo_duran_.sql 
-	;grep -v '^--' < schema_bdexplo_autan_.sql | grep -v '^$' > schema_bdexplo_autan_nocomment_.sql
-	;grep -v '^--' < schema_bdexplo_duran_.sql | grep -v '^$' > schema_bdexplo_duran_nocomment_.sql
-	;vimdiff schema_bdexplo_autan_nocomment_.sql schema_bdexplo_duran_nocomment_.sql
-	] ; }}}
-]; }}}
-
 
 
 
