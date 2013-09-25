@@ -1,26 +1,36 @@
 rebol [ ;{{{ } } }
-	Title:   "Rebol routines called by gll_bdexplo* programs"
+	Title:   "Rebol routines called by geolllibre gll_* programs"
 	Name:    gll_routines.r
 	Version: 1.0.2
-	Date:   22-Sep-2013/10:31:32+2:00
+	Date:    22-Sep-2013/10:31:32+2:00
 	Author:  "Pierre Chevalier"
-	Licence: {
-		  Copyright 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
-		  
-		  This program is free software; you can redistribute it and/or modify
-		  it under the terms of the GNU General Public License as published by
-		  the Free Software Foundation; either version 2 of the License, or
-		  (at your option) any later version.
-		  
-		  This program is distributed in the hope that it will be useful,
-		  but WITHOUT ANY WARRANTY; without even the implied warranty of
-		  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-		  GNU General Public License for more details.
-		  
-		  You should have received a copy of the GNU General Public License
-		  along with this program; if not, write to the Free Software
-		  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-		  MA 02110-1301, USA.
+	License: {
+		This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
+		###########################################################################
+		##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##
+		##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##
+		##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##
+		##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##
+		##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
+		##                                                                       ##
+		###########################################################################
+		  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
+		 
+		    GeolLLibre is free software: you can redistribute it and/or modify
+		    it under the terms of the GNU General Public License as published by
+		    the Free Software Foundation, either version 3 of the License, or
+		    (at your option) any later version.
+		
+		    This program is distributed in the hope that it will be useful,
+		    but WITHOUT ANY WARRANTY; without even the implied warranty of
+		    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+		    GNU General Public License for more details.
+		
+		    You should have received a copy of the GNU General Public License
+		    along with this program.  If not, see <http://www.gnu.org/licenses/>
+		    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+		    Fifth Floor, Boston, MA 02110-1301, USA.
+		    See LICENSE file.
 		}
 	History: [
 	1.0.1	[21-Aug-2013/16:25:11+2:00 {Ajout d'utilitaires, de fonctions communes, etc.}]
