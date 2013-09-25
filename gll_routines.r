@@ -706,7 +706,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	fabrique_cmd
 	err: copy ""
 	call/wait/error cmd err
-	if err [print rejoin ["Error while dumping database structure: " newline err]]
+	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 	
 	dbhost: dbhost2
 	dbname: dbname2
@@ -717,14 +717,15 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	fabrique_cmd
 	err: copy ""
 	call/wait/error cmd err
-	if err [print rejoin ["Error while dumping database structure: " newline err]]
+	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 
 	; les dumps sont générés, on les compare:
 	print "Structure dumps generated, comparison: "
 	cmd: rejoin ["diff " filename1 " " filename2]
 	print cmd
 	tt: copy ""
-	call/wait/output/error cmd1 tt err
+	err: copy ""
+	call/wait/output/error cmd tt err
 	if err [print "Error while running diff"]
 	print "diff output:"
 	print tt
