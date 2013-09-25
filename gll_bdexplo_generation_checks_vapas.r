@@ -2,7 +2,7 @@
 rebol	[
 	Title:   "Generation of a HTML report from bdexplo database, with various check queries"
 	Name:    gll_bdexplo_generation_checks_vapas.r
-	Version: 1.0.0
+	Version: 1.1.2
 	Date:    "5-Aug-2013/17:53:46"
 	Author:  "Pierre Chevalier"
 	Licence: {
@@ -23,7 +23,7 @@ rebol	[
 		  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 		  MA 02110-1301, USA.
 		}
-	Desctiption: {
+	Description: {
 	Ce script va chercher un fichier contenant une série de requêtes SQL:
 	    bdexplo_verifs.sql
 	puis génère une sortie en .html reprenant les sorties des requêtes.

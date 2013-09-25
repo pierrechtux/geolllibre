@@ -96,6 +96,7 @@ SELECT opid, min(id) AS min_id, max(id) AS max_id, x, y, z, count(*) AS number_o
 SELECT opid, id, dh_collars.x, dh_collars.y, dh_collars.z, azim_ng, dip_hz FROM dh_collars JOIN (SELECT count(*),x,y FROM dh_collars GROUP BY x,y HAVING count(*) >1) tmp ON (dh_collars.x=tmp.x AND dh_collars.y=tmp.y) ORDER BY opid, id;
 
 --#Drill holes lengths, comparison between total length, and various lengths (destructive, PQ, HQ, NQ, BQ). Records listed below are unconsistent:
+--(not working any more since september 2013, after modifications SMI
 SELECT opid, id, x,y,length, (coalesce((coalesce(len_destr,0) +coalesce(len_pq,0) +coalesce(len_hq,0) + coalesce(len_nq,0)+ coalesce(len_bq,0)),0)) as somme_lenX, len_destr, len_pq, len_hq, len_nq, len_bq, dh_type FROM dh_collars WHERE (length - coalesce((coalesce(len_destr,0) +coalesce(len_pq,0) +coalesce(len_hq,0) + coalesce(len_nq,0)+ coalesce(len_bq,0)),0)) <> 0 ORDER BY opid, id;
 
 
@@ -711,11 +712,10 @@ SELECT qc_sampling.* FROM qc_sampling LEFT OUTER JOIN dh_sampling ON qc_sampling
 --}}}
 
 
---depths checks:
+--TODO depths checks:
 --faire une procédure qui itère, pour chaque table, pour chaque sondage, et mette dans une table temporaire les table, id, depfrom, depto des enregistrements qui merdoient
 --lancer cette procédure
 --renvoyer les enregistrements de la table en sortie
-
 
 --#{{{1Deviations: dh_devia
 
@@ -731,8 +731,6 @@ JOIN
 ON dh_collars.opid = tmp.opid AND dh_collars.id = tmp.id 
 WHERE dh_collars.azim_ng != tmp.azim_ng OR dh_collars.dip_hz != tmp.dip_hz 
 ORDER BY dh_collars.opid, dh_collars.id;
-
-
 
 --}}}
 
