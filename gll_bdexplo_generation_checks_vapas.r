@@ -66,9 +66,7 @@ rebol	[
 
 ;TOUT ÇA ROULE: {{{ } } }
 ; initialisation: {{{ } } }
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines (et des préférences)
-change-dir system/options/path				; on se met dans le répertoire courant (...)
-connection_db						; connection à la base
+do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines (et des préférences) et connexion à la base
 if error? try [ type? journal_sql ] [journal_sql: [] ]	; si pas de journal des instructions SQL, on en crée un vide
 
 ; début de transaction:

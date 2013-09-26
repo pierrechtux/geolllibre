@@ -599,7 +599,12 @@ make root-protocol [
 connection_db: does [ ;{{{ } } }
 	; on fait une connexion à la base de données:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
-	db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname ]
+	if error? try 	[
+			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname]
+			print rejoin [{Connected to database } dbname { hosted by } dbhost {, logged in as role } user]
+	] 		[
+			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost {, as role } user]
+	]
 ] ;}}}
 
 ; functions related to database:
@@ -706,7 +711,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	fabrique_cmd
 	err: copy ""
 	call/wait/error cmd err
-	if err [print rejoin ["Error while dumping database structure: " newline err]]
+	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 	
 	dbhost: dbhost2
 	dbname: dbname2
@@ -717,14 +722,15 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	fabrique_cmd
 	err: copy ""
 	call/wait/error cmd err
-	if err [print rejoin ["Error while dumping database structure: " newline err]]
+	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 
 	; les dumps sont générés, on les compare:
 	print "Structure dumps generated, comparison: "
 	cmd: rejoin ["diff " filename1 " " filename2]
 	print cmd
 	tt: copy ""
-	call/wait/output/error cmd1 tt err
+	err: copy ""
+	call/wait/output/error cmd tt err
 	if err [print "Error while running diff"]
 	print "diff output:"
 	print tt
@@ -904,4 +910,7 @@ print "Gll preferences loaded: "
 ?? user
 ?? tmp_schema
 print rejoin ["Current working directory: " what-dir ]
+
+; on lance la connexion à la base
+connection_db
 

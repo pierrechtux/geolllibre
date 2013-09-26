@@ -753,17 +753,6 @@ print rejoin ["Current working directory: " what-dir ]
 
 if error? try [do gll_routines] [print "Problem, routines not found, cannot continue." quit]
 
-;if any [
-;	(error? try [(none? dbname)]	)
-;	(dbname = none			)
-;	(dbname = ""			)
-;	(error? try [(none? dbhost)]	)
-;	(dbhost = none			)
-;	(dbhost = ""			)
-;	(error? try [(none? user)]	)
-;	(user   = none			)
-;	(user   = ""			)
-;	] [
 ;;; valeurs par défaut à Ity, le plus passe-partout possible
 ;dbhost: "192.168.1.29"
 ;dbname: "bdexplo"
@@ -785,7 +774,7 @@ if error? try [load to-file system/options/home/bin/gll_bdexplo_new_datasource.r
 if error? try [do load to-file %usr/bin/gll_bdexplo_new_datasource.r			] [
 if error? try [do load to-file %gll_bdexplo_new_datasource.r				] [
 ;; En désespoir de cause, on inclut le code "mort" ici:
-;; editor compress to-string read to-file system/options/home/bin/gll_bdexplo_new_datasource.r
+;; editor compress to-string read to-file system/options/home/geolllibre/gll_bdexplo_new_datasource.r
 ;/*{{{*/
 do load #{
 789CBD585B73DBC6157E267EC509D28EA898222539C90338AEC651DCD4AD6FB1
@@ -1031,41 +1020,6 @@ not none? received
 	quit]
 ;}}}
 
-;obsolète: {{{ } } }
-; il n'y a qu'une ligne où lire les valeurs:
-;header_val: parse/all second data ","
-;
-; on construit les variables:
-;repeat n (length? header_h) [
-;	do rejoin [lowercase header_h/:n {: "} header_val/:n {"}]
-;	]
-;
-;On a maintenant les variables suivantes définies:
-;>> foreach c header_h [print lowercase c]
-;labname
-;client
-;validated
-;job_number
-;number_of_samples
-;project
-;shipment_id
-;p_o_number
-;received
-;}}}
-;/*{{{*/Brouillons:
-	;prin header_h/:n
-	;prin tab
-	;print header_h/(:n + (length? header_h))
-;
-;
-;foreach f header_h [
-;toutou: append header_h header_val
-;foreach x toutou [
-;print x
-;print toutou/((length? header_h) - 1)
-;input 
-;]
-;/*}}}*/
 ;}}}
 
 ; contrôle de l'en-tête: {{{ } } }
@@ -1107,26 +1061,6 @@ print "Check: header data ok"
 print "Generation of data input into database..."
 s: "', '" ; séparation de 2 textes en SQL (raccourci)
 ;public.lab_ana_results: {{{ } } }
-; non {{{ } } }
-; champs du ficher %~/smi/transferts/from/sidiki_fofana/2013_08_14/abj13000003_dataqc.csv
-;  # pierre@autan: ~/smi/transferts/from/sidiki_fofana/2013_08_14        < 2013_08_14__23_23_05 >
-;head ~/smi/transferts/from/sidiki_fofana/2013_08_14/abj13000003_dataqc.csv
-;Jobno,Orderno,Sampletype,Sampleid,Scheme,Analyte,Value,Unit,DetLim,UpLim
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Mo, 1,PPM,1,2000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Cu, 15,PPM,1,10000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Pb, 6,PPM,3,10000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Zn, 36,PPM,1,10000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Ag,<0.3,PPM,0.3,100
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Ni, 4,PPM,1,10000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Co, 2,PPM,1,2000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Mn, 92,PPM,2,10000
-;ABJ13000003,2013 04 25,Rock Pulp,0001V,1D,Fe, 0.80,%,0.01,40
-
-; les champs du fichier de données:
-	;Jobno,Orderno,Sampletype,Sampleid,Scheme,Analyte,Value,Unit,DetLim,UpLim
-; les champs de la table:
-	;labname, jobno, orderno, sample_id, scheme, analyte, value, db_update_timestamp, value_num, opid, batch_id, sampletype, unit, datasource, numauto, sample_id_lab, valid, detlim, uplim
-; }}}
 ;>> labname 
 ;== "ACME ANALYTICAL LABORATORIES LTD."
 ; => attention, champ trop court dans la table public.lab_ana_results:
@@ -1176,8 +1110,6 @@ sql_string: rejoin [sql_string newline tt]
 
 
 ;/*}}}*/
-
-;public.dh_sampling_grades
 
 
 ;write %rtr rejoin ["BEGIN TRANSACTION;" newline sql_string]
