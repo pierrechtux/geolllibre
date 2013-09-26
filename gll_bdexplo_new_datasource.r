@@ -36,13 +36,12 @@ rebol [
 ]
 
 ; initialisation:
-if error? try [						; Récupération des routines (et des préférences)
+if error? try [						; Récupération des routines (et des préférences) et connexion à la base
 do load to-file system/options/home/bin/gll_routines.r	; soit depuis ~/bin
 ] [
 do load to-file %gll_routines.r				; ou sinon là où se trouve le script présent
 ]
 
-connection_db						; connection à la base
 if error? try [ type? journal_sql ] [journal_sql: [] ]	; si pas de journal des instructions SQL, on en crée un vide
 
 ; test pour voir si les transactions peuvent avoir lieu:
@@ -182,16 +181,5 @@ print new_datasource_id
 ]
 quit
 ]
-;fin
+; fin
 
-
-
-comment {
-
-	;poubelle:
-	;open_datafile_and_generate_new_datasource: func [ file_in ] [
-	;return new_datasource_id
-	;test_datasource_available new_datasource_id
-	;]
-:set foldmethod=indent
-}

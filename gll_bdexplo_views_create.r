@@ -46,8 +46,7 @@ rebol	[
 ;	                ||     ||
 ;	
 
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences
-connection_db						; connection à la base
+do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
 insert db "BEGIN TRANSACTION;"
 
 ;# on commence à fabriquer un gros texte en sql, qu'on fera tourner à la fin: {{{
