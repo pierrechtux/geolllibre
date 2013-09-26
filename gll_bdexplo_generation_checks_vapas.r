@@ -436,7 +436,8 @@ append fichier_sortie ".html"
 fichier_sortie: to-file lowercase fichier_sortie
 write fichier_sortie sortie_generale
 
-
+print "Finished: check results in file:"
+print fichier_sortie
 
 ; poubelle: {{{ } } }
 ;des tests divers de parse, pas réussis: {{{ } } }

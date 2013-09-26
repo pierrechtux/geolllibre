@@ -6,8 +6,7 @@ passw:	reverse decompress #{789C2B492D4A4E2D2EC94BCD4DCD484E2C0300327306420F0000
 opid:		0			; default operation id (opid)
 					; (opid 0 is a fake dataset)
 tmp_schema:	"tmp_imports"		; schema where temporary imports tables go
-working_directory: %~/geolllibre/bdexplo/ 
-
+working_directory: %~/geolllibre/
 
 ; Si des variables d'environnement	; If environment variables are set,
 ; sont settées, elles remplacent 	; they replace those already defined
