@@ -1,4 +1,4 @@
-#!/usr/bin/rebol -qs
+#!/usr/bin/rebol_core -qs
 rebol	[
 	Title:   "Generation of a HTML report from bdexplo database, with various check queries"
 	Name:    gll_bdexplo_generation_checks_vapas.r

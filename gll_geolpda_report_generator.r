@@ -1,4 +1,4 @@
-#!/usr/bin/rebol -cs
+#!/usr/bin/rebol_core -qs
 REBOL [
 	Title:   "GeolPDA report generator"
 	Date:    09-Mar-2013

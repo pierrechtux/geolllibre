@@ -127,9 +127,11 @@ either system/options/args = none [
 		btn #"c" "Abandon" [ new_datasource_id: none
 		 unview ]
 		]
-	view/title layout layout_new_datasource "Fichier pour import et nouveau datasource_id"
-	if confirm "Commit changes to database (undoable)?" [
-	insert db "COMMIT;"
+	if view? [	; /only if this rebol is a view
+		view/title layout layout_new_datasource "Fichier pour import et nouveau datasource_id"
+		if confirm "Commit changes to database (undoable)?" [
+		insert db "COMMIT;"
+		]
 	]
 	quit
 ][

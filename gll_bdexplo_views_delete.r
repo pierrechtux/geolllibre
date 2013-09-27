@@ -1,4 +1,4 @@
-#!/usr/bin/rebol -qs
+#!/usr/bin/rebol_core -qs
 rebol	[
 	Title:   "Démolition des vues de bdexplo"
 	Name:    gll_bdexplo_views_create.r

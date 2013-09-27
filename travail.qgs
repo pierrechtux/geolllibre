@@ -1580,7 +1580,7 @@
             <FontSize type="int">10</FontSize>
             <Enabled type="bool">true</Enabled>
             <Placement type="int">3</Placement>
-            <Label type="QString">&amp;copy; &lt;i>PChG 2009&lt;/i></Label>
+            <Label type="QString">&amp;copy; &lt;i>PChG 2013&lt;/i></Label>
             <Color type="QString">#000000</Color>
         </CopyrightLabel>
         <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
