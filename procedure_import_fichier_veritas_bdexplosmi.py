@@ -4,18 +4,18 @@
 Je fais un script traitant d'un seul coup les résultats analytiques de Veritas:
 Je fais ça en pseudo-code, converti en python
 
-31_10_2012__10_41_45: je reprends ça, avec le nouveau format .csv que fournit veritas.
+31_10_2012__10_41_45: je reprends ça, avec le nouveau format .csv que fournit le labo X.
 2013_09_29__18_11_48: modifications, pour importer dans la structure appropriée de lab_ana_batches_reception
 
 """
 
- # import des fichiers analytiques de bureau veritas directement dans la bd:/*{{{*/
+ # import des fichiers analytiques de labo X directement dans la bd:/*{{{*/
 
 import os, sys, csv, string, psycopg2
 # paramètres:/*{{{*/
 # file_in = '/home/pierre/smi/transferts/from/polU/2012_10_31/u100133.csv'
 opid = 18
-labname = 'VERITAS'
+labname = 'X'
 scheme = 'FA001'
 analyte = 'AU'
 unit = 'PPM'
@@ -28,17 +28,16 @@ passw   = ''               # pas beau; ne pas le faire => ôté
 if passw == '':
     passw = raw_input("Mot de passe: ")
 
-
 # /*}}}*/
 
-
+commentedout = """
 #########DEBUG______________________
 dbname  = 'bdexplo'
 dbhost  = 'autan'
 user    = 'pierre'   # en dernier recours, on fait en tant que postgres.
 passw   = 'pp'    # pas beau; ne pas le faire
 #########DEBUG______________________
-
+"""
 
 
 ####################################
@@ -188,6 +187,7 @@ print
 
 # /*}}}*/
 
+commentedout = """
 # contrôle des valeurs qu'on a lues, éponymes des champs: DEBUG______________________
 print opid                
 print jobno               
@@ -207,6 +207,7 @@ print username
 print certificate_comments
 print info_suppl_json     
 #############DEBUG______________________
+"""
 
 # Construction de la chaîne SQL qui sera finalement "jouée": d'abord la partie lots:/*{{{*/
 #anciennement, quand public.lab_ana_batches_reception était un dépotoir immonde: {{{
