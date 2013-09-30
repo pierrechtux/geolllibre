@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*-coding=utf-8
+
+#DEBUG______________________
 """
 Je fais un script traitant d'un seul coup les résultats analytiques de Veritas:
 Je fais ça en pseudo-code, converti en python
@@ -22,8 +24,10 @@ unit = 'PPM'
 
 dbname  = 'bdexplo'
 dbhost  = 'duran'
+dbhost  = 'autan'  #DEBUG______________________
 #user    = 'marie_cecile'   # en dernier recours, modifier pour faire en tant que postgres.
 user    = 'smiexplo'   # en dernier recours, modifier pour faire en tant que postgres.
+user    = 'pierre'   #DEBUG______________________ 
 passw   = ''               # pas beau; ne pas le faire => TODO faire lire dans .gll_preferences: mais python ne peut pas le décrypter
 #à défaut, on va lire ça dans .pgpass:
 
