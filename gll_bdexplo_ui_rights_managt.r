@@ -36,9 +36,47 @@ rebol [ ;{{{ } } }
 ]	]
 ;}}}
 
+do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines (et des préférences) et connexion à la base
 
-ui_rights_management: [
-	h1 "Gestion des droits pour les tables de la base " dbname " sur le serveur " dbhost
+
+schemas: run_query "SELECT DISTINCT schemaname FROM pg_tables WHERE tableowner <> 'postgres';"  ; ORDER BY schemaname;
+roles:   run_query "SELECT rolname FROM pg_roles;"
+tables:	 run_query "SELECT DISTINCT tablename FROM pg_tables WHERE tablename <> 'postgres';"
+
+
+ui_rights_management: [ ; {{{ } } }
+	h1 "GeolLLibre - exploration database bdexplo"
+	h1 rejoin 	["Gestion des droits pour les tables de la base " 
+			dbname " sur le serveur " dbhost]
+	guide
+	h2 "Schemas:"
+	schema_list: text-list blue 100x100 data (schemas) [
+		print value
+		tables:	 run_query rejoin ["SELECT DISTINCT tablename FROM pg_tables WHERE tablename <> 'postgres' AND schemaname = '" value "' ;"]
+		tables_list/data: tables
+		show tables_list
+	]
+	return
+	h2 "Tables"
+	tables_list: text-list black 100x100 data (tables) [
+		
+	]
+
+	return
+	h2 "Roles:"
+	roles_list: text-list blue 100x100 data (roles) [
+		print value
+	]
+	;choice ["1" "2" "3"]
+
+	btn #"Q" "Quit"  [unview halt]		; halt is softer than quit: it allows 
+					; the rebol console to remain open, 
+					; in case there is something useful.
 ]
+
 view layout ui_rights_management
+;}}}
+
+; Pour déboguer le VID:
+; do %~/autan/rebol/telech/VID-Livecoding/RealTime-VID-demo.r
 
