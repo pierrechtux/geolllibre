@@ -4,9 +4,9 @@
 Je fais un script traitant d'un seul coup les résultats analytiques de Veritas:
 Je fais ça en pseudo-code, converti en python
 
+2013_08_14__18_08_24: on met lab_ana_results.valid à FALSE quand re-analyses
 31_10_2012__10_41_45: je reprends ça, avec le nouveau format .csv que fournit le labo X.
 2013_09_29__18_11_48: modifications, pour importer dans la structure appropriée de lab_ana_batches_reception
-
 """
 
  # import des fichiers analytiques de labo X directement dans la bd:/*{{{*/
@@ -15,29 +15,35 @@ import os, sys, csv, string, psycopg2
 # paramètres:/*{{{*/
 # file_in = '/home/pierre/smi/transferts/from/polU/2012_10_31/u100133.csv'
 opid = 18
-labname = 'X'
+labname = 'X'        # => peu importe: ces variables seront overwritées plus bas
 scheme = 'FA001'
 analyte = 'AU'
 unit = 'PPM'
 
 dbname  = 'bdexplo'
 dbhost  = 'duran'
-user    = 'marie_cecile'   # en dernier recours, modifier pour faire en tant que postgres.
-passw   = ''               # pas beau; ne pas le faire => ôté
+#user    = 'marie_cecile'   # en dernier recours, modifier pour faire en tant que postgres.
+user    = 'smiexplo'   # en dernier recours, modifier pour faire en tant que postgres.
+passw   = ''               # pas beau; ne pas le faire => TODO faire lire dans .gll_preferences: mais python ne peut pas le décrypter
+#à défaut, on va lire ça dans .pgpass:
+
+try:
+    pgpass = open("/home/" + user + "/.pgpass", 'r')
+    tt = ""
+    while ((tt.find(user)) + tt.find(dbhost) == -2):
+        tt = pgpass.readline()
+    pgpass.close()
+    passw = tt.split(":")[4]
+    passw = passw[:len(passw) - 1]
+except:
+    print("No suitable information from .pgpass")
+    passw = raw_input("Mot de passe: ")
 
 if passw == '':
     passw = raw_input("Mot de passe: ")
 
 # /*}}}*/
 
-commentedout = """
-#########DEBUG______________________
-dbname  = 'bdexplo'
-dbhost  = 'autan'
-user    = 'pierre'   # en dernier recours, on fait en tant que postgres.
-passw   = 'pp'    # pas beau; ne pas le faire
-#########DEBUG______________________
-"""
 
 
 ####################################
@@ -53,9 +59,9 @@ else:
     file_in = raw_input("Rien en argument.\nNom du fichier à traiter: ")
 
 
-
 #########DEBUG______________________
-file_in = "/home/pierre/heaume_pierre/pchgeol/operations/smi/transferts/from/kalvin/2013_06_23/u100556.csv"
+#pour test:
+#file_in = "/home/pierre/heaume_pierre/pchgeol/operations/smi/transferts/from/kalvin/2013_06_23/u100556.csv"
 #########DEBUG______________________
 
 
@@ -128,6 +134,7 @@ for (k, v) in key_values:
         certificate_comments = v
     elif k == 'PO NUMBER':
         p_o_number = v
+	orderno = v
     elif k == 'IDENT':
         analyte = string.upper(v)
         info_suppl_json = info_suppl_json + ", \"" + k + "\": \"" + v + "\""
@@ -244,6 +251,17 @@ for line in file_in_reader:
 sql_string = sql_string[0:-2] + ";\n"
 
 # /*}}}*/
+
+
+
+# 2013_08_14__18_08_24 {{{
+
+# on met valid à FALSE quand re-analyses:
+sql_string += "UPDATE public.lab_ana_results SET valid = FALSE WHERE opid = " + str(opid) + " AND labname = '" + str(labname) + "' AND jobno = '" + str(jobno) + "' AND (sample_id_lab ILIKE 'STD:%' OR sample_id_lab ILIKE 'ROCK%' OR sample_id_lab ILIKE 'BLANK%');"
+
+# }}}
+
+
 # On "joue" finalement le SQL résultant:/*{{{*/
 
 cur.execute(sql_string)
