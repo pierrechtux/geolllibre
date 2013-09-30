@@ -34,8 +34,10 @@ passw   = ''               # pas beau; ne pas le faire => TODO faire lire dans .
 try:
     pgpass = open("/home/" + user + "/.pgpass", 'r')
     tt = ""
-    while ((tt.find(user)) + tt.find(dbhost) == -2):
-        tt = pgpass.readline()
+    for l in pgpass.readlines():
+        if ((l.find(user) != -1) and (l.find(dbhost) != -1)):
+            tt = l
+    print tt
     pgpass.close()
     passw = tt.split(":")[4]
     passw = passw[:len(passw) - 1]
@@ -47,8 +49,6 @@ if passw == '':
     passw = raw_input("Mot de passe: ")
 
 # /*}}}*/
-
-
 
 ####################################
 # un argument en fin de ligne de commande? ## MODIF pour prendre plus de 2 arguments;
@@ -124,7 +124,7 @@ for (k, v) in key_values:
     if   k == 'Batch_No':
         jobno = v
     elif k == 'CLIENT':
-        client = string.replace(client, "'", "")  # le ' ne pourrait pas passer, plus tard: on l'enlève
+        client = string.replace(v, "'", "")  # le ' ne pourrait pas passer, plus tard: on l'enlève
     elif k == 'No of SAMPLES':
         number_of_samples = v
     elif k == 'DATE RECEIVED':
@@ -132,6 +132,7 @@ for (k, v) in key_values:
         received = int.__str__((string.atoi(received[-2:]) + 2000)) + '-' + received[-4:-2] + "-" + received[:-4]
     elif k == 'DATE COMPLETED':
         validated = v
+        validated = int.__str__((string.atoi(validated[-2:]) + 2000)) + '-' + validated[-4:-2] + "-" + validated[:-4]
     elif k == 'PROJECT':
         project = v
     elif k == 'CERTIFICATE COMMENTS':
