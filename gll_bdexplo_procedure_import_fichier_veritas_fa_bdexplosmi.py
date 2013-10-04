@@ -17,8 +17,8 @@ import os, sys, csv, string, psycopg2
 # paramètres:/*{{{*/
 # file_in = '/home/pierre/smi/transferts/from/polU/2012_10_31/u100133.csv'
 opid = 18
-labname = 'X'        # => peu importe: ces variables seront overwritées plus bas
-scheme = 'FA001'
+labname = 'VERITAS'
+scheme = 'FA001'            # => peu importe: ces variables seront overwritées plus bas
 analyte = 'AU'
 unit = 'PPM'
 
