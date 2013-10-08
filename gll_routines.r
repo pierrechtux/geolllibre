@@ -765,6 +765,106 @@ continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue
 throw 'continue]
 ;/*}}}*/
 
+; implements a constructor for objects:
+; from rgchris on: http://stackoverflow.com/questions/19229293/is-there-an-object-constructor-in-rebol
+; slightly modified
+new: func [prototype [object!] args [block! none!]][
+    prototype: make prototype [
+        if in self '__init__ [
+            case [
+                function? :__ini__ [apply :__init__ args]
+                block? :__init__ [apply func [args] :__init__ [args]]
+            ]
+        ]
+    ]
+]
+
+; USAGE:
+;thing: context [
+;    name: description: none
+;    __init__: [name: args/1 description: args/2]
+;]
+;
+;derivative: new thing ["Foo" "Bar"]
+
+
+; calcul matriciel et vectoriel:
+product_matrix_line: func ["Returns product of matrix m and vector v" m [block!] v [block!] ] [ ;{{{ } } }
+	;2013_10_04__16_25_39
+	; cette fonction était nommée matrix_line: renommée en matrix_product_line
+;	return reduce [	(m/(1)/(1) * v/(1)) + (m/(1)/(2) * v/(2)) + (m/(1)/(3) * v/(3)) 
+;			(m/(2)/(1) * v/(1)) + (m/(2)/(2) * v/(2)) + (m/(2)/(3) * v/(3)) 
+;			(m/(3)/(1) * v/(1)) + (m/(3)/(2) * v/(2)) + (m/(3)/(3) * v/(3)) 
+;]	]
+	return reduce [	(m/1/1 * v/1) + (m/1/2 * v/2) + (m/1/3 * v/3) 
+			(m/2/1 * v/1) + (m/2/2 * v/2) + (m/2/3 * v/3) 
+			(m/3/1 * v/1) + (m/3/2 * v/2) + (m/3/3 * v/3) 
+]	]
+;}}}
+product_vector: func ["Returns vector product of vectors u and v" u [block!] v [block!] ] [ ;{{{ } } }
+	return reduce [
+		(u/2 * v/3) - (u/3 * v/2)
+		(u/3 * v/1) - (u/1 * v/3)
+		(u/1 * v/2) - (u/2 * v/1)
+]	]
+;}}}
+
+to-vector: func ["Converts a [x y z] block! into a vector" b [block!] ][ ;{{{ } } }
+return make vector [x: b/1 y: b/2 z: b/3]
+]; }}}
+
+;comment [
+;tests:
+;u: [1 0 0]
+;v: [0 1 0]
+;
+;product_vector u v
+;=> doit donner [0 0 1]
+;]
+
+
+
+; On définit une classe pour les vecteurs:
+vector: make object! [
+	x: 0 	y: 0 	z: 0
+	norm: 	does [return (x ** 2) + (y ** 2) + (z ** 2)]
+	is_unit: does [return ((norm) - 1 ) ** 2 < 1E-4 ]	; à quelque chose près, pour compenser les erreurs de calculs en virgule flottante
+	azim: 	does [
+		tt: arcsine   (x / ((x ** 2) + (y ** 2) + (z ** 2)))
+		return tt
+	]
+	dip:  	does [return arccosine (z / ((x ** 2) + (y ** 2) + (z ** 2)))]
+]
+
+
+
+
+
+; tests:
+ON: make vector [
+x: 0.7
+y: -0.5
+z: 0.4
+]
+print ON/norm
+;0.9
+ON/is_unit
+;== [false]
+ON/azim
+ON/dip
+
+
+test: make vector [x: 0.7 y: -0.2 z: 0.6]
+test/norm
+test/azim
+test/dip
+
+
+
+
+
+
+
 
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
