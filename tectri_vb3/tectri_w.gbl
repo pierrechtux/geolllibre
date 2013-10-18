@@ -1,0 +1,990 @@
+'!!!**Virer tout ce qui est inutile (en particulier dans le constant.txt inclus)
+'**************AFFICHAGE************************
+'Dimensions des fenêtres
+  ' Global MDI_width, MDI_height, MDI_left, MDI_top As Integer
+  ' Global tableau_width, tableau_height, tableau_left, tableau_top As Integer
+  ' Global st_left, st_top   As Integer
+  ' Global grouptri_left, grouptri_top   As Integer
+   Global Retracage_Manuel As Integer
+   Global Fichiers_Bkp As Integer
+   Global Open_nFichiers  As Integer
+   Global Fichiers_Param As Integer
+   Global Separateur_champs$
+   Global Aff_F_non_Sélec As Integer
+   Global Impression_vectorielle As Integer
+   Global Signale_Erreurs As Integer
+   Global Tracage_Progressif As Integer
+   Global Affich_F_Stations_Icones As Integer
+'Couleurs des groupes de tri et des dièdres droits
+    Global CouleurGroupe() As Long
+    Global CouleurDDroits_X As Long
+    Global CouleurDDroits_Z  As Long
+'Flag qq, utilisable comme on veut, utilisé dans le resize du stereo (st), pour éviter que la procédure ne s'auto-appelle
+    Global flag As Single'Variant
+   'constantes de flag:
+   'normal=0
+   'vrai=-1
+   Global Const flag_quitter = 1
+   Global Const flag_RechargerFichier = 2
+   Global Const flag_cancel = 3
+   Global Const flag_chargement = 4
+   Global Const flag_D_Droits = 5
+   Global Const flag_cede_main = 6
+   Global Const flag_imprime = 7
+
+'!!!Paramètres stéréo
+    Global DiamStereo
+    Global Hémisphère As Integer
+    Global Const coté = 1.2            'coté du stéréogramme, dans l'unité du stéréo (rayon stéréo=1)
+    Global Const HauteurBarreTitre = 285'hauteur de la barre de titre, utilisée dans st.resize
+'!!!Variables d'affichage; à nettoyer éventuellement
+    Global TeintePremPlan%, TeinteFond%, CleurDdrts%
+
+'***************GENERAL*************************
+    Global Const pi = 3.141592654
+'**********PARAMETRES DE TECTRI*****************
+'Nombre de stations et de failles
+   Global IMax', NsMax
+   Global ns  As Integer, i As Integer
+   Global NbStations  As Integer
+'Paramètres pour le tri des failles
+    Global SymboleGroupeDeTri() As String * 1
+    Global NbGroupesDeTri As Integer
+    Global NbMesSelect() As Integer
+'****************************************************************************
+'**************FAILLES ET STATIONS**************
+   '***réorganisation:
+   Type type_param
+     ox  As Double
+     oy  As Double
+     R As Double
+     PolX As Double
+     PolY As Double
+     SX As Double
+     SY As Double
+     SFX As Double
+     SFY As Double
+     SAX As Double
+     SAY As Double
+     Xmvt As Double
+     Ymvt As Double
+     rmvt As Double
+     AxeXX As Double
+     AxeXY As Double
+     AxeYX As Double
+     AxeYY As Double
+     AxeZX As Double
+     AxeZY As Double
+     Angledeppmvtz1 As Double
+     Anglearrpmvtz1 As Double
+     Angledeppmvtz2 As Double
+     Anglearrpmvtz2 As Double
+     Angledeppmvtx1 As Double
+     Anglearrpmvtx1 As Double
+     Angledeppmvtx2 As Double
+     Anglearrpmvtx2 As Double
+     Angledepaux As Double
+     Anglearraux As Double
+     Angledep As Double
+     Anglearr As Double
+     Xaux As Double
+     Yaux As Double
+     Raux As Double
+     azstri As Double
+     jv  As String * 1
+     jh  As String * 1
+   End Type
+   Type type_faille
+      azi As Variant
+      Pd As Variant
+      DirPd As Variant
+      Pitch As Variant
+      DirPi As Variant
+      Jeu As Variant
+     'mesure As String
+      tri As Variant
+      GroupeTri As Variant
+      commentaire As Variant
+      param As type_param
+   End Type
+   Global frm_Station() As New frmStation 'impossible d'inclure 1 objet dans le type site
+   Type type_site
+      Faille(140)  As type_faille '****reprendre ça!!
+      NbMes  As Integer
+      Situation As String
+      'Repertoire As String
+      NomFichier As String
+      Format As String
+      Titredat As String
+      Titrecal As String
+      Deleted As Integer
+      Dirty As Integer
+      'index_frm As Integer
+   End Type
+   Global site() As type_site
+
+   '*************remettre!!!!*******
+   'Type tenseur
+   '   AziSigma As Single
+   '   PlSigma As Single
+   '   RptFme As Single
+   'End Type
+   '*************remettre!!!!*******
+
+    Global teta
+'Variables des rosaces
+    '!!!Attention! c'est l'ancienne variable dir()(rosaces)qui a été
+    'renommée en direction, bikoz yavé une ôtre variable du m
+    'nom, dir$, & le visual basic, il aim'pa.
+    Global direction(), NbValeurs() As Integer, nb As Integer
+    Global Dir1ouAzi2%, NbElts%
+
+    
+'Variables générales
+    Global Chemin$
+
+'*** Module global de fonctions de graphisme GDI ***
+'** type RECT pour InvertRect()
+'
+    Type RECT
+     left As Integer
+     Top As Integer
+     Right As Integer
+     Bottom As Integer
+    End Type
+
+    Declare Function BitBlt Lib "Gdi" (ByVal destHdc%, ByVal X%, ByVal Y%, ByVal w%, ByVal h%, ByVal srcHdc%, ByVal srcX%, ByVal srcY%, ByVal Rop&) As Integer
+    Declare Function StretchBlt Lib "Gdi" (ByVal destHdc%, ByVal X%, ByVal Y%, ByVal w%, ByVal h%, ByVal srcHdc%, ByVal srcX%, ByVal srcY%, ByVal srcW%, ByVal srcH%, ByVal Rop&) As Integer
+    Declare Function InvertRect Lib "User" (ByVal hDC%, lpRect As RECT) As Integer
+
+'**Constantes de BitBlt()
+    'Global Const SRCCOPY = &HCC0020
+    'Global Const SRCPAINT = &HEE0086
+    'Global Const SRCAND = &H8800C6
+    'Global Const SRCINVERT = &H660046
+    'Global Const srcerase = &H440328
+    'Global Const notsrccopy = &H330008
+    'Global Const notsrcerase = &H1100A6
+    'Global Const mergepaint = &HBB0226
+    'Global Const dstinvert = &H550009
+    'Global Const BLACKNESS = &H42&
+   Type POINTAPI
+      X As Integer
+      Y As Integer
+   End Type
+
+'appel dll pour mettre une fenêtre par-dessus (presentation, stéréo)
+   Declare Sub SetWindowPos Lib "User" (ByVal h1%, ByVal h2%, ByVal X%, ByVal Y%, ByVal cx%, ByVal cy%, ByVal f%)
+   Global Const HWND_TOPMOST = -1
+   Global Const HWND_NOTOPMOST = -2
+   Global Const SWP_NOACTIVATE = &H10
+   Global Const SWP_SHOWWINDOW = &H40
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Fichier global des constantes Visual Basic. Ce fichier peut
+' être chargé dans un module de code.
+'
+' Certaines constantes sont désactivées car elles apparaissent
+' à plusieurs endroits (par exemple AUCUN).
+'
+' Lors de la mise à jour d'un programme Visual Basic 1.0 pour
+' l'exécuter dans Visual Basic 2.0, vous devez remplacer les
+' constantes globales par les constantes définies dans ce fichier.
+' Remarquez que True et False font partie du langage de Visual Basic
+' et n'apparissent plus dans ce fichier.
+'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+' Général
+'Global Const false = False
+
+' Formats Presse-papiers
+'Global Const FP_LIAISON = &HBF00
+'Global Const FP_TEXTE = 1
+'Global Const FP_MODEPOINT = 2
+'Global Const FP_METAFICHIER = 3
+'Global Const FP_DIB = 8
+'Global Const FP_PALETTE = 9
+'
+'Global Const CF_LINK = &HBF00
+'Global Const CF_TEXT = 1
+'Global Const CF_BITMAP = 2
+'Global Const CF_METAFILE = 3
+'Global Const CF_DIB = 8
+'Global Const CF_PALETTE = 9
+
+' Faire glisser : DragOver
+'Global Const ENTREE = 0
+'Global Const QUITTER = 1
+'Global Const AUDESSUS = 2
+'
+'Global Const ENTER = 0
+'Global Const LEAVE = 1
+'Global Const OVER = 2
+
+' Faire glisser (contrôles) : Drag
+'Global Const ANNULER = 0
+'Global Const DEBUT_GLISSER = 1
+'Global Const FIN_GLISSER = 2
+'
+'Global Const CANCEL = 0
+'Global Const BEGIN_DRAG = 1
+'Global Const END_DRAG = 2
+
+' Paramètres de Show
+'Global Const MODALE = 1
+'Global Const SANSMODE = 0
+'
+'Global Const MODAL = 1
+'Global Const MODELESS = 0
+
+' Méthode Arrange pour feuilles MDI
+'Global Const CASCADE = 0
+'Global Const MOZAIQUE_HORIZONTALE = 1
+'Global Const MOZAIQUE_VERTICALE = 2
+'Global Const REORGANISER_ICONES = 3
+'
+' Global Const CASCADE = 0
+'Global Const TILE_HORIZONTAL = 1
+'Global Const TILE_VERTICAL = 2
+'Global Const ARRANGE_ICONS = 3
+
+' Méthode ZOrder
+'Global Const AVANT_PLAN = 0
+'Global Const ARRIERE_PLAN = 1
+'
+'Global Const BRINGTOFRONT = 0
+'Global Const SENDTOBACK = 1
+
+' Codes Touches (français)
+'Global Const TOUCHE_BOUTONG = &H1
+'Global Const TOUCHE_BOUTOND = &H2
+'Global Const TOUCHE_ANNULER = &H3
+'Global Const TOUCHE_BOUTONM = &H4    'PAS contigu avec les boutons droit et gauche
+'Global Const TOUCHE_RETARR = &H8
+'Global Const TOUCHE_TAB = &H9
+'Global Const TOUCHE_EFFACER = &HC
+'Global Const TOUCHE_ENTREE = &HD
+'Global Const TOUCHE_MAJ = &H10
+'Global Const TOUCHE_CONTROLE = &H11
+'Global Const TOUCHE_MENU = &H12
+'Global Const TOUCHE_PAUSE = &H13
+'Global Const TOUCHE_VERRMAJ = &H14
+'Global Const TOUCHE_ECHAP = &H1B
+'Global Const TOUCHE_ESPACE = &H20
+'Global Const TOUCHE_PGPREC = &H21
+'Global Const TOUCHE_PGSUIV = &H22
+'Global Const TOUCHE_FIN = &H23
+'Global Const TOUCHE_ORIGINE = &H24
+   Global Const TOUCHE_GAUCHE = &H25
+   Global Const TOUCHE_HAUT = &H26
+   Global Const TOUCHE_DROITE = &H27
+   Global Const TOUCHE_BAS = &H28
+'Global Const TOUCHE_SELECT = &H29
+'Global Const TOUCHE_IMPRECRAN = &H2A
+'Global Const TOUCHE_EXECUTER = &H2B
+'Global Const TOUCHE_CLICHE = &H2C
+'Global Const TOUCHE_INS = &H2D
+'Global Const TOUCHE_SUPPR = &H2E
+'Global Const TOUCHE_AIDE = &H2F
+
+' TOUCHE_A à TOUCHE_Z correspondent à leurs équivalents ASCII: 'A' à 'Z'
+' TOUCHE_0 à TOUCHE_9 correspondent à leurs équivalents ASCII : '0' à '9'
+
+'Global Const TOUCHE_PAVNUM0 = &H60
+'Global Const TOUCHE_PAVNUM1 = &H61
+'Global Const TOUCHE_PAVNUM2 = &H62
+'Global Const TOUCHE_PAVNUM3 = &H63
+'Global Const TOUCHE_PAVNUM4 = &H64
+'Global Const TOUCHE_PAVNUM5 = &H65
+'Global Const TOUCHE_PAVNUM6 = &H66
+'Global Const TOUCHE_PAVNUM7 = &H67
+'Global Const TOUCHE_PAVNUM8 = &H68
+'Global Const TOUCHE_PAVNUM9 = &H69
+'Global Const TOUCHE_MULT = &H6A
+'Global Const TOUCHE_PLUS = &H6B
+'Global Const TOUCHE_SEPARATEUR = &H6C
+'Global Const TOUCHE_MOINS = &H6D
+'Global Const TOUCHE_POINT = &H6E
+'Global Const TOUCHE_DIV = &H6F
+'Global Const TOUCHE_F1 = &H70
+'Global Const TOUCHE_F2 = &H71
+'Global Const TOUCHE_F3 = &H72
+'Global Const TOUCHE_F4 = &H73
+'Global Const TOUCHE_F5 = &H74
+'Global Const TOUCHE_F6 = &H75
+'Global Const TOUCHE_F7 = &H76
+'Global Const TOUCHE_F8 = &H77
+'Global Const TOUCHE_F9 = &H78
+'Global Const TOUCHE_F10 = &H79
+'Global Const TOUCHE_F11 = &H7A
+'Global Const TOUCHE_F12 = &H7B
+'Global Const TOUCHE_F13 = &H7C
+'Global Const TOUCHE_F14 = &H7D
+'Global Const TOUCHE_F15 = &H7E
+'Global Const TOUCHE_F16 = &H7F
+
+'Global Const TOUCHE_VERRNUM = &H90
+
+' Codes Touches (américains)
+'Global Const KEY_LBUTTON = &H1
+'Global Const KEY_RBUTTON = &H2
+'Global Const KEY_CANCEL = &H3
+'Global Const KEY_MBUTTON = &H4    ' Pas contigu avec L & RBUTTON
+'Global Const KEY_BACK = &H8
+'Global Const KEY_TAB = &H9
+'Global Const KEY_CLEAR = &HC
+'Global Const KEY_RETURN = &HD
+'Global Const KEY_SHIFT = &H10
+'Global Const KEY_CONTROL = &H11
+'Global Const KEY_MENU = &H12
+'Global Const KEY_PAUSE = &H13
+'Global Const KEY_CAPITAL = &H14
+'Global Const KEY_ESCAPE = &H1B
+'Global Const KEY_SPACE = &H20
+'Global Const KEY_PRIOR = &H21
+'Global Const KEY_NEXT = &H22
+'Global Const KEY_END = &H23
+'Global Const KEY_HOME = &H24
+'Global Const KEY_LEFT = &H25
+'Global Const KEY_UP = &H26
+'Global Const KEY_RIGHT = &H27
+'Global Const KEY_DOWN = &H28
+'Global Const KEY_SELECT = &H29
+'Global Const KEY_PRINT = &H2A
+'Global Const KEY_EXECUTE = &H2B
+'Global Const KEY_SNAPSHOT = &H2C
+'Global Const KEY_INSERT = &H2D
+'Global Const KEY_DELETE = &H2E
+'Global Const KEY_HELP = &H2F
+
+' KEY_A à KEY_Z correspondent à leurs équivalents ASCII: 'A' à 'Z'
+' KEY_0 à KEY_9 correspondent à leurs équivalents ASCII: '0' à '9'
+
+'Global Const KEY_NUMPAD0 = &H60
+'Global Const KEY_NUMPAD1 = &H61
+'Global Const KEY_NUMPAD2 = &H62
+'Global Const KEY_NUMPAD3 = &H63
+'Global Const KEY_NUMPAD4 = &H64
+'Global Const KEY_NUMPAD5 = &H65
+'Global Const KEY_NUMPAD6 = &H66
+'Global Const KEY_NUMPAD7 = &H67
+'Global Const KEY_NUMPAD8 = &H68
+'Global Const KEY_NUMPAD9 = &H69
+'Global Const KEY_MULTIPLY = &H6A
+'Global Const KEY_ADD = &H6B
+'Global Const KEY_SEPARATOR = &H6C
+'Global Const KEY_SUBTRACT = &H6D
+'Global Const KEY_DECIMAL = &H6E
+'Global Const KEY_DIVIDE = &H6F
+'Global Const KEY_F1 = &H70
+'Global Const KEY_F2 = &H71
+'Global Const KEY_F3 = &H72
+'Global Const KEY_F4 = &H73
+'Global Const KEY_F5 = &H74
+'Global Const KEY_F6 = &H75
+'Global Const KEY_F7 = &H76
+'Global Const KEY_F8 = &H77
+'Global Const KEY_F9 = &H78
+'Global Const KEY_F10 = &H79
+'Global Const KEY_F11 = &H7A
+'Global Const KEY_F12 = &H7B
+'Global Const KEY_F13 = &H7C
+'Global Const KEY_F14 = &H7D
+'Global Const KEY_F15 = &H7E
+'Global Const KEY_F16 = &H7F
+
+'Global Const KEY_NUMLOCK = &H90
+
+' Noms symbolique pour le type Variant
+
+'Global Const V_EMPTY = 0
+'Global Const V_NULL = 1
+'Global Const V_INTEGER = 2
+'Global Const V_LONG = 3
+'
+'Global Const V_SINGLE = 4
+'Global Const V_DOUBLE = 5
+'Global Const V_CURRENCY = 6
+'Global Const V_DATE = 7
+'Global Const V_STRING = 8
+
+' Paramètres d'événements
+
+' ErrNum (LinkError)
+'Global Const MAUVAIS_FORMAT = 1
+'Global Const DDE_SOURCE_FERMEE = 6
+'Global Const TROP_DE_LIAISONS = 7
+'Global Const ECHEC_TRANSFERT_DONNEES = 8
+''
+'Global Const WRONG_FORMAT = 1
+'Global Const DDE_SOURCE_CLOSED = 6
+'Global Const TOO_MANY_LINKS = 7
+'Global Const DATA_TRANSFER_FAILED = 8
+
+' QueryUnload
+'Global Const FEUILLE_CONTROLMENU = 0
+'Global Const FEUILLE_CODE = 1
+'Global Const APP_WINDOWS = 2
+'Global Const APP_GESTIONNAIRE_TACHE = 3
+'Global Const FEUILLE_MDI = 4
+'
+'Global Const FORM_CONTROLMENU = 0
+'Global Const FORM_CODE = 1
+' Global Const APP_WINDOWS = 2
+'Global Const APP_TASKMANAGER = 3
+'Global Const FORM_MDIFORM = 4
+
+' Propriétés
+
+' Couleurs
+Global Couleur()
+Global Const NOIR = &H0&
+Global Const ROUGE = &HFF&
+Global Const VERT = &HFF00&
+Global Const JAUNE = &HFFFF&
+Global Const BLEU = &HFF0000
+Global Const MAGENTA = &HFF00FF
+Global Const CYAN = &HFFFF00
+Global Const BLANC = &HFFFFFF
+'
+'Global Const BLACK = &H0&
+'Global Const RED = &HFF&
+'Global Const GREEN = &HFF00&
+'Global Const YELLOW = &HFFFF&
+'Global Const BLUE = &HFF0000
+' Global Const MAGENTA = &HFF00FF
+' Global Const CYAN = &HFFFF00
+'Global Const WHITE = &HFFFFFF
+
+' Couleurs système
+Global Const BARRES_DEFILEMENT = &H80000000    ' Région grise barres de
+                                               ' défilement.
+'Global Const BUREAU = &H80000001               ' Bureau.
+'Global Const BARRE_DE_TITRE_ACTIVE = &H80000002    ' Légende de fenêtre active.
+'Global Const BARRE_DE_TITRE_INACTIVE = &H80000003   ' Légende de fenêtre inactive.
+'Global Const BARRE_DE_MENUS = &H80000004            ' Arrière-plan menu.
+Global Const FOND_FENETRE = &H80000005     ' Arrière-plan fenêtre.
+'Global Const FILET_FENETRE = &H80000006    ' Cadre fenêtre.
+'Global Const TEXTE_MENU = &H80000007       ' Texte dans les menus.
+'Global Const TEXTE_FENETRE = &H80000008    ' Texte dans les fenêtres.
+'Global Const TEXTE_BARRE_DE_TITRE = &H80000009 ' Texte dans la légende, zone de
+                                           ' flèche, flèche, barres de défilement...
+'Global Const BORDURE_ACTIVE = &H8000000A   ' Bordure de fenêtre active.
+'Global Const BORDURE_INACTIVE = &H8000000B ' Bordure de fenêtre inactive.
+'Global Const ESP_TRAVAIL_APPLI = &H8000000C  ' Couleur de fond des applications à
+                                                                             ' interface multidocuments (MDI).
+'Global Const SURBRILLANCE = &H8000000D     ' Elément(s) selectionné(s) dans un
+                                           ' contrôle.
+'Global Const TEXTE_SURBRILLANCE = &H8000000E ' Texte d'élément sélectionné dans
+                                             ' un contrôle.
+'Global Const BOUTON = &H8000000F           ' Face grisée de boutons de commande.
+'Global Const OMBRE_BOUTON = &H80000010     ' Bordure grisée de boutons de
+                                           ' commande.
+'Global Const TEXTE_GRISE = &H80000011      ' Texte grisé (désactivé).
+' Cette couleur est établie à 0 si le gestionnaire d'affichage courant
+' ne gère pas une couleur gris unie.
+'Global Const TEXTE_BOUTON = &H80000012     ' Texte sur boutons à enfoncer.
+
+' Couleurs systèmes (américains)
+'Global Const SCROLL_BARS = &H80000000           ' Scroll-bars gray area.
+'Global Const DESKTOP = &H80000001               ' Desktop.
+'Global Const ACTIVE_TITLE_BAR = &H80000002      ' Active window caption.
+'Global Const INACTIVE_TITLE_BAR = &H80000003    ' Inactive window caption.
+'Global Const MENU_BAR = &H80000004              ' Menu background.
+'Global Const WINDOW_BACKGROUND = &H80000005     ' Window background.
+'Global Const WINDOW_FRAME = &H80000006          ' Window frame.
+'Global Const MENU_TEXT = &H80000007             ' Text in menus.
+'Global Const WINDOW_TEXT = &H80000008           ' Text in windows.
+'Global Const TITLE_BAR_TEXT = &H80000009        ' Text in caption, size box, scroll-bar
+                                                ' arrow box..
+'Global Const ACTIVE_BORDER = &H8000000A         ' Active window border.
+'Global Const INACTIVE_BORDER = &H8000000B       ' Inactive window border.
+'Global Const APPLICATION_WORKSPACE = &H8000000C ' Background color of multiple
+                                                ' document interface (MDI) applications.
+'Global Const HIGHLIGHT = &H8000000D             ' Items selected item in a control.
+'Global Const HIGHLIGHT_TEXT = &H8000000E        ' Text of item selected in a control.
+'Global Const BUTTON_FACE = &H8000000F           ' Face shading on command buttons.
+'Global Const BUTTON_SHADOW = &H80000010         ' Edge shading on command buttons.
+'Global Const GRAY_TEXT = &H80000011             ' Grayed (disabled) text.  This color is set
+                                                ' to 0 if the current display driver does not
+                                                ' support a solid gray color.
+'Global Const BUTTON_TEXT = &H80000012           ' Text on push buttons.
+
+' Types énumérés
+
+' Align (zone d'image)
+'Global Const AUCUN = 0
+'Global Const ALIGNE_HAUT = 1
+'Global Const ALIGNE_BAS = 2
+'
+'Global Const NONE = 0
+'Global Const ALIGN_TOP = 1
+'Global Const ALIGN_BOTTOM = 2
+
+' Alignement
+'Global Const JUSTIFIER_A_GAUCHE = 0 ' 0 - Justifier à gauche.
+'Global Const JUSTIFIER_A_DROITE = 1 ' 1 - Justifier à droite.
+'Global Const CENTRE = 2            ' 2 - Centré
+'
+'Global Const LEFT_JUSTIFY = 0       ' 0 - Left Justify
+'Global Const RIGHT_JUSTIFY = 1      ' 1 - Right Justify
+'Global Const CENTER = 2             ' 2 - Center
+
+' BorderStyle (feuille)
+' Global Const AUCUN = 0             ' 0 - Aucun
+'Global Const TRAIT_SIMPLE_FIXE = 1   ' 1 - Trait simple fixe
+'Global Const REGLABLE = 2        ' 2 - Réglable (Feuilles seulement)
+'Global Const TRAIT_DOUBLE_FIXE = 3   ' 3 - Trait double fixe (Feuilles seulement)
+'
+' Global Const NONE = 0              ' 0 - None
+'Global Const FIXED_SINGLE = 1        ' 1 - Fixed Single
+'Global Const SIZABLE = 2         ' 2 - Sizable (Forms only)
+'Global Const FIXED_DOUBLE = 3        ' 3 - Fixed Double (Forms only)
+
+' BorderStyle (Shape and Line)
+'Global Const TRANSPARENT = 0    '0 - Transparent
+'Global Const SOLID = 1          '1 - Solid
+'Global Const DASH = 2           '2 - Dash
+'Global Const DOT = 3            '3 - Dot
+'Global Const DASH_DOT = 4       '4 - Dash-Dot
+'Global Const DASH_DOT_DOT = 5   '5 - Dash-Dot-Dot
+'Global Const INSIDE_SOLID = 6   '6 - Inside Solid
+
+' Curseur pour la souris: MousePointer
+'Global Const DEFAUT = 0            ' 0 - Défaut
+'Global Const flèche = 1            ' 1 - Flèche
+'Global Const CROIX = 2             ' 2 - Croix
+'Global Const POINTEUR_EN_I = 3     ' 3 - Pointeur en forme de I
+'Global Const ICONE = 4             ' 4 - Icône
+'Global Const FLECHEAQUATREPOINTES = 5  ' 5 - Flèche
+'Global Const FLECHES_NE_SO = 6     ' 6 - Flèche NE SO
+'Global Const FLECHES_N_S = 7       ' 7 - Flèche NS
+'Global Const FLECHES_NO_SE = 8     ' 8 - Flèche NO SE
+'Global Const FLECHES_O_E = 9       ' 9 - Flèche OE
+'Global Const FLECHE_VERS_LE_HAUT = 10  ' 10 - Flèche vers le haut
+'Global Const SABLIER = 11          ' 11 - Sablier
+Global Const INTERDIT = 12         ' 12 - Panneau d'interdiction
+'
+Global Const DEFAULT = 0        ' 0 - Default
+Global Const ARROW = 1          ' 1 - Arrow
+Global Const CROSSHAIR = 2      ' 2 - Cross
+Global Const IBEAM = 3          ' 3 - I-Beam
+Global Const ICON_POINTER = 4   ' 4 - Icon
+Global Const SIZE_POINTER = 5   ' 5 - Size
+Global Const SIZE_NE_SW = 6     ' 6 - Size NE SW
+Global Const SIZE_N_S = 7       ' 7 - Size N S
+Global Const SIZE_NW_SE = 8     ' 8 - Size NW SE
+Global Const SIZE_W_E = 9       ' 9 - Size W E
+Global Const UP_ARROW = 10      ' 10 - Up Arrow
+Global Const HOURGLASS = 11     ' 11 - Hourglass
+Global Const NO_DROP = 12       ' 12 - No drop
+
+' Mode de glissement: DragMode
+Global Const MANUEL = 0      ' 0 - Manuel
+Global Const AUTOMATIQUE = 1 ' 1 - Automatique
+'
+Global Const MANUAL = 0      ' 0 - Manual
+Global Const AUTOMATIC = 1   ' 1 - Automatic
+
+' Mode de dessin: DrawMode
+Global Const BLACKNESS = 1      ' 1 - Black Pen
+Global Const NOT_MERGE_PEN = 2  ' 2 - Not Merge Pen
+Global Const MASK_NOT_PEN = 3   ' 3 - Mask Not Pen
+Global Const NOT_COPY_PEN = 4   ' 4 - Not Copy Pen
+Global Const MASK_PEN_NOT = 5   ' 5 - Mask Pen Not
+Global Const INVERT = 6         ' 6 - Invert
+Global Const XOR_PEN = 7        ' 7 - Xor Pen
+Global Const NOT_MASK_PEN = 8   ' 8 - Not Mask Pen
+Global Const MASK_PEN = 9       ' 9 - Mask Pen
+Global Const NOT_XOR_PEN = 10   ' 10 - Not Xor Pen
+Global Const NOP = 11           ' 11 - Nop
+Global Const MERGE_NOT_PEN = 12 ' 12 - Merge Not Pen
+Global Const COPY_PEN = 13      ' 13 - Copy Pen
+Global Const MERGE_PEN_NOT = 14 ' 14 - Merge Pen Not
+Global Const MERGE_PEN = 15     ' 15 - Merge Pen
+Global Const WHITENESS = 16     ' 16 - White Pen
+'**les mêmes, du vieux constant.txt
+Global Const NOIRCEUR = 1      ' 1 - Noir
+Global Const NON_CRAYON_AFFICHAGE = 2  ' 2 - Non crayon+affichage
+Global Const MASQUE_AFFICHAGE_NONCRAYON = 3   ' 3 - Masque et affichage non-crayon
+Global Const NON_CRAYON = 4   ' 4 - Non-crayon
+Global Const MASQUE_CRAYON_NONAFFICHAGE = 5   ' 5 - Masque et crayon non-affichage
+Global Const NONAFFICHAGE = 6         ' 6 - Inversé
+Global Const CRAYONOU_AFFICHAGE = 7        ' 7 - Crayon ou affichege
+Global Const NON_MASQUE_CRAYONAFFICHAGE = 8   ' 8 - Non Masque, affichage crayon
+Global Const MASQUE_CRAYONAFFICHAGE = 9       ' 9 - Masque affichage crayon
+Global Const NON_CRAYONOU_AFFICHAGE = 10   ' 10 - Non crayon ou affichage
+'Global Const NOP = 11           ' 11 - Pas d'opération
+Global Const AFFICHAGE_NON_CRAYON = 12 ' 12 - Affichage + non-crayon
+Global Const PREMIER_PLAN = 13      ' 13 - Premier plan
+Global Const CRAYON_NON_AFFICHAGE = 14 ' 14 - Crayon et non-affichage
+Global Const CRAYON_AFFICHAGE = 15     ' 15 - Crayon et affichage
+Global Const BLANCHEUR = 16     ' 16 - Blanc
+
+
+
+' Style de dessin: DrawStyle
+Global Const PLEIN = 0                ' 0 - Plein
+Global Const TIRET = 1                ' 1 - Tiret
+Global Const POINTILLE = 2            ' 2 - Pointillé
+Global Const TIRET_POINT = 3          ' 3 - Tiret point
+Global Const TIRET_POINT_POINT = 4    ' 4 - Tiret point point
+'Global Const INVISIBLE = 5           ' 5 - Invisible
+Global Const INTERIEUR_PLEIN = 6      ' 6 - Intérieur plein
+'
+Global Const solid = 0            ' 0 - Solid
+Global Const DASH = 1             ' 1 - Dash
+Global Const DOT = 2              ' 2 - Dot
+Global Const DASH_DOT = 3         ' 3 - Dash-Dot
+Global Const DASH_DOT_DOT = 4     ' 4 - Dash-Dot-Dot
+Global Const INVISIBLE = 5        ' 5 - Invisible
+Global Const INSIDE_SOLID = 6     ' 6 - Inside Solid
+
+' Style de coloriage: FillStyle
+' Global Const PLEIN = 0              ' 0 - Plein
+'Global Const TRANSPARENT = 1         ' 1 - Transparent
+Global Const RAYURE_HORIZONTALE = 2   ' 2 - Rayure horizontale
+Global Const RAYURE_VERTICALE = 3     ' 3 - Rayure verticale
+Global Const RAYURE_DIAGONALE = 4     ' 4 - Diagonale vers le haut
+Global Const RAYURE_DIAGONALINVERSE = 5 ' 5 - Diagonale vers le bas
+Global Const HACHURECROISEE = 6       ' 6 - Hachure croisée
+Global Const HACHURECROISEE_DIAGONALE = 7    ' 7 - Hachure croisée diagonale
+'
+' Global Const SOLID = 0              ' 0 - Solid
+Global Const TRANSPARENT = 1          ' 1 - Transparent
+Global Const HORIZONTAL_LINE = 2      ' 2 - Horizontal Line
+Global Const VERTICAL_LINE = 3        ' 3 - Vertical Line
+Global Const UPWARD_DIAGONAL = 4      ' 4 - Upward Diagonal
+Global Const DOWNWARD_DIAGONAL = 5    ' 5 - Downward Diagonal
+Global Const CROSS = 6                ' 6 - Cross
+Global Const DIAGONAL_CROSS = 7       ' 7 - Diagonal Cross
+
+' Mode de liaison (feuilles et contrôles): LinkMode
+' Global Const AUCUNE = 0   ' 0 - Aucune
+Global Const AUTO = 1       ' 1 - Automatique (contrôles seulement)
+Global Const SOURCE = 1    ' 1 - Source (feuilles seulement)
+Global Const SURDEMANDE = 2 ' 2 - Sur demande (contrôles seulement)
+' LinkMode (gardé pour la compatibilité avec VB1.0, utilisez les nouvelles constantes)
+Global Const HOT = 1        ' 1 - Hot (controls only)
+Global Const SERVER = 1     ' 1 - Server (forms only)
+Global Const COLD = 2       ' 2 - Cold (controls only)
+
+' Global Const AUCUNE = 0              ' 0 - AUCUNE
+Global Const LIAISON_SOURCE = 1      ' 1 - Source (feuilles seulement)
+Global Const LIAISON_AUTOMATIQUE = 1 ' 1 - Automatique (contrôles seulement)
+Global Const LIAISON_MANUELLE = 2    ' 2 - Manuelle (contrôles seulement)
+Global Const LIAISON_SUR_DEMANDE = 3 ' 3 - Sur demande (contrôles seulement)
+'
+Global Const LINK_SOURCE = 1          ' 1 - Source (forms only)
+Global Const LINK_AUTOMATIC = 1       ' 1 - Automatic (controls only)
+Global Const LINK_MANUAL = 2          ' 2 - Manual (controls only)
+Global Const LINK_NOTIFY = 3          ' 3 - Notify (controls only)
+
+' Mode échelle: ScaleMode
+Global Const UTILISATEUR = 0          ' 0 - Utilisateur
+Global Const TWIP = 1                 ' 1 - Twip
+'Global Const POINTS = 2              ' 2 - Point
+Global Const PIXEL = 3                ' 3 - Pixel
+Global Const CARACTERE = 4            ' 4 - Caractère
+Global Const POUCE = 5                ' 5 - Pouce
+Global Const MILLIMETRE = 6           ' 6 - Millimètre
+Global Const CENTIMETRE = 7           ' 7 - Centimètre
+'
+Global Const USER = 0                 ' 0 - User
+Global Const TWIPS = 1                ' 1 - Twip
+Global Const POINTS = 2               ' 2 - Point
+Global Const PIXELS = 3               ' 3 - Pixel
+Global Const CHARACTERS = 4           ' 4 - Character
+Global Const INCHES = 5               ' 5 - Inch
+Global Const MILLIMETERS = 6          ' 6 - Millimeter
+Global Const CENTIMETERS = 7          ' 7 - Centimeter
+
+' Barre de défilement: ScrollBar
+' Global Const AUCUNE     = 0     ' 0 - Aucune
+Global Const HORIZONTALE = 1      ' 1 - Horizontale
+Global Const VERTICALE = 2        ' 2 - Verticale
+Global Const COMBINE = 3          ' 3 - Les deux combinées
+'
+' Global Const NONE     = 0       ' 0 - None
+Global Const HORIZONTAL = 1       ' 1 - Horizontal
+Global Const VERTICAL = 2         ' 2 - Vertical
+Global Const BOTH = 3             ' 3 - Both
+
+' Shape
+'Global Const SHAPE_RECTANGLE = 0
+Global Const SHAPE_CARRE = 1
+Global Const SHAPE_OVALE = 2
+Global Const SHAPE_CERCLE = 3
+Global Const SHAPE_RECTANGLE_ARRONDI = 4
+Global Const SHAPE_CARRE_ARRONDI = 5
+'
+Global Const SHAPE_RECTANGLE = 0
+Global Const SHAPE_SQUARE = 1
+Global Const SHAPE_OVAL = 2
+Global Const SHAPE_CIRCLE = 3
+Global Const SHAPE_ROUNDED_RECTANGLE = 4
+Global Const SHAPE_ROUNDED_SQUARE = 5
+
+' Etat fenêtre: WindowState
+'Global Const NORMAL = 0    ' 0 - Normal
+Global Const REDUIT = 1     ' 1 - Minimizé
+Global Const AGRANDI = 2    ' 2 - Maximizé
+'
+Global Const NORMAL = 0     ' 0 - Normal
+Global Const MINIMIZED = 1  ' 1 - Minimized
+Global Const MAXIMIZED = 2  ' 2 - Maximized
+
+' Valeur de coche
+Global Const NONCOCHE = 0       ' 0 - Non coché
+Global Const COCHE = 1          ' 1 - Coché
+Global Const GRISE = 2          ' 2 - Grisé
+'
+Global Const UNCHECKED = 0      ' 0 - Unchecked
+Global Const CHECKED = 1        ' 1 - Checked
+Global Const GRAYED = 2         ' 2 - Grayed
+
+' Masques paramètres majuscules
+Global Const MAJ_MASQUE = 1
+Global Const CTRL_MASQUE = 2
+Global Const ALT_MASQUE = 4
+'
+Global Const SHIFT_MASK = 1
+Global Const CTRL_MASK = 2
+Global Const ALT_MASK = 4
+
+' Masques paramètres boutons
+Global Const GAUCHE_BOUTON = 1
+Global Const DROIT_BOUTON = 2
+Global Const MILIEU_BOUTON = 4
+'
+Global Const LEFT_BUTTON = 1
+Global Const RIGHT_BUTTON = 2
+Global Const MIDDLE_BUTTON = 4
+
+' Paramètres de fonction
+' Paramètres de MsgBox
+Global Const MB_OK = 0                   ' Bouton OK seulement
+Global Const MB_OKANNULER = 1            ' Boutons OK et Annuler
+Global Const MB_ABANDONREPRISEECHEC = 2  ' Boutons Abandon, Reprise, Echec
+Global Const MB_OUINONANUULER = 3        ' Boutons Oui, Non, Annuler
+Global Const MB_OUINON = 4               ' Boutons Oui et Non
+Global Const MB_REESSAYERANNULER = 5     ' Boutons Réssayer et Annuler
+'
+' Global Const MB_OK = 0                  ' Bouton OK seulement
+Global Const MB_OKCANCEL = 1              ' Boutons OK et Cancel
+Global Const MB_ABORTRETRYIGNORE = 2      ' Boutons Abort, Retry et Ignore
+Global Const MB_YESNOCANCEL = 3           ' Boutons Yes, No et Cancel
+Global Const MB_YESNO = 4                 ' Boutons Yes et No
+Global Const MB_RETRYCANCEL = 5           ' Boutons Retry et Cancel
+
+Global Const MB_ICONSTOP = 16             ' Message critique
+Global Const MB_ICONQUESTION = 32         ' Question pour avertissement
+Global Const MB_ICONEXPILICATION = 48     ' Message d'avertissement
+Global Const MB_ICONEXCLAMATION = 48      ' Message d'avertissement
+Global Const MB_ICONINFORMATION = 64      ' Message d'information
+
+Global Const MB_APPLMODAL = 0             ' Boîte de dialogue de message modal
+Global Const MB_DEFBUTTON1 = 0            ' Premier bouton est le défaut
+Global Const MB_DEFBUTTON2 = 256          ' Deuxième bouton est le défaut
+Global Const MB_DEFBUTTON3 = 512          ' Deuxième bouton est le défaut
+Global Const MB_SYSTEMMODAL = 4096        ' Système Modal
+
+' MsgBox return values
+'Global Const IDOK = 1               ' Bouton OK sélectionné
+Global Const IDANNULER = 2           ' Bouton ANNULER sélectionné
+Global Const IDABANDON = 3           ' Bouton ABANDON sélectionné
+Global Const IDREPRISE = 4           ' Bouton REPRISE sélectionné
+Global Const IDECHEC = 5             ' Bouton ECHEC sélectionné
+Global Const IDOUI = 6               ' Bouton OUIsélectionné
+Global Const IDNON = 7               ' Bouton NON sélectionné
+'Global Const IDOK = 1                      ' OK button pressed
+Global Const IDCANCEL = 2            ' Cancel button pressed
+Global Const IDABORT = 3             ' Abort button pressed
+Global Const IDRETRY = 4             ' Retry button pressed
+Global Const IDIGNORE = 5            ' Ignore button pressed
+Global Const IDYES = 6               ' Yes button pressed
+Global Const IDNO = 7                ' No button pressed
+
+' Fonctions SetAttr, Dir, GetAttr
+' Global Const ATTR_NORMAL = 0
+Global Const ATTR_LECTURESEULE = 1
+Global Const ATTR_CACHE = 2
+Global Const ATTR_SYSTEME = 4
+'Global Const ATTR_VOLUME = 8
+Global Const ATTR_REPERTOIRE = 16
+'Global Const ATTR_ARCHIVE = 32
+'
+Global Const ATTR_NORMAL = 0
+Global Const ATTR_READONLY = 1
+Global Const ATTR_HIDDEN = 2
+Global Const ATTR_SYSTEM = 4
+Global Const ATTR_VOLUME = 8
+Global Const ATTR_DIRECTORY = 16
+Global Const ATTR_ARCHIVE = 32
+
+'Grid
+'Propriétés ColAlignment,FixedAlignment
+Global Const GRID_ALIGNE_A_GAUCHE = 0
+Global Const GRID_ALIGNE_A_DROITE = 1
+Global Const GRID_CENTRE = 2
+'
+Global Const GRID_ALIGNLEFT = 0
+Global Const GRID_ALIGNRIGHT = 1
+Global Const GRID_ALIGNCENTER = 2
+
+'Fillstyle Property
+Global Const GRID_SIMPLE = 0
+Global Const GRID_REPETITION = 1
+'
+Global Const GRID_SINGLE = 0
+Global Const GRID_REPEAT = 1
+
+'OLE Client Control
+'Action
+Global Const OLE_CREER_NOUVEAU = 0
+Global Const OLE_CREER_A_PARTIR_FICHIER = 1
+Global Const OLE_COPIER = 4
+Global Const OLE_COLER = 5
+Global Const OLE_METTRE_A_JOUR = 6
+Global Const OLE_ACTIVER = 7
+Global Const OLE_EXECUTER = 8
+Global Const OLE_FERMER = 9
+Global Const OLE_SUPPRIMER = 10
+Global Const OLE_ENREGISTRER_DANS_FICHIER = 11
+Global Const OLE_LIRE_FICHIER = 12
+Global Const OLE_CONVERTIR_TYPE = 13
+'
+Global Const OLE_CREATE_NEW = 0
+Global Const OLE_CREATE_FROM_FILE = 1
+Global Const OLE_COPY = 4
+Global Const OLE_PASTE = 5
+Global Const OLE_UPDATE = 6
+Global Const OLE_ACTIVATE = 7
+Global Const OLE_EXECUTE = 8
+Global Const OLE_CLOSE = 9
+Global Const OLE_DELETE = 10
+Global Const OLE_SAVE_TO_FILE = 11
+Global Const OLE_READ_FROM_FILE = 12
+Global Const OLE_CONVERT_TO_TYPE = 13
+
+'ServerType
+Global Const OLE_LIE = 0
+Global Const OLE_INCORPORE = 1
+Global Const OLE_STATIQUE = 2
+'
+Global Const OLE_LINKED = 0
+Global Const OLE_EMBEDDED = 1
+Global Const OLE_STATIC = 2
+
+'UpdateOptions
+Global Const OLE_AUTOMATIQUE = 0
+Global Const OLE_GELEE = 1
+Global Const OLE_MANUELLE = 2
+'
+Global Const OLE_AUTOMATIC = 0
+Global Const OLE_FROZEN = 1
+Global Const OLE_MANUAL = 2
+
+'Constants Update Event
+Global Const OLE_MODIFIE = 0
+Global Const OLE_ENREGISTRE = 1
+Global Const OLE_FERME = 2
+Global Const OLE_LIBERE = 3
+'
+Global Const OLE_CHANGED = 0
+Global Const OLE_SAVED = 1
+Global Const OLE_CLOSED = 2
+Global Const OLE_RELEASE = 3
+
+
+'***********poubelle: vieilles variables, gardées au cas où...
+'Flag indiquant le mode de présentation des mesures: tableau ou liste
+'désuet...    Global Tableau_Liste As Integer 'vaut 0 pour tableau et -1 pour liste
+    'Global rStereo  As Integer'!!!pas employé
+    'Global Aspect
+'!!!Flag de dièdres droits d'utilité oubliée
+    'Global ddrts As Integer
+'Global AffichageA%, AffichageB%, AffichageC%, AffichageD%
+'Global NbMesSelect%, NbMesSelectA%, NbMesSelectB%, NbMesSelectC%, NbMesSelectD%
+    'Global ListeMesures() As String
+    'Global GroupeTri() As Integer
+    'Global SymboleGroupeDeTri() As String * 1
+'Paramètres de mesure de chaque faille:
+    'Global azi(), Pd(), DirPd() As String * 1, Pitch(), DirPi()  As String * 1, Jeu() As String * 1, mesure()
+'Et paramètres calculés de projection, de chaque faille:
+    'Global ox(), oy(), r(), PolX(), PolY(), SX(), SY(), SFX(), SFY(), SAX(), SAY(), Xmvt(), Ymvt(), rmvt()
+    'Global AxeXX(), AxeXY(), AxeYX(), AxeYY(), AxeZX(), AxeZY()
+    'Global Angledeppmvtz1(), Anglearrpmvtz1(), Angledeppmvtz2(), Anglearrpmvtz2(), Angledeppmvtx1(), Anglearrpmvtx1(), Angledeppmvtx2(), Anglearrpmvtx2(), Angledepaux(), Anglearraux(), Angledep(), Anglearr()
+    'Global Xaux(), Yaux(), Raux()
+    'Global azstri(), strix(), striy()
+    'Global jv()  As String * 1, jh()  As String * 1
+    'Global commentaire() As String
+'Paramètres de chaque station:
+'    Global NbMes()  As Integer, Situation$()
+'    Global TitreStation$(), Titredat$(), Titrecal$()
+
+'Variables lors de la traduction de la ligne de faille lue ds le fichier
+    Global h  As Integer, Rg As Integer
+    Global NO(), Elt$()
+    
+'!!!************* utile?
+
+'!!!Flags des traces projetées; remplacer par les check des menus?
+'    Global cyclo As Integer, Strie As Integer, Pol As Integer, Ppmvt As Integer, XX As Integer, YY As Integer, zz As Integer, pmvtX As Integer, pmvtZ As Integer, aux As Integer, DirMvtsRelBlocs As Integer
+
+'!!!Variables pour le débasculement: à remettre, un jour...
+    'global test1, test2, a, b, c
+    'global aa, bb, cc, alfa, beta, zzz, r, t, alfa2
+    'global aaa, bbb, ccc
+    'global ax, ay, bx, by, mx, my, ox, oy
+    'global Pd$, dir$
+    'global beta2, pddir$, pddir2$
+    'global azideb(), pddeb(), pddirdeb$(), pitchdeb(), DirPitchdeb$()
+'***Déclarations pour mesure ressources système
+Declare Function GlobalCompact Lib "kernel" (ByVal flag&) As Long
+Declare Function GetFreeSpace Lib "kernel" (ByVal flag%) As Long
+Declare Function GetFreeSystemResources Lib "User" (ByVal fuSysResource As Integer) As Integer
+Global Const GFSR_SYSTEMRESOURCES = &H0
+Global Const GFSR_GDIRESOURCES = &H1
+Global Const GFSR_USERRESOURCES = &H2
+'***
+'****Declarations pour metafile fonctions
+Declare Function CreateMetaFile Lib "GDI" (lpString As Any) As Integer
+Declare Function CloseMetaFile Lib "GDI" (ByVal hmf As Integer) As Integer
+Declare Function PlayMetaFile Lib "GDI" (ByVal hDC As Integer, ByVal hmf As Integer) As Integer
+Declare Function DeleteMetaFile Lib "GDI" (ByVal hmf As Integer) As Integer
+
+Declare Function MoveTo Lib "GDI" (ByVal hDC As Integer, ByVal X As Integer, ByVal Y As Integer) As Long
+Declare Function LineTo Lib "GDI" (ByVal hDC As Integer, ByVal X As Integer, ByVal Y As Integer) As Integer
+Declare Function ellipse Lib "GDI" (ByVal hDC As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
+Declare Function Arc Lib "GDI" (ByVal hDC As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer, ByVal X4 As Integer, ByVal Y4 As Integer) As Integer
+'Global lambda 'facteur d'échelle entre méta et bmp stéréo
+Global hmf 'handle metafile
+Type METAFILEPICT
+   mm As Integer
+   xExt As Integer
+   yExt As Integer
+   hmf As Integer
+End Type
+
+Type METAHEADER
+   mtType As Integer
+   mtHeaderSize As Integer
+   mtVersion As Integer
+   mtSize As Long
+   mtNoObjects As Integer
+   mtMaxRecord As Long
+   mtNoParameters As Integer
+End Type
+
+Type METARECORD
+   rdSize As Long
+   rdFunction As Integer
+   rdParm As String * 512 ' Array length is arbitrary; may be changed
+End Type
+
+Type HANDLETABLE
+   objectHandle As String * 512 ' Array length is arbitrary; may be changed
+End Type
+

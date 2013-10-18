@@ -1,0 +1,258 @@
+Date_heure	Code_erreur	Description	Objet	Commentaire
+18/06/2007 11:00:43	 5	Illegal function call	Boite_Diedres_Droits / DiedresDroits	
+18/06/2007 11:01:01	 62	Input past end of file	Routines / LitFicPartieDat	
+18/06/2007 11:01:01	 5	Illegal function call	Tools / GetToken$	
+18/06/2007 11:01:19	 62	Input past end of file	Routines / LitFicPartieDat	
+18/06/2007 11:01:19	 5	Illegal function call	Tools / GetToken$	
+18/06/2007 11:01:30	 62	Input past end of file	Routines / LitFicPartieDat	
+18/06/2007 11:01:30	 5	Illegal function call	Tools / GetToken$	
+18/06/2007 11:03:52	 380	Invalid property value	ErreurPointage / calcul2	
+18/06/2007 11:03:52	 380	Invalid property value	ErreurPointage / calcul2	
+18/06/2007 11:08:04	 5	Illegal function call	Boite_Diedres_Droits / commande_commence_Click	
+18/06/2007 16:51:03	 5	Illegal function call	Boite_Diedres_Droits / commande_commence_Click	
+18/06/2007 16:59:13	 380	Invalid property value	ErreurPointage / calcul2	
+18/06/2007 16:59:13	 380	Invalid property value	ErreurPointage / calcul2	
+18/06/2007 17:17:56	 5	Illegal function call	Boite_Diedres_Droits / commande_commence_Click	
+18/06/2007 18:13:32	 380	Invalid property value	ErreurPointage / calcul2	
+18/06/2007 18:13:32	 380	Invalid property value	ErreurPointage / calcul2	
+25/04/2009 23:31:57	 5	Illegal function call	Boite_Diedres_Droits / commande_commence_Click	
+05/06/2012 15:46:36	 340	Control array element ' ' doesn't exist	Routines / LectureTectriIni	
+05/06/2012 15:46:36	 340	Control array element ' ' doesn't exist	Routines / LectureTectriIni	
+05/06/2012 15:46:48	 340	Control array element ' ' doesn't exist	Routines / LectureTectriIni	
+05/06/2012 15:46:56	 340	Control array element ' ' doesn't exist	Routines / LectureTectriIni	
+05/06/2012 15:47:08	 340	Control array element ' ' doesn't exist	Routines / LectureTectriIni	
+06/06/2012 12:11:31	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:11:31	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:11:32	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:11:32	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:11:32	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:11:32	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:10	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:10	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:10	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:10	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:10	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:11	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:12	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:21	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:21	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:21	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:22	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:23	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:25	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:25	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 12:14:25	 9	Subscript out of range	TenseurFocStri / Drague	
+06/06/2012 13:07:39	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:07:39	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:07:39	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:07:58	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:07:58	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:07:58	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:00	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:08:00	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:00	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:02	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:08:02	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:02	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:03	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:08:03	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:03	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:07	 13	Type mismatch	Routines / selecfailles	
+06/06/2012 13:08:07	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:08:07	 423	Property or control ' ' not found	Routines / selecfailles	
+06/06/2012 13:11:16	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:23	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:23	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:11:24	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:11:26	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:26	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:11:26	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:27	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:11:27	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:27	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:27	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:11:27	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:08	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:10	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:11	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:11	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:13	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:15	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:15	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:17	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:18	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:19	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:19	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:20	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:21	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:22	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:23	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:24	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:24	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:25	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:28	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:30	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:31	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:33	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:34	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:36	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:37	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:37	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:37	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:38	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:38	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:38	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:38	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:38	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:39	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:41	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:43	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:44	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:46	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:47	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:49	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:50	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:50	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:50	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:51	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:51	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:51	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:51	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:51	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:52	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:53	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:53	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:54	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:56	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:57	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:12:58	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:12:59	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:01	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:01	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:01	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:01	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:01	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:02	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:02	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:02	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:03	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:04	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:05	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:05	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:05	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:05	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:05	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:06	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:06	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:07	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:09	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:12	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:13	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:13	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:13	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:13	 480	Can't create AutoRedraw image	St-Graph / Get_Put_image	
+06/06/2012 13:13:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:13:14	 6	Overflow	St-Graph / Get_Put_image	
+06/06/2012 13:17:19	 5	Illegal function call	Boite_Diedres_Droits / commande_commence_Click	
