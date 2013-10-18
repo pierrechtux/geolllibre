@@ -3,7 +3,7 @@ Dim FailleBad()
 Dim NbBadFailles
 Dim local_AZI, local_pd, local_pitch As Double   'variables temporaires locales pour CalculeParametresMesure
 
-Sub AfficheListeGroupes ()
+Sub AfficheListeGroupes () '{{{
    On Error GoTo Traite_Erreurs1:
    If flag = flag_chargement Then Exit Sub
    'Afficher la liste des groupes de tri, avec les populations.
@@ -39,8 +39,8 @@ Exit Sub
 Traite_Erreurs1:
    If Erreurs(Err, "Routines / AfficheListeGroupes") Then Resume Next
 End Sub
-
-Function AnyPadsLeft () As Integer
+'}}}
+Function AnyPadsLeft () As Integer '{{{
    On Error GoTo Traite_Erreurs2:
     Dim i As Integer
 
@@ -57,8 +57,8 @@ Exit Function
 Traite_Erreurs2:
    If Erreurs(Err, "Routines / AnyPadsLeft") Then Resume Next
 End Function
-
-Sub bye_bye ()
+'}}}
+Sub bye_bye () '{{{
    On Error GoTo Traite_Erreurs3:
    If MDI!menu_sauve_parametres.Checked Then SauveTectriIni
    prompt "Fin de session"
@@ -84,8 +84,8 @@ Exit Sub
 Traite_Erreurs3:
    If Erreurs(Err, "Routines / bye_bye") Then Resume Next
 End Sub
-
-Sub CalculeFichier ()
+'}}}
+Sub CalculeFichier () '{{{
    On Error GoTo Traite_Erreurs4:
  prompt "Calcul des paramètres géométriques de " & Site(ns).NomFichier
  MDI!lblStatus.Refresh
@@ -125,8 +125,8 @@ Exit Sub
 Traite_Erreurs4:
    If Erreurs(Err, "Routines / CalculeFichier") Then Resume Next
 End Sub
-
-Sub CalculeParametresMesure ()
+'}}}
+Sub CalculeParametresMesure () '{{{
    On Error GoTo Traite_Erreurs5:
  If teta = 0 Then teta = pi / 6
  If Left$(MDI!lblStatus.Caption, 6) <> "Calcul" Then prompt "Calcul des paramètres géométriques de " + Site(ns).NomFichier: MDI!lblStatus.Refresh
@@ -407,8 +407,8 @@ Exit Sub
 Traite_Erreurs5:
    If Erreurs(Err, "Routines / CalculeParametresMesure") Then Resume Next
 End Sub
-
-Sub cherche_comment ()
+'}}}
+Sub cherche_comment () '{{{
    On Error GoTo Traite_Erreurs6:
    'sélection de mesures d'après une recherche dans les commentaires
    chaine_a_chercher = InputBox("Chaîne de caractères à identifier:", "Sélection de failles")
@@ -437,8 +437,8 @@ Exit Sub
 Traite_Erreurs6:
    If Erreurs(Err, "Routines / cherche_comment") Then Resume Next
 End Sub
-
-Sub ColleRange ()
+'}}}
+Sub ColleRange () '{{{
    On Error GoTo Traite_Erreurs7:
    prompt "Colle depuis le presse-papiers"
    
@@ -591,8 +591,8 @@ Exit Sub
 Traite_Erreurs7:
    If Erreurs(Err, "Routines / ColleRange") Then Resume Next
 End Sub
-
-Sub CopieRange ()
+'}}}
+Sub CopieRange () '{{{
    On Error GoTo Traite_Erreurs8:
     prompt "Copie vers le presse-papiers"
     ' Déclare les variables locales.
@@ -655,8 +655,8 @@ Exit Sub
 Traite_Erreurs8:
    If Erreurs(Err, "Routines / CopieRange") Then Resume Next
 End Sub
-
-Function CouleurMesureàProjeter (ByVal couleurfond As Long, ByVal switch_) As Long
+'}}}
+Function CouleurMesureàProjeter (ByVal couleurfond As Long, ByVal switch_) As Long '{{{
    On Error GoTo Traite_Erreurs9:
    'Retourne couleur du groupe  ou  couleurfond, selon que
    'la mesure ns,i doive être projetée ou non
@@ -677,8 +677,8 @@ Exit Function
 Traite_Erreurs9:
    If Erreurs(Err, "Routines / CouleurMesureàProjeter") Then Resume Next
 End Function
-
-Sub CreatFicPgmTRATR (NomFichier$)
+'}}}
+Sub CreatFicPgmTRATR (NomFichier$) '{{{
    On Error GoTo Traite_Erreurs10:
 'Créat° d'un fichier pouvant être utilisé directement par le calcul de tenseurs tratr Mercier, en y mettant toutes les mesures affichées au stéréo.
 'Print "Création d'un fichier tecto pour le programme de calculs de tenseurs Mercier."
@@ -724,13 +724,13 @@ Exit Sub
 Traite_Erreurs10:
    If Erreurs(Err, "Routines / CreatFicPgmTRATR") Then Resume Next
 End Sub
-
-Sub CtrlF9 ()
+'}}}
+Sub CtrlF9 () '{{{
    St!bmp.Picture = LoadPicture("")
    F9
 End Sub
-
-Sub DecryptageMesure (fault As String)
+'}}}
+Sub DecryptageMesure (fault As String) '{{{
    On Error GoTo Traite_Erreurs11:
    Select Case Left$(Site(ns).format, 5)
       Case "tectr"
@@ -749,12 +749,12 @@ Exit Sub
 Traite_Erreurs11:
    If Erreurs(Err, "Routines / DecryptageMesure") Then Resume Next
 End Sub
-
-Sub Demo ()
+'}}}
+Sub Demo () '{{{
    If i > 8 Or ns > 1 Then MsgBox ("Version d'évaluation limitée " + Chr$(13) + Chr$(10) + "à 1 sites de 8 failles" + Chr$(13) + Chr$(10) + "Arrêt du programme"): Stop
 End Sub
-
-Sub DimensionneObjets ()
+'}}}
+Sub DimensionneObjets () '{{{
    On Error GoTo Traite_Erreurs12:
    ReDim Preserve frm_Station(NbStations)'MAX(NbStations, 2))     ' (NbStations)
 '   Tableau.Grille.Rows = max(NbStations + 1, 2)
@@ -779,8 +779,8 @@ Exit Sub
 Traite_Erreurs12:
    If Erreurs(Err, "Routines / DimensionneObjets") Then Resume Next
 End Sub
-
-Sub DimensionneVariables ()
+'}}}
+Sub DimensionneVariables () '{{{
    On Error GoTo Traite_Erreurs13:
    ReDim Preserve Site(max(NbStations, 2))'(nsmax)
       imax = 1
@@ -798,8 +798,8 @@ Exit Sub
 Traite_Erreurs13:
    If Erreurs(Err, "Routines / DimensionneVariables") Then Resume Next
 End Sub
-
-Sub DropFaille (index As Integer, source As Control)
+'}}}
+Sub DropFaille (index As Integer, source As Control) '{{{
    On Error GoTo Traite_Erreurs__2:
    nsavant = ns
    'ObjetDéposéIcon = Source.DragIcon
@@ -850,8 +850,8 @@ Exit Sub
 Traite_Erreurs__2:
    If Erreurs(Err, "TenseurFocStri / DropFaille") Then Resume Next
 End Sub
-
-Sub EcritFicPartieCal (nsns As Integer)
+'}}}
+Sub EcritFicPartieCal (nsns As Integer) '{{{
    On Error GoTo Traite_Erreurs14:
       NomCompletFichier = Site(nsns).NomFichier
   If Site(nsns).format = "tectri_parametres" Then
@@ -911,8 +911,8 @@ Exit Sub
 Traite_Erreurs14:
    If Erreurs(Err, "Routines / EcritFicPartieCal") Then Resume Next
 End Sub
-
-Sub EcritFicPartieDat (nsns As Integer)
+'}}}
+Sub EcritFicPartieDat (nsns As Integer) '{{{
    On Error GoTo Traite_Erreurs15:
    If (Left$(Site(ns).format, 6) = "tectri" Or Site(ns).format = "") Then
       sep$ = Separateur_champs$
@@ -944,8 +944,8 @@ Exit Sub
 Traite_Erreurs15:
    If Erreurs(Err, "Routines / EcritFicPartieDat") Then Resume Next
 End Sub
-
-Sub EnregistreLaStation (nsns As Integer)
+'}}}
+Sub EnregistreLaStation (nsns As Integer) '{{{
    On Error GoTo Traite_Erreurs16:
    If Site(nsns).NomFichier = "" Or Left(Site(nsns).NomFichier, 11) = "(sans-titre" Then EnregistreSous
    NomCompletFichier = Site(nsns).NomFichier
@@ -977,8 +977,8 @@ Exit Sub
 Traite_Erreurs16:
    If Erreurs(Err, "Routines / EnregistreLaStation") Then Resume Next
 End Sub
-
-Sub EnregistreLesStations ()
+'}}}
+Sub EnregistreLesStations () '{{{
    On Error GoTo Traite_Erreurs17:
    screen.MousePointer = 11
    'Print "Sauvegarde des stations en m‚moire et de leurs s‚lections."
@@ -990,8 +990,8 @@ Exit Sub
 Traite_Erreurs17:
    If Erreurs(Err, "Routines / EnregistreLesStations") Then Resume Next
 End Sub
-
-Sub EnregistreSous ()
+'}}}
+Sub EnregistreSous () '{{{
    On Error Resume Next
    MDI!CMDialog.DialogTitle = "TecTri: enregistrer sous"
       If Site(ns).NomFichier = "" Or Left(Site(ns).NomFichier, 11) = "(sans-titre" Then
@@ -1038,8 +1038,8 @@ Exit Sub
 Traite_Erreurs18:
    If Erreurs(Err, "Routines / EnregistreSous") Then Resume Next
 End Sub
-
-Sub EnregistreTout ()
+'}}}
+Sub EnregistreTout () '{{{
    On Error GoTo Traite_Erreurs41:
    screen.MousePointer = 11
    nsi = ns
@@ -1052,8 +1052,8 @@ Exit Sub
 Traite_Erreurs41:
    If Erreurs(Err, "Routines / EnregistreSous") Then Resume Next
 End Sub
-
-Function Entre_faille_courante (i, ByVal azi, ByVal Pd, ByVal DirPd, ByVal pitch, ByVal dirpitch, ByVal jeu, ByVal Commentaire)
+'}}}
+Function Entre_faille_courante (i, ByVal azi, ByVal Pd, ByVal DirPd, ByVal pitch, ByVal dirpitch, ByVal jeu, ByVal Commentaire) '{{{
    On Error GoTo Traite_Erreurs19:
    If Not (Checke_Mesure(azi, Pd, DirPd, pitch, dirpitch, jeu) = True) Then
       Entre_faille_courante = False
@@ -1078,8 +1078,8 @@ Exit Function
 Traite_Erreurs19:
    If Erreurs(Err, "Routines / Entre_faille_courante") Then Resume Next
 End Function
-
-Sub EntreeMesures ()
+'}}}
+Sub EntreeMesures () '{{{
    On Error GoTo Traite_Erreurs20:
    temoin = Site(ns).NbMes
    Site(ns).NbMes = InputFaille(i)
@@ -1095,8 +1095,8 @@ Exit Sub
 Traite_Erreurs20:
    If Erreurs(Err, "Routines / EntreeMesures") Then Resume Next
 End Sub
-
-Sub F9 ()
+'}}}
+Sub F9 () '{{{
    On Error GoTo Traite_Erreurs21:
     St!Stereo.Picture = St!bmp.Picture'LoadPicture("")
       '***REMETTRE METASTEREO***metastereo!Stereo.Picture = St!bmp.Picture
@@ -1109,8 +1109,8 @@ Exit Sub
 Traite_Erreurs21:
    If Erreurs(Err, "Routines / F9") Then Resume Next
 End Sub
-
-Sub Ferme_Tout ()
+'}}}
+Sub Ferme_Tout () '{{{
    On Error GoTo Traite_Erreurs22:
    Retracage_Manueli = Retracage_Manuel
    nsi = ns
@@ -1146,8 +1146,8 @@ Exit Sub
 Traite_Erreurs22:
    If Erreurs(Err, "Routines / Ferme_Tout") Then Resume Next
 End Sub
-
-Sub FichierTratr ()
+'}}}
+Sub FichierTratr () '{{{
     On Error Resume Next
     '***Création d'un fichier pour pgm Mercier
    CompteTotal = NbMesuresAffichees()
@@ -1175,8 +1175,8 @@ Exit Sub
 Traite_Erreurs23:
    If Erreurs(Err, "Routines / FichierTratr") Then Resume Next
 End Sub
-
-Function FindFreeIndex () As Integer
+'}}}
+Function FindFreeIndex () As Integer '{{{
    On Error GoTo Traite_Erreurs24:
     Dim index As Integer
     Dim ArrayCount As Integer
@@ -1216,8 +1216,8 @@ Exit Function
 Traite_Erreurs24:
    If Erreurs(Err, "Routines / FindFreeIndex") Then Resume Next
 End Function
-
-Sub GetRecentFiles ()
+'}}}
+Sub GetRecentFiles () '{{{
    On Error GoTo Traite_Erreurs25:
   Dim RetVal, key, index, j
   Dim IniString As String
@@ -1244,8 +1244,8 @@ Exit Sub
 Traite_Erreurs25:
    If Erreurs(Err, "Routines / GetRecentFiles") Then Resume Next
 End Sub
-
-Sub imprime ()
+'}}}
+Sub imprime () '{{{
    On Error GoTo ErrorHandler ' Installe une routine de gestion
 			      ' d'erreurs
    Select Case MDI.ActiveForm.Tag
@@ -1349,8 +1349,8 @@ ErrorHandler:
    If Err <> 13 Then MsgBox "Erreur d'impression"' Affiche le message.
    Resume Next
 End Sub
-
-Function InputFaille (ByVal faille1 As Integer)
+'}}}
+Function InputFaille (ByVal faille1 As Integer) '{{{
    On Error GoTo Traite_Erreurs26:
    'Rentre une ou plusieurs mesures; renvoie le nouveau nb de mesures
    i = faille1 '+ 1
@@ -1361,8 +1361,8 @@ Exit Function
 Traite_Erreurs26:
    If Erreurs(Err, "Routines / InputFaille") Then Resume Next
 End Function
-
-Sub LectureTectriIni ()
+'}}}
+Sub LectureTectriIni () '{{{
    On Error GoTo Traite_Erreurs27:
       '***REMETTRE METASTEREO***creemetafile
 f = "tectri.ini"
@@ -1518,8 +1518,8 @@ Exit Sub
 Traite_Erreurs27:
    If Erreurs(Err, "Routines / LectureTectriIni") Then Resume Next
 End Sub
-
-Sub lit_fichier_tra ()
+'}}}
+Sub lit_fichier_tra () '{{{
 '   libre = FreeFile
 '      Open fichier_tenseur For Input As libre
 '      input libre,nbfailles
@@ -1535,8 +1535,8 @@ Sub lit_fichier_tra ()
 '         Next
 '   Close libre
 End Sub
-
-Sub LitFicPartieCal ()
+'}}}
+Sub LitFicPartieCal () '{{{
    On Error GoTo Traite_Erreurs28:
    For i = 1 To Site(ns).NbMes
    'Dans la version qb, l'input tenait sur une ligne: ce n'est hélas plus possible...
@@ -1554,8 +1554,8 @@ Exit Sub
 Traite_Erreurs28:
    If Erreurs(Err, "Routines / LitFicPartieCal") Then Err = 1000: Resume Next
 End Sub
-
-Sub LitFicPartieDat ()
+'}}}
+Sub LitFicPartieDat () '{{{
    On Error GoTo Traite_Erreurs29:
       Select Case Left$(Site(ns).format, 5)
 	 Case "tratr"
@@ -1606,8 +1606,8 @@ Exit Sub
 Traite_Erreurs29:
    If Erreurs(Err, "Routines / LitFicPartieDat") Then Resume Next
 End Sub
-
-Sub LitStation (NomCompletFichier)  'NomCompletFichier est drive+répertoire+fichier
+'}}}
+Sub LitStation (NomCompletFichier)  'NomCompletFichier est drive+répertoire+fichier '{{{
    NbBadFailles = 0
    prompt "Ouverture du fichier " + NomCompletFichier
    'If InStr(NomCompletFichier, ".") = 0 Then NomCompletFichier = NomCompletFichier + ".tec"
@@ -1762,8 +1762,8 @@ Exit Sub
 Traite_Erreurs30:
    If Erreurs(Err, "Routines / LitStation") Then Resume Next
 End Sub
-
-Sub LoadTitles ()
+'}}}
+Sub LoadTitles () '{{{
    On Error GoTo Traite_Erreurs31:
 	 'ns = Val(Me.Tag)
 	 'If ns = 0 Then ns = 1
@@ -1802,18 +1802,18 @@ Exit Sub
 Traite_Erreurs31:
    If Erreurs(Err, "Routines / LoadTitles") Then Resume Next
 End Sub
-
-Sub menu_barre_etat_Click ()
+'}}}
+Sub menu_barre_etat_Click () '{{{
     'menu_Barre_Etat.Checked = Not (menu_Barre_Etat.Checked)
     MDI!Image2.Visible = Not (MDI!Image2.Visible)' menu_Barre_Etat.Checked
 End Sub
-
-Sub menu_Barre_Outils_click ()
+'}}}
+Sub menu_Barre_Outils_click () '{{{
     'menu_Barre_Outils.Checked = Not (menu_Barre_Outils.Checked)
     MDI!barre_outils.Visible = Not (MDI!barre_outils.Visible)'menu_Barre_Outils.Checked
 End Sub
-
-Sub MetàJourListeGroupe ()
+'}}}
+Sub MetàJourListeGroupe () '{{{
    On Error GoTo Traite_Erreurs32:
     'Mettre à jour la liste des groupes de tri, avec les populations.
    ' For groupe = 0 To NbGroupesDeTri
@@ -1836,8 +1836,8 @@ Exit Sub
 Traite_Erreurs32:
    If Erreurs(Err, "Routines / MetàJourListeGroupe") Then Resume Next
 End Sub
-
-Sub MetàJourMesureTableau (ByVal nsns, ByVal ii)
+'}}}
+Sub MetàJourMesureTableau (ByVal nsns, ByVal ii) '{{{
    On Error GoTo Traite_Erreurs33:
 '   Tableau.Grille.Row = nsns
 '   Tableau.Grille.Col = ii
@@ -1851,8 +1851,8 @@ Exit Sub
 Traite_Erreurs33:
    If Erreurs(Err, "Routines / MetàJourMesureTableau") Then Resume Next
 End Sub
-
-Sub MetàJourStation ()
+'}}}
+Sub MetàJourStation () '{{{
    On Error GoTo Traite_Erreurs34:
    'Met à jour le tableau des données de la station courante
    If flag = flag_RechargerFichier Then flag = True: frm_Station(ns).Grille.Rows = 2
@@ -1888,24 +1888,24 @@ Exit Sub
 Traite_Erreurs34:
    If Erreurs(Err, "Routines / MetàJourStation") Then Resume Next
 End Sub
-
-Function NbMesuresAffichees ()
+'}}}
+Function NbMesuresAffichees () '{{{
    tmp = 0
       For groupe = 0 To NbGroupesdeTri
 	 tmp = tmp + NbMesSelect(groupe) * MDI!menu_projettegroupe(groupe).Checked    'Affichage(groupe)
       Next
    NbMesuresAffichees = Abs(tmp)
 End Function
-
-Sub NonDisponible ()
+'}}}
+Sub NonDisponible () '{{{
  CR$ = Chr$(13) + Chr$(10)
  TheMessage$ = "Cette option n'est pas encore disponible dans la version présente de Tectri."
  TheStyle = 16
  TheTitle$ = "Tectri"
  MsgBox TheMessage$, TheStyle, TheTitle$
 End Sub
-
-Sub nouvelle_station ()
+'}}}
+Sub nouvelle_station () '{{{
    On Error GoTo Traite_Erreurs35:
    'NbStations = NbStations + 1
    'trouver un numéro libre
@@ -1934,8 +1934,8 @@ Exit Sub
 Traite_Erreurs35:
    If Erreurs(Err, "Routines / nouvelle_station") Then Resume Next
 End Sub
-
-Function OnRecentFilesList (Filename) As Integer
+'}}}
+Function OnRecentFilesList (Filename) As Integer '{{{
   Dim index
      Filename = LCase$(Filename)
      For index = 1 To 8
@@ -1947,8 +1947,8 @@ Function OnRecentFilesList (Filename) As Integer
      Next index
   OnRecentFilesList = False
 End Function
-
-Sub Proc_Cascade ()
+'}}}
+Sub Proc_Cascade () '{{{
    etatstereo = St.WindowState
    etatgrouptri = GroupTri.WindowState
    St.WindowState = REDUIT
@@ -1957,8 +1957,8 @@ Sub Proc_Cascade ()
    GroupTri.WindowState = etatgrouptri
    St.WindowState = etatstereo
 End Sub
-
-Sub Proc_Tile_Horizontal ()
+'}}}
+Sub Proc_Tile_Horizontal () '{{{
    etatstereo = St.WindowState
    etatgrouptri = GroupTri.WindowState
    St.WindowState = REDUIT
@@ -1967,8 +1967,8 @@ Sub Proc_Tile_Horizontal ()
    GroupTri.WindowState = etatgrouptri
    St.WindowState = etatstereo
 End Sub
-
-Sub Proc_Tile_Vertical ()
+'}}}
+Sub Proc_Tile_Vertical () '{{{
    etatstereo = St.WindowState
    etatgrouptri = GroupTri.WindowState
    St.WindowState = REDUIT
@@ -1977,8 +1977,8 @@ Sub Proc_Tile_Vertical ()
    GroupTri.WindowState = etatgrouptri
    St.WindowState = etatstereo
 End Sub
-
-Function QuestionFermeStation (nsns As Integer)
+'}}}
+Function QuestionFermeStation (nsns As Integer) '{{{
     Dim msg, Filename, NL
     Dim Response As Integer
        If Site(nsns).dirty Then
@@ -1992,8 +1992,8 @@ Function QuestionFermeStation (nsns As Integer)
 	   QuestionFermeStation = 7
        End If
 End Function
-
-Sub SauveTectriIni ()
+'}}}
+Sub SauveTectriIni () '{{{
    On Error GoTo Traite_Erreurs36:
 prompt "Sauvegarde des paramètres dans tectri.ini"
 f = "tectri.ini"
@@ -2117,8 +2117,8 @@ Exit Sub
 Traite_Erreurs36:
    If Erreurs(Err, "Routines / SauveTectriIni") Then Resume Next
 End Sub
-
-Sub selec (keyascii As Integer)
+'}}}
+Sub selec (keyascii As Integer) '{{{
    On Error GoTo Traite_Erreurs37:
 '            screen.MousePointer = 11
 	    Select Case keyascii
@@ -2140,8 +2140,8 @@ Exit Sub
 Traite_Erreurs37:
    If Erreurs(Err, "Routines / selec") Then Resume Next
 End Sub
-
-Sub selecfailles (objet As Form, keyascii As Integer)
+'}}}
+Sub selecfailles (objet As Form, keyascii As Integer) '{{{
    On Error GoTo Traite_Erreurs38:
    screen.MousePointer = 11
    Select Case keyascii
@@ -2201,8 +2201,8 @@ Exit Sub
 Traite_Erreurs38:
    If Erreurs(Err, "Routines / selecfailles") Then Resume Next
 End Sub
-
-Sub selecfailles_jeu (ByVal jeux As String)
+'}}}
+Sub selecfailles_jeu (ByVal jeux As String) '{{{
    On Error GoTo Traite_Erreurs39:
    'Sélectionne les failles de jeu "jeu"
    screen.MousePointer = 11
@@ -2240,8 +2240,8 @@ Exit Sub
 Traite_Erreurs39:
    If Erreurs(Err, "Routines / selecfailles_jeu") Then Resume Next
 End Sub
-
-Sub SélectionMesure (groupe)
+'}}}
+Sub SélectionMesure (groupe) '{{{
    On Error GoTo Traite_Erreurs40:
 'Nb:        groupe  symbolegroupedetri
 '              -1
@@ -2264,8 +2264,8 @@ Exit Sub
 Traite_Erreurs40:
    If Erreurs(Err, "Routines / SélectionMesure") Then Resume Next
 End Sub
-
-Function TestFormatFicTratrTectri$ (fichier)
+'}}}
+Function TestFormatFicTratrTectri$ (fichier) '{{{
    On Error Resume Next
    Close #1
    Open fichier For Input As #1
@@ -2280,8 +2280,8 @@ Function TestFormatFicTratrTectri$ (fichier)
    Err = 0
    Close #1
 End Function
-
-Sub UpdateFileMenu (Filename)
+'}}}
+Sub UpdateFileMenu (Filename) '{{{
 	Filename = LCase$(Filename)
 	Dim RetVal
 	' Check if OpenFileName is already on MRU list.
@@ -2292,8 +2292,8 @@ Sub UpdateFileMenu (Filename)
 	' Update menus for most recent file list.
 	GetRecentFiles
 End Sub
-
-Sub WriteRecentFiles (OpenFileName)
+'}}}
+Sub WriteRecentFiles (OpenFileName) '{{{
   Dim index, j, key, RetVal
   Dim IniString As String
   IniString = String(255, 0)
@@ -2312,4 +2312,4 @@ Sub WriteRecentFiles (OpenFileName)
   ' Write openfile to first Recent File.
     RetVal = writeprivateprofilestring("Liste des derniers fichiers", "Fichier1", OpenFileName, "tectri.ini")
 End Sub
-
+'}}}
