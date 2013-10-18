@@ -1,5 +1,5 @@
 VERSION 2.00
-Begin Form Debasculement 
+Begin Form Debasculement  '{{{
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Débasculement"
    ClientHeight    =   3960
@@ -163,7 +163,7 @@ Begin Form Debasculement
       Top             =   975
       Width           =   2265
    End
-End
+End '}}}
                'alfa,beta,a,b, c,pddir$,zzz,r,t,aa,cc,bb,aaa,bbb,ccc,azimut,
     Dim test1, test2, a, b, c
     Dim aa, bb, cc, alfa, beta, zzz, r, t, alfa2
@@ -175,11 +175,11 @@ End
 'Pour compter les clics sur le stéréo, lors des focalisations de stries
 Dim nbclics As Integer
 
-Sub Command_annule_Click ()
+Sub Command_annule_Click () '{{{
    Unload Me
 End Sub
-
-Sub Command_cliq_pol_Click ()
+ '}}}
+Sub Command_cliq_pol_Click () '{{{
    On Error GoTo Traite_Erreurs6:
    'entrée pd à la souris**
    Stereo.Tag = "clic"
@@ -197,8 +197,8 @@ Exit Sub
 Traite_Erreurs6:
    If Erreurs(Err, "Debasculement / Command_cliq_pol_Click") Then Resume Next
 End Sub
-
-Sub Command_Deba_Click ()
+ '}}}
+Sub Command_Deba_Click () '{{{
    On Error GoTo Traite_Erreurs7:
    'Existe-t-il des failles à débasculer?
       If NbStations = 0 Or (Option_FSelec.Value = 1 And NbMesuresAffichees() = 0) Then
@@ -270,8 +270,8 @@ Exit Sub
 Traite_Erreurs7:
    If Erreurs(Err, "Debasculement / Command_Deba_Click") Then Resume Next
 End Sub
-
-Sub Command_ok_Click ()
+ '}}}
+Sub Command_ok_Click () '{{{
    On Error GoTo Traite_Erreurs8:
    'Met à jour le tableau
    MetàJourStation
@@ -285,8 +285,8 @@ Exit Sub
 Traite_Erreurs8:
    If Erreurs(Err, "Debasculement / Command_ok_Click") Then Resume Next
 End Sub
-
-Sub ConversionPlan ()
+ '}}}
+Sub ConversionPlan () '{{{
    On Error GoTo Traite_Erreurs1:
    'ConversionPendage
    If alfa = pi / 2 Then a = 1: b = 0: GoTo lb3
@@ -322,8 +322,8 @@ Exit Sub
 Traite_Erreurs1:
    If Erreurs(Err, "Debasculement / ConversionPlan") Then Resume Next
 End Sub
-
-Sub deba ()
+ '}}}
+Sub deba () '{{{
    On Error GoTo Traite_Erreurs2:
    aa = a * Cos(alfa2) - b * Sin(alfa2):  'Mettre le pendage en N-S.
    cc = c
@@ -340,8 +340,8 @@ Exit Sub
 Traite_Erreurs2:
    If Erreurs(Err, "Debasculement / deba") Then Resume Next
 End Sub
-
-Sub DebaMesure ()
+ '}}}
+Sub DebaMesure () '{{{
    On Error GoTo Traite_Erreurs3:
    'plan
       Select Case Site(ns).Faille(i).azi '* 180 / pi
@@ -434,8 +434,8 @@ Exit Sub
 Traite_Erreurs3:
    If Erreurs(Err, "Debasculement / DebaMesure") Then Resume Next
 End Sub
-
-Sub Form_Activate ()
+ '}}}
+Sub Form_Activate () '{{{
    On Error Resume Next'pour le setfocus qui n'est pas valable quand la feuille n'est pas showée
    Stereo.Height = st!Stereo.Height
    Stereo.Width = st!Stereo.Width
@@ -445,8 +445,8 @@ Sub Form_Activate ()
    Get_Put_image st!Stereo, Stereo, ""
    screen.MousePointer = defaut
 End Sub
-
-Sub Form_Load ()
+ '}}}
+Sub Form_Load () '{{{
    On Error GoTo Traite_Erreurs9:
    prompt "Débasculement"
    'centerformchild mdi, Me
@@ -458,8 +458,8 @@ Exit Sub
 Traite_Erreurs9:
    If Erreurs(Err, "Debasculement / Form_Load") Then Resume Next
 End Sub
-
-Sub Form_Resize ()
+ '}}}
+Sub Form_Resize () '{{{
    On Error GoTo Traite_Erreurs10:
    If flag Or WindowState <> 0 Then flag = False: Exit Sub
    Stereo.Top = Command_annule.Top + Command_annule.Height + 100
@@ -474,8 +474,8 @@ Exit Sub
 Traite_Erreurs10:
    If Erreurs(Err, "Debasculement / Form_Resize") Then Resume Next
 End Sub
-
-Sub pro ()
+ '}}}
+Sub pro () '{{{
    On Error GoTo Traite_Erreurs4:
 'procedure pro;    Traduction plan math->plan g‚ol.
 'label lb1,lb2;
@@ -535,8 +535,8 @@ Exit Sub
 Traite_Erreurs4:
    If Erreurs(Err, "Debasculement / pro") Then Resume Next
 End Sub
-
-Sub pro2 ()
+ '}}}
+Sub pro2 () '{{{
    On Error GoTo Traite_Erreurs5:
 '********* cette procédure est-elle utile? ******
 'procedure pro2;Traduction plan g‚ol-> plan math.
@@ -556,8 +556,8 @@ Exit Sub
 Traite_Erreurs5:
    If Erreurs(Err, "Debasculement / pro2") Then Resume Next
 End Sub
-
-Sub Stereo_MouseDown (Button As Integer, Shift As Integer, X As Single, Y As Single)
+ '}}}
+Sub Stereo_MouseDown (Button As Integer, Shift As Integer, X As Single, Y As Single) '{{{
    On Error GoTo Traite_Erreurs11:
    If Stereo.Tag <> "clic" Or X ^ 2 + Y ^ 2 > 1 Then Exit Sub
    Stereo.MousePointer = 0
@@ -574,8 +574,8 @@ Exit Sub
 Traite_Erreurs11:
    If Erreurs(Err, "Debasculement / Stereo_MouseDown") Then Resume Next
 End Sub
-
-Sub Stereo_MouseMove (Button As Integer, Shift As Integer, X As Single, Y As Single)
+ '}}}
+Sub Stereo_MouseMove (Button As Integer, Shift As Integer, X As Single, Y As Single) '{{{
    On Error GoTo Traite_Erreurs12:
    If Stereo.Tag <> "clic" Then Exit Sub
    distcentre = X ^ 2 + Y ^ 2
@@ -620,8 +620,8 @@ Exit Sub
 Traite_Erreurs12:
    If Erreurs(Err, "Debasculement / Stereo_MouseMove") Then Resume Next
 End Sub
-
-Sub text_azideb_Change ()
+ '}}}
+Sub text_azideb_Change () '{{{
    If Err Then Exit Sub
    text_azideb.Text = UCase$(text_azideb.Text)
    text_azideb.SelStart = Len(text_azideb.Text)
@@ -635,8 +635,8 @@ Sub text_azideb_Change ()
       End If
    End If
 End Sub
-
-Sub text_dirpddeb_Change ()
+ '}}}
+Sub text_dirpddeb_Change () '{{{
    On Error Resume Next
    If Err Then Exit Sub
    Err = 1
@@ -653,8 +653,8 @@ Sub text_dirpddeb_Change ()
    If Err > 1 Then text_dirpddeb.Text = "": Err = 0
    Err = 0
 End Sub
-
-Sub text_pddeb_Change ()
+ '}}}
+Sub text_pddeb_Change () '{{{
    If Err Then Exit Sub
    text_pddeb.Text = UCase$(text_pddeb.Text)
    text_pddeb.SelStart = Len(text_pddeb.Text)
@@ -668,4 +668,4 @@ Sub text_pddeb_Change ()
       End If
    End If
 End Sub
-
+ '}}}
