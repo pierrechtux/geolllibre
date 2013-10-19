@@ -487,7 +487,7 @@ print mold structural_symbol
 ; on dessine ça dans un layout:
 l: layout [
 	zone_diagram: box ivory 220x220 effect	[
-		grid 10x10 gray
+		;grid 10x10 gray
 		draw [circle 100 100 10]]
 ]
 append zone_diagram/effect/draw structural_symbol
@@ -600,3 +600,48 @@ print f/print_plane_line
 ;-------------------------------------------------------------------##
 
 
+;###### Other solution, a function which uses orientation object!, but in a temporary manner, so that an array of measurements would be waste way less memory:
+compute_geolpda_orientation_matrix: func ["Takes a rotation matrix as provided by GeolPDA, and outputs a structural measurement, for measured plane and/or line" geolpda_matrix [string! block!]] [ ;{{{ } } }
+	; (function was previously named matrix2struct_measure)
+	; DEBUG ######
+		; L'exemple de matrice pour une pseudomesure de faille Nm30/60/E/55/S/N:
+		matrix: {-0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4}
+	; ################
+	; If matrix is given as a string!, convert it to a block!:
+	if (type? matrix) = string! [matrix: to-block matrix]
+	; Check if matrix is well a 9 elements block!:
+	if (length? matrix) != 9 [
+		print rejoin ["Error, rotation matrix given as argument has " length? matrix " elements instead of 9: matrix must be a 3x3 matrix written as 9 elements"] 
+		return none]
+	; Check if all 9 elements are numeric:
+	bad: false
+	foreach v matrix [
+		if (all [((type? v) != number!) ((type? v) != decimal!) ((type? v) != integer!)]) [bad: true]
+		]
+	if bad [ print rejoin ["Error, rotation matrix given as argument contains elements which are not numeric"] return none]
+	; If we got that far, no check error found.
+	; Build an orientation object!:
+	o: orientation/new matrix
+	; Get its contents, put it into a *light* object! (without methods):
+	res: make object! [
+		plane_direction:        o/plane_direction
+		plane_dip:              o/plane_dip
+		plane_quadrant_dip:     o/plane_quadrant_dip
+		plane_downdip_azimuth:  o/plane_downdip_azimuth
+		line_azimuth:           o/line_azimuth
+		line_plunge:            o/line_plunge
+	]
+	return res
+] ;}}}
+
+; test:
+;>> probe compute_geolpda_orientation_matrix {-0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4}
+;make object! [
+;    plane_direction: 35.5376777919744
+;    plane_dip: 66.4218215217982
+;    plane_quadrant_dip: "E"
+;    plane_downdip_azimuth: 125.537677791974
+;    line_azimuth: 0
+;    line_plunge: 53.130102354156
+;]
+;

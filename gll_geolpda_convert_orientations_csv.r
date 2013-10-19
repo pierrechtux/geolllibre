@@ -56,8 +56,8 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 
 ;}}}
 ; "import" these conversion tools:
-orientation: make object!...
-diagram: make object!...
+;orientation: make object!...
+;diagram: make object!...
 
 ; open geolpda .csv files:
 file_in: to-file request-file/title/filter "GeolPDA orientations file" "Open" [geolpda*.csv *csv *.CSV]
@@ -74,13 +74,21 @@ foreach line at read/lines file_in 2 [
 	append/only orientations reduce   [ r/1    r/2             r/3 rejoin [r/4 " " r/5 " " r/6 " " r/7 " " r/8 " " r/9 " " r/10 " " r/11 " " r/12 ]]
 ]
 ;print mold orientations/1	;DEBUG
+;>> print mold orientations/1;DEBUG
+;["867" "372" "P" {0.113424 0.0507597 -0.992249 -0.0104283 0.9987 0.0498977 0.993492 0.00468783 0.113806}]
 
 ; iterate through orientations, and make another block! with the computed structural measurements:
 struct_measures: copy []
 foreach i orientations [
 	o: orientation/new to-block to-string (at i 4)
-	print o/print_plane_line
+	append struct_measures o
+	;print o/print_plane_line
 ]
+
+length? struct_measures
+;== 867
+
+;=> too dispendious to make so many object!s with the code repeated every time.
 
 
 ;DEBUG
@@ -88,13 +96,13 @@ i: orientations/1
 o: orientation/new to-block to-string (at i 4)
 
 l: layout [
-	zone_diagram: box ivory 220x220 effect	[
-		grid 10x10 gray
-		draw [circle 100 100 10]]
+	zone_diagram: box ivory 220x220 effect [
+		grid 10x10
+		;draw [circle 100 100 10]]
+		]
 	btn #"q" "quit"[unview]
 ]
 append zone_diagram/effect/draw structural_symbol
-show zone_diagram
 view l
 
 
