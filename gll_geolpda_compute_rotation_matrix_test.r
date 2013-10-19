@@ -43,7 +43,6 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 }
 ];}}}
 
-; #DEBUG tout ça marche (pas pour le moment):  } } }
 ; initialisation: ;{{{ } } }
 if error? try [						; Récupération des routines (et des préférences) et connexion à la base
 if error? try [						; Récupération des routines (et des préférences) et connexion à la base
@@ -56,9 +55,8 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 ]
 
 ;}}}
-
 ; some generic code: => to be put later in gll_routines.r : ;{{{ } } }
-	azimuth_vector: func [{Returns the azimuth of a 3D vector, with reference to North = y axis} v [block!]] [;{{{ } } }
+	azimuth_vector: func [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{ } } }
 		x: v/1
 		y: v/2
 		either (x = 0) [azim: 0] [azim: 90 - arctangent (y / x )] ;(nota bene: calculs directement en degrés chez rebol)
@@ -102,11 +100,7 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 	;== 315.0
 ;}}}
 ; }}}
-
-
-;--## An orientation object, which fully characterises a plane and/or 
-;--## a line:
-orientation: make object! [ ;==={{{ } } }
+orientation: make object! [ ;--## An orientation object, which fully characterises a plane and/or a line: ;==={{{ } } }
 	; ## Les données initiales: {{{ } } }
 	;# J'ai pris une mesure de ma planchette dans ma position de
 	;# travail chez moi, avec le téléphone pitchant vers la
@@ -431,165 +425,55 @@ orientation: make object! [ ;==={{{ } } }
 		;}}}
 	];}}}
 ] ;}}}
-
-;--## A diagram, which will contain a DRAW block with the T trace 
-;--## from the orientation measurement:
-diagram: make object! [ ;{{{ } } }
-	; functions to trace graphics elements in the plot block:
-	trace_line: func [A [block!] B [block!]] [; {{{ } } }
-		append plot [line]
-		x: (     A/1  * scale) + offset/1
-		y: ((0 - A/2) * scale) + offset/2
-		append plot as-pair x y
-		x: (     B/1  * scale) + offset/1
-		y: ((0 - B/2) * scale) + offset/2
-		append plot as-pair x y
-	];}}}
-	trace_circle: func [center [block!] diameter [number!]] [; {{{ } } }
-		append plot [circle]
-		x: (     center/1  * scale) + offset/1
-		y: ((0 - center/2) * scale) + offset/2
-		append plot as-pair x y
-		append plot (diameter * scale)
-	];}}}
-	; plot is a DRAW dialect block containing the diagram:
-		plot: copy [pen black]
+diagram: make object! [ ;--## A diagram, which will contain a DRAW sting with the T trace from the orientation measurement: ;{{{ } } }
+	; attributes:
+		; plot is a DRAW dialect block containing the diagram:
+			plot: copy [pen black]
 		; to offset and scale the output of the plot:
 			offset: 110x110
-			scale:  50
+			scale:  100
+	; methods:
+		; functions to trace graphics elements in the plot block:
+		plot_reset: does [	plot: copy [pen black]]
+		trace_line: func ["traces a line from A point to B point; both are block!s" A [block!] B [block!]] [; {{{ } } }
+			append plot [line]
+			x: (     A/1  * scale) + offset/1
+			y: ((0 - A/2) * scale) + offset/2
+			append plot as-pair x y
+			x: (     B/1  * scale) + offset/1
+			y: ((0 - B/2) * scale) + offset/2
+			append plot as-pair x y
+		];}}}
+		trace_circle: func [{traces a circle from center (block! containing xy coordinates) with diameter} center [block!] diameter [number!]] [; {{{ } } }
+			append plot [circle]
+			x: (     center/1  * scale) + offset/1
+			y: ((0 - center/2) * scale) + offset/2
+			append plot as-pair x y
+			append plot (diameter * scale)
+		];}}}
+	; "constructor": rest of the code:
 		; axes:
 			append plot [pen gray]
-			trace_line [0 -1.1] [0 1.1]
-			trace_line [-1.1 0] [1.1 0]
-	; a rondibet:
-		;trace_circle [0 0] 1
-	plot_reset: does [	plot: copy [pen black]]
+			; un réticule:
+			;trace_line [0 -1.1] [0 1.1]
+			;trace_line [-1.1 0] [1.1 0]
+	; trace a rondibet:
+		trace_circle [0 0] 1
+		trace_line [  1  0 ] [  1.1  0  ]
+		trace_line [ -1  0 ] [ -1.1  0  ]
+		trace_line [  0  1 ] [  0    1.1]
+		trace_line [  0 -1 ] [  0   -1.1]
 ] ;}}}
 
-;-------------------------------------------------------------------##
-; Des essais:{{{ } } }
-;[0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-; Une mesure réelle du géolpda:
-; Exemple réel de plan:
-;_id	poiname	poitime	elevation	poilat	poilon	photourl	audiourl	note
-;358	PCh2013_0639	1377339260698	89.9	43.3359	-1.39078	1377339392897.jpg;1377339414464.jpg		Bel affleurement de gneiss, foliation Nm140/40/W
-;_id	poi_id	orientationtype	rot1	rot2	rot3	rot4	rot5	rot6	rot7	rot8	rot9	v1	v2	v3
-;851	358	P	0.375471	-0.866153	-0.32985	0.669867	0.499563	-0.549286	0.640547	-0.0147148	0.767778	0	0	0
-;
-;matrix:           [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-print o/print_plane_line
-;=>
-;>> o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-;>> o/print_plane_line
-;Matrix:     0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778
-;Plane:  Nm120/39/S
-;Line:   Nm299/0
-
-
-probe o
-print mold o/matrix
-print o/a
-o/plane_normal_vector
-o/axis_vector
-o/plane_downdip_azimuth
-o/plane_direction
-o/plane_dip
-o/plane_quadrant_dip
-o/line_azimuth
-o/line_plunge
-o/print_plane_line
-
-une_mesure_de_geolpda: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-print une_mesure_de_geolpda/print_plane_line
-;=>
-;>> une_mesure_de_geolpda/print_plane_line
-;Matrix:     0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778
-;Plane:  Nm120/39/S
-;Line:   Nm299/0
-
-;[0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-; Une mesure réelle du géolpda:
-; Exemple réel de plan:
-;_id	poiname	poitime	elevation	poilat	poilon	photourl	audiourl	note
-;358	PCh2013_0639	1377339260698	89.9	43.3359	-1.39078	1377339392897.jpg;1377339414464.jpg		Bel affleurement de gneiss, foliation Nm140/40/W
-;_id	poi_id	orientationtype	rot1	rot2	rot3	rot4	rot5	rot6	rot7	rot8	rot9	v1	v2	v3
-;851	358	P	0.375471	-0.866153	-0.32985	0.669867	0.499563	-0.549286	0.640547	-0.0147148	0.767778	0	0	0
-;
-;matrix: [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
-
-
-; L'exemple de matrice pour une pseudomesure de faille 
-;Nm30/60/E/55/S/N:
-o: orientation/new [-0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4]
-print o/print_plane_line
-;=>
-;>> o/print_plane_line
-;Matrix:     -0.7 0 0.7 0.6 0.6 -0.5 0.4 0.8 0.4
-;Plane:  Nm35/66/E
-;Line:   Nm0/53
-
-;# mesure de faille Nm30/60/E/55/S/N:
-;rotation_matrix:	 [ -0.7   0     0.7
-;					    0.6   0.6  -0.5
-;					    0.4   0.8   0.4]
-
-f: orientation/new [ -0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4]
-print f/print_plane_line
-;>> f/print_plane_line
-;Matrix:     -0.7 0 0.7 0.6 0.6 -0.5 0.4 0.8 0.4
-;Plane:  Nm35/66/E
-;Line:   Nm0/53
-
-;}}}
-;-------------------------------------------------------------------##
-
-
-; a graphical user interface: ;{{{ } } }
-;ui: [ ; Interface to debug rotation_matrix depatouillating:
-;	style field field 40x20
-;	h2 "Matrice de rotation:"
-;	guide
-;		return
-;	f_a: field o/a [o/matrix/1/1: f_a/text]
-;	f_b: field o/b [o/matrix/1/2: f_b/text]
-;	f_c: field o/c [o/matrix/1/3: f_c/text]
-;		return
-;	f_d: field o/d [o/matrix/2/1: f_d/text]
-;	f_e: field o/e [o/matrix/2/2: f_e/text]
-;	f_f: field o/f [o/matrix/2/3: f_f/text]
-;		return
-;	f_g: field o/g [o/matrix/3/1: f_g/text]
-;	f_h: field o/h [o/matrix/3/2: f_h/text]
-;	f_i: field o/i [o/matrix/3/3: f_i/text]
-;		return
-;	guide
-;	box ivory 220x220 effect [
-;		;grid 10x10 
-;		draw diagram/plot
-;	]
-;	;a: text to-string plot
-;	btn #"q" "quitte" 	[;quit 
-;						halt
-;						]
-;	; information des 9 zones de texte avec les variables faisant la matrice:
-;;	foreach v variables_short [
-;;		do rejoin ["f_" v "/text: " to-string v]
-;;	]
-;]
-;view layout ui
-;;}}}
-;=> bof
-
-
-; on définit une orientation:
+; USAGE:
+; on définit une orientation (la foliation du gneiss basque):/*{{{*/
 o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
 print o/print_matrix
 print o/print_plane
 print o/print_line
 print o/print_plane_line
-
-; on trace son Té sur structural_symbol:
+;/*}}}*/
+; on trace son Té sur diagram:/*{{{*/
 structural_symbol: diagram/plot
 o/trace_structural_symbol diagram
 ;== [pen black pen gray line 110x165 110x54 line 54x110 165x110 pen black line 152x135 67x84 line 110x110 102x122 line 110x110 153x1...
@@ -598,8 +482,20 @@ print mold diagram/plot
 print mold structural_symbol
 ;>> print mold structural_symbol/plot
 ;[pen black pen gray line 110x165 110x54 line 54x110 165x110 pen black line 152x135 67x84 line 110x110 102x122 line 110x110 153x134]
+;/*}}}*/
+
+; on dessine ça dans un layout:
+l: layout [
+	zone_diagram: box ivory 220x220 effect	[
+		grid 10x10 gray
+		draw [circle 100 100 10]]
+]
+append zone_diagram/effect/draw structural_symbol
+view l
+show zone_diagram
 
 ; a graphical user interface, more simple:
+a: [ ;{{{ } } }
 ui: layout [ ; Interface to debug rotation_matrix depatouillating:
 	h3 "Matrice de rotation:"	;guide return
 	field_matrix: field 250 "0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778" [
@@ -608,8 +504,9 @@ ui: layout [ ; Interface to debug rotation_matrix depatouillating:
 	structural_measurement: area 250x100
 	return
 	zone_diagram: box ivory 220x220 effect	[
-		grid 10x10
-		draw structural_symbol				]	; strange: if I put diagram/plot (which is the same as structural_symbol, it does not work
+		;grid 10x10
+		draw structural_symbol				]	; strange: if I put diagram/plot (which is the same as structural_symbol, it does not work,
+												; although diagram/plot points to structural_symbol => ?
 	across
 	btn #"t" "trace"	[ trace_diagram	]
 	btn #"c" "calcule"	[ print "calcule"	]
@@ -637,7 +534,69 @@ show field_matrix
 ;append zone_diagram structural_symbol
 view ui
 do-events
+] ;}}}
+do a
+do-events
 
 
+
+
+;-------------------------------------------------------------------##
+; Des essais:{{{ } } }
+;[0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+; Une mesure réelle du géolpda:
+; Exemple réel de plan (sans ligne), en Euskadi:/*{{{*/
+;_id	poiname	poitime	elevation	poilat	poilon	photourl	audiourl	note
+;358	PCh2013_0639	1377339260698	89.9	43.3359	-1.39078	1377339392897.jpg;1377339414464.jpg		Bel affleurement de gneiss, foliation Nm140/40/W
+;_id	poi_id	orientationtype	rot1	rot2	rot3	rot4	rot5	rot6	rot7	rot8	rot9	v1	v2	v3
+;851	358	P	0.375471	-0.866153	-0.32985	0.669867	0.499563	-0.549286	0.640547	-0.0147148	0.767778	0	0	0
+;
+;matrix:           [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+print o/print_plane_line
+;=>
+;>> o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+;>> o/print_plane_line
+;Matrix:     0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778
+;Plane:  Nm120/39/S
+;Line:   Nm299/0
+
+probe o
+print mold o/matrix
+print o/a
+o/plane_normal_vector
+o/axis_vector
+o/plane_downdip_azimuth
+o/plane_direction
+o/plane_dip
+o/plane_quadrant_dip
+o/line_azimuth
+o/line_plunge
+o/print_plane_line
+;/*}}}*/
+
+; L'exemple de matrice pour une pseudomesure de faille Nm30/60/E/55/S/N:
+o: orientation/new [-0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4]
+print o/print_plane_line
+;=>
+;>> o/print_plane_line
+;Matrix:     -0.7 0 0.7 0.6 0.6 -0.5 0.4 0.8 0.4
+;Plane:  Nm35/66/E
+;Line:   Nm0/53
+
+;# mesure de faille Nm30/60/E/55/S/N:
+;rotation_matrix:	 [ -0.7   0     0.7
+;					    0.6   0.6  -0.5
+;					    0.4   0.8   0.4]
+
+f: orientation/new [ -0.7   0     0.7 0.6   0.6  -0.5 0.4   0.8   0.4]
+print f/print_plane_line
+;>> f/print_plane_line
+;Matrix:     -0.7 0 0.7 0.6 0.6 -0.5 0.4 0.8 0.4
+;Plane:  Nm35/66/E
+;Line:   Nm0/53
+
+;}}}
+;-------------------------------------------------------------------##
 
 
