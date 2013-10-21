@@ -55,6 +55,7 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 ]
 
 ;}}}
+; #######POUBELLE########
 ; some generic code: => to be put later in gll_routines.r : ;{{{ } } }
 	azimuth_vector: func [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{ } } }
 		x: v/1
@@ -464,10 +465,12 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW sting with th
 		trace_line [  0  1 ] [  0    1.1]
 		trace_line [  0 -1 ] [  0   -1.1]
 ] ;}}}
+; #######POUBELLE########
 
 ; USAGE:
 ; on définit une orientation (la foliation du gneiss basque):/*{{{*/
-o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+;o: orientation/new [0.375471 -0.866153 -0.32985 0.669867 0.499563 -0.549286 0.640547 -0.0147148 0.767778]
+o: orientation/new [0.13364 0.856407 0.498706 -0.794842 0.393185 -0.462203 -0.591918 -0.334624 0.733253]
 print o/print_matrix
 print o/print_plane
 print o/print_line
@@ -484,15 +487,43 @@ print mold structural_symbol
 ;[pen black pen gray line 110x165 110x54 line 54x110 165x110 pen black line 152x135 67x84 line 110x110 102x122 line 110x110 153x134]
 ;/*}}}*/
 
+; autre exemple:/*{{{*/ } } }
+; ~~~Nm30/40/E/30/N/I
+;"868","387","PLM","0.13364","0.856407","0.498706","-0.794842","0.393185","-0.462203","-0.591918","-0.334624","0.733253","0","0","0"
+o: orientation/new [0.13364 0.856407 0.498706 -0.794842 0.393185 -0.462203 -0.591918 -0.334624 0.733253]
+print o/print_matrix
+print o/print_plane
+print o/print_line
+print o/print_plane_line
+;Matrix:     0.13364 0.856407 0.498706 -0.794842 0.393185 -0.462203 -0.591918 -0.334624 0.733253
+;Plane:  Nm42/42/E
+;Line:   Nm65/-19
+;=> semble auquai/*}}}*/
+; on trace son Té sur diagram:/*{{{*/
+structural_symbol: diagram/plot
+o/trace_structural_symbol diagram
+; le Té est contenu dans diagram/plot:
+print mold diagram/plot
+print mold structural_symbol
+;/*}}}*/
+
+
 ; on dessine ça dans un layout:
 l: layout [
+	list_orientations: list 240x300 "A" "b" "c"
+;[0.13364 0.856407 0.498706 -0.794842 0.393185 -0.462203 -0.591918 -0.334624 0.733253] [0.13364 0.856407 0.498706 -0.794842 0.393185 -0.462203 -0.591918 -0.334624 0.733253]]
 	zone_diagram: box ivory 220x220 effect	[
 		;grid 10x10 gray
-		draw [circle 100 100 10]]
+		;draw [circle 100 100 10]
+		draw []
+	]
+	btn #"q" "quit" [unview]
 ]
 append zone_diagram/effect/draw structural_symbol
 view l
-show zone_diagram
+
+
+
 
 ; a graphical user interface, more simple:
 a: [ ;{{{ } } }
