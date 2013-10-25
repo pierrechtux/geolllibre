@@ -1,5 +1,6 @@
 rebol [ 
 	Title:   "Rebol routines called by geolllibre gll_* programs"
+	IDEA:    "TODO make an automatic system of imports, where a program named abc_ghea_jh_lkk.r would automatically include any file named abc_ghea_jh_*.r and any file named abc_ghea_jh_routines.r. Doing tis recursively would make an easy to maintain tree of dependencies"
 	Name:    gll_routines.r
 	Version: 1.0.2
 	Date:    22-Sep-2013/10:31:32+2:00
@@ -613,7 +614,15 @@ run_query: func ["Utility function: sends a SQL query, returns the result as a b
 	; TODO prendre en compte le résultat de requêtes de type UPDATE ou DELETE
 	;either requete_select: [][]
 	sql_result_fields: make block! []
-	foreach champ db/locals/columns [ append sql_result_fields champ/name ]
+	foreach field db/locals/columns [
+		either ((type? field) = object!) [
+			; using postgresql driver
+			append sql_result_fields field/name
+		][
+			; using btn sqlite driver
+			append sql_result_fields field
+		]
+	]
 	return sql_result
 ] ; }}}
 run_sql_string_update: does [ ;{{{ } } }
@@ -764,7 +773,50 @@ continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue
 
 throw 'continue]
 ;/*}}}*/
+; Les dates du geolpda sont au format epoch en millisecondes;
+; voici une fonction pour convertir les epoch en date: [{{{ TODO erase this function from gll_geolpda_report_generator.r
+epoch-to-date: func [
+	"Return REBOL date from unix time format"
+	epoch [integer!] "Date in unix time format"
+	] [
+	day:       1-Jan-1970 + (to-integer (epoch / 86400))
+	hours:     to-integer   (((epoch // 86400)) /  3600)
+	minutes:   to-integer  ((((epoch // 86400)) // 3600) /  60)
+	seconds:   to-integer  ((((epoch // 86400)) // 3600) // 60)
+	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone 
+															   ; ^ TODO un 
+															   ;beau jour, 
+															   ;remettre ça;
+															   ;ça boguait.
+] ;}}}]
 
+
+; from LouGit:
+copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
+	if (source = target) [alert "Error: source and destination are the same" return none]
+	; open source		;o)
+	port_source: open/direct/binary/read to-file source
+	filename: (second split-path source)
+	if (dir? target) [		; target is a directory: check if a file named like source already exists there
+		if ((last (to-string target)) != slash) [append target slash]
+		if (exists? to-file rejoin [target filename]) [
+			if (not (request/confirm rejoin ["Overwrite existing file " target file "?"])) [ return none ]
+		]
+		target: rejoin [target filename]
+	]
+	if (exists? to-file rejoin [target filename]) [
+		; file exists!
+		if (not (request/confirm rejoin ["Overwrite existing file " target "?"])) [ return none ]
+	]
+	; solution proposée sur stackoverflow
+	port_target: open/direct/binary/write to-file target
+	bytes_per: 1024 * 100
+	while [not none? data: copy/part port_source bytes_per] [insert port_target data]
+	close port_target
+	close port_source
+	; => oups, pas bon!
+
+]; }}}
 
 
 ; fonctions pour la gestion des datasource:

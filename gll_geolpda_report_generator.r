@@ -14,16 +14,16 @@ REBOL [
 		Le fichier .csv doit se situer là (répertoire courant):
 		geolpda_picks.csv
 		Et les photos doivent être là (en aval du répertoire courant):
-		photos/
+			hotos/
 	}
 	History: [
-		0.2.5 11-Sep-2013/20:01:21+2:00	"Débogage, corrections; prise en compte de dates de début et fin pour générer le rapport"
-		0.2.4 15-Apr-2013/14:08:11	"Prise en compte du cas ou le .csv a une ligne vide à la fin"
-		0.2.3 2-Apr-2013/11:59:57+2:00	"Ajout license et copyright"
-		0.2.2 8-Mar-2013            	"PCh: Tri des observations en fonction du timestamp, et non de l'id (problème de tri asciibétique)"
-		0.2.1 10-Dec-2012          	"PCh: Je fais un exemple de rapport de geolpda: quelques modifications"
-		0.2.0 17-Nov-2012           	"PCh: Youpi, mon programme Rebol a généré un rapport à peu près potable:"
 		0.1.0 15-Nov-2012            	"PCh: J'écris vite fait un script qui fabrique un .html de mes données collectées avec le géolpda"
+		0.2.0 17-Nov-2012           	"PCh: Youpi, mon programme Rebol a généré un rapport à peu près potable:"
+		0.2.1 10-Dec-2012          	"PCh: Je fais un exemple de rapport de geolpda: quelques modifications"
+		0.2.2 8-Mar-2013            	"PCh: Tri des observations en fonction du timestamp, et non de l'id (problème de tri asciibétique)"
+		0.2.3 2-Apr-2013/11:59:57+2:00	"Ajout license et copyright"
+		0.2.4 15-Apr-2013/14:08:11	"Prise en compte du cas ou le .csv a une ligne vide à la fin"
+		0.2.5 11-Sep-2013/20:01:21+2:00	"Débogage, corrections; prise en compte de dates de début et fin pour générer le rapport"
 	]
 	License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
@@ -63,6 +63,7 @@ lines: read/lines %geolpda_picks.csv
 ; =============================================================================
 ; TODO: ouvrir le fichier avec un chemin à choisir
 ; TODO: à terme, attaquer direct la base sqlite geolpda
+; 		=> 23-Oct-2013/9:55:53+2:00: see gll_geolpda_fetch_data.r 
 ; =============================================================================
 
 
@@ -125,7 +126,7 @@ foreach o observations [
 
 ; Il faut trouver les jours.
 ; Les dates sont au format epoch en millisecondes;
-; voici une fonction pour convertir les epoch en date: [{{{
+; voici une fonction pour convertir les epoch en date: [{{{ TODO erase this function from here: it is migrated to gll_routines.r => include gll_routines.r in this program
 epoch-to-date: func [
 	"Return REBOL date from unix time format"
 	epoch [integer!] "Date in unix time format"
@@ -135,10 +136,10 @@ epoch-to-date: func [
 	minutes:   to-integer  ((((epoch // 86400)) // 3600) /  60)
 	seconds:   to-integer  ((((epoch // 86400)) // 3600) // 60)
 	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone 
-								   ; ^ TODO un 
-								   ;beau jour, 
-								   ;remettre ça;
-								   ;ça boguait.
+															   ; ^ TODO un 
+															   ;beau jour, 
+															   ;remettre ça;
+															   ;ça boguait.
 ] ;}}}]
 
 ; Faisons une liste contenant les jours:
