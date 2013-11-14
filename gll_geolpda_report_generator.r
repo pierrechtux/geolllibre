@@ -2,28 +2,30 @@
 REBOL [
 	Title:   "GeolPDA report generator"
 	Date:    09-Mar-2013
-	Version: 0.7.2 
+	Version: 0.8.0 
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
 		Génération d'un rapport sous forme d'un fichier .html 
-		à partir d'un fichier .csv d'observations issu du géolpda
-		de la forme:
+		à partir d'une base sqlite "geolpda" du géolpda
+		en allant chercher la table des observations avec les données:
 		_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note
 		"94","PCh2012_0372","1351959798292","544.3","43.4495","0.733307","1351959861748.jpg","1351959897130.3gpp","Le Bouche à oreille, café, logiciels libres, tango studio"
 		"93","PCh2012_0371","1351700656858","91.1","5.37645","-3.96311","","","chez PNG"
-		Le fichier .csv doit se situer là (répertoire courant):
-		geolpda_picks.csv
+		Le fichier sqlite doit se situer là (répertoire courant):
+		geolpda
 		Et les photos doivent être là (en aval du répertoire courant):
-			hotos/
+			photos/
 	}
 	History: [
 		0.1.0 15-Nov-2012            	"PCh: J'écris vite fait un script qui fabrique un .html de mes données collectées avec le géolpda"
 		0.2.0 17-Nov-2012           	"PCh: Youpi, mon programme Rebol a généré un rapport à peu près potable:"
-		0.2.1 10-Dec-2012          	"PCh: Je fais un exemple de rapport de geolpda: quelques modifications"
+		0.2.1 10-Dec-2012          		"PCh: Je fais un exemple de rapport de geolpda: quelques modifications"
 		0.2.2 8-Mar-2013            	"PCh: Tri des observations en fonction du timestamp, et non de l'id (problème de tri asciibétique)"
 		0.2.3 2-Apr-2013/11:59:57+2:00	"Ajout license et copyright"
-		0.2.4 15-Apr-2013/14:08:11	"Prise en compte du cas ou le .csv a une ligne vide à la fin"
+		0.2.4 15-Apr-2013/14:08:11		"Prise en compte du cas ou le .csv a une ligne vide à la fin"
 		0.2.5 11-Sep-2013/20:01:21+2:00	"Débogage, corrections; prise en compte de dates de début et fin pour générer le rapport"
+		;(check git)
+		0.8.0 8-Nov-2013/13:24:46+1:00	"Take data from sqlite base, instead of .csv files"
 	]
 	License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
