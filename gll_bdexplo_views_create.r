@@ -95,7 +95,7 @@ tables_for_view_join_operationid: []
 tables_public: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public';"
 ; on enlève les tables qui n'ont pas à être VIEWées:
 foreach t tables_public [ append tables_for_view_join_operationid to-string t ]
-tables_indesirables: ["dh_nb_samples" "dh_collars_lengths" "spatial_ref_sys" "geometry_columns" "operations" "operation_active" "" ]
+tables_indesirables: ["dh_nb_samples" "dh_collars_lengths" "spatial_ref_sys" "geometry_columns" "operations" "operation_active" "units" "conversions_oxydes_elements"]
 tables_for_view_join_operationid: (exclude tables_for_view_join_operationid tables_indesirables)
 
 ; pour voir les tables concernées rapidos:
