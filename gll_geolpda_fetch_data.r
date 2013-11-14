@@ -37,7 +37,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 }
 ];}}}
 
-DEBUG: true
+DEBUG: false
 ; initialisation: ;{{{ } } }
 if error? try [						; Récupération des routines (et des préférences) et connexion à la base
 if error? try [						; Récupération des routines (et des préférences) et connexion à la base
@@ -55,12 +55,14 @@ synchronize_geolpda: does [
 	; TODO: make this platform-independent:
 	; as is, it will /only work on a platform where rsync is installed 
 	; and in the $PATH
-	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_geolpda_android { } dir_geolpda_local ]
+	print "Synchronization process..."
+	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
+	print rejoin["Running " cmd]
 	tt:  copy ""
 	err: copy ""
 	call/wait/output/error cmd tt err
-	return tt
+	print tt
 ]
 
 ; Library to access sqlite geolpda database:
@@ -68,22 +70,19 @@ do %~/rebol/library/scripts/btn-sqlite.r
 ;}}}
 
 ; First, connect geolpda android device, copy to local directory:{{{ } } }
+; default directories are stored in .gll_preferences
+
 ; Get the user to properly mount the android device:
 alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
-
 ; Get the location where it is mounted (unless DEBUG is on):
 alert {locate where android device is mounted, pick up "geolpda" subdirectory}
-either DEBUG [	dir_geolpda_android: %/mnt/galaxy1/geolpda/ ] [
-				dir_geolpda_android: request-dir/title {locate geolpda where android device is located, choose "geolpda" subdirectory} ]
+unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {locate geolpda where android device is located, choose "geolpda" subdirectory} dir_mount_geolpda_android ]
 
 ; Get the location of the local image of geolpda data (unless DEBUG is on):
 alert {now locate the local directory where geolpda data is (or will be) replicated}
+unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
 
-either DEBUG [	dir_geolpda_local:  %~/geolpda/android_cp/geolpda/	] [
-				dir_geolpda_local: request-dir/title {locate local directory for replication of geolpda data} ]
-
-
-print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
+print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 
 ;}}}
 ; Synchronize android device to local filesystem, if agreed (and not DEBUG):{{{ } } }
@@ -275,25 +274,29 @@ datasource: 9999    ; bidon; TODO generate a new datasource record in lex_dataso
 ; Put data:{{{ } } }
 ; observations:{{{ } } }
 ; build a SQL INSERT statement:
-_: {, } ; just to save a few keystrokes to the coder... and to make REJOIN code a bit more readable; variable was called SEP for SEParator; renamed to _ for clarity/brevity
-sql_string:  {INSERT INTO public.field_observations (opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms) VALUES }
-foreach o geolpda_observations [
-	; assign temporary variables with field names: (bof, no){{{ } } }
-	;i: 0
-	;foreach f geolpda_observations_fields [
-	;	++ i
-	;	print rejoin [f ": "]
-	;	print o/:i
-	;] ; }}}
-	; check if record already in database or not: by default, we do not update
-	; data in the database, assuming that data inside the database could have
-	; changed, corrected, updated, etc. since it was imported from GeolPDA.
-	; DEBUG o: geolpda_observations/4
-	tmp: to-date epoch-to-date (to-integer ((to-decimal o/3) / 1000))
-	append sql_string rejoin [newline {(} opid _ tmp/year _ {'} o/2 {'} _ {'} tmp/year "-" pad tmp/month 2 "-" pad tmp/day 2 {'} _ {'} o/1 {'} _ o/6 _ o/5 _ o/4 _ {'} o/9 {'} _ {NULL, NULL, 4326} _ {'} geologist {'} _ {NULL, NULL, NULL, NULL, } {'} o/7 {'} _ {'} o/8 {'} _ o/3 {),}]
+sql_string: copy ""
+; if there is anything to add:
+if (length? geolpda_observations) > 0 [
+	; continue the SQL INSERT statement:
+	_: {, } ; just to save a few keystrokes to the coder... and to make REJOIN code a bit more readable; variable was called SEP for SEParator; renamed to _ for clarity/brevity
+	sql_string:  {INSERT INTO public.field_observations (opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms) VALUES }
+	foreach o geolpda_observations [
+		; assign temporary variables with field names: (bof, no){{{ } } }
+		;i: 0
+		;foreach f geolpda_observations_fields [
+		;	++ i
+		;	print rejoin [f ": "]
+		;	print o/:i
+		;] ; }}}
+		; check if record already in database or not: by default, we do not update
+		; data in the database, assuming that data inside the database could have
+		; changed, corrected, updated, etc. since it was imported from GeolPDA.
+		; DEBUG o: geolpda_observations/4
+		tmp: to-date epoch-to-date (to-integer ((to-decimal o/3) / 1000))
+		append sql_string rejoin [newline {(} opid _ tmp/year _ {'} o/2 {'} _ {'} tmp/year "-" pad tmp/month 2 "-" pad tmp/day 2 {'} _ {'} o/1 {'} _ o/6 _ o/5 _ o/4 _ {'} o/9 {'} _ {NULL, NULL, 4326} _ {'} geologist {'} _ {NULL, NULL, NULL, NULL, } {'} o/7 {'} _ {'} o/8 {'} _ o/3 {),}]
+	]
+	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
 ]
-sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
-
 ;DEBUG editor sql_string
 
 print "SQL statement to be run:"
@@ -311,31 +314,33 @@ print "..."
 ;]
 ;}}}
 ; orientations: {{{ } } }
-; continue the SQL INSERT statement:
-	;\pset format unaligned
-	;\pset fieldsep ','
-	;SELECT * FROM public.field_observations_struct_measures LIMIT 0;
-	;opid,obs_id,measure_type,structure_type,north_ref,direction,dip,dip_quadrant,pitch,pitch_quadrant,movement,valid,comments,numauto,db_update_timestamp,username,datasource,rotation_matrix,geolpda_id,geolpda_poi_id
+; if anything to add:
+if (length? geolpda_orientations) > 0 [
+	; continue the SQL INSERT statement:
+		;\pset format unaligned
+		;\pset fieldsep ','
+		;SELECT * FROM public.field_observations_struct_measures LIMIT 0;
+		;opid,obs_id,measure_type,structure_type,north_ref,direction,dip,dip_quadrant,pitch,pitch_quadrant,movement,valid,comments,numauto,db_update_timestamp,username,datasource,rotation_matrix,geolpda_id,geolpda_poi_id
 
-; DEBUG 
-; o: geolpda_orientations/1
-; geolpda_orientations_fields
-; == ["poiname" "_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"]
-;   m/       1     2        3                 4      5      6      7      8      9     10     11     12     13   14   15   16
-;for i 5 13 1 [prin rejoin [" m/" to-string i { " "}]]
-; m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13 " ">> 
-append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id   ) VALUES } ]
-foreach m geolpda_orientations [
-	append sql_string rejoin [newline {(}                                               		  opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3        {),}        ]
+	; DEBUG 
+	; o: geolpda_orientations/1
+	; geolpda_orientations_fields
+	; == ["poiname" "_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"]
+	;   m/       1     2        3                 4      5      6      7      8      9     10     11     12     13   14   15   16
+	;for i 5 13 1 [prin rejoin [" m/" to-string i { " "}]]
+	; m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13 " ">> 
+	append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id   ) VALUES } ]
+	foreach m geolpda_orientations [
+		append sql_string rejoin [newline {(}                                               		  opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3        {),}        ]
+	]
+	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
+			; DEBUG 
+			;editor sql_string
+			;sql_string: copy ""
+
+			;write %azeq sql_string
+			; DEBUG
 ]
-sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
-		; DEBUG 
-		;editor sql_string
-		;sql_string: copy ""
-
-		;write %azeq sql_string
-		; DEBUG
-
 
 print "SQL statement to be run:"
 print copy/part sql_string 300
