@@ -105,7 +105,7 @@ either system/options/args = none [
 			 new_datasource_id: to-integer field_new_datasource_id/text
 			 either (test_datasource_available new_datasource_id) [
 			  t/text: rejoin ["ok, proposed datasource_id " new_datasource_id " free in database" ]
-			  generate_sql_string_update
+			  generate_sql_string_update new_datasource_id file_in
 			  field_sql/text: sql_string_update
 			  show field_sql
 			  ] [
@@ -135,53 +135,50 @@ either system/options/args = none [
 	]
 	quit
 ][
-; s'il y a quelque chose en arguments sur la ligne de commande, on fait en mode texte:
-; on utilise sous la forme:
-;                           gll_bdexplo_new_datasource.r "~/smi/transferts/from/duc/fich.csv" 		=> numéro datasource_id automatique
-;                           gll_bdexplo_new_datasource.r "~/smi/transferts/from/duc/fich.csv" 1232	=> force un datasource_id
+	; s'il y a quelque chose en arguments sur la ligne de commande, on fait en mode texte:
+	; on utilise sous la forme:
+	;                           gll_bdexplo_new_datasource.r "~/smi/transferts/from/duc/fich.csv" 		=> numéro datasource_id automatique
+	;                           gll_bdexplo_new_datasource.r "~/smi/transferts/from/duc/fich.csv" 1232	=> force un datasource_id
 
-switch/default length? system/options/args [
-1 [				;=> numéro datasource_id automatique
- ; RAS, on garde le new_datasource_id tel que déjà défini
- ]
-2 [				;=> force un datasource_id
- if error? try [new_datasource_id: to-integer system/options/args/2 ] [ msg_err ]
+	switch/default length? system/options/args [
+	1 [				;=> numéro datasource_id automatique
+	 ; RAS, on garde le new_datasource_id tel que déjà défini
+	 ]
+	2 [				;=> force un datasource_id
+	 if error? try [new_datasource_id: to-integer system/options/args/2 ] [ msg_err ]
+	 ]
+	][				;=> autre cas: erreur
+	msg_err
+	]
 
- ]
-][				;=> autre cas: erreur
-msg_err
-]
-
-; tout va bien, on continue
-file_in: to-file pick system/options/args 1
+	; tout va bien, on continue
+	file_in: to-file pick system/options/args 1
 	if not(test_datasource_available new_datasource_id) [
-	print rejoin ["problem, proposed datasource_id " new_datasource_id " already referenced in database: ^/" res ]
-	quit
+		print rejoin ["problem, proposed datasource_id " new_datasource_id " already referenced in database: ^/" res ]
+		quit
 	]
-; tout va bien, ça continue
-print rejoin ["ok, proposed datasource_id " new_datasource_id " free in database" ]
-
+	; tout va bien, ça continue
+	print rejoin ["ok, proposed datasource_id " new_datasource_id " free in database" ]
 	if not (chk_file_exists file_in) [
-	print rejoin [ "Non, cela ne le fait pas, erreur en essayant d'ouvrir " to-string file_in ]
-	quit
+		print rejoin [ "Non, cela ne le fait pas, erreur en essayant d'ouvrir " to-string file_in ]
+		quit
 	]
-; tout va bien, ça continue encore
+	; tout va bien, ça continue encore
+	print rejoin ["ok, file " file_in " open"]
 
-print rejoin ["ok, file " file_in " open"]
-
-generate_sql_string_update
-;print "-- SQL instruction to be run:"
-;print sql_string_update
-reponse: (ask rejoin ["Générer l'enregistrement dans public.lex_datasource:^/" sql_string_update "^/(Y/n) ?"])
-if any [(reponse = "y") (reponse = "")] [
-run_sql_string_update ]
-reponse: (ask "Commit changes to database (undoable)?")
-if any [(reponse = "y") (reponse = "")] [
-insert db "COMMIT;"
-prin "New datasource generated: "
-print new_datasource_id
-]
-quit
+	generate_sql_string_update new_datasource_id file_in
+	print "-- SQL instruction to be run:"
+	print sql_string_update
+	reponse: (ask rejoin ["Générer l'enregistrement dans public.lex_datasource:^/" sql_string_update "^/(Y/n) ?"])
+	if any [(reponse = "y") (reponse = "")] [
+		run_sql_string_update ]
+	reponse: (ask "Commit changes to database (undoable)?")
+	if any [(reponse = "y") (reponse = "")] [
+		insert db "COMMIT;"
+		prin "New datasource generated: "
+		print new_datasource_id
+	]
+	quit
 ]
 ; fin
 
