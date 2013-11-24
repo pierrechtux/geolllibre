@@ -1,4 +1,4 @@
-#!/usr/bin/rebol_core -qs
+#!/usr/bin/rebol -qs
 REBOL [;{{{ } } }
 	Title:   "Gets information from GeolPDA android device, and uploads it to a database"
 	Date:    == 22-Oct-2013/17:23:33+2:00
@@ -58,6 +58,19 @@ synchronize_geolpda: does [
 	print "Synchronization process..."
 	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
+	print rejoin["Running " cmd]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+]
+
+synchronize_oruxmaps_tracklogs: does [
+	; TODO: make this platform-independent:
+	; as is, it will /only work on a platform where rsync is installed 
+	; and in the $PATH
+	print "Synchronization process..."
+	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
 	print rejoin["Running " cmd]
 	tt:  copy ""
 	err: copy ""
@@ -379,4 +392,17 @@ insert db "COMMIT;"
 print "commited => end."
 
 ;}}}
+
+; Synchronize oruxmaps tracklogs, optionally: ;/*{{{*/ } } }
+if confirm {Synchronize oruxmaps tracklogs?} [
+	alert {locate where android device is mounted, pickup "oruxmaps" subdirectory}
+	unless DEBUG [ dir_mount_oruxmaps_android: request-dir/title/dir {locate oruxmaps where android device is located, choose "oruxmaps" subdirectory} dir_mount_oruxmaps_android ]
+	alert {locate the local directory where oruxmaps tracks data is (or will be) replicated}
+	unless DEBUG [ dir_oruxmaps_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_oruxmaps_local         ]
+	print rejoin ["Mount directory of OruxMaps android device: " tab tab dir_mount_oruxmaps_android newline "Local directory for oruxmaps data replication: " tab dir_oruxmaps_local]
+	unless DEBUG [ if ( confirm "synchronize geolpda data?" ) [ synchronize_oruxmaps_tracklogs ] ]
+]
+
+;/*}}}*/
 ; Finished.
+
