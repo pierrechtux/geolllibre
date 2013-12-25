@@ -1,91 +1,87 @@
-rebol []
-code_fortran_to_be_translated: [
-Té, comment connaître la déviation magnétique en n'importe quel endroit du globe:{{{
-http://geomag.nrcan.gc.ca/apps/mdcal-fra.php?Year=2010&Month=12&Day=15&Lat=7&Min=0&LatSign=1&Long=8&Min2=0&LongSign=-1&Submit=Calculer+la+d%E9clinaison+magn%E9tique&CityIndex=0{{{
-Inscrire la latitude et la longitude ou choisir une ville : 	
+rebol [
+	title: "IGRF11"
+	note: {translated from fortran to rebol}
+]
+;code_fortran_to_be_translated: [
+;Té, comment connaître la déviation magnétique en n'importe quel endroit du globe:{{{
+;http://www.ngdc.noaa.gov/IAGA/vmod/igrf11.f{{{
 
-Année
-Mois Jour
-Latitude
-degrés, minutes ( nord sud )
-Longitude
-degrés, minutes (ouest  est )
- 
+;      PROGRAM IGRF11
+;C
+;C     This is a program for synthesising geomagnetic field values from the 
+;C     International Geomagnetic Reference Field series of models as agreed
+;c     in December 2009 by IAGA Working Group V-MOD. 
+;C     It is the 11th generation IGRF, ie the 10th revision. 
+;C     The main-field models for 1900.0, 1905.0,..1940.0 and 2010.0 are 
+;C     non-definitive, those for 1945.0, 1950.0,...2005.0 are definitive and
+;C     the secular-variation model for 2010.0 to 2015.0 is non-definitive.
+;C
+;C     Main-field models are to degree and order 10 (ie 120 coefficients)
+;C     for 1900.0-1995.0 and to 13 (ie 195 coefficients) for 2000.0 onwards. 
+;C     The predictive secular-variation model is to degree and order 8 (ie 80
+;C     coefficients).
+;C
+;C     Options include values at different locations at different
+;C     times (spot), values at same location at one year intervals
+;C     (time series), grid of values at one time (grid); geodetic or
+;C     geocentric coordinates, latitude & longitude entered as decimal
+;C     degrees or degrees & minutes (not in grid), choice of main field 
+;C     or secular variation or both (grid only).
+;C Recent history of code:
+;c     Aug 2003: 
+;c     Adapted from 8th generation version to include new maximum degree for
+;c     main-field models for 2000.0 and onwards and use WGS84 spheroid instead
+;c     of International Astronomical Union 1966 spheroid as recommended by IAGA
+;c     in July 2003. Reference radius remains as 6371.2 km - it is NOT the mean
+;c     radius (= 6371.0 km) but 6371.2 km is what is used in determining the
+;c     coefficients. 
+;c     Dec 2004: 
+;c     Adapted for 10th generation
+;c     Jul 2005: 
+;c     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls
+;c     now used in code - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients)
+;c     Dec 2009:
+;c     Adapted for 11th generation
+;c
 
-Résultats IGRF-2010:
-Année: 2010 12 15 	Latitude: 7° nord 	Longitude: 8° ouest
- 
-Déclinaison magnétique calculée: 6? 23 ' ouest
-Changement Annuel (minutes/année): 6.6 '/a est}}}
-http://www.ngdc.noaa.gov/IAGA/vmod/igrf11.f{{{
+;      IMPLICIT DOUBLE PRECISION (A-H,O-Z)	; NDLR: ? not translated
+;      CHARACTER*1 IA
+;      CHARACTER*11 TYPE
+;      CHARACTER*20 NAME
+;      CHARACTER*30 FNM
 
-      PROGRAM IGRF11
-C
-C     This is a program for synthesising geomagnetic field values from the 
-C     International Geomagnetic Reference Field series of models as agreed
-c     in December 2009 by IAGA Working Group V-MOD. 
-C     It is the 11th generation IGRF, ie the 10th revision. 
-C     The main-field models for 1900.0, 1905.0,..1940.0 and 2010.0 are 
-C     non-definitive, those for 1945.0, 1950.0,...2005.0 are definitive and
-C     the secular-variation model for 2010.0 to 2015.0 is non-definitive.
-C
-C     Main-field models are to degree and order 10 (ie 120 coefficients)
-C     for 1900.0-1995.0 and to 13 (ie 195 coefficients) for 2000.0 onwards. 
-C     The predictive secular-variation model is to degree and order 8 (ie 80
-C     coefficients).
-C
-C     Options include values at different locations at different
-C     times (spot), values at same location at one year intervals
-C     (time series), grid of values at one time (grid); geodetic or
-C     geocentric coordinates, latitude & longitude entered as decimal
-C     degrees or degrees & minutes (not in grid), choice of main field 
-C     or secular variation or both (grid only).
-C Recent history of code:
-c     Aug 2003: 
-c     Adapted from 8th generation version to include new maximum degree for
-c     main-field models for 2000.0 and onwards and use WGS84 spheroid instead
-c     of International Astronomical Union 1966 spheroid as recommended by IAGA
-c     in July 2003. Reference radius remains as 6371.2 km - it is NOT the mean
-c     radius (= 6371.0 km) but 6371.2 km is what is used in determining the
-c     coefficients. 
-c     Dec 2004: 
-c     Adapted for 10th generation
-c     Jul 2005: 
-c     1995.0 coefficients as published in igrf9coeffs.xls and igrf10coeffs.xls
-c     now used in code - (Kimmo Korhonen spotted 1 nT difference in 11 coefficients)
-c     Dec 2009:
-c     Adapted for 11th generation
-c
-      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
-      CHARACTER*1 IA
-      CHARACTER*11 TYPE
-      CHARACTER*20 NAME
-      CHARACTER*30 FNM
-      DATA DTMN,DTMX/1900.0,2020.0/
-C
-C
-      WRITE(6,*)
-      WRITE(6,*)'******************************************************'
-      WRITE(6,*)'*              IGRF SYNTHESIS PROGRAM                *'
-      WRITE(6,*)'*                                                    *'
-      WRITE(6,*)'* A program for the computation of geomagnetic       *'
-      WRITE(6,*)'* field elements from the International Geomagnetic  *'
-      WRITE(6,*)'* Reference Field (11th generation) as revised in    *'
-      WRITE(6,*)'* December 2009 by the IAGA Working Group V-MOD.     *'
-      WRITE(6,*)'*                                                    *'
-      WRITE(6,*)'* It is valid for dates from 1900.0 to 2015.0,       *'
-      WRITE(6,*)'* values up to 2020.0 will be computed but with      *'
-      WRITE(6,*)'* reduced accuracy. Values for dates before 1945.0   *'
-      WRITE(6,*)'* and after 2005.0 are non-definitive, otherwise the *'
-      WRITE(6,*)'* values are definitive.                             *'
-      WRITE(6,*)'*                                                    *'
-      WRITE(6,*)'* Susan Macmillan          British Geological Survey *'
-      WRITE(6,*)'*                           IAGA Working Group V-MOD *'
-      WRITE(6,*)'******************************************************'
-      WRITE(6,*)
-      WRITE(6,*)'Enter name of output file (30 characters maximum)'
-      WRITE(6,*)'or press "Return" for output to screen'
-      READ (5,991) FNM
+IA: TYPE: NAME: FNM: copy ""
+
+;      DATA DTMN,DTMX/1900.0,2020.0/
+
+DTMN: 1900.0
+DTMX: 2020.0
+
+
+print ""
+print "******************************************************"
+print "*              IGRF SYNTHESIS PROGRAM                *"
+print "*                                                    *"
+print "* A program for the computation of geomagnetic       *"
+print "* field elements from the International Geomagnetic  *"
+print "* Reference Field (11th generation) as revised in    *"
+print "* December 2009 by the IAGA Working Group V-MOD.     *"
+print "*                                                    *"
+print "* It is valid for dates from 1900.0 to 2015.0,       *"
+print "* values up to 2020.0 will be computed but with      *"
+print "* reduced accuracy. Values for dates before 1945.0   *"
+print "* and after 2005.0 are non-definitive, otherwise the *"
+print "* values are definitive.                             *"
+print "*                                                    *"
+print "* Susan Macmillan          British Geological Survey *"
+print "*                           IAGA Working Group V-MOD *"
+print "******************************************************"
+print ""
+print "Enter name of output file (30 characters maximum)"
+print "or press "Return" for output to screen"
+;      READ (5,991) FNM
+FNM: input
+
   991 FORMAT (A30)
       IF (ICHAR(FNM(1:1)).EQ.32) THEN
        IU = 6
@@ -1105,8 +1101,8 @@ c
 
 
 }}}
-http://vtopo.free.fr/declimag.htm
 
+http://vtopo.free.fr/declimag.htm
 NOAA, pas mal du tout: http://www.ngdc.noaa.gov/geomagmodels/struts/calcDeclination {{{
 CI/Ity:{{{
 Enter Location: (latitude 90S to 90N, longitude 180W to 180E). See Instructions for details.
@@ -1122,5 +1118,5 @@ Declination = 3° 0' E changing by 0° 4' E/year
 }}}
 }}}
 }}}
-]
+;]
 
