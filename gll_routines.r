@@ -1284,6 +1284,8 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 		["formations_group_lithos"]
 		["lab_ana_batches_expedition"]
 		["lab_ana_columns_definition"]
+		["conversions_oxydes_elements"]
+		["units"]
 	]
 	tables: exclude tables tables_inutiles
 	;length? tables
