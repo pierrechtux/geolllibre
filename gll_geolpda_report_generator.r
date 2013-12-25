@@ -173,46 +173,130 @@ foreach j jours [print j]   ; <= la liste des jours, triée
 
 ; 2013_09_11__15_51_45: j'essaye de faire une liste des séquences contigües de dates, 
 ; pour donner le choix des séquences à traiter à l'utilisateur.
+; ### MARCHE PAS ###
 comment [ ; {{{ } } }
 jour_zero: to-date replace/all "05_01_2012" "_" "/" ; le jour de la première version de GéolPDA: il ne peut, par définition, avoir d'observations faite avant.
 
-jour_precedent: jour_zero
-sequences_jours:  make block! []
-sequence_encours: false
-nb_sequences:     0
-num:              0
-foreach j jours [
-	print "A"				; #DEBUG
-	?? j					; #DEBUG
-	?? jour_precedent			; #DEBUG
-	?? sequences_jours			; #DEBUG
-	input
-	either (j - jour_precedent > 1) [ 			; séquence non contigüe
+
+
+;/*{{{*/
+sequences_jours_contigus:  copy []
+sequence:                  copy []
+num:                       0
+
+; premier jour:
+append sequence jours/1
+jour_precedent: jours/1
+sequence_encours:          true
+nb_sequences:              1
+jours: next jours
+
+foreach j jours [								; à partir du second jour, donc, on itère:
+	either (j - jour_precedent > 1) [ 				; on est dans une séquence non contigüe:
+		either sequence_encours [						; si on est dans une séquences, 
+			append sequence jour_precedent				; on l'arrête.
+			jour_precedent: j
+			append sequence j							; et on en démarre une autre
+			append sequences_jours_contigus 
+		] [	sequence_encours: true					; on n'est pas dans une séquence contigüe: on démarre une séquence
+			append sequences_jours_contigus j
+			jour_precedent: j
+		]
+	] [											; séquence contigüe
 		either sequence_encours [
-			append sequences_jours jour_precedent
-			jour_precedent: j
-			print "B"		; #DEBUG
-			?? sequences_jours	; #DEBUG
-			input			; #DEBUG
-		] [
-		]	sequence_encours: true
-			append sequences_jours j
-			jour_precedent: j
-			print "C"		; #DEBUG
-			?? sequences_jours	; #DEBUG
-			input			; #DEBUG
-	] [							; séquence contigüe
-		either sequence_encours [
 		] [
 			jour_precedent: j
-			print "D"		; #DEBUG
-			?? sequences_jours	; #DEBUG
-			input			; #DEBUG
 			sequence_encours: true
 			append sequences_jours j
 		]
 	]
 ]
+
+
+
+
+
+sequence: copy []
+j: jours/1
+append sequence j
+jour_precedent: j
+foreach j jours [
+	unless (j - jour_precedent = 1) [
+		
+	]
+]
+
+
+
+append sequence jours/1
+for i 2 ((length? jours) - 1) 1 [
+	unless all [((jours/:i - jours/(i - 1)) = 1) ((jours/(i + 1) - jours/:i) = 1)] [
+		append sequence jours/(:i - 1) 
+		append sequence jours/:i
+	]
+
+
+
+
+
+
+;/*}}}*/
+
+
+
+
+jours: [		;;DEBUG!!!
+21-Jul-2013
+4-Aug-2013
+7-Aug-2013
+22-Aug-2013
+23-Aug-2013
+24-Aug-2013
+25-Aug-2013
+26-Aug-2013
+27-Aug-2013
+28-Aug-2013
+30-Aug-2013
+2-Oct-2013
+]
+nbjours: length? jours
+sequences_jours_contigus: copy []
+append sequences_jours_contigus jours/1
+jours: next jours
+while [ (nbjours - (index? jours)) > 2 ] [
+	print first jours
+	either (((first jours) - (jours/(-1))) = 1) [	; jour contigu au précédent?
+													; si c'est le cas, on ne fait rien
+	] [												; sinon,
+		either ((jours/2 - jours/1) = 1) [		; jour contigu au suivant?
+															; si c'est le cas, on ne fait toujours rien
+		] [													; sinon
+			append sequences_jours_contigus (jours/(-1))	; on ajoute le jour précédent pour finir la séquence en cours,
+			append sequences_jours_contigus (first jours)			; ainsi que le jour courant   pour commencer la nouvelle séquence.
+		]
+	]
+	jours: next jours
+]
+foreach [a b] sequences_jours_contigus [
+	prin a
+	prin tab
+	print b
+]
+
+
+
+
+
+
+
+
+
+trucmuche [
+	print i
+	print rejoin [jours/(i - 1) " - " jours/:i " -" jours/(i + 1)]
+	print rejoin ["    " (jours/:i - jours/(i - 1)) "         " (jours/(i + 1) - jours/:i)]
+]
+
 
 
 
@@ -240,6 +324,7 @@ until  [
 
 
 ] ;}}}
+; ### MARCHE PAS ###
 
 ;}}}
 
