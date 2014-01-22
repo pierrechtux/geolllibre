@@ -122,23 +122,22 @@ foreach tablename tables_for_view_join_operationid [
 append sql_string {
 -- 4. vues pour postgis:{{{
 
-CREATE VIEW dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM dh_collars;
-CREATE VIEW dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM dh_collars) tmp ORDER BY tmp.id;
-CREATE VIEW public.field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM field_observations;
-CREATE VIEW geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM geoch_sampling_grades;
-CREATE VIEW grid_points AS SELECT *, GeomFromText('POINT (' || x || ' ' || y || ')',2041) FROM grid;
-CREATE VIEW index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM index_geo_documentation;
-CREATE VIEW licences_quadrangles AS SELECT opid, id, licence_name, operator, year, lat_min, lon_min, lat_max, lon_max, comments, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM licences ORDER BY licences.licence_name;
-CREATE VIEW operations_quadrangles AS 
-SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
-FROM operations ORDER BY operation;
-CREATE VIEW surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM surface_samples_grades;
-CREATE VIEW dh_collars_points_marrec AS 
-SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
+CREATE VIEW public.dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM public.dh_collars;
+CREATE VIEW public.dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM public.dh_collars) tmp ORDER BY tmp.id;
+CREATE VIEW public.field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM public.field_observations;
+CREATE VIEW public.geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM public.geoch_sampling_grades;
+CREATE VIEW public.grid_points AS SELECT *, GeomFromText('POINT (' || x || ' ' || y || ')',2041) FROM public.grid;
+CREATE VIEW public.index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM public.index_geo_documentation;
+CREATE VIEW public.licences_quadrangles AS SELECT opid, id, licence_name, operator, year, lat_min, lon_min, lat_max, lon_max, comments, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM public.licences ORDER BY licences.licence_name;
+CREATE VIEW public.operations_quadrangles AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
+FROM public.operations ORDER BY operation;
+CREATE VIEW public.surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM public.surface_samples_grades;
+CREATE VIEW public.dh_collars_points_marrec AS 
+SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM public.dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
 
 
-CREATE VIEW pierre.petro_mineralo_study_field_observations_points AS SELECT * FROM field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
-CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
+CREATE VIEW pierre.petro_mineralo_study_field_observations_points AS SELECT * FROM public.field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
+CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM public.dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
 
 
 --DROP cascade sur vue dh_mineralised_intervals0_traces_3d/*{{{*/
