@@ -1,0 +1,96 @@
+Tectri.r ;MODIF 4/8/04
+rebol [
+ title: "essai d'implementation de Tectri en Rebol"
+ version: 0.1
+ description: {premier codage "en aveugle", sur visor. bcp de code reste a traduire de vb; faire tests de vitesses; faire 1 autre test en python}
+ auteur: "Pierre Chevalier"
+ date: 03/05/2004
+ ]
+
+;objet PLAN: mesure d'un plan, en convention usuelle du type N120/60/S
+plan: make object! [
+ direction: make float!
+ pendage: make float!
+ quadrant: make char!
+ ]
+
+;objet LIGNE; une ligne liée à 1 plan pourra être définie par pitch; azi et pl doivent alors être recalculés
+ligne: make object! [
+ azi: make float!
+ pl: make float!
+ pi: make float!
+ quadr_pi: make char!
+ calcule_azi: function [] [] [
+  ...
+  ]
+ calcule_pl: function [] [] [
+  ...
+  ]
+ calcule_pi: function [] [] [
+  ...
+  ]
+ ]
+
+;objet FAILLE: un plan & une ligne, + jeu, commentaire & tri. 1champ booleen de jeu sûr ou pas ajouté par rapport à tectri vx.x (vb 1995)
+faille: make object![
+ plan: make plan []
+ strie: make ligne []
+ jeu: make string!
+ jeu_sur: make boolean!
+ commentaire: make string!
+ tri: make string!
+ ]
+
+
+do %rondibet.r
+
+;objet STEREO: implemente(ra) methodes de tracés, un layout, des couches raster. Hérite de rondibet
+
+stereo: make rondibet [
+
+ trace_stereo_vierge: make function [] [] [
+  trace_rondibet
+  ]
+
+ trace_plan_cyclo: make function[p plan][][
+  ;voir si fonction arc ou <=> ds VID ou GCS; sinon, au pire, mettre 1 cache troué en cercle(...)
+  ;voir ds logiciel CAD s/ knoppix cercle passant par rayon infini: comment est-fe implémenté?
+  ...
+  ]
+ trace_plan_polaire: make function[p plan][][
+  ...
+  ]
+ trace_ligne: make function[l ligne][][
+  ...
+  ]
+  trace_faille_plan_strie: make function[f faille][][
+  ...
+  ]
+ ]
+
+;objet STATION: ensemble de failles, avec définition des groupes de tris de faille (avant, versions vb, les groupes étaient définis sur la machine dans tectri.ini). Coord pour carto, éventuellt.
+station: make object![
+ nom: make string!
+ ;f: make faille [];[0 0 E 0 N N ? "Faille vide" a]
+ failles: make list! [make faille[]] ;@#liste
+ s0: make plan
+ commentaire: make string!
+ x_coord: make float!
+ y_coord: make float!
+ coordsys: make string!
+ groupes_tri: make string! ;@#implementer 1 tableau de grpes de tri par station, ek 1 commentaire a chaque
+ ]
+
+;widget quelconque grille, a telech; alias
+grille: _widqet_grid_
+
+;objet GRILLE_STATION: grille de données; hériter d'1 widget qq
+grille_station: make object![][][
+ grille_station: make grille [
+  data:
+   
+  ]
+ ]
+
+;objet GRILLE_GROUP_TRI: grille de groupes de tri; hériter d'1 widget qq
+grille_group_tri: make object![][][]
