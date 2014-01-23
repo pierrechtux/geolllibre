@@ -1,6 +1,6 @@
-#!/usr/bin/rebol_core -qs
+#!/usr/bin/rebol -qs
 REBOL [;{{{ } } }
-	Title:   "Coversion of a file containing GeolPDA orientations measurements"
+	Title:   "Conversion of a file containing GeolPDA orientations measurements"
 	Date:    == 19-Oct-2013/10:52:07+2:00
 	Version: 0.0.0 
 	Purpose: {
@@ -473,7 +473,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW sting with th
 file_in: to-file request-file/title/filter "GeolPDA orientations file" "Open" [geolpda*.csv *csv *.CSV]
 
 
-file_in: %geolllibre/qqtest_geolpda_orientations.csv	; DEBUG ###
+;file_in: %geolllibre/qqtest_geolpda_orientations.csv	; DEBUG ###
 
 
 ; Read its contents into a block! named orientations:
