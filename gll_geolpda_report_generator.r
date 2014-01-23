@@ -57,6 +57,10 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 }
 ]
 
+; Get routines, preferences, and connect to database:
+do load to-file system/options/home/bin/gll_routines.r
+
+
 ; {{{ } } }
 ; ouvrir le fichier .csv des observations du geolpda:
 change-dir system/options/path
@@ -128,21 +132,10 @@ foreach o observations [
 
 ; Il faut trouver les jours.
 ; Les dates sont au format epoch en millisecondes;
-; voici une fonction pour convertir les epoch en date: [{{{ TODO erase this function from here: it is migrated to gll_routines.r => include gll_routines.r in this program
-epoch-to-date: func [
-	"Return REBOL date from unix time format"
-	epoch [integer!] "Date in unix time format"
-	] [
-	day:       1-Jan-1970 + (to-integer (epoch / 86400))
-	hours:     to-integer   (((epoch // 86400)) /  3600)
-	minutes:   to-integer  ((((epoch // 86400)) // 3600) /  60)
-	seconds:   to-integer  ((((epoch // 86400)) // 3600) // 60)
-	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone 
-															   ; ^ TODO un 
-															   ;beau jour, 
-															   ;remettre ça;
-															   ;ça boguait.
-] ;}}}]
+; on utilise la fonction pour convertir les epoch en date 
+; dans gll_routines.r
+
+do gll_routines.r
 
 ; Faisons une liste contenant les jours:
 jours: copy []
