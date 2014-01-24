@@ -6,7 +6,7 @@ REBOL [
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
 		Génération d'un rapport sous forme d'un fichier .html 
-		à partir d'une base sqlite "geolpda" du géolpda
+		à partir d'une base sqlite "geolpda" du geolpda
 		en allant chercher la table des observations avec les données:
 		_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note
 		"94","PCh2012_0372","1351959798292","544.3","43.4495","0.733307","1351959861748.jpg","1351959897130.3gpp","Le Bouche à oreille, café, logiciels libres, tango studio"
@@ -17,7 +17,7 @@ REBOL [
 			photos/
 	}
 	History: [
-		0.1.0 15-Nov-2012            	"PCh: J'écris vite fait un script qui fabrique un .html de mes données collectées avec le géolpda"
+		0.1.0 15-Nov-2012            	"PCh: J'écris vite fait un script qui fabrique un .html de mes données collectées avec le geolpda"
 		0.2.0 17-Nov-2012           	"PCh: Youpi, mon programme Rebol a généré un rapport à peu près potable:"
 		0.2.1 10-Dec-2012          		"PCh: Je fais un exemple de rapport de geolpda: quelques modifications"
 		0.2.2 8-Mar-2013            	"PCh: Tri des observations en fonction du timestamp, et non de l'id (problème de tri asciibétique)"
@@ -168,7 +168,7 @@ foreach j jours [print j]   ; <= la liste des jours, triée
 ; pour donner le choix des séquences à traiter à l'utilisateur.
 ; ### MARCHE PAS ###
 comment [ ; {{{ } } }
-jour_zero: to-date replace/all "05_01_2012" "_" "/" ; le jour de la première version de GéolPDA: il ne peut, par définition, avoir d'observations faite avant.
+jour_zero: to-date replace/all "05_01_2012" "_" "/" ; le jour de la première version de GeolPDA: il ne peut, par définition, avoir d'observations faite avant.
 
 
 
@@ -409,7 +409,7 @@ write/lines outputfile to-string [
   <title>
   }]
 
-write/lines/append outputfile rejoin ["Rapport d'observations de terrain collectées par GéolPDA du " (to-string date_deb) " au " (to-string date_fin)]
+write/lines/append outputfile rejoin ["Rapport d'observations de terrain collectées par GeolPDA du " (to-string date_deb) " au " (to-string date_fin)]
 write/lines/append outputfile [{
   </title>
  </head>

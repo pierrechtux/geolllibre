@@ -108,7 +108,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;# gauche.
 	;# Ça revient à une mesure de faille Nm30/60/E/55/S/N.
 	;# en tous cas, sans intérêt pour nous.
-	;# À l'écran du GéolPDA, ça se présentait à peu près
+	;# À l'écran du GeolPDA, ça se présentait à peu près
 	;# ainsi:
 	;#
 	;#       |  -0.7 |   0   |   0.7 |   0   |
@@ -116,7 +116,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;#       |   0.4 |   0.8 |   0.4 |   0   |
 	;#       |   0   |   0   |   0   |   1   |
 	;#
-	;# J'ai recopié ça depuis l'écran du GéolPDA, en
+	;# J'ai recopié ça depuis l'écran du GeolPDA, en
 	;# omettant la dernière colonne et la dernière
 	;# ligne, qui sont insignifiantes (une réminiscence
 	;# de la matrice identité; peut-être l'accélération?)
@@ -181,7 +181,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; plane normal vector:: {{{ } } }
 			;=======================================================
 			;# ON ou N (plane_Normal_vector): vecteur unitaire normal
-			;# au plan du GéolPDA, se définit par xn,
+			;# au plan du GeolPDA, se définit par xn,
 			;# yn, zn: les calculs matriciels sont simplistes,
 			;# il suffit de prendre la dernière colonne de la
 			;# matrice de rotation matrix; ça se démontre en un tournemain;
@@ -226,7 +226,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;OA/is_unit
 			;OA/norm
 			;# et A (axis_vector), vecteur unitaire dans
-			;# l'allongement du GéolPDA, se définit par
+			;# l'allongement du GeolPDA, se définit par
 			;# xa, ya, za: pareil, calculs simplistes,
 			;# c'est la seconde colonne de la matrice
 			;# rotation_matrix:
@@ -321,7 +321,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		return rejoin [print_matrix newline print_plane newline print_line]
 	];}}}
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
-		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le géolpda: {{{ } } }
+		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
 		;# Il s'agit maintenant de tracer le Té de
 		;# pendage:
 		;# Les coordonnées sont centrées autour de
@@ -349,7 +349,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;
 		;# Il faudra tracer la ligne symbolisant
 		;# la linéation, mesurée par l'axe A du
-		;# GéolPDA:
+		;# GeolPDA:
 		;#
 		;#   B              A
 		;#    x-----+------x  Même Té, avec une
@@ -371,7 +371,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;##   FIXME: pour un plan strictement horizontal,
 		;##   on aura une division par zéro: faut gérer ça!
 		;##     Pour le moment, lors de la démo, il faudra
-		;##     simplement éviter de poser le GéolPDA à plat...
+		;##     simplement éviter de poser le GeolPDA à plat...
 		;
 		;# Le point origine O, par convénience...
 		O: [0 0]
