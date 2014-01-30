@@ -1633,9 +1633,25 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			line_azimuth: azimuth_vector axis_vector
 			line_plunge: 90 - (arccosine ( axis_vector/3 ))
 			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
+			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
 			;line_pitch_quadrant:	TODO
+				case [
+					(parse plane_quadrant_dip [ "E" | "W" ] [
+						; line_pitch_quadrant will be N or S
+						either ( all [ (line_azimuth >= -90) (line_azimuth <=  90)] ) [line_pitch_quadrant: "N"] [line_pitch_quadrant: "S"]
+						either ( all [ (line_azimuth >=  90) (line_azimuth <= 270)] ) [line_pitch_quadrant: "S"] [line_pitch_quadrant: "N"]
+						]
+					(parse plane_quadrant_dip [ "N" | "S" ] [
+						; line_pitch_quadrant will be E or W
+						either ( all [ (line_azimuth >=   0) (line_azimuth <= 180)] ) [line_pitch_quadrant: "E"] [line_pitch_quadrant: "W"]
+						either ( all [ (line_azimuth >= 180) (line_azimuth <= 360)] ) [line_pitch_quadrant: "W"] [line_pitch_quadrant: "E"]
+						]
+				]
 			;line_movement:		TODO ; {{{ } } }
-				; ça va être ON ^ OA qui tourne dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé dans la faille en mouvement ou dans la guimauve qui flue)
+				; Avec les conventions prises (GeolPDA en position "lisible" sur une mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé dans la faille en mouvement ou dans la guimauve qui flue).
+				; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
+				;____________JEANSUILA___________
+
 			;}}}
 			;overturned:
 		]
