@@ -1430,6 +1430,8 @@ delete_datasource_and_dependant_information: func ["Delete a datasource from all
 	;== 315.0
 ;}}}
 ;}}}
+
+;=======================================
 orientation: make object! [ ;--## An orientation object, which fully characterises a plane and/or a line: ;==={{{ } } }
 	; ## Les données initiales: {{{ } } }
 	;# J'ai pris une mesure de ma planchette dans ma position de
@@ -1459,32 +1461,44 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;					    0.6   0.6  -0.5
 	;					    0.4   0.8   0.4]
 
-	;(une autre mesure:)
-	;rotation_matrix:	 [ 0.95   0.3    -0.1
-	;					   -0.3   0.9    -0.3
-	;					    0.0   0.3     0.95]
+	; L'exemple de matrice pour cette pseudomesure de faille 
+	; Nm30/60/E/55/S/N:
+	;	rotation_matrix: [ -0.7   0     0.7    0.6   0.6  -0.5    0.4   0.8   0.4]
 
-	; L'exemple de matrice pour une pseudomesure de faille Nm30/60/E/55/S/N:
-	;rotation_matrix:	 [ -0.7   0     0.7
-	;					    0.6   0.6  -0.5
-	;					    0.4   0.8   0.4]
+				;(une autre mesure:)
+				;rotation_matrix:	 [ 0.95   0.3    -0.1
+				;					   -0.3   0.9    -0.3
+				;					    0.0   0.3     0.95]
 	; }}}
 	;--## attributes:
-	matrix:             copy []
-	axis_vector: make block! []				; 3D unit vector = axis of geolpda = oriented line
-	plane_downdip_azimuth: 0					; down-dip azimuth of plane
-	north_reference:    "Nm" ; magnetic North; could be Nu for UTM north, or Ng for geographic North
-	plane_quadrant_dip: copy ""
+	;     They are defined by the "new" constructor method:
+	north_reference:        "Nm"			; default to magnetic North; could be Nu for UTM north, or Ng for geographic North
+	matrix:             	copy []			; rotation matrix = GeolPDA measurement fully characterising orientation of measuring device
+	plane_normal_vector: 	copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement oveterurned
+	axis_vector: 			make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
+	plane_downdip_azimuth: 	make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
+	plane_direction: 		make decimal! 0	; direction of the plane, from 0 to 180°:
+	plane_dip: 				make decimal! 0	; Pendage du plan
+	plane_quadrant_dip: 	copy ""			; quadrant (N, E, S, W) towards where plane dips
+	line_azimuth: 			make decimal! 0	; line azimuth
+	line_plunge:  			make decimal! 0	; line plunge
+	line_pitch: 			make decimal! 0	; pitch angle of line
+	line_pitch_quadrant: 	copy ""			; quadrant (N, E, S, W) towards where line pitches
+	line_movement: 			copy ""			; movement (N, I or R, D, S) for faults and equivalents
+	overturned: 			make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
+	; NOTE: *all* these variables are determined, since the matrix rotation (measurement data from GeolPDA) fully determines plane and line. If the measurement /only concerns a line, or /only a line, the relevant values are /only to be considered.
+
 	;--## methods:
-	new: func ["Constructor, builds an orientation object! based on a measurement, as given by GeolPDA device, a rotation matrix represented by a suite of 9 values" m] [;{{{ } } }
+	; construction:
+	new: func ["Constructor, builds an orientation object! based on a measurement, as given by GeolPDA device, a rotation matrix represented by a suite of 9 values provided as a block!" m [block!]] [;{{{ } } }
 		make self [
-			; Convert matrix m to a block of blocks:
-			foreach [a b c] m [append/only matrix to-block reduce [a b c]]
+			; Convert matrix m to a block of blocks named matrix:
+			foreach [u v w] m [append/only matrix to-block reduce [u v w]]
 			; variables abcdefghi: juste pour un souci d'ergonomie du codeur: {{{ } } }
 			; la notation de la matrice de rotation
 			; est bien plus pratique à manier sous
 			; forme de abcdefghi, dans les formules:
-			; No: too ringard: => yes, ringard, but works...
+			; No: too ringard: => yes, ringard, but works... (cf.infra)
 			a: self/matrix/1/1
 			b: self/matrix/1/2
 			c: self/matrix/1/3
@@ -1506,6 +1520,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;do code
 			;}}}
 			;}}}
+			; Calculation of variables:
 			; Definition of vectors which fully caracterise the geometry:
 			; plane normal vector:: {{{ } } }
 			;=======================================================
@@ -1515,10 +1530,11 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;# il suffit de prendre la dernière colonne de la
 			;# matrice de rotation matrix; ça se démontre en un tournemain;
 			;# je mets plane_normal_vector sous forme linéaire:
-			; ATTENTION! les index changent, entre python et rebol, début 0 ou 1:
-			plane_normal_vector: reduce [	matrix/1/3
-											matrix/2/3
-											matrix/3/3 ]
+			; ATTENTION! les indices changent, entre python et rebol, début 0 ou 1:
+			;plane_normal_vector: reduce [	matrix/1/3
+			;								matrix/2/3
+			;								matrix/3/3 ]
+			plane_normal_vector: reduce [ c f i ]
 			;; une autre formulation: {{{
 			;; ON est la normale du plan vers le haut (utile pour 
 			;; les pendages inverses, par exemple):
@@ -1559,9 +1575,10 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;# xa, ya, za: pareil, calculs simplistes,
 			;# c'est la seconde colonne de la matrice
 			;# rotation_matrix:
-			axis_vector: reduce [	self/matrix/1/2
-									self/matrix/2/2
-									self/matrix/3/2 ]
+			;axis_vector: reduce [	self/matrix/1/2
+			;						self/matrix/2/2
+			;						self/matrix/3/2 ]
+			axis_vector: reduce [ b e h ]
 			;}}}
 	;down_dip_vect: func [] [;{{{ } } } ;=> annulé: en fait, on s'en fout.
 	;	; OD est le vecteur aval-pendage; D pour Down-Dip:
@@ -1602,30 +1619,28 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;	;; => pas bon TODO revoir
 	;	;return down_dip_vect
 	;];}}}
-			; Calculation of variables:
-			plane_downdip_azimuth: azimuth_vector plane_normal_vector ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
-			; direction of the plane, from 0 to 180°:
+			; other variables:
+			plane_downdip_azimuth: azimuth_vector plane_normal_vector 
 			plane_direction: plane_downdip_azimuth - 90
-			if (plane_direction < 0) [plane_direction: plane_direction - 180]
-			; dip of the plane, from 0 to 90°:
-			plane_dip: arccosine ( plane_normal_vector/3 ) ; Pendage du plan = plongement de OD: ;== 39.8452276492299 ; => correct
-			; quadrant of plane dip, in N E S W:
+				if (plane_direction < 0) [plane_direction: plane_direction + 180]			; dip of the plane, from 0 to 90°:
+			plane_dip: arccosine ( plane_normal_vector/3 ) ; = plongement de OD: ;== 39.8452276492299 ; => correct
 			case [
 				((plane_downdip_azimuth >   315) or (plane_downdip_azimuth <=  45))	[plane_quadrant_dip: "N"]
 				((plane_downdip_azimuth >   45) and (plane_downdip_azimuth <= 135))	[plane_quadrant_dip: "E"]
 				((plane_downdip_azimuth >  135) and (plane_downdip_azimuth <= 225))	[plane_quadrant_dip: "S"]
 				((plane_downdip_azimuth >  225) and (plane_downdip_azimuth <= 315)) [plane_quadrant_dip: "W"]
 			]
-			; line azimuth:
 			line_azimuth: azimuth_vector axis_vector
-			; line plunge:
 			line_plunge: 90 - (arccosine ( axis_vector/3 ))
-			; TODO reste à implémenter ces variables:
-			;plan_line_pitch:
-			;plan_line_pitch_quadrant:
-			;plan_line_movement:
+			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
+			;line_pitch_quadrant:	TODO
+			;line_movement:		TODO ; {{{ } } }
+				; ça va être ON ^ OA qui tourne dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé dans la faille en mouvement ou dans la guimauve qui flue)
+			;}}}
+			;overturned:
 		]
 	];}}}
+	; outputs:
 	print_matrix: does [ ;{{{ } } }
 		return rejoin ["Matrix: " tab self/matrix]
 		;		"Normal vector: " 		probe plane_normal_vector newline
@@ -1755,6 +1770,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;}}}
 	];}}}
 ] ;}}}
+;=======================================
+
 diagram: make object! [ ;--## A diagram, which will contain a DRAW sting with the T trace from the orientation measurement: ;{{{ } } }
 	; attributes:
 		; plot is a DRAW dialect block containing the diagram:
@@ -1816,6 +1833,10 @@ structural_measurement_convention_fr: make object! [
 		sep: "/" ; separator
 		return rejoin [north_ref direction sep dip sep dip_quadrant sep pitch sep pitch_quadrant sep movement " " comments]
 	]
+	print_tectri: func ["Prints a tectri-readable string"] [
+		sep: " " ; separator
+		return rejoin [direction sep dip sep dip_quadrant sep pitch sep pitch_quadrant sep movement " " comments]
+	]
 ]
 
 ;}}}
@@ -1839,7 +1860,7 @@ parse_tecto_measure: func [{Converts a string structural measurement in the form
 ;rejoin [NORTH_REF DIRECTION DIP DIP_QUADRANT PITCH PITCH_QUADRANT MOVEMENT COMMENTS]
 
 output: make structural_measurement_convention_fr [
-	; coherent with relation field_observations_struct_measures in bdexplo database:
+	; data structure coherent with relation field_observations_struct_measures in bdexplo database:
     measure_type:   "PLMS"
     ;structure_type: "FAULT"
     north_ref:       to-string NORTH_REF_
