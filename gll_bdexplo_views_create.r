@@ -121,52 +121,21 @@ append sql_string {
 -- 4. vues pour postgis:{{{
 
 -- 2014_02_01__17_55_45
--- Ah. Tout avait été passé en schéma public, mais ça ne me semble pas adéquat: on remet ça dans le schéma par défaut: corrections --ées
---CREATE VIEW public.dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM public.dh_collars;
-  CREATE VIEW        dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM        dh_collars;
-
---CREATE VIEW public.dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM public.dh_collars) tmp ORDER BY tmp.id;
-  CREATE VIEW        dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM        dh_collars) tmp ORDER BY tmp.id;
-
---CREATE VIEW public.field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM public.field_observations;
-  CREATE VIEW        field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        field_observations;
-
---CREATE VIEW public.geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM public.geoch_sampling_grades;
-  CREATE VIEW        geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        geoch_sampling_grades;
-
---CREATE VIEW public.grid_points AS SELECT *, GeomFromText('POINT (' || x || ' ' || y || ')',2041) FROM public.grid;
-
---CREATE VIEW public.index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM public.index_geo_documentation;
-  CREATE VIEW        index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM        index_geo_documentation;
-
---CREATE VIEW public.licences_quadrangles AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM public.licences ORDER BY licences.licence_name;
-  CREATE VIEW        licences_quadrangles AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM        licences ORDER BY licences.licence_name;
-
---CREATE VIEW public.operations_quadrangles AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
---FROM public.operations ORDER BY operation;
-  CREATE VIEW        operations_quadrangles AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
-  FROM        operations ORDER BY operation;
-
-
---CREATE VIEW public.surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM public.surface_samples_grades;
-  CREATE VIEW        surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM        surface_samples_grades;
-
---CREATE VIEW public.dh_collars_points_marrec AS 
---SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM public.dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
-  CREATE VIEW        dh_collars_points_marrec AS 
-  SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM        dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
-
-
---CREATE VIEW pierre.petro_mineralo_study_field_observations_points AS SELECT * FROM public.field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
-  CREATE VIEW        petro_mineralo_study_field_observations_points AS SELECT * FROM        field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
-
---CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM public.dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
-  CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM        dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
+CREATE VIEW        dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM        dh_collars;
+CREATE VIEW        dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM        dh_collars) tmp ORDER BY tmp.id;
+CREATE VIEW        field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        field_observations;
+CREATE VIEW        geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        geoch_sampling_grades;
+CREATE VIEW        index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM        index_geo_documentation;
+CREATE VIEW        licences_quadrangles AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM        licences ORDER BY licences.licence_name;
+CREATE VIEW        operations_quadrangles AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))') FROM        operations ORDER BY operation;
+CREATE VIEW        surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM        surface_samples_grades;
+CREATE VIEW        dh_collars_points_marrec AS SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM        dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
+CREATE VIEW        petro_mineralo_study_field_observations_points AS SELECT * FROM        field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
+CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM        dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
 
 
 --DROP cascade sur vue dh_mineralised_intervals0_traces_3d/*{{{*/
---CREATE OR REPLACE VIEW public.dh_mineralised_intervals0_traces_3d AS 
-  CREATE OR REPLACE VIEW        dh_mineralised_intervals0_traces_3d AS 
+CREATE OR REPLACE VIEW        dh_mineralised_intervals0_traces_3d AS 
 SELECT *, 
 GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || 
 x1 || ' ' || 
@@ -208,10 +177,10 @@ SELECT *, geomfromewkt('POINT(' || topo_points.x || ' ' || topo_points.y || ' ' 
 
 --}}}
 -- 3. des vues genre alias pratique: {{{
---CREATE VIEW public.dh_litho_custom AS SELECT id, depfrom, depto, code1 AS codelitho, code2 AS codestrati, description, code3 AS oxidation, value1 AS deformation, value2 AS alteration, code4 AS water FROM dh_litho;
+--CREATE VIEW dh_litho_custom AS SELECT id, depfrom, depto, code1 AS codelitho, code2 AS codestrati, description, code3 AS oxidation, value1 AS deformation, value2 AS alteration, code4 AS water FROM dh_litho;
 
 --les échantillons avec teneurs (au6 = au maxi), et graphique des teneurs en ascii-art:
-CREATE VIEW public.dh_sampling_grades_graph_au_6 AS 
+CREATE VIEW dh_sampling_grades_graph_au_6 AS 
 SELECT opid, id, depfrom, depto, sample_id, au1_ppm, au2_ppm, au6_ppm, weight_kg, core_loss_cm, 
 repeat('#', (au6_ppm*5)::integer) AS graph_au_6
 FROM dh_sampling_grades 
@@ -221,7 +190,7 @@ ORDER BY opid, id, depto;
 
 
 --les teneurs et les passes minéralisées (de classe 0) raboutées:/*{{{*/
-CREATE VIEW public.dh_sampling_mineralised_intervals_graph_au6 AS
+CREATE VIEW dh_sampling_mineralised_intervals_graph_au6 AS
 
 SELECT 
 tmp.opid, 
@@ -307,7 +276,7 @@ LANGUAGE 'plpgsql' VOLATILE CALLED ON NULL INPUT SECURITY INVOKER;
 
 
 --une vue temporaire pour avoir analyte, unité et scheme dans le libellé pour crosstabber dessus, en allant chercher le libellé des colonnes dans une table annexe, lab_ana_columns_definition:
-CREATE OR REPLACE VIEW public.tmp_lab_ana_results AS 
+CREATE OR REPLACE VIEW tmp_lab_ana_results AS 
 SELECT lab_ana_results.opid, sample_id, colid, 
 (CASE WHEN value_num < 0 THEN 0 ELSE value_num END) AS value_num 
 FROM lab_ana_results 
@@ -331,15 +300,15 @@ SELECT create_crosstab_view ('SELECT * FROM tmp_lab_ana_results', 'lab_ana_resul
 
 --@#attention aux échantillons qui ont leur sample_id commun à 2 opid!!
 
---CREATE VIEW public.lab_ana_results_sel AS SELECT * FROM lab_ana_results WHERE orderno = 'VMS_001';
+--CREATE VIEW lab_ana_results_sel AS SELECT * FROM lab_ana_results WHERE orderno = 'VMS_001';
 --}}}
 -- 6. vues des échantillons et analyses en colonnes: {{{
-CREATE VIEW public.dh_sampling_ana AS SELECT opid, id, depfrom, depto, lab_ana_results_columns_avg.* FROM dh_sampling_grades JOIN lab_ana_results_columns_avg ON (dh_sampling_grades.sample_id = lab_ana_results_columns_avg.sample_id);
+CREATE VIEW dh_sampling_ana AS SELECT opid, id, depfrom, depto, lab_ana_results_columns_avg.* FROM dh_sampling_grades JOIN lab_ana_results_columns_avg ON (dh_sampling_grades.sample_id = lab_ana_results_columns_avg.sample_id);
 --}}}
 -- 8. les sondages ouverts:/*{{{*/
 
 --sondages ouverts en pied en Au:{{{
-CREATE VIEW public.dh_sampling_grades_open_ended_au_tail
+CREATE VIEW dh_sampling_grades_open_ended_au_tail
  AS
 SELECT id, max(length) AS length, max(depto) AS depto FROM (
 SELECT dh_sampling_grades.*, dh_collars.length FROM 
@@ -365,8 +334,8 @@ ORDER BY id, depto;
 
 
 
---DROP VIEW public.dh_sampling_grades_open_ended_au_top CASCADE;
-CREATE VIEW public.dh_sampling_grades_open_ended_au_top
+--DROP VIEW dh_sampling_grades_open_ended_au_top CASCADE;
+CREATE VIEW dh_sampling_grades_open_ended_au_top
  AS
 SELECT id, length, min(depto) AS depto FROM (
 SELECT dh_sampling_grades.*, dh_collars.length FROM 
@@ -734,7 +703,7 @@ CREATE OR REPLACE VIEW checks.doublons_collars_xyz_ouvrages_concernes AS SELECT 
 
 
 -- pour surpac:/*{{{*/
-CREATE VIEW public.surpac_survey AS
+CREATE VIEW surpac_survey AS
     SELECT dh_collars.id AS hole_id, 0 AS depth, (- dh_collars.dip_hz) AS dip, dh_collars.azim_ng AS azimuth FROM dh_collars WHERE (NOT (dh_collars.id IN (SELECT DISTINCT dh_devia.id FROM dh_devia WHERE ((dh_devia.depto = 0) AND (dh_devia.valid IS TRUE))))) UNION SELECT dh_devia.id AS hole_id, dh_devia.depto AS depth, (- dh_devia.dip_hz) AS dip, dh_devia.azim_ng AS azimuth FROM dh_devia WHERE (dh_devia.valid IS TRUE) ORDER BY 1, 2;
 
 --/*}}}*/
@@ -1012,12 +981,12 @@ CREATE VIEW public.surpac_survey AS
 
 --ALTER TABLE sections_array ADD CONSTRAINT sections_array_num PRIMARY KEY (num);
 
---CREATE OR REPLACE VIEW public.sections_array_plines AS SELECT *,     GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x1 || ' ' || y1 || ' ' || z1 || ', ' || x2 || ' ' || y2 || ' ' || z2 || ')') FROM sections_array ORDER BY num;
+--CREATE OR REPLACE VIEW sections_array_plines AS SELECT *,     GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x1 || ' ' || y1 || ' ' || z1 || ', ' || x2 || ' ' || y2 || ' ' || z2 || ')') FROM sections_array ORDER BY num;
 
 
 --}}}
 --9. points echantillons 3D:{{{
-CREATE VIEW public.dh_sampling_avg_grades_3dpoints AS
+CREATE VIEW dh_sampling_avg_grades_3dpoints AS
 SELECT *,
 GeomFromEWKT('SRID=' || srid || ';POINT (' ||/* x1 || ' ' || y1 || ' ' || z1 || ', ' ||*/ x2 || ' ' || y2 || ' ' || z2 || ')') AS geometry 
 FROM
@@ -1042,14 +1011,14 @@ ON c.id = s.id
 --}}}
 -- des sélections, des vues qui ont vocation à être souvent modifiées, au gré de différentes sélections:{{{
 
-CREATE VIEW public.collars_selection AS SELECT * FROM dh_collars_points WHERE id IN('DA08-650', 'DA08-656');
+CREATE VIEW collars_selection AS SELECT * FROM dh_collars_points WHERE id IN('DA08-650', 'DA08-656');
 --}}}
 -- un dh_sampling, par souci de compatibilité avec les requêtes ayant précédé dh_sampling_grades::{{{
-CREATE VIEW public.dh_sampling AS SELECT id,depfrom,depto,core_loss_cm,weight_kg,sample_type,sample_id,comments,opid,batch_id,datasource FROM dh_sampling_grades;
+CREATE VIEW dh_sampling AS SELECT id,depfrom,depto,core_loss_cm,weight_kg,sample_type,sample_id,comments,opid,batch_id,datasource FROM dh_sampling_grades;
 
 --}}}
 -- une vue qui montre les sondages avec les dernières analyses:/*{{{*/
-CREATE VIEW public.dh_collars_points_last_ana_results AS 
+CREATE VIEW dh_collars_points_last_ana_results AS 
 SELECT * FROM dh_collars_points WHERE id 
 IN (
 SELECT DISTINCT id FROM dh_sampling_grades WHERE sample_id IN (
@@ -1135,7 +1104,7 @@ SELECT /*drill_hole_id*/ id, max(completed::integer) FROM /*drilling_daily_repor
 --}}}
 
 --une vue spécifique pour envoyer à un .gpx, qui permettra de mettre name, notamment:/*{{{*/
-CREATE VIEW public.dh_collars_for_gpx AS SELECT id AS name FROM dh_collars_points WHERE not(completed);
+CREATE VIEW dh_collars_for_gpx AS SELECT id AS name FROM dh_collars_points WHERE not(completed);
 /*}}}*/
 -- une vue pour carter les points topo vers points de dh_collars:/*{{{*/
 CREATE OR REPLACE VIEW checks.dh_collars_to_topo_points_lines AS SELECT dh_collars.id, topo_points.numauto, dh_collars.x dh_collars_x, topo_points.x AS topo_points_x, dh_collars.y AS dh_collars_y, topo_points.y AS topo_points_y, dh_collars.z AS dh_collars_z, topo_points.z AS topo_points_z, geomfromewkt('LINESTRING (' || dh_collars.x::text || ' ' || dh_collars.y::text || ' ' || dh_collars.z::text || ', ' || topo_points.x || ' ' || topo_points.y::text || ' ' || topo_points.z || ')') AS geometry FROM topo_points JOIN dh_collars ON topo_points.opid = dh_collars.opid AND topo_points.id = dh_collars.id;
