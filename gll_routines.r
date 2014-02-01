@@ -1636,12 +1636,12 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
 			;line_pitch_quadrant:	TODO
 				case [
-					(parse plane_quadrant_dip [ "E" | "W" ] [
+					(parse plane_quadrant_dip [ "E" | "W" ]) [
 						; line_pitch_quadrant will be N or S
 						either ( all [ (line_azimuth >= -90) (line_azimuth <=  90)] ) [line_pitch_quadrant: "N"] [line_pitch_quadrant: "S"]
 						either ( all [ (line_azimuth >=  90) (line_azimuth <= 270)] ) [line_pitch_quadrant: "S"] [line_pitch_quadrant: "N"]
 						]
-					(parse plane_quadrant_dip [ "N" | "S" ] [
+					(parse plane_quadrant_dip [ "N" | "S" ]) [
 						; line_pitch_quadrant will be E or W
 						either ( all [ (line_azimuth >=   0) (line_azimuth <= 180)] ) [line_pitch_quadrant: "E"] [line_pitch_quadrant: "W"]
 						either ( all [ (line_azimuth >= 180) (line_azimuth <= 360)] ) [line_pitch_quadrant: "W"] [line_pitch_quadrant: "E"]
