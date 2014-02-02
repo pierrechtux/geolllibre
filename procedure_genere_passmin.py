@@ -13,7 +13,7 @@ import sqlalchemy, os, pickle, csv, decimal
 # - données: #{{{
 # Une table contenant les données, correctement faite; une chaîne de connexion à une base:
 table          = 'dh_sampling_grades'
-connection_str =  'postgresql://pierre:pp@autan/bdexplo_smi'
+connection_str =  'postgresql://pierre:pp@autan/bdexplo'
 
 # => @#passer ça en paramètres comme variables shell, $GLL_BD_HOST $GLL_BD_NAME
 
@@ -46,7 +46,7 @@ connection_str =  'postgresql://pierre:pp@autan/bdexplo_smi'
 # }}}
 
 
-def generate_mineralised_intervals(opid = 18, criteria='TRUE', mineralised_intervals_class=0, cutoff=0.5, flag_dilution=True, max_barren_length=10, flag_accu_mini=False, accu_mini=0, gradefield='au6_ppm',  insert_records=True, delete_records=False): #{{{
+def generate_mineralised_intervals(opid = 17, criteria='TRUE', mineralised_intervals_class=0, cutoff=0.5, flag_dilution=True, max_barren_length=10, flag_accu_mini=False, accu_mini=0, gradefield='au6_ppm',  insert_records=True, delete_records=False): #{{{
     # => On a en sortie:
     # les intervalles des passes minéralisées, sous forme d'une liste de dicos, 
     # ou carrément un ResultSet; comme, par exemple: (...) TODO
@@ -351,7 +351,7 @@ def generate_mineralised_intervals(opid = 18, criteria='TRUE', mineralised_inter
 # Il faudrait que je puisse utiliser une fonction, ou une classe, ainsi:
 # generate_mineralised_intervals(classe=0, cutoff=0.5, max_barren_length=2, criteria="opid = 18 AND id ILIKE 'S%'", delete_records=True)
 
-opid_ = 18
+opid_ = 17
 generate_mineralised_intervals(opid = opid_, criteria='TRUE', mineralised_intervals_class=0, cutoff=0.5, flag_dilution=True, max_barren_length=10, flag_accu_mini=False, accu_mini=0, gradefield='au6_ppm',  insert_records=False, delete_records=False)
 generate_mineralised_intervals(opid = opid_, criteria='TRUE', mineralised_intervals_class=1, cutoff=0.5, flag_dilution=True, max_barren_length=2 , flag_accu_mini=False, accu_mini=0, gradefield='au6_ppm',  insert_records=False, delete_records=False)
 generate_mineralised_intervals(opid = opid_, criteria='TRUE', mineralised_intervals_class=2, cutoff=2,   flag_dilution=True, max_barren_length=1 , flag_accu_mini=False, accu_mini=0, gradefield='au6_ppm',  insert_records=False, delete_records=False)
