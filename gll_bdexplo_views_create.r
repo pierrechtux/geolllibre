@@ -249,7 +249,7 @@ ORDER BY tmp.opid, tmp.id, tmp.depto;
 -- 5. vues des analyses en colonnes:{{{
 
 -- la fonction qui va bien: {{{
-CREATE OR REPLACE FUNCTION public.create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar) RETURNS pg_catalog.void AS
+CREATE OR REPLACE FUNCTION create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar) RETURNS pg_catalog.void AS
 \$body\$
 DECLARE
     casesql varchar;
@@ -1165,17 +1165,20 @@ COMMIT;
 ; insert db to-string sql_string
 ; => marche pas, cf. Doc
 
-ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
-;call/wait ligne_cmd
-
-; Prudemment, on ne runne pas, on affiche juste:
-; print ligne_cmd
-
-; Mieux, on génère un script à runner:
-script: %tt_gll_bdexplo_views_create.sh 
-write script ligne_cmd
-
-print rejoin [newline "Bdexplo views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
-
 close  db
+
+
+ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
+
+
+either ( confirm "Run the generated script?" ) [
+	call/wait ligne_cmd ]
+	[
+	; Prudemment, on ne runne pas, on affiche juste:
+	; print ligne_cmd
+	; Mieux, on génère un script à runner:
+	script: %tt_gll_bdexplo_views_create.sh 
+	write script ligne_cmd
+	print rejoin [newline "Bdexplo views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
+	]
 ;###########################################################

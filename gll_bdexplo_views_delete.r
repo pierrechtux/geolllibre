@@ -49,13 +49,11 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 
 do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connection à la base
-insert db "BEGIN TRANSACTION;"
-;# on fabrique un gros texte en sql, qu'on fera tourner à la fin {{ {
-
 ?? dbhost
 ?? dbname
 
 
+;# on fabrique un gros texte en sql, qu'on fera tourner à la fin {{ {
 sql_text: {
 --destruction des vues de la bdexplo
 --tout est listé dans l'ordre inverse du script de création
@@ -77,14 +75,14 @@ DROP VIEW IF EXISTS tanguy.surp_collar;
 
 
 
-DROP VIEW IF EXISTS public.dh_collars_for_gpx;
+DROP VIEW IF EXISTS dh_collars_for_gpx;
 
 --#################################################################
 
 --#################################################################
 
 --9. points echantillons 3D:/*{{{*/
-DROP VIEW IF EXISTS public.dh_sampling_avg_grades_3dpoints;
+DROP VIEW IF EXISTS dh_sampling_avg_grades_3dpoints;
 --
 /*}}}*/
 -- 8. requetes SMI: apu/*{{{*/
@@ -109,16 +107,16 @@ DROP VIEW IF EXISTS public.dh_sampling_avg_grades_3dpoints;
 
 --DROP VIEW IF EXISTS dh_dernieres_analyses;
 
-DROP VIEW IF EXISTS public.dh_collars_points_last_ana_results;
+DROP VIEW IF EXISTS dh_collars_points_last_ana_results;
 
-DROP VIEW IF EXISTS public.sections_array_plines;
+DROP VIEW IF EXISTS sections_array_plines;
 
 --le marecage de la SMI: /*{{{*/
 --DROP VIEW IF EXISTS marec2utm;
 /*}}}*/
 
 -- pour surpac:/*{{{*/
-DROP VIEW IF EXISTS public.surpac_survey;
+DROP VIEW IF EXISTS surpac_survey;
 --
 /*}}}*/
 
@@ -184,7 +182,7 @@ DROP VIEW IF EXISTS gdm.gdm_selection;
 
 
 --un intrus: une dépendance à résoudre: TODO
-DROP VIEW IF EXISTS public.dh_sampling;
+DROP VIEW IF EXISTS dh_sampling;
 
 
 -- 8. les sondages ouverts:
@@ -209,53 +207,55 @@ DROP VIEW IF EXISTS lab_ana_results_columns_max;
 DROP VIEW IF EXISTS lab_ana_results_columns_min;
 DROP VIEW IF EXISTS lab_ana_results_columns_avg;
 DROP VIEW IF EXISTS tmp_lab_ana_results;
-DROP FUNCTION public.create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar);
+DROP FUNCTION create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar);
 --
 
 -- 3. des vues genre alias pratique: 
 DROP VIEW IF EXISTS dh_sampling_mineralised_intervals_graph_au6;
 DROP VIEW IF EXISTS dh_sampling_grades_graph_au_6;
 --DROP VIEW IF EXISTS dh_litho_custom;
-DROP VIEW IF EXISTS public.collars_selection;
---DROP VIEW IF EXISTS public.dh_collars_points_20137;
---DROP VIEW IF EXISTS public.dh_collars_points_20136;
---DROP VIEW IF EXISTS public.collars_program;
---DROP VIEW IF EXISTS public.collars;
+DROP VIEW IF EXISTS collars_selection;
+--DROP VIEW IF EXISTS dh_collars_points_20137;
+--DROP VIEW IF EXISTS dh_collars_points_20136;
+--DROP VIEW IF EXISTS collars_program;
+--DROP VIEW IF EXISTS collars;
 --
 
 
 
 -- 4. vues pour postgis:
---DROP VIEW IF EXISTS public.tmp_xy_points;
---DROP VIEW IF EXISTS public.tmp_coupes_seriees_plines;
+--DROP VIEW IF EXISTS tmp_xy_points;
+--DROP VIEW IF EXISTS tmp_coupes_seriees_plines;
 --DROP VIEW IF EXISTS soil_geoch_bondoukou_points;
 
-DROP VIEW IF EXISTS public.dh_collars_points_marrec ;
+DROP VIEW IF EXISTS dh_collars_points_marrec ;
 
 DROP VIEW IF EXISTS surface_samples_grade_points;
 DROP VIEW IF EXISTS operations_quadrangles;
-DROP VIEW IF EXISTS public.licences_quadrangles;
+DROP VIEW IF EXISTS licences_quadrangles;
 DROP VIEW IF EXISTS dh_mineralised_intervals0_traces_3d;
-DROP VIEW IF EXISTS public.index_geo_documentation_rectangles;
-DROP VIEW IF EXISTS public.grid_points;
+DROP VIEW IF EXISTS index_geo_documentation_rectangles;
+DROP VIEW IF EXISTS grid_points;
 
 
-DROP VIEW IF EXISTS public.geoch_sampling_grades_points;
+DROP VIEW IF EXISTS geoch_sampling_grades_points;
 
 
 
 --#################################################################
-DROP VIEW IF EXISTS public.topo_points_points;
+DROP VIEW IF EXISTS topo_points_points;
 DROP VIEW IF EXISTS petro_mineralo_study_field_observations_points;
 DROP VIEW IF EXISTS petro_mineralo_study_dh_collars;
 --#################################################################
 
 
+DROP VIEW IF EXISTS index_geo_documentation_rectangles;
+DROP VIEW IF EXISTS geoch_sampling_grades_points;
 DROP VIEW IF EXISTS field_observations_points;
 DROP VIEW IF EXISTS dh_traces_3d              ;
 DROP VIEW IF EXISTS dh_collars_points         ;
---DROP VIEW IF EXISTS public.dh_traces_3d_20137;
---DROP VIEW IF EXISTS public.dh_traces_3d_20136;
+--DROP VIEW IF EXISTS dh_traces_3d_20137;
+--DROP VIEW IF EXISTS dh_traces_3d_20136;
 --
 
 COMMIT; --}}}
@@ -353,16 +353,19 @@ append sql_text newline
 ;=> marche pas: voir avec Doc
 ;] 
 
+close  db
+
 ; => en attendant que ça marche (voir doc ou Doc), on passe bêtement par une bonne vieille ligne de commande:
 ligne_cmd: rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost { -U } user ]
-;call/wait ligne_cmd
 
-; Prudemment, on ne runne pas, on affiche juste:
-; print ligne_cmd
-; Mieux, on génère un script à runner:
-script: %tt_gll_bdexplo_views_delete.sh 
-write script ligne_cmd
-
-print rejoin [newline "Bdexplo views deletion script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
-close  db
+either ( confirm "Run the generated script?" ) [
+	call/wait ligne_cmd ]
+	[
+	; Prudemment, on ne runne pas, on affiche juste:
+	; print ligne_cmd
+	; Mieux, on génère un script à runner:
+	script: %tt_gll_bdexplo_views_delete.sh 
+	write script ligne_cmd
+	print rejoin [newline "Bdexplo views deletion script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
+	]
 
