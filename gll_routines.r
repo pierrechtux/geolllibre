@@ -1891,6 +1891,35 @@ output: make structural_measurement_convention_fr [
 return output
 ] ;}}}
 
+; Fonctions utilisées pour faire des programmes de sondages:
+cogo: func [ "Coordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
+    x: x + (distance * (sine    azim))
+    y: y + (distance * (cosine  azim))
+    return reduce [x y]
+];}}}
+xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" id] [ ;{{{ } } }
+    sql: rejoin ["SELECT x, y, z FROM dh_collars WHERE id = '" id "'"]
+	resultat: run_query sql
+    return reduce [to-decimal resultat/1/1 to-decimal resultat/1/2 to-decimal resultat/1/3]
+]
+;# /*}}}*/
+plante_un_sondage_ici: does [ ;append current values to list planned holes; {{{ } } }
+	append/only sondages_prevus (make object! [ "Objet drill hole"
+	_location: make string! location
+	_id: make string! rejoin [prefix (pad reduce (number) nbdigits)]
+	_x: make decimal! x
+	_y: make decimal! y
+	_z: make decimal! z
+	_azim_ng: make decimal! azim_ng
+	_dip_hz: make decimal! dip_hz
+	_length: make decimal! length
+	_dh_type: make string! dh_type
+	_comments: make string! comments
+	] )
+	number: number + 1
+	probe last sondages_prevus
+	];}}}
+
 ; === fin des définitions de fonctions ==========
 
 
