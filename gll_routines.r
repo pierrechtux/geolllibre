@@ -1892,10 +1892,10 @@ return output
 ] ;}}}
 
 ; Fonctions utilisées pour faire des programmes de sondages:
-cogo: func [ "Coordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
+cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
     x: x + (distance * (sine    azim))
     y: y + (distance * (cosine  azim))
-    return reduce [x y]
+    ;return reduce [x y]
 ];}}}
 xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" id] [ ;{{{ } } }
     sql: rejoin ["SELECT x, y, z FROM dh_collars WHERE id = '" id "'"]
