@@ -59,83 +59,129 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 ; Get routines, preferences, and connect to database:
 do load to-file system/options/home/bin/gll_routines.r
+; Library to access sqlite geolpda database:
+do %~/rebol/library/scripts/btn-sqlite.r
 
-
-; {{{ } } }
-; ouvrir le fichier .csv des observations du geolpda:
-change-dir system/options/path
-lines: read/lines %geolpda_picks.csv
-
+; non: {{{ } } }
+;; ouvrir le fichier .csv des observations du geolpda:
+;change-dir system/options/path
+;lines: read/lines %geolpda_picks.csv
+;}}}
 ; =============================================================================
 ; TODO: ouvrir le fichier avec un chemin à choisir
 ; TODO: à terme, attaquer direct la base sqlite geolpda
-; 		=> 23-Oct-2013/9:55:53+2:00: see gll_geolpda_fetch_data.r 
+; 		=> 23-Oct-2013/9:55:53+2:00: see gll_geolpda_fetch_data.r
+;		=> 6-Feb-2014/23:58:48-3:00: essayons
 ; =============================================================================
 
+; Open sqlite geolpda, get data:{{{ } } }
+print "Open GeolPDA database..."
+change-dir dir_geolpda_local
+copy-file %geolpda %geolpda_copy.db
+	; => not terrible; this file copy is /only due to the 
+	;    fact that the btn (better than nothing) driver does
+	;    not support sqlite file without extension...
+db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
 
-; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
-;lines/1 == {_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note}
+; Get data: as db is the same name as defined for default
+; database connexion in gll_routines.r, we can use the functions:
+; observations: {{{ } } }
+run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par la suite
+	; DEBUG TODO remove ça
+	; write %qq1 sql_result_csv
 
-observations: copy []    ; un tableau contenant les observations
-foreach line lines [     ; on remplit ce tableau
-	if line == "" [ break ]
-	t: parse/all line ","
-	append observations reduce [to-list skip t 1]
+; Comparison of field list: to be sure that the table structure matches the 
+; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
+unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
+	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "Error, halting"
+	halt
 ]
-;?? observations
+geolpda_observations:        copy sql_result
+geolpda_observations_fields: copy sql_result_fields
+print rejoin [tab length? geolpda_observations " records in observations table"]
 
-; On enlève la première ligne d'en-tête:
-remove observations
+;}}}
+; orientations:{{{ } } }
+run_query "SELECT * FROM orientation"
+; Comparison of field list: to be sure that the table structure matches the 
+; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
+unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"] [
+	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "Error, halting"
+	halt
+]
+; If we reached here, we are ok; now, it is necessary to also fetch the full id from observations by JOINing:
+run_query "SELECT poiname, orientation._id, poi_id, orientationtype, rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9, v1, v2, v3 FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id"
+geolpda_orientations: 			copy sql_result
+geolpda_orientations_fields: 	copy sql_result_fields
+print rejoin [tab length? geolpda_orientations " records in orientations measurements table"]
 
-; On trie la table: {{{ } } }
-;sort observations
-; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{ } } }
-;TotBol1
-;TotBol10
-;TotBol11
-;TotBol12
-;TotBol13
-;TotBol14
-;TotBol15
-;TotBol16
-;TotBol17
-;TotBol18
-;TotBol19
-;TotBol2
-;TotBol20
-;TotBol21
-;TotBol22
-;TotBol3
-;TotBol4
-;TotBol5
-;TotBol6
-;TotBol7
-;TotBol8
-;TotBol9
-;] ;}}}
-; Donc on trie la table par timestamp, plutôt:
-field: 2    ; le champ sur lequel trier: timestamp = 2, en l'occurrence
-sort/compare observations func [a b] [(at a field) < (at b field)]
-; }}}
+;}}}
+;}}}
 
+; Inutile si on n'utilise pas le .csv: {{{ } } }
+;; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
+;;lines/1 == {_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note}
+;
+;observations: copy []    ; un tableau contenant les observations
+;foreach line lines [     ; on remplit ce tableau
+;	if line == "" [ break ]
+;	t: parse/all line ","
+;	append observations reduce [to-list skip t 1]
+;]
+;;?? observations
+;
+;; On enlève la première ligne d'en-tête:
+;remove observations
+;
+;; On trie la table: {{{ } } }
+;;sort observations
+;; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{ } } }
+;;TotBol1
+;;TotBol10
+;;TotBol11
+;;TotBol12
+;;TotBol13
+;;TotBol14
+;;TotBol15
+;;TotBol16
+;;TotBol17
+;;TotBol18
+;;TotBol19
+;;TotBol2
+;;TotBol20
+;;TotBol21
+;;TotBol22
+;;TotBol3
+;;TotBol4
+;;TotBol5
+;;TotBol6
+;;TotBol7
+;;TotBol8
+;;TotBol9
+;;] ;}}}
+;; Donc on trie la table par timestamp, plutôt:
+;field: 2    ; le champ sur lequel trier: timestamp = 2, en l'occurrence
+;sort/compare observations func [a b] [(at a field) < (at b field)]
+;; }}}
+;}}}
 ; On affiche combien on a de lignes (d'observations)
-print rejoin ["Nombre d'observations: " length? observations]
+print rejoin ["Nombre d'observations: " length? geolpda_observations]
 
 ; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
 ; on construit une liste vide:
 dates: copy []
 ; qui contiendra
 ; toutes les dates:
-foreach o observations [
-    append dates o/2             ;c'est le champ poitime
+foreach o geolpda_observations [
+    append dates o/3             ;c'est le champ poitime
 ]
 
 ; Il faut trouver les jours.
 ; Les dates sont au format epoch en millisecondes;
 ; on utilise la fonction pour convertir les epoch en date 
 ; dans gll_routines.r
-
-do gll_routines.r
 
 ; Faisons une liste contenant les jours:
 jours: copy []
@@ -169,8 +215,6 @@ foreach j jours [print j]   ; <= la liste des jours, triée
 ; ### MARCHE PAS ###
 comment [ ; {{{ } } }
 jour_zero: to-date replace/all "05_01_2012" "_" "/" ; le jour de la première version de GeolPDA: il ne peut, par définition, avoir d'observations faite avant.
-
-
 
 ;/*{{{*/
 sequences_jours_contigus:  copy []
@@ -227,15 +271,13 @@ for i 2 ((length? jours) - 1) 1 [
 		append sequence jours/(:i - 1) 
 		append sequence jours/:i
 	]
-
+]
 
 
 
 
 
 ;/*}}}*/
-
-
 
 
 jours: [		;;DEBUG!!!
@@ -449,7 +491,7 @@ foreach j jours [
 		;PRINT "DEBUG_1" ?? j input ;###############################################################DEBUG
 		write/append outputfile rejoin ["<p></p>" {<hr size="2" width="100%"><br>} "<h1>" to-string j "</h1>"]
 		; On ne considère que les observations faites le jour dit:
-		foreach o observations [
+		foreach o geolpda_observations [
 			;if o/1 = "PCh2012_0383" [ halt  ;###############################################################DEBUG
 			;	;il y a là une date aberrante:
 			;		;PCh2012_0383 1354924679009 0 0 0   
@@ -459,7 +501,7 @@ foreach j jours [
 			;	print "date aberrante: " o/2
 			;	]
 			;PRINT "DEBUG_2" ?? o input       ;###############################################################DEBUG
-			tmp: epoch-to-date to-integer ((to-decimal o/2) / 1000)
+			tmp: epoch-to-date to-integer ((to-decimal o/3) / 1000)
 			timestamp: to-date tmp
 			;PRINT "DEBUG_3" ?? timestamp print timestamp/date ?? j input ;###############################################################DEBUG
 			if (timestamp/date = j) [ ; on est dans le jour courant, on procède:
@@ -469,13 +511,13 @@ foreach j jours [
 				;input ;###############################################################DEBUG
 				; des variables aux noms explicites:
 				;poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note
-				id:          to-string  o/1
-				alt:         to-decimal o/3
-				lat:         to-decimal o/4
-				lon:         to-decimal o/5
-				photos:      to-string  o/6
-				audio:       to-string  o/7
-				note:        to-string  o/8
+				id:          to-string  o/2
+				alt:         to-decimal o/4
+				lat:         to-decimal o/5
+				lon:         to-decimal o/6
+				photos:      to-string  o/7
+				audio:       to-string  o/8
+				note:        to-string  o/9
 
 				; discret à droite, l'heure:
 				write/lines/append outputfile rejoin [ {<p align="right"><small>} timestamp/time "</small></p>" ]
@@ -529,6 +571,8 @@ write/append outputfile to-string [
 }]
 
 ;/*}}}*/
+
+print rejoin ["Report generated: " to-string outputfile]
 
 comment {
 Pour vim:
