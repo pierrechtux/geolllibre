@@ -1472,20 +1472,23 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	; }}}
 	;--## attributes:
 	;     They are defined by the "new" constructor method:
-	north_reference:        "Nm"			; default to magnetic North; could be Nu for UTM north, or Ng for geographic North
-	matrix:             	copy []			; rotation matrix = GeolPDA measurement fully characterising orientation of measuring device
-	plane_normal_vector: 	copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement oveterurned
-	axis_vector: 			make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
-	plane_downdip_azimuth: 	make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
-	plane_direction: 		make decimal! 0	; direction of the plane, from 0 to 180°:
-	plane_dip: 				make decimal! 0	; Pendage du plan
-	plane_quadrant_dip: 	copy ""			; quadrant (N, E, S, W) towards where plane dips
-	line_azimuth: 			make decimal! 0	; line azimuth
-	line_plunge:  			make decimal! 0	; line plunge
-	line_pitch: 			make decimal! 0	; pitch angle of line
-	line_pitch_quadrant: 	copy ""			; quadrant (N, E, S, W) towards where line pitches
-	line_movement: 			copy ""			; movement (N, I or R, D, S) for faults and equivalents
-	overturned: 			make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
+	north_reference:			"Nm"			; default to magnetic North; could be Nu for UTM north, or Ng for geographic North
+	matrix:						copy []			; bloc of 3 blocs of 3 values between 0 and 1: rotation matrix = GeolPDA measurement fully characterising orientation of measuring device
+	plane_normal_vector:		copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement overturned
+	axis_vector:				make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
+	plane_downdip_azimuth:		make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
+	plane_direction:			make decimal! 0	; direction of the plane, from 0 to 180°:
+	plane_dip:					make decimal! 0	; Pendage du plan
+	plane_quadrant_dip:			copy ""			; quadrant (N, E, S, W) towards where plane dips
+	line_azimuth:				make decimal! 0	; line azimuth
+	line_plunge:				make decimal! 0	; line plunge
+	line_pitch:					make decimal! 0	; pitch angle of line
+	line_pitch_quadrant:		copy ""			; quadrant (N, E, S, W) towards where line pitches
+	line_movement: 				copy ""			; movement (N, I or R, D, S) for faults and equivalents
+	line_movement_vertical:		copy ""			; vertical component of movement (N, I or R)
+	line_movement_horizontal:	copy ""			; horizontal component of movement (D, S)
+	overturned:					make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
+	comments:					copy ""			; comments, if any
 	; NOTE: *all* these variables are determined, since the matrix rotation (measurement data from GeolPDA) fully determines plane and line. If the measurement /only concerns a line, or /only a line, the relevant values are /only to be considered.
 
 	;--## methods:
@@ -1562,7 +1565,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; quand on tient le téléphone normalement.
 			; Si l'on mesure une faille, il s'agit du vecteur mouvement du bloc 
 			; en place (opposé de celui de la mesure), de sorte qu'une faille
-			; _normale_ se mesure avec le téléphone en position _normale_.
+			; _normale_ avec le bloc supérieur érodé se mesure avec le téléphone 
+			; en position _normale_.
 			;OA: product_matrix_line rotation_matrix [0 1 0]
 			;OA: to-vector OA
 			;probe OA
@@ -1622,7 +1626,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; other variables:
 			plane_downdip_azimuth: azimuth_vector plane_normal_vector 
 			plane_direction: plane_downdip_azimuth - 90
-				if (plane_direction < 0) [plane_direction: plane_direction + 180]			; dip of the plane, from 0 to 90°:
+			if (plane_direction <   0) [plane_direction: plane_direction + 180]
+			if (plane_direction > 180) [plane_direction: plane_direction - 180]
+			; dip of the plane, from 0 to 90°:
 			plane_dip: arccosine ( plane_normal_vector/3 ) ; = plongement de OD: ;== 39.8452276492299 ; => correct
 			case [
 				((plane_downdip_azimuth >   315) or (plane_downdip_azimuth <=  45))	[plane_quadrant_dip: "N"]
@@ -1633,6 +1639,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			line_azimuth: azimuth_vector axis_vector
 			line_plunge: 90 - (arccosine ( axis_vector/3 ))
 			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
+			;if (line_pitch < 0) [ line_pitch: line_pitch + 180 ]
 			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
 			;line_pitch_quadrant:	TODO
 				case [
@@ -1647,13 +1654,30 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						either ( all [ (line_azimuth >= 180) (line_azimuth <= 360)] ) [line_pitch_quadrant: "W"] [line_pitch_quadrant: "E"]
 						]
 				]
-			;line_movement:		TODO ; {{{ } } }
-				; Avec les conventions prises (GeolPDA en position "lisible" sur une mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé dans la faille en mouvement ou dans la guimauve qui flue).
+			;line_movement:
+					; Avec les conventions prises (GeolPDA en position "lisible" sur une 
+					; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
+					; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé 
+					; dans la faille en mouvement ou dans la guimauve qui flue).
 				; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
-				;____________JEANSUILA___________
-
-			;}}}
+				; la composante verticale du mouvement:
+				; on prend le delta azimut de la ligne (mouvement bloc inférieur) - azimut de la
+				; ligne de plus grande pente du plan, comme discriminant:
+				delta_azim_line_plane: line_azimuth - plane_downdip_azimuth
+				if (delta_azim_line_plane <   0) [ delta_azim_line_plane: delta_azim_line_plane + 360 ]
+				if (delta_azim_line_plane > 360) [ delta_azim_line_plane: delta_azim_line_plane - 360 ]
+				either	(delta_azim_line_plane >  90)	[ line_movement_vertical:   "N" ]	; jeu normal
+														[ line_movement_vertical:   "I" ]	; jeu inverse
+				either	(delta_azim_line_plane > 180)   [ line_movement_horizontal: "D" ]	; jeu dextre
+														[ line_movement_horizontal: "S" ]	; jeu sénestre
+				either (line_pitch < 45)	[ line_movement: line_movement_horizontal]		; pitch petit: mouvement décrochant dominant
+											[ line_movement: line_movement_vertical  ]		; pitch grand: mouvement vertical dominant					
 			;overturned:
+			;____________JEANSUILA___________
+			if (plane_dip > 90) [
+				plane_dip: 180 - plane_dip
+				overturned: true
+			]
 		]
 	];}}}
 	; outputs:
@@ -1680,6 +1704,14 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	print_plane_line: does [ ;{{{ } } }
 		return rejoin [print_matrix newline print_plane newline print_line]
 	];}}}
+
+	print_tectri: does [ ;{{{ } } }
+		;Prints a tectri-readable string; numeric values converted to integers
+		sep: " " ; separator
+		return rejoin [to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement " " comments]
+	];}}}
+
+
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
 		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
 		;# Il s'agit maintenant de tracer le Té de
@@ -1788,7 +1820,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 ] ;}}}
 ;=======================================
 
-diagram: make object! [ ;--## A diagram, which will contain a DRAW sting with the T trace from the orientation measurement: ;{{{ } } }
+diagram: make object! [ ;--## A diagram, which will contain a DRAW string with the T trace from the orientation measurement: ;{{{ } } }
 	; attributes:
 		; plot is a DRAW dialect block containing the diagram:
 			plot: copy [pen black]
@@ -1849,6 +1881,7 @@ structural_measurement_convention_fr: make object! [
 		sep: "/" ; separator
 		return rejoin [north_ref direction sep dip sep dip_quadrant sep pitch sep pitch_quadrant sep movement " " comments]
 	]
+	;WARNING! method DUPLICATED in object orientation:
 	print_tectri: func ["Prints a tectri-readable string"] [
 		sep: " " ; separator
 		return rejoin [direction sep dip sep dip_quadrant sep pitch sep pitch_quadrant sep movement " " comments]
@@ -1856,8 +1889,11 @@ structural_measurement_convention_fr: make object! [
 ]
 
 ;}}}
-parse_tecto_measure: func [{Converts a string structural measurement in the form "Nm85/80/N/70/W/I Overturned plane" to a structural_measurement_convention_fr} m] [ ; {{{ } } }
+parse_tecto_measure: func [{Converts a string structural measurement in the form "Nm85/80/N/70/W/I Overturned plane" to a structural_measurement_convention_fr object} m] [ ; {{{ } } }
 	; m is for the string containing the structural measurement with the associated comment
+	; RAZ variables, to avoid side-effects:
+	NORTH_REF_: DIP_QUADRANT_: PITCH_QUADRANT_: MOVEMENT_: COMMENTS_: copy ""
+	DIRECTION_: DIP_: PITCH_: 0
 	; rules to parse the structural measurement:
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
 	digit: charset  [#"0" - #"9"]
@@ -1871,7 +1907,7 @@ parse_tecto_measure: func [{Converts a string structural measurement in the form
 	rule_cardinal_point:  ["N" | "E" | "S" | "W" | "O"]
 	rule_movement:        ["N" | "R" | "I" | "D" | "S"]
 	; (VARIABLES are uppercase in the following parse rule, /only for code readability)
-	rule_plane_line_movement_pitch: [COPY NORTH_REF_ rule_north_ref COPY DIRECTION_ rule_angle_direction separator COPY DIP_ rule_angle_dip separator COPY DIP_QUADRANT_ rule_cardinal_point separator COPY PITCH_ rule_angle_dip separator COPY PITCH_QUADRANT_ rule_cardinal_point separator COPY MOVEMENT_ rule_movement " " COPY COMMENTS_ to end]
+	rule_plane_line_movement_pitch: [COPY NORTH_REF_ rule_north_ref COPY DIRECTION_ rule_angle_direction separator COPY DIP_ rule_angle_dip separator COPY DIP_QUADRANT_ rule_cardinal_point separator COPY PITCH_ rule_angle_dip separator COPY PITCH_QUADRANT_ rule_cardinal_point separator COPY MOVEMENT_ rule_movement separator COPY COMMENTS_ to end]
 	parse/all m rule_plane_line_movement_pitch
 ;rejoin [NORTH_REF DIRECTION DIP DIP_QUADRANT PITCH PITCH_QUADRANT MOVEMENT COMMENTS]
 
