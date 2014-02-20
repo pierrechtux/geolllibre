@@ -78,11 +78,14 @@ synchronize_geolpda: does [
 	print "Synchronization process..."
 	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
-	print rejoin["Running " cmd]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
+	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
+	print rejoin["NOT Running: " newline cmd newline "=> TOO DANGEROUS! Run yourself at your own risks; press any key to resume, once directories are syncrhronised"]
+	;tt:  copy ""
+	;err: copy ""
+	;call/wait/output/error cmd tt err
+	;print tt
+	input
+	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
 ]
 
 synchronize_oruxmaps_tracklogs: does [
@@ -182,7 +185,8 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes.
-opid: to-integer input "OPeration IDentifier: "
+prin "OPeration IDentifier: "
+opid: to-integer input 
 
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
