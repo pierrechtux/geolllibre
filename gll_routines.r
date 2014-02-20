@@ -1180,6 +1180,14 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 ] ;}}}
 
 ; fonctions utilitaires:
+; Definition of standard charsets useful for PARSEing: {{{ } } } 
+	letter: charset [#"a" - #"z" #"A" - #"Z"]
+	digit: charset  [#"0" - #"9"]
+	space: charset  [#" "]
+	letter-or-digit: union letter digit
+	letter-or-digit-nospace: exclude letter-or-digit space
+	digit-decimalplace: union digit charset [#"."]
+;}}}
 chk_file_exists: func ["Simply checks for the existence of a file" file_in] [ ;{{{ } } }
 	if error? try [
 	file_in_reader: open/string/lines/read to-file file_in
@@ -1221,6 +1229,37 @@ epoch-to-date: func [
 															   ;remettre ça;
 															   ;ça boguait.
 ] ;}}}]
+; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
+epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [
+	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
+	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
+]
+;}}}
+
+; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
+dd2dms: func ["Converts decimal degrees to degrees, minutes, seconds" dd] [ ;{{{ } } }
+	;my $dd = shift;
+	;print dd
+	minutes: (dd - (round/down dd)) * 60
+	seconds: (minutes - (round/down minutes)) * 60
+	minutes: round/down minutes
+	degrees: round/down dd
+	return rejoin [degrees "," minutes "," seconds]
+	] ;}}}
+dms2dd: func ["Converts degrees, minutes, seconds to decimal degrees" dms] [ ;{{{ } } }
+	; 	dms: {48 deg 17' 33.39"}	; test
+	replace/all dms " " ""	; remove all whitespaces
+	rule_degree: ["degrees" | "deg" | "d" | "°"]
+	rule_minute: ["minutes" | "min" | "m" | "'"]
+	rule_second: ["seconds" | "sec" | "s" | {"}]
+	degrees: minutes: seconds: none
+	parse/all dms [copy degrees any digit-decimalplace rule_degree copy minutes any digit-decimalplace rule_minute copy seconds any digit-decimalplace rule_second to end]
+	degrees: to-decimal degrees
+	minutes: to-decimal minutes
+	seconds: to-decimal seconds
+	dd: degrees + (minutes / 60) + (seconds / 3600)
+	return dd
+	] ;}}}
 
 ; from LouGit:
 copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
@@ -1260,10 +1299,13 @@ test_datasource_available: func ["Teste si new_datasource_id est libre dans la b
 get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } }
 	; 2013_07_09__09_13_51
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
-	sql_string: rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
-	run_query sql_string
-	max_datasource_id: to-integer to-string run_query sql_string
-	new_datasource_id: max_datasource_id + 1
+	tt: run_query rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
+	either to-string tt = "none" [
+		new_datasource_id: 1	; pas encore de datasource dans cet opid, on inaugure
+		] [
+		max_datasource_id: to-integer to-string tt
+		new_datasource_id: max_datasource_id + 1
+	]
 	] ;}}}
 generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{ } } }
 	sql_string_update: rejoin [ "INSERT INTO public.lex_datasource (opid, filename, datasource_id) VALUES (" opid ", '" file_in "', " new_datasource_id ");" ]
@@ -1637,6 +1679,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 				((plane_downdip_azimuth >  225) and (plane_downdip_azimuth <= 315)) [plane_quadrant_dip: "W"]
 			]
 			line_azimuth: azimuth_vector axis_vector
+			if (axis_vector/3 > 0) [line_azimuth: line_azimuth + 180] ; case when line upwards; convention is azimuth of down lineation
 			line_plunge: 90 - (arccosine ( axis_vector/3 ))
 			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
 			;if (line_pitch < 0) [ line_pitch: line_pitch + 180 ]
@@ -1890,42 +1933,37 @@ structural_measurement_convention_fr: make object! [
 
 ;}}}
 parse_tecto_measure: func [{Converts a string structural measurement in the form "Nm85/80/N/70/W/I Overturned plane" to a structural_measurement_convention_fr object} m] [ ; {{{ } } }
-	; m is for the string containing the structural measurement with the associated comment
+	; m is for the string containing the structural measurement, with the associated comment
 	; RAZ variables, to avoid side-effects:
-	NORTH_REF_: DIP_QUADRANT_: PITCH_QUADRANT_: MOVEMENT_: COMMENTS_: copy ""
-	DIRECTION_: DIP_: PITCH_: 0
+		NORTH_REF_: DIP_QUADRANT_: PITCH_QUADRANT_: MOVEMENT_: COMMENTS_: copy ""
+		DIRECTION_: DIP_: PITCH_: 0
 	; rules to parse the structural measurement:
-	letter: charset [#"a" - #"z" #"A" - #"Z"]
-	digit: charset  [#"0" - #"9"]
-	space: charset  [#" "]
-	letter-or-digit: union letter digit
-	letter-or-digit-nospace: exclude letter-or-digit space
-	rule_north_ref: ["N" ["m" | "g" | "u"]]		; rule for North reference: (m)agnetic, (g)eographic or (u)tm
-	separator: charset ["/" "," "-"]			; separator between elements
-	rule_angle_direction: [1 3 digit]
-	rule_angle_dip:       [1 2 digit]
-	rule_cardinal_point:  ["N" | "E" | "S" | "W" | "O"]
-	rule_movement:        ["N" | "R" | "I" | "D" | "S"]
-	; (VARIABLES are uppercase in the following parse rule, /only for code readability)
-	rule_plane_line_movement_pitch: [COPY NORTH_REF_ rule_north_ref COPY DIRECTION_ rule_angle_direction separator COPY DIP_ rule_angle_dip separator COPY DIP_QUADRANT_ rule_cardinal_point separator COPY PITCH_ rule_angle_dip separator COPY PITCH_QUADRANT_ rule_cardinal_point separator COPY MOVEMENT_ rule_movement separator COPY COMMENTS_ to end]
+		rule_north_ref: ["N" ["m" | "g" | "u"]]		; rule for North reference: (m)agnetic, (g)eographic or (u)tm
+		separator: charset ["/" "," "-"]			; separator between elements
+		rule_angle_direction: [1 3 digit]
+		rule_angle_dip:       [1 2 digit]
+		rule_cardinal_point:  ["N" | "E" | "S" | "W" | "O"]
+		rule_movement:        ["N" | "R" | "I" | "D" | "S"]
+		; (VARIABLES are uppercase in the following parse rule, /only for code readability)
+	rule_plane_line_movement_pitch: [COPY NORTH_REF_ rule_north_ref COPY DIRECTION_ rule_angle_direction separator COPY DIP_ rule_angle_dip separator COPY DIP_QUADRANT_ rule_cardinal_point separator COPY PITCH_ rule_angle_dip separator COPY PITCH_QUADRANT_ rule_cardinal_point separator COPY MOVEMENT_ rule_movement [" " | separator] COPY COMMENTS_ to end]
 	parse/all m rule_plane_line_movement_pitch
-;rejoin [NORTH_REF DIRECTION DIP DIP_QUADRANT PITCH PITCH_QUADRANT MOVEMENT COMMENTS]
+	;rejoin [NORTH_REF DIRECTION DIP DIP_QUADRANT PITCH PITCH_QUADRANT MOVEMENT COMMENTS]
 
-output: make structural_measurement_convention_fr [
-	; data structure coherent with relation field_observations_struct_measures in bdexplo database:
-    measure_type:   "PLMS"
-    ;structure_type: "FAULT"
-    north_ref:       to-string NORTH_REF_
-    direction:       to-integer DIRECTION_
-    dip:             to-integer DIP_
-    dip_quadrant:    to-string DIP_QUADRANT_
-    pitch:           to-integer PITCH_
-    pitch_quadrant:  copy PITCH_QUADRANT_
-    movement:        copy MOVEMENT_
-    comments:        copy COMMENTS_
-]
-return output
-] ;}}}
+	output: make structural_measurement_convention_fr [
+		; data structure coherent with relation field_observations_struct_measures in bdexplo database:
+		measure_type:   "PLMS"
+		;structure_type: "FAULT"
+		north_ref:       to-string NORTH_REF_
+		direction:       to-integer DIRECTION_
+		dip:             to-integer DIP_
+		dip_quadrant:    to-string DIP_QUADRANT_
+		pitch:           to-integer PITCH_
+		pitch_quadrant:  copy PITCH_QUADRANT_
+		movement:        copy MOVEMENT_
+		comments:        copy COMMENTS_
+	]
+	return output
+	] ;}}}
 
 ; Fonctions utilisées pour faire des programmes de sondages:
 cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
