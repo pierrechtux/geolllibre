@@ -1288,6 +1288,54 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 
 ]; }}}
 
+; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
+; exemple: /*{{{*/ } } }
+ ; une matrice de cas, volontairement simple, avec des tabulations séparant les choses, de manière à pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la dernière chaîne qui correspond à ce que renverra la fonction:
+
+;case_matrix: {
+;v1 v2  v3
+;<1  0  >1  "pas bon"
+;>1  0 >=1  "bon"
+;<1  0  >1  "moyen"
+;}
+
+;process_cases_table case_matrix
+;On doit aboutir à un bloc de code du type:
+;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return "pas bon"]
+;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return "pas bon"]
+;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return " pas bon"]
+;if (all [(v1 > 1) (v2 = 0) (v3 >= 1)]) [return "bon"]
+;if (all [(v1 < 1) (v2 = 0) (v3 >1)] [return "moyen"]
+;/*}}}*/
+process_cases_table: function ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{ } } }
+	mm: parse/all case_matrix "^/"
+	foreach ii mm [if ((to-string first mm) = "") [remove first mm mm: next mm ]] 	; skip empty lines, if any
+	code: copy {case [^/} 															; final code, returned by function
+	v: make block! [] 																; read the variables into v variables block!
+	foreach ii (to-block parse (first mm) "") [append v to-word ii]
+	mm: next mm 																	;read one line: these are lines with criteria
+	while [ not (tail? mm) ] [ 														; while not at the end
+		criteria: parse first mm ""
+		append code " (all ["
+		count: 0
+		loop (length? v) [ 															; as many times as variables count:
+			count: count + 1
+			append code rejoin ["( " v/:count " "]
+			any [
+				parse/all criteria/:count [copy tt ["=<" | "=>"]                                  (append code rejoin [reverse tt " "]) copy tt to end (append code rejoin [tt " "])]	; comparison, misspelled
+				parse/all criteria/:count [copy tt ["<=" | ">=" | "<" | ">"  | "==" | "=" | "!="] (append code rejoin [tt " "])         copy tt to end (append code rejoin [tt " "])]	; comparison
+				parse/all criteria/:count [copy tt to end                                         (append code rejoin [" = " tt " "])]                                                   ; no operator: add "="
+				]
+			append code ") "
+		]
+		append code rejoin [ {] ) [} mold (criteria/(:count + 1)) "]^/"]
+		mm: next mm 																;read one line: these are lines with criteria
+	]
+	append code "^/]"
+	;print code
+	return code
+];}}}
+
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
 	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '" 
@@ -1514,23 +1562,23 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	; }}}
 	;--## attributes:
 	;     They are defined by the "new" constructor method:
-	north_reference:			"Nm"			; default to magnetic North; could be Nu for UTM north, or Ng for geographic North
-	matrix:						copy []			; bloc of 3 blocs of 3 values between 0 and 1: rotation matrix = GeolPDA measurement fully characterising orientation of measuring device
-	plane_normal_vector:		copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement overturned
-	axis_vector:				make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
-	plane_downdip_azimuth:		make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
-	plane_direction:			make decimal! 0	; direction of the plane, from 0 to 180°:
-	plane_dip:					make decimal! 0	; Pendage du plan
-	plane_quadrant_dip:			copy ""			; quadrant (N, E, S, W) towards where plane dips
-	line_azimuth:				make decimal! 0	; line azimuth
-	line_plunge:				make decimal! 0	; line plunge
-	line_pitch:					make decimal! 0	; pitch angle of line
-	line_pitch_quadrant:		copy ""			; quadrant (N, E, S, W) towards where line pitches
+	north_reference: 			"Nm"			; default to magnetic North; could be Nu for UTM north, or Ng for geographic North
+	matrix: 					copy []			; bloc of 3 blocs of 3 values between 0 and 1: rotation matrix = GeolPDA measurement fully characterising orientation of measuring device
+	plane_normal_vector: 		copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement overturned
+	axis_vector: 				make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
+	plane_downdip_azimuth: 		make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
+	plane_direction: 			make decimal! 0	; direction of the plane, from 0 to 180°:
+	plane_dip: 					make decimal! 0	; Pendage du plan
+	plane_quadrant_dip: 		copy ""			; quadrant (N, E, S, W) towards where plane dips
+	line_azimuth: 				make decimal! 0	; line azimuth
+	line_plunge: 				make decimal! 0	; line plunge
+	line_pitch: 				make decimal! 0	; pitch angle of line
+	line_pitch_quadrant: 		copy ""			; quadrant (N, E, S, W) towards where line pitches
 	line_movement: 				copy ""			; movement (N, I or R, D, S) for faults and equivalents
-	line_movement_vertical:		copy ""			; vertical component of movement (N, I or R)
-	line_movement_horizontal:	copy ""			; horizontal component of movement (D, S)
-	overturned:					make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
-	comments:					copy ""			; comments, if any
+	line_movement_vertical: 	copy ""			; vertical component of movement (N, I or R)
+	line_movement_horizontal: 	copy ""			; horizontal component of movement (D, S)
+	overturned: 				make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
+	comments: 					copy ""			; comments, if any
 	; NOTE: *all* these variables are determined, since the matrix rotation (measurement data from GeolPDA) fully determines plane and line. If the measurement /only concerns a line, or /only a line, the relevant values are /only to be considered.
 
 	;--## methods:
@@ -1540,9 +1588,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; Convert matrix m to a block of blocks named matrix:
 			foreach [u v w] m [append/only matrix to-block reduce [u v w]]
 			; variables abcdefghi: juste pour un souci d'ergonomie du codeur: {{{ } } }
-			; la notation de la matrice de rotation
-			; est bien plus pratique à manier sous
-			; forme de abcdefghi, dans les formules:
+			; la notation de la matrice de rotation est bien plus pratique à manier sous forme de abcdefghi, dans les formules:
 			; No: too ringard: => yes, ringard, but works... (cf.infra)
 			a: self/matrix/1/1
 			b: self/matrix/1/2
@@ -1553,6 +1599,17 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			g: self/matrix/3/1
 			h: self/matrix/3/2
 			i: self/matrix/3/3
+			comment [; DEBUG
+			a: matrix/1/1
+			b: matrix/1/2
+			c: matrix/1/3
+			d: matrix/2/1
+			e: matrix/2/2
+			f: matrix/2/3
+			g: matrix/3/1
+			h: matrix/3/2
+			i: matrix/3/3
+			]
 			; Better, more rebolish: (but doesn't work... :-/ {{{ } } }
 			;variables_short: [a b c d e f g h i]
 			;count: 1
@@ -1564,6 +1621,26 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;]	]
 			;do code
 			;}}}
+			;}}}
+			;1) on détecte les jeux et l'overturn: {{{ } } }
+			; As if the measurement was a fault, determination of the attitude (overturned or not) and movement, both vertical and horizontal components:
+			; table with cases of attitude and movements; result of the matrix "nNS" reads as: (overturned: 0(normal) or 1(overturned), movement vertical, movement horizontal
+			table_cases_rotation_movements: {
+ i  h  g
+>0 >0 >0 "0NS"
+>0 >0 <0 "0ND"
+>0 <0 <0 "0IS"
+>0 <0 >0 "0ID"
+<0 >0 >0 "1IS"
+<0 >0 <0 "1ID"
+<0 <0 <0 "1ND"
+<0 <0 >0 "1NS"
+}
+			; case determination
+			res: do process_cases_table table_cases_rotation_movements
+			overturned:               to-logic  to-integer to-string res/1
+			line_movement_vertical:   to-string res/2
+			line_movement_horizontal: to-string res/3
 			;}}}
 			; Calculation of variables:
 			; Definition of vectors which fully caracterise the geometry:
@@ -1666,6 +1743,16 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;	;return down_dip_vect
 	;];}}}
 			; other variables:
+			;2) on met les vecteurs tous dans le même sens:
+			; la normale vers le haut,
+			if overturned [
+				plane_normal_vector: reduce [plane_normal_vector/1 * -1 plane_normal_vector/2 * -1 plane_normal_vector/3 * -1]
+			]
+			; la linéation vers le bas.
+			if (axis_vector/3 > 0) [
+				axis_vector: reduce [axis_vector/1 * -1 axis_vector/2 * -1 axis_vector/3 * -1]
+			]	
+			;3) on calcule les angles pour la représentation conventionnelle
 			plane_downdip_azimuth: azimuth_vector plane_normal_vector 
 			plane_direction: plane_downdip_azimuth - 90
 			if (plane_direction <   0) [plane_direction: plane_direction + 180]
@@ -1679,12 +1766,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 				((plane_downdip_azimuth >  225) and (plane_downdip_azimuth <= 315)) [plane_quadrant_dip: "W"]
 			]
 			line_azimuth: azimuth_vector axis_vector
-			if (axis_vector/3 > 0) [line_azimuth: line_azimuth + 180] ; case when line upwards; convention is azimuth of down lineation
-			line_plunge: 90 - (arccosine ( axis_vector/3 ))
+			;if (axis_vector/3 > 0) [line_azimuth: line_azimuth + 180] ; case when line upwards; convention is azimuth of down lineation <= eliminated case, see above
+			line_plunge: -90 + (arccosine ( axis_vector/3 ))
 			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
-			;if (line_pitch < 0) [ line_pitch: line_pitch + 180 ]
-			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
-			;line_pitch_quadrant:	TODO
 				case [
 					(parse plane_quadrant_dip [ "E" | "W" ]) [
 						; line_pitch_quadrant will be N or S
@@ -1697,30 +1781,43 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						either ( all [ (line_azimuth >= 180) (line_azimuth <= 360)] ) [line_pitch_quadrant: "W"] [line_pitch_quadrant: "E"]
 						]
 				]
-			;line_movement:
-					; Avec les conventions prises (GeolPDA en position "lisible" sur une 
-					; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
-					; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé 
-					; dans la faille en mouvement ou dans la guimauve qui flue).
-				; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
-				; la composante verticale du mouvement:
-				; on prend le delta azimut de la ligne (mouvement bloc inférieur) - azimut de la
-				; ligne de plus grande pente du plan, comme discriminant:
-				delta_azim_line_plane: line_azimuth - plane_downdip_azimuth
-				if (delta_azim_line_plane <   0) [ delta_azim_line_plane: delta_azim_line_plane + 360 ]
-				if (delta_azim_line_plane > 360) [ delta_azim_line_plane: delta_azim_line_plane - 360 ]
-				either	(delta_azim_line_plane >  90)	[ line_movement_vertical:   "N" ]	; jeu normal
-														[ line_movement_vertical:   "I" ]	; jeu inverse
-				either	(delta_azim_line_plane > 180)   [ line_movement_horizontal: "D" ]	; jeu dextre
-														[ line_movement_horizontal: "S" ]	; jeu sénestre
-				either (line_pitch < 45)	[ line_movement: line_movement_horizontal]		; pitch petit: mouvement décrochant dominant
-											[ line_movement: line_movement_vertical  ]		; pitch grand: mouvement vertical dominant					
-			;overturned:
-			;____________JEANSUILA___________
-			if (plane_dip > 90) [
-				plane_dip: 180 - plane_dip
-				overturned: true
-			]
+			;;line_movement: => inutile {{{ } } }
+			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une 
+			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
+			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé 
+			;		; dans la faille en mouvement ou dans la guimauve qui flue).
+			;	; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
+			;	; la composante verticale du mouvement:
+			;	; on prend le delta azimut de la ligne (mouvement bloc inférieur) - azimut de la
+			;	; ligne de plus grande pente du plan, comme discriminant:
+			;	delta_azim_line_plane: line_azimuth - plane_downdip_azimuth
+			;	if (delta_azim_line_plane <   0) [ delta_azim_line_plane: delta_azim_line_plane + 360 ]
+			;	if (delta_azim_line_plane > 360) [ delta_azim_line_plane: delta_azim_line_plane - 360 ]
+			;	either (delta_azim_line_plane >  90)    [ line_movement_vertical:   "N" ] [ line_movement_vertical:   "I" ]
+			;	either (delta_azim_line_plane > 180)    [ line_movement_horizontal: "D" ] [ line_movement_horizontal: "S" ]
+			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
+			; In fact, result is that line_pitch is < 0 when movement inverse:
+			;either (line_pitch < 0) [
+			;							line_pitch: -1 * line_pitch
+			;							if (line_movement_vertical != "I") [alert "error!"]
+			;							line_movement_vertical: "I"
+			;						] [
+			;							line_movement_vertical: "N"]
+			; also, reset line_plunge to a positive value:
+			line_plunge: absolute line_plunge
+			;;overturned:
+			;if (i < 0) [
+			;	overturned: true
+			;	plane_dip: 180 - plane_dip
+			;	if line_movement_vertical = "I"   [line_movement_vertical: "N"]
+			;	if line_movement_vertical = "N"   [line_movement_vertical: "I"]
+			;	if line_movement_horizontal = "D" [line_movement_horizontal: "S"]
+			;	if line_movement_horizontal = "S" [line_movement_horizontal: "S"]
+			;	]
+			;;if (plane_dip > 90) [
+			;;	plane_dip: 180 - plane_dip
+			;;]	;}}}
+			either (line_pitch < 45) [ line_movement: line_movement_horizontal] [ line_movement: line_movement_vertical ]     ; pitch petit: mouvement décrochant dominant; pitch grand: mouvement vertical dominant
 		]
 	];}}}
 	; outputs:
@@ -1747,14 +1844,11 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	print_plane_line: does [ ;{{{ } } }
 		return rejoin [print_matrix newline print_plane newline print_line]
 	];}}}
-
 	print_tectri: does [ ;{{{ } } }
 		;Prints a tectri-readable string; numeric values converted to integers
 		sep: " " ; separator
 		return rejoin [to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement " " comments]
 	];}}}
-
-
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
 		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
 		;# Il s'agit maintenant de tracer le Té de
