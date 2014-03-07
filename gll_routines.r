@@ -1331,7 +1331,7 @@ process_cases_table: function ["Processes a matrix (table) of cases, which is a 
 		append code rejoin [ {] ) [} mold (criteria/(:count + 1)) "]^/"]
 		mm: next mm 																;read one line: these are lines with criteria
 	]
-	append code "^/]"
+	append code "]"
 	;print code
 	return code
 ];}}}
@@ -1348,13 +1348,15 @@ get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } 
 	; 2013_07_09__09_13_51
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
 	tt: run_query rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
-	either to-string tt = "none" [
+	either ((to-string tt) = "none") [
 		new_datasource_id: 1	; pas encore de datasource dans cet opid, on inaugure
 		] [
 		max_datasource_id: to-integer to-string tt
 		new_datasource_id: max_datasource_id + 1
+		;TODO: il faudrait plutôt faire un return new_datasource_id, pour éviter la pollution de l'espace de noms principal, et tous les effets de bords qui s'ensuivent; également, cloisonner les variables locales des fonctions, ce pour toutes les fonctions.
 	]
 	] ;}}}
+
 generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{ } } }
 	sql_string_update: rejoin [ "INSERT INTO public.lex_datasource (opid, filename, datasource_id) VALUES (" opid ", '" file_in "', " new_datasource_id ");" ]
 	] ;}}}
@@ -1580,7 +1582,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	overturned: 				make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
 	comments: 					copy ""			; comments, if any
 	; NOTE: *all* these variables are determined, since the matrix rotation (measurement data from GeolPDA) fully determines plane and line. If the measurement /only concerns a line, or /only a line, the relevant values are /only to be considered.
-
+	a: b: c: d: e: f: g: h: i: make decimal! 0	; (only for coder's convenience... variables in the matrix; TODO: one day, get rid of these)
 	;--## methods:
 	; construction:
 	new: func ["Constructor, builds an orientation object! based on a measurement, as given by GeolPDA device, a rotation matrix represented by a suite of 9 values provided as a block!" m [block!]] [;{{{ } } }
@@ -1599,17 +1601,17 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			g: self/matrix/3/1
 			h: self/matrix/3/2
 			i: self/matrix/3/3
-			comment [; DEBUG
-			a: matrix/1/1
-			b: matrix/1/2
-			c: matrix/1/3
-			d: matrix/2/1
-			e: matrix/2/2
-			f: matrix/2/3
-			g: matrix/3/1
-			h: matrix/3/2
-			i: matrix/3/3
-			]
+				comment [; DEBUG
+				a: matrix/1/1
+				b: matrix/1/2
+				c: matrix/1/3
+				d: matrix/2/1
+				e: matrix/2/2
+				f: matrix/2/3
+				g: matrix/3/1
+				h: matrix/3/2
+				i: matrix/3/3
+				]
 			; Better, more rebolish: (but doesn't work... :-/ {{{ } } }
 			;variables_short: [a b c d e f g h i]
 			;count: 1
@@ -1623,24 +1625,41 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;}}}
 			;}}}
 			;1) on détecte les jeux et l'overturn: {{{ } } }
-			; As if the measurement was a fault, determination of the attitude (overturned or not) and movement, both vertical and horizontal components:
+			; As if the measurement was a fault, determination of the attitude (overturned or not) and movement, both vertical and horizontal components.
+			; Cancelled: nice tentative, but merdalors, fonctionne pas, zut: {{{ } } }
+			comment [
 			; table with cases of attitude and movements; result of the matrix "nNS" reads as: (overturned: 0(normal) or 1(overturned), movement vertical, movement horizontal
 			table_cases_rotation_movements: {
- i  h  g
->0 >0 >0 "0NS"
->0 >0 <0 "0ND"
->0 <0 <0 "0IS"
->0 <0 >0 "0ID"
-<0 >0 >0 "1IS"
-<0 >0 <0 "1ID"
-<0 <0 <0 "1ND"
-<0 <0 >0 "1NS"
-}
+			 i  h  g
+			>0 >0 >0 "0NS"
+			>0 >0 <0 "0ND"
+			>0 <0 <0 "0IS"
+			>0 <0 >0 "0ID"
+			<0 >0 >0 "1IS"
+			<0 >0 <0 "1ID"
+			<0 <0 <0 "1ND"
+			<0 <0 >0 "1NS"
+			}
 			; case determination
-			res: do process_cases_table table_cases_rotation_movements
+			code: process_cases_table table_cases_rotation_movements
+			res: do code
+			; BUG: une fois le code appelé, les variables i et autres ont été oubliées: ???
+			?? res	;DEBUG
 			overturned:               to-logic  to-integer to-string res/1
 			line_movement_vertical:   to-string res/2
 			line_movement_horizontal: to-string res/3
+			]
+			;}}}
+			case [	; more verbose, less elegant, but merdalors:
+				(all [(i > 0) (h > 0)  (g > 0)]) [ overturned: false line_movement_vertical: "N" line_movement_horizontal: "S" ]
+				(all [(i > 0) (h > 0)  (g < 0)]) [ overturned: false line_movement_vertical: "N" line_movement_horizontal: "D" ]
+				(all [(i > 0) (h < 0)  (g < 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "S" ]
+				(all [(i > 0) (h < 0)  (g > 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "D" ]
+				(all [(i < 0) (h > 0)  (g > 0)]) [ overturned: true  line_movement_vertical: "I" line_movement_horizontal: "S" ]
+				(all [(i < 0) (h > 0)  (g < 0)]) [ overturned: true  line_movement_vertical: "I" line_movement_horizontal: "D" ]
+				(all [(i < 0) (h < 0)  (g < 0)]) [ overturned: true  line_movement_vertical: "N" line_movement_horizontal: "D" ]
+				(all [(i < 0) (h < 0)  (g > 0)]) [ overturned: true  line_movement_vertical: "N" line_movement_horizontal: "S" ]
+			]
 			;}}}
 			; Calculation of variables:
 			; Definition of vectors which fully caracterise the geometry:
@@ -1751,9 +1770,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; la linéation vers le bas.
 			if (axis_vector/3 > 0) [
 				axis_vector: reduce [axis_vector/1 * -1 axis_vector/2 * -1 axis_vector/3 * -1]
-			]	
+			]
 			;3) on calcule les angles pour la représentation conventionnelle
-			plane_downdip_azimuth: azimuth_vector plane_normal_vector 
+			plane_downdip_azimuth: azimuth_vector plane_normal_vector
 			plane_direction: plane_downdip_azimuth - 90
 			if (plane_direction <   0) [plane_direction: plane_direction + 180]
 			if (plane_direction > 180) [plane_direction: plane_direction - 180]
@@ -1767,8 +1786,15 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			]
 			line_azimuth: azimuth_vector axis_vector
 			;if (axis_vector/3 > 0) [line_azimuth: line_azimuth + 180] ; case when line upwards; convention is azimuth of down lineation <= eliminated case, see above
-			line_plunge: -90 + (arccosine ( axis_vector/3 ))
-			line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )
+			;line_plunge: -90 + (arccosine ( axis_vector/3 ))
+			line_plunge: absolute arcsine (axis_vector/3)
+			;line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )	;###BUG? recorrigé en relisant article:
+			;line_pitch: arctangent ( (tangent line_plunge) / (sine plane_dip) )	; non...
+			;line_pitch: arctangent ( (tangent (line_azimuth - plane_direction)) / (sine plane_dip) )	; toujours VRAIMENT pas...
+			;line_pitch: arctangent ((sine plane_dip) / ((sine (line_azimuth - plane_direction)) * tangent plane_dip))	; non!
+			;line_pitch: arctangent ((tangent (line_azimuth - plane_direction)) / (cosine plane_dip) * (sine plane_dip))	; toujours pas...
+			line_pitch: absolute arcsine ( ( sine line_plunge ) / ( sine plane_dip ) )	; tout refait; ah, je retombe sur ma première formule.
+			comment [;PAS BON:==========================================
 				case [
 					(parse plane_quadrant_dip [ "E" | "W" ]) [
 						; line_pitch_quadrant will be N or S
@@ -1781,6 +1807,23 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						either ( all [ (line_azimuth >= 180) (line_azimuth <= 360)] ) [line_pitch_quadrant: "W"] [line_pitch_quadrant: "E"]
 						]
 				]
+			];==========================================================
+			either [line_azimuth - plane_downdip_azimuth < 0] [	; la ligne est à "gauche" de la plus grande pente		
+				case [
+					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "N" ]
+					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "E" ]
+					(plane_quadrant_dip = "W") [ line_pitch_quadrant: "S" ]
+					(plane_quadrant_dip = "N") [ line_pitch_quadrant: "W" ]
+					]
+				][												; la ligne est à "droite" de la plus grande pente
+				case [
+					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "S" ]
+					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "W" ]
+					(plane_quadrant_dip = "W") [ line_pitch_quadrant: "N" ]
+					(plane_quadrant_dip = "N") [ line_pitch_quadrant: "E" ]
+					]
+				]
+			
 			;;line_movement: => inutile {{{ } } }
 			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une 
 			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
@@ -1803,8 +1846,6 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;							line_movement_vertical: "I"
 			;						] [
 			;							line_movement_vertical: "N"]
-			; also, reset line_plunge to a positive value:
-			line_plunge: absolute line_plunge
 			;;overturned:
 			;if (i < 0) [
 			;	overturned: true
@@ -1817,12 +1858,19 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;;if (plane_dip > 90) [
 			;;	plane_dip: 180 - plane_dip
 			;;]	;}}}
+			; also, reset line_plunge to a positive value:
+			;line_plunge: absolute line_plunge	; => done already
 			either (line_pitch < 45) [ line_movement: line_movement_horizontal] [ line_movement: line_movement_vertical ]     ; pitch petit: mouvement décrochant dominant; pitch grand: mouvement vertical dominant
 		]
 	];}}}
 	; outputs:
 	print_matrix: does [ ;{{{ } } }
-		return rejoin ["Matrix: " tab self/matrix]
+		;return rejoin ["Matrix: " tab self/matrix]
+		tt: copy ""
+		foreach [item] self/matrix [
+			append tt rejoin [ "(" tab item/1 tab item/2 tab item/3 tab ")" newline]
+		]	
+		return tt
 		;		"Normal vector: " 		probe plane_normal_vector newline
 		;		"Axis vector: " 		probe axis_vector newline
 		;		"Down-Dip azimuth: "	plane_downdip_azimuth newline
@@ -1957,6 +2005,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 ] ;}}}
 ;=======================================
 
+;### attention:
 diagram: make object! [ ;--## A diagram, which will contain a DRAW string with the T trace from the orientation measurement: ;{{{ } } }
 	; attributes:
 		; plot is a DRAW dialect block containing the diagram:
@@ -1996,6 +2045,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW string with t
 		trace_line [  0  1 ] [  0    1.1]
 		trace_line [  0 -1 ] [  0   -1.1]
 ] ;}}}
+;### attention, duplicata avec rondibet.r
 
 ;--## structure containing the variables of a structural measurement, using French usual conventions: ;{{{ } } }
 
@@ -2071,7 +2121,9 @@ xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" i
     return reduce [to-decimal resultat/1/1 to-decimal resultat/1/2 to-decimal resultat/1/3]
 ]
 ;# /*}}}*/
-plante_un_sondage_ici: does [ ;append current values to list planned holes; {{{ } } }
+plante_un_sondage_ici: func [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{ } } }
+	?? comm
+	unless comment [comm: copy ""]
 	append/only sondages_prevus (make object! [ "Objet drill hole"
 	_location: make string! location
 	_id: make string! rejoin [prefix (pad reduce (number) nbdigits)]
@@ -2082,11 +2134,21 @@ plante_un_sondage_ici: does [ ;append current values to list planned holes; {{{ 
 	_dip_hz: make decimal! dip_hz
 	_length: make decimal! length
 	_dh_type: make string! dh_type
-	_comments: make string! comments
+	_comments: make string! comm
 	] )
 	number: number + 1
 	probe last sondages_prevus
 	];}}}
+mark_set: does [ ; set a mark, to go back afterwards; {{{ } } }
+	mark_x: x
+	mark_y: y
+	mark_z: z
+];}}}
+mark_go: does [  ; go back to a previously marked place; {{{ } } }
+	x: mark_x
+	y: mark_y
+	z: mark_z
+];}}}
 
 ; === fin des définitions de fonctions ==========
 

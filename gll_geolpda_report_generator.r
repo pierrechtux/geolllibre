@@ -69,7 +69,7 @@ do %~/rebol/library/scripts/btn-sqlite.r
 ;}}}
 ; =============================================================================
 ; TODO: ouvrir le fichier avec un chemin à choisir
-; TODO: à terme, attaquer direct la base sqlite geolpda
+; TODO: à terme, attaquer direct la base sqlite geolpda => auquai
 ; 		=> 23-Oct-2013/9:55:53+2:00: see gll_geolpda_fetch_data.r
 ;		=> 6-Feb-2014/23:58:48-3:00: essayons
 ; =============================================================================
@@ -506,7 +506,7 @@ foreach j jours [
 			;PRINT "DEBUG_3" ?? timestamp print timestamp/date ?? j input ;###############################################################DEBUG
 			if (timestamp/date = j) [ ; on est dans le jour courant, on procède:
 				;PRINT "DEBUG_4" input ;###############################################################DEBUG
-				print timestamp/date
+				;print timestamp/date
 				;print timestamp/date = j
 				;input ;###############################################################DEBUG
 				; des variables aux noms explicites:
@@ -528,10 +528,10 @@ foreach j jours [
 				write/lines/append outputfile rejoin [
 				"<h2>" id ": "
 				either lat >= 0 ["N"] ["S"]
-				lat "° " 
+				absolute (round/to lat 1E-6) "° " 
 				either lon >= 0 ["E"] ["W"]
-				lon "°, z = "
-				alt "m"
+				absolute (round/to lon 1E-6) "°, z = "
+				absolute (round/to alt 1E-2) "m"
 				"</h2>"]
 				; les notes:
 				write/lines/append outputfile rejoin ["<p>" note "</p>"]
@@ -539,13 +539,13 @@ foreach j jours [
 					; Il y a des photos:
 					;write/append outputfile photos
 					;photos: "1342804479678.jpg;1342804628278.jpg;1342804641423.jpg"
-					print photos
+					;print photos
 					photos_list: to-list parse/all photos ";"
 					foreach pho photos_list [
 						print pho
 						tt: to-integer ((to-decimal first parse pho ".") / 1000)
 						timestamp_photo: to-date epoch-to-date tt
-						print timestamp_photo
+						;print timestamp_photo
 						write/lines/append outputfile rejoin [
 							{<img src="photos/} 
 							pho 

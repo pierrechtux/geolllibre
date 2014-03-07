@@ -203,7 +203,9 @@ either (test_datasource_available new_datasource_id) [
 	; NB: sql_string_update contient maintenant le SQL à jouer à la fin
 	] [
 	print rejoin ["Problem, proposed datasource_id " new_datasource_id " already referenced in database: ^/" res ]
-	quit ]
+	;quit ; trop dur
+	halt  ; plus doux
+	]
 sql_string: rejoin ["" newline sql_string_update]
 datasource: new_datasource_id
 ;}}}
