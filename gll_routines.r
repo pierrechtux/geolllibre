@@ -2,7 +2,7 @@ rebol [
 	Title:   "Rebol routines called by geolllibre gll_* programs"
 	IDEA:    "TODO make an automatic system of imports, where a program named abc_ghea_jh_lkk.r would automatically include any file named abc_ghea_jh_*.r and any file named abc_ghea_jh_routines.r. Doing tis recursively would make an easy to maintain tree of dependencies"
 	Name:    gll_routines.r
-	Version: 1.0.3
+	Version: 1.0.4
 	Date:    26-Jan-2014/18:27:07+1:00
 	Author:  "Pierre Chevalier"
 	License: {
@@ -37,6 +37,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	1.0.1	[21-Aug-2013/16:25:11+2:00 {Ajout d'utilitaires, de fonctions communes, etc.}]
 	1.0.2	[22-Sep-2013/10:31:32+2:00 {Mise au point de la comparaison de structures de bases}]
 	1.0.3	[26-Jan-2014/18:27:07+1:00 {Inclusion d'objets et fonction en liaison avec des structures}]
+	1.0.4	[8-Mar-2014/0:08:07+1:00   {Calculs de structures à partir des mesures d'orientations du GeolPDA semblent corrects}]
 ]	]
 
 ; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
@@ -1653,8 +1654,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			case [	; more verbose, less elegant, but merdalors:
 				(all [(i > 0) (h > 0)  (g > 0)]) [ overturned: false line_movement_vertical: "N" line_movement_horizontal: "S" ]
 				(all [(i > 0) (h > 0)  (g < 0)]) [ overturned: false line_movement_vertical: "N" line_movement_horizontal: "D" ]
-				(all [(i > 0) (h < 0)  (g < 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "S" ]
-				(all [(i > 0) (h < 0)  (g > 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "D" ]
+				(all [(i > 0) (h < 0)  (g < 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "D" ] ;****
+				(all [(i > 0) (h < 0)  (g > 0)]) [ overturned: false line_movement_vertical: "I" line_movement_horizontal: "S" ] ;****
+
 				(all [(i < 0) (h > 0)  (g > 0)]) [ overturned: true  line_movement_vertical: "I" line_movement_horizontal: "S" ]
 				(all [(i < 0) (h > 0)  (g < 0)]) [ overturned: true  line_movement_vertical: "I" line_movement_horizontal: "D" ]
 				(all [(i < 0) (h < 0)  (g < 0)]) [ overturned: true  line_movement_vertical: "N" line_movement_horizontal: "D" ]
@@ -1777,7 +1779,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			if (plane_direction <   0) [plane_direction: plane_direction + 180]
 			if (plane_direction > 180) [plane_direction: plane_direction - 180]
 			; dip of the plane, from 0 to 90°:
-			plane_dip: arccosine ( plane_normal_vector/3 ) ; = plongement de OD: ;== 39.8452276492299 ; => correct
+			plane_dip: absolute arccosine ( plane_normal_vector/3 ) ; = plongement de OD: ;== 39.8452276492299 ; => correct ; absolute, to avoid problem in arcsine for pitch angle
 			case [
 				((plane_downdip_azimuth >   315) or (plane_downdip_azimuth <=  45))	[plane_quadrant_dip: "N"]
 				((plane_downdip_azimuth >   45) and (plane_downdip_azimuth <= 135))	[plane_quadrant_dip: "E"]
@@ -1793,7 +1795,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;line_pitch: arctangent ( (tangent (line_azimuth - plane_direction)) / (sine plane_dip) )	; toujours VRAIMENT pas...
 			;line_pitch: arctangent ((sine plane_dip) / ((sine (line_azimuth - plane_direction)) * tangent plane_dip))	; non!
 			;line_pitch: arctangent ((tangent (line_azimuth - plane_direction)) / (cosine plane_dip) * (sine plane_dip))	; toujours pas...
-			line_pitch: absolute arcsine ( ( sine line_plunge ) / ( sine plane_dip ) )	; tout refait; ah, je retombe sur ma première formule.
+			;line_pitch: absolute arcsine ( ( sine line_plunge ) / ( sine plane_dip ) )	; tout refait; ah, je retombe sur ma première formule.
+			line_pitch: absolute arcsine ( minimum 1 ( ( sine line_plunge ) / ( sine plane_dip ) ) )   ; tout refait; ah, je retombe sur ma première formule. Workaround for case where ( sine line_plunge ) / ( sine plane_dip ) slightly exceeds 1 (due to ? it is theoretically impossible that plane_dip < line_plunge; in present case, probably a precision problem for a pitch 90 case)
 			comment [;PAS BON:==========================================
 				case [
 					(parse plane_quadrant_dip [ "E" | "W" ]) [
@@ -1808,7 +1811,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						]
 				]
 			];==========================================================
-			either [line_azimuth - plane_downdip_azimuth < 0] [	; la ligne est à "gauche" de la plus grande pente		
+			either (line_azimuth - plane_downdip_azimuth < 0) [	; la ligne est à "gauche" de la plus grande pente		
 				case [
 					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "N" ]
 					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "E" ]
@@ -1823,7 +1826,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 					(plane_quadrant_dip = "N") [ line_pitch_quadrant: "E" ]
 					]
 				]
-			
+		
 			;;line_movement: => inutile {{{ } } }
 			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une 
 			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
