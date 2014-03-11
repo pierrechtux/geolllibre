@@ -1882,24 +1882,40 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	];}}}
 	print_plane: does [ ;{{{ } } }
 		return rejoin [
-			"Plane: " tab
+			;"Plane "
 			north_reference to-string to-integer self/plane_direction "/" to-string to-integer self/plane_dip "/" self/plane_quadrant_dip
 		]
 	];}}}
 	print_line:  does [ ;{{{ } } }
 		return rejoin [
-			"Line: " tab 
+			;"Line "
 			north_reference to-string to-integer self/line_azimuth "/" to-string to-integer self/line_plunge
 		]
 	];}}}
+;	print_plane_line: does [ ;{{{ } } }
+;		return rejoin [print_matrix newline print_plane newline print_line]
+;	];}}}
 	print_plane_line: does [ ;{{{ } } }
-		return rejoin [print_matrix newline print_plane newline print_line]
+		;Prints a human-readable string; numeric values converted to integers
+		sep: "/" ; separator
+		return rejoin [
+			;"Plane+line "
+			north_reference to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant]
+	];}}}
+	print_plane_line_movement: does [ ;{{{ } } }
+		;Prints a human-readable string; numeric values converted to integers
+		sep: "/" ; separator
+		return rejoin [
+			;"Plane+line, movement "
+			north_reference to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement]
 	];}}}
 	print_tectri: does [ ;{{{ } } }
 		;Prints a tectri-readable string; numeric values converted to integers
 		sep: " " ; separator
 		return rejoin [to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement " " comments]
 	];}}}
+
+
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
 		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
 		;# Il s'agit maintenant de tracer le Té de
