@@ -67,6 +67,18 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ; Get routines, preferences, and connect to database:
 do load to-file system/options/home/bin/gll_routines.r
 
+date_deb: date_fin: none
+
+unless (none? system/options/args) [
+	either ((length? system/options/args) = 2) [
+			if error? try [
+					date_deb: to-date pick system/options/args 1
+					date_fin: to-date pick system/options/args 2
+				] [ print "Error, arguments are not correct dates; continue execution"]
+		] [         print "Error, two arguments must be used: starting date and ending date, both in Rebol-Red date format" ]
+	]
+
+
 ; non: {{{ } } }
 ;; ouvrir le fichier .csv des observations du geolpda:
 ;change-dir system/options/path
@@ -156,7 +168,6 @@ sort/compare observations func [a b] [(at a field) < (at b field)]
 
 ; TODO récupérer les données d'orientations
 ] ;}}}
-
 get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{ } } }
 ; Library to access sqlite geolpda database:
 do %~/rebol/library/scripts/btn-sqlite.r
@@ -248,9 +259,10 @@ jours: unique jours
 sort jours
 ;}}}]
 prin "Jours: "
-foreach j jours [print j]   ; <= la liste des jours, triée
+if (none? date_deb) [
+	foreach j jours [print j]   ; <= la liste des jours, triée
+]
 ] ;}}}
-
 get_geolpda_data_from_postgresql: does [;{{{ } } }
 ; if we are not yet connected to the database:
 connection_db
@@ -264,7 +276,7 @@ print rejoin ["Open GeolPDA data in field_observations table on " dbname " datab
 ;>> print mold geolpda_observations/3500
 ;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
 
-run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
+run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY évitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
 	; DEBUG TODO remove ça
 	; write %qq1 sql_result_csv
 geolpda_observations:        copy sql_result
@@ -308,16 +320,18 @@ foreach i sql_result [
 ]
 ;length? jours 
 ;}}}]
-prin "Jours: "
-foreach j jours [print j]   ; <= la liste des jours, triée
+if (none? date_deb) [
+	prin "Jours: "
+	foreach j jours [print j]   ; <= la liste des jours, triée
+]
 ] ;}}}
 
 ; *** on fait tourner la fonction qu'on souhaite, get_geolpda_data_from_csv, get_geolpda_data_from_sqlite ou get_geolpda_data_from_postgresql:
 get_geolpda_data_from_postgresql
 
-; On affiche combien on a de lignes (d'observations)
-print rejoin ["Nombre d'observations: "          length? geolpda_observations]
-print rejoin ["Nombre de mesures structurales: " length? geolpda_orientations]
+; On affiche combien on a de lignes (d'observations)								<= non, déjà fait plus haut
+;print rejoin ["Nombre d'observations: "          length? geolpda_observations]
+;print rejoin ["Nombre de mesures structurales: " length? geolpda_orientations]
 
 ; 2013_09_11__15_51_45: j'essaye de faire une liste des séquences contigües de dates, ;{{{ TODO } } }
 ; pour donner le choix des séquences à traiter à l'utilisateur.
@@ -472,19 +486,21 @@ until  [
 
 ;}}}
 
-; {{{ ask start and end dates: } } }
-; =============================================================================
-; TODO: paramétrer les dates de début et fin de la génération du rapport
-; =============================================================================
-prin rejoin ["Date de début de génération du rapport (défaut: " (to-string first jours) ": "]
-date_deb: input
-either date_deb = "" [date_deb: first jours] [date_deb: to-date date_deb]
-?? date_deb
-prin rejoin ["Date de fin de génération du rapport (défaut: " (to-string last jours) ": "]
-date_fin: input
-either date_fin = "" [date_fin: last jours] [date_fin: to-date date_fin]
-?? date_fin
-; }}}
+if (none? date_deb) [	; if date_deb is not defined, date_fin is also undefined
+	; {{{ ask start and end dates: } } }
+	; =============================================================================
+	; TODO: paramétrer les dates de début et fin de la génération du rapport
+	; =============================================================================
+	prin rejoin ["Date de début de génération du rapport (défaut: " (to-string first jours) ": "]
+	date_deb: input
+	either date_deb = "" [date_deb: first jours] [date_deb: to-date date_deb]
+	?? date_deb
+	prin rejoin ["Date de fin de génération du rapport (défaut: " (to-string last jours) ": "]
+	date_fin: input
+	either date_fin = "" [date_fin: last jours] [date_fin: to-date date_fin]
+	?? date_fin
+	; }}}
+]
 
 comment [ ; DEBUG ###################### {{{ } } }
 date_deb: 22-Aug-2013
@@ -608,7 +624,7 @@ foreach j jours [
 				photos:      to-string  o/7
 				audio:       to-string  o/8
 				note:        to-string  o/9
-				
+				prin rejoin [id ": "]
 				; discret à droite, l'heure:
 				write/lines/append outputfile rejoin [ {<p align="right"><small>} timestamp/time "</small></p>" ]
 				; => non, ça affiche, curieusement, que none => TODO remettre ça
@@ -624,16 +640,17 @@ foreach j jours [
 				absolute (round/to alt 1E-2) "m"
 				"</h2>"]
 				; les notes:
+				prin rejoin ["notes: " (length? note) " caractères"]
 				write/lines/append outputfile rejoin ["<p>" note "</p>"]
 				; les mesures structurales:
-
 				;_____________JEANSUILA_____________________________
 				; first, are there any structural measurements concerning the current observation:
 				run_query rejoin ["SELECT count(*) FROM public.field_observations_struct_measures WHERE obs_id = '" id "'"]
 				nb_orientations: to-integer sql_result/1/1
 					if ( nb_orientations > 0 ) [
-						either (nb_orientations = 1) [	write/lines/append outputfile "<ul><li>Mesure structurale:</li>"   ] [ 
-														write/lines/append outputfile "<ul><li>Mesures structurales:</li>" ]
+						prin rejoin [", " nb_orientations " mesures"]
+						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Mesure structurale:</dt><dd>"   ] [ 
+														write/lines/append outputfile "<dl><dt>Mesures structurales:</dt><dd>" ]
 ; sortie de psql en html, pour inspiration: {{{ } } }
 ;comment [
 ;--autan bdexplo=> 
@@ -733,6 +750,7 @@ foreach j jours [
 						measures: sql_result
 						foreach m measures [
 							; o name is already an Observation: s stands for Structure:
+							;prin "-"
 							s: orientation/new first (to-block m/7)
 							; which type of geometry is measured:
 							parse m/6 [
@@ -744,17 +762,19 @@ foreach j jours [
 								]
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 							]
-						write/lines/append outputfile "</tt></ul>"
+						write/lines/append outputfile "</tt></dd></dl>"
 						]
 				;_____________JEANSUILA_____________________________
-				if length? photos [
+				if ((length? photos) > 0) [
 					; Il y a des photos:
+					prin rejoin [", photos: " length? photos]
 					;write/append outputfile photos
 					;photos: "1342804479678.jpg;1342804628278.jpg;1342804641423.jpg"
 					;print photos
 					photos_list: to-list parse/all photos ";"
 					foreach pho photos_list [
-						print pho
+						;prin rejoin [pho " "]
+						;prin "-"
 						tt: to-integer ((to-decimal first parse pho ".") / 1000)
 						timestamp_photo: to-date epoch-to-date tt
 						;print timestamp_photo
@@ -770,11 +790,13 @@ foreach j jours [
 						;  {<img alt="} pho {" src="file:///home/pierre/geolpda/copie_android_media_disk/photos/reduit_700/} pho {" " />}
 					]
 				]
+				print ""
 			]
 		]
 	]
 ]
 ;/*}}}*/
+
 ; Une fois tout écrit, on ferme les balises ouvertes:/*{{{*/
 write/append outputfile to-string [
 {
@@ -786,10 +808,4 @@ write/append outputfile to-string [
 ;}}}
 
 print rejoin ["Report generated: " to-string outputfile]
-
-comment {
-Pour vim:
-:set foldmarker=[,]
-:set syntax=rebol
-}
 
