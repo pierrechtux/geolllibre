@@ -640,7 +640,7 @@ foreach j jours [
 				absolute (round/to alt 1E-2) "m"
 				"</h2>"]
 				; les notes:
-				prin rejoin ["notes: " (length? note) " caractères"]
+				prin rejoin ["notes (" (length? note) " caractères)"]
 				write/lines/append outputfile rejoin ["<p>" note "</p>"]
 				; les mesures structurales:
 				;_____________JEANSUILA_____________________________

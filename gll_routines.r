@@ -2143,6 +2143,9 @@ xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" i
 plante_un_sondage_ici: func [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{ } } }
 	?? comm
 	unless comment [comm: copy ""]
+	; correct when an azimuth azim_ng is incorrect, either < 0 or > 360:
+		if ( azim_ng <   0 ) [ azim_ng: azim_ng + 360]
+		if ( azim_ng > 360 ) [ azim_ng: azim_ng - 360]
 	append/only sondages_prevus (make object! [ "Objet drill hole"
 	_location: make string! location
 	_id: make string! rejoin [prefix (pad reduce (number) nbdigits)]
