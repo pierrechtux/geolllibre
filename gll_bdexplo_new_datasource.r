@@ -129,8 +129,8 @@ either system/options/args = none [
 		]
 	if view? [	; /only if this rebol is a view
 		view/title layout layout_new_datasource "Fichier pour import et nouveau datasource_id"
-		if confirm "Commit changes to database (undoable)?" [
-		insert db "COMMIT;"
+		if confirm "Commit changes to database (*not* undoable)?" [
+			insert db "COMMIT;"
 		]
 	]
 	quit
