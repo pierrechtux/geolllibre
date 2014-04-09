@@ -73,19 +73,19 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 ; functions, libraries: {{{ } } }
 synchronize_geolpda: does [
 	; TODO: make this platform-independent:
-	; as is, it will /only work on a platform where rsync is installed 
-	; and in the $PATH
+	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
 	print "Synchronization process..."
 	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
 	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
-	print rejoin["NOT Running: " newline cmd newline "=> TOO DANGEROUS! Run yourself at your own risks; press any key to resume, once directories are syncrhronised"]
-	;tt:  copy ""
-	;err: copy ""
-	;call/wait/output/error cmd tt err
-	;print tt
+	;###################### RE-ENABLED, bravement...     ################################################
+	print rejoin["Running: " cmd]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	print "Press any key to continue..."
 	input
-	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
 ]
 
 synchronize_oruxmaps_tracklogs: does [
@@ -285,6 +285,7 @@ print {diff ~/field_observations_struct_measures_avant.csv ~/field_observations_
 
 ; Synchronize oruxmaps tracklogs, optionally: ;/*{{{*/ } } }
 if confirm {Synchronize oruxmaps tracklogs?} [
+	print "Synchronizing oruxmaps tracklogs"
 	alert {locate where android device is mounted, pickup "oruxmaps" subdirectory}
 	unless DEBUG [ dir_mount_oruxmaps_android: request-dir/title/dir {locate oruxmaps where android device is located, choose "oruxmaps" subdirectory} dir_mount_oruxmaps_android ]
 	alert {locate the local directory where oruxmaps tracks data is (or will be) replicated}
