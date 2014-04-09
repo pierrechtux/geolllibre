@@ -517,7 +517,7 @@ outputfile: to-file rejoin ["geolpda_report_pch_from_"
 date_deb/year "_" 
 next form 100 + date_deb/month "_" 
 next form 100 + date_deb/day
-"to"
+"_to_"
 date_fin/year "_" 
 next form 100 + date_fin/month "_" 
 next form 100 + date_fin/day ".html"]
