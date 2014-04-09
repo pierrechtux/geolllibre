@@ -2141,7 +2141,7 @@ xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" i
 ]
 ;# /*}}}*/
 plante_un_sondage_ici: func [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{ } } }
-	?? comm
+	;?? comm
 	unless comment [comm: copy ""]
 	; correct when an azimuth azim_ng is incorrect, either < 0 or > 360:
 		if ( azim_ng <   0 ) [ azim_ng: azim_ng + 360]
@@ -2159,7 +2159,7 @@ plante_un_sondage_ici: func [ "append current values to list planned holes, opti
 	_comments: make string! comm
 	] )
 	number: number + 1
-	probe last sondages_prevus
+	;probe last sondages_prevus
 	];}}}
 mark_set: does [ ; set a mark, to go back afterwards; {{{ } } }
 	mark_x: x
