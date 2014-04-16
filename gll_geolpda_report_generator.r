@@ -627,8 +627,6 @@ foreach j jours [
 				prin rejoin [id ": "]
 				; discret à droite, l'heure:
 				write/lines/append outputfile rejoin [ {<p align="right"><small>} timestamp/time "</small></p>" ]
-				; => non, ça affiche, curieusement, que none => TODO remettre ça
-				; => auquai; ça doit être mieux
 				
 				; Un titre de niveau 2 = le waypoint:
 				write/lines/append outputfile rejoin [
@@ -764,14 +762,13 @@ foreach j jours [
 							]
 						write/lines/append outputfile "</tt></dd></dl>"
 						]
-				;_____________JEANSUILA_____________________________
 				if ((length? photos) > 0) [
 					; Il y a des photos:
-					prin rejoin [", photos: " length? photos]
 					;write/append outputfile photos
 					;photos: "1342804479678.jpg;1342804628278.jpg;1342804641423.jpg"
 					;print photos
 					photos_list: to-list parse/all photos ";"
+					prin rejoin [", photos: " length? photos_list]
 					foreach pho photos_list [
 						;prin rejoin [pho " "]
 						;prin "-"
