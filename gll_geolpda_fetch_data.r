@@ -40,8 +40,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ];}}}
 
 DEBUG: false
-comment [
-; DEBUG vérif:  ============================ sauve 2 tables obs et mesures en csv AVANT: {{{ } } }
+if DEBUG [; vérif:  ============================ sauve 2 tables obs et mesures en csv AVANT: {{{ } } }
 run_query "SELECT * FROM public.field_observations"
 ;write %~/field_observations_avant.csv sql_result_csv
 ww: copy sql_result
@@ -56,8 +55,7 @@ ww: copy sql_result
 foreach r ww [
 	write/append %~/field_observations_struct_measures_avant.csv rejoin [mold r newline]
 ]
-;}}}
-]
+] ;}}}
 
 ; initialisation: ;{{{ } } }
 if error? try [						; Récupération des routines (et des préférences) et connexion à la base
@@ -71,49 +69,12 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 ]
 ;}}}
 ; functions, libraries: {{{ } } }
-synchronize_geolpda: does [
-	; TODO: make this platform-independent:
-	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
-	print "Synchronization process..."
-	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
-	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
-	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
-	;###################### RE-ENABLED, bravement...     ################################################
-	print rejoin["Running: " cmd]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-	print "Press any key to continue..."
-	input
-]
-
-synchronize_oruxmaps_tracklogs: does [
-	; TODO: make this platform-independent:
-	; as is, it will /only work on a platform where rsync is installed 
-	; and in the $PATH
-	print "Synchronization process..."
-	cmd: rejoin [{rsync --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
-	print rejoin["Running " cmd]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-]
-
-; Library to access sqlite geolpda database:
-do %~/rebol/library/scripts/btn-sqlite.r
+; => all moved to gll_routines.r
 ;}}}
 
-; Open destination database:{{{ } } }
-;=> non
-;}}}
-; Remove records from dataset from geolpda which are already in database: {{{ } } }
-; 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name):
-run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
-max_waypoint_name: to-integer to-string first (copy sql_result)
-; and, later, only consider data with higher _id
-;}}}
+; Execution
+get_bdexplo_max__id
+
 ; Connect geolpda android device, copy to local directory:{{{ } } }
 ; default directories are stored in .gll_preferences
 
@@ -132,6 +93,7 @@ print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_ge
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 if ( confirm "synchronize geolpda data?" ) [ synchronize_geolpda ]
 ;}}}
+
 ; Open sqlite geolpda, get data:{{{ } } }
 print "Open GeolPDA database..."
 change-dir dir_geolpda_local
@@ -185,8 +147,9 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes.
-prin "OPeration IDentifier: "
-opid: to-integer input 
+prin rejoin ["OPeration IDentifier: " opid]
+tt: input
+unless (tt = "") [ opid: to-integer tt ]
 
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
@@ -210,6 +173,7 @@ sql_string: rejoin ["" newline sql_string_update]
 datasource: new_datasource_id
 ;}}}
 ;}}}
+; TODO BUG: no records are added to public.lex_datasource
 append sql_string newline
 
 ; observations:{{{ } } }
@@ -217,26 +181,27 @@ append sql_string newline
 if (length? geolpda_observations) > 0 [
 	; continue the SQL INSERT statement:
 	_: {, } ; just to save a few keystrokes to the coder... and to make REJOIN code a bit more readable; variable was called SEP for SEParator; renamed to _ for clarity/brevity
-	sql_string:  {INSERT INTO public.field_observations (device,opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms) VALUES }
+	append sql_string {INSERT INTO public.field_observations (device,opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms) VALUES }
 	foreach o geolpda_observations [
 		tmp: to-date epoch-to-date (to-integer ((to-decimal o/3) / 1000))
 		append sql_string rejoin [newline {('} geolpda_device {'} _ opid _ tmp/year _ {'} o/2 {'} _ {'} tmp/year "-" pad tmp/month 2 "-" pad tmp/day 2 {'} _ {'} o/1 {'} _ o/6 _ o/5 _ o/4 _ {'} o/9 {'} _ {NULL, NULL, 4326} _ {'} geologist {'} _ {NULL, NULL, NULL, NULL, } {'} o/7 {'} _ {'} o/8 {'} _ o/3 {),}]
 	]
 	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
 ]
+; Corrections of single quotes in strings: i.e. jusqu&#39;ici
+append sql_string rejoin [newline {UPDATE public.field_observations SET description = replace(description, '&#39;', e'\'') WHERE description ILIKE '%&#39;%';}]
 
 print "SQL statement to be run:"
 prin copy/part sql_string 300
 print "..."
 
-
 ;}}}
 ; orientations: {{{ } } }
 ; if anything to add:
 if (length? geolpda_orientations) > 0 [
-	append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id   ) VALUES } ]
+	append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (device,    opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id   ) VALUES } ]
 	foreach m geolpda_orientations [
-		append sql_string rejoin [newline {(}                                               		  opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3        {),}        ]
+		append sql_string rejoin [newline {(}                                               		  'GeolPDA', opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3        {),}        ]
 	]
 	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
 ]
@@ -246,9 +211,6 @@ prin copy/part sql_string 300
 print "..."
 ;}}}
 ;}}}
-
-;DEBUG!:
-;editor sql_string
 
 ; Play INSERT queries on database and COMMIT: {{{ } } }
 insert db sql_string
@@ -257,8 +219,8 @@ insert db "COMMIT;"
 print "commited => end."
 ;}}}
 
-comment [
-; DEBUG vérif:  ============================ sauve 2 tables obs et mesures en csv APRÈS: {{{ } } }
+if DEBUG [ ; {{{ } } }
+vérif:  ============================ sauve 2 tables obs et mesures en csv APRÈS: {{{ } } }
 run_query "SELECT * FROM public.field_observations"
 ;write %~/field_observations_apres.csv newline
 ;ww: copy sql_result
@@ -281,7 +243,7 @@ print {To see diffs, run:}
 print {diff ~/field_observations_avant.csv ~/field_observations_apres.csv}
 print {diff ~/field_observations_struct_measures_avant.csv ~/field_observations_struct_measures_apres.csv}
 ;}}}
-]
+] ;}}}
 
 ; Synchronize oruxmaps tracklogs, optionally: ;/*{{{*/ } } }
 if confirm {Synchronize oruxmaps tracklogs?} [
