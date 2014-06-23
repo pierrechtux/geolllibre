@@ -36,21 +36,32 @@ rebol [ ;{{{ } } }
 ]
 ;}}}
 
+print "no, no: you MUST read, and copy-paste to a terminal, a bash, a psql, logged in as postgres or normal user, accordingly..."
 
-ancien code: [
+old_code: [
 ;#!/bin/PASbash
 ;echo "non, non: faut lire, et faire en copiant-collant, selon, sur un terminal, un bash, un psql, en postgres ou utilisateur normal, selon..."
 ;exit 0
 ;
-# faire une bd vide, avec postgis
-nouvellebd="bdexplovide"
+
+quit
+
+
+# make a new empty database, with postgis
+newdb="emptybdexplo"
+
 # su postgres {{{
-bd=$nouvellebd
+bd=$newdb
+
 dropdb $bd
-createdb $bd --o pierre -T template_postgis
-echo "grant all on geometry_columns to pierre;"     | psql -d $bd
-echo "grant select on spatial_ref_sys to pierre;"   | psql -d $bd
-echo "CREATE LANGUAGE plpythonu;" | psql -d $bd
+createdb $bd --o $LOGNAME
+
+echo "CREATE EXTENSION postgis;"                    | psql -d $bd
+echo "CREATE EXTENSION postgis_topology;"           | psql -d $bd
+
+echo "grant all on geometry_columns to $LOGNAME;"   | psql -d $bd
+echo "grant select on spatial_ref_sys to $LOGNAME;" | psql -d $bd
+echo "CREATE LANGUAGE plpythonu;"                   | psql -d $bd
 
 
 psql -d $bd
@@ -58,7 +69,7 @@ psql -d $bd
 --# --Définissons la fonction, en superutilisateur (postgres): 
 
 
-DROP FUNCTION generate_cross_sections_array();
+DROP FUNCTION IF EXISTS generate_cross_sections_array();
 CREATE OR REPLACE FUNCTION generate_cross_sections_array() RETURNS trigger AS $$
 #{{{
 #{{{
@@ -138,17 +149,14 @@ $$LANGUAGE plpythonu;
 
 
 # }}}
-# su pierre{{{
-bd=$nouvellebd
-
+# su normal user{{{
+bd=$newdb
 #echo "CREATE SCHEMA amc   ;" | psql -d $bd
 #echo "CREATE SCHEMA bof   ;" | psql -d $bd
 #echo "CREATE SCHEMA smi;" | psql -d $bd
 #echo "CREATE SCHEMA tmp_a_traiter;" | psql -d $bd
 echo "CREATE SCHEMA tmp_imports;" | psql -d $bd
-echo "CREATE SCHEMA pierre   ;" | psql -d $bd
-
-
+echo "CREATE SCHEMA $LOGNAME   ;" | psql -d $bd
 
 psql -d $bd
 
