@@ -38,6 +38,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	1.0.2	[22-Sep-2013/10:31:32+2:00 {Mise au point de la comparaison de structures de bases}]
 	1.0.3	[26-Jan-2014/18:27:07+1:00 {Inclusion d'objets et fonction en liaison avec des structures}]
 	1.0.4	[8-Mar-2014/0:08:07+1:00   {Calculs de structures à partir des mesures d'orientations du GeolPDA semblent corrects}]
+	1.0.5	[23-Apr-2014/14:44:58+1:00 {Functions concerning GeolPDA moved here, from gll_geolpda_fetch_data.r and gll_geolpda_report_generator.r}]
 ]	]
 
 ; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
@@ -1031,6 +1032,8 @@ load-csv: funct [
 
 ]
 ;/*}}}*/
+; Library to access sqlite geolpda database:
+do %~/rebol/library/scripts/btn-sqlite.r
 
 ; === functions and objects definitions ==========
 ; functions related to database:
@@ -1236,6 +1239,289 @@ epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (p
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
 ]
 ;}}}
+; a very simple function, to quickly print a list:{{{
+print-list: func [ l [block!]] [
+	foreach i l [
+		print i
+	]
+]
+;}}}
+
+; Functions concerning GeolPDA data management: {{{ } } }
+synchronize_geolpda: does [; {{{ } } }
+	; TODO: make this platform-independent:
+	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
+	print "Synchronization process..."
+	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
+	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
+	;###################### RE-ENABLED, bravement...     ################################################
+	; For security (some files were just deleted...), first do a --dry-run , then confirm:
+	print {"Dry run:}
+	cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	prin "Perform these actions [Yn]?"
+	if ((lowercase input ) = "y") [
+		; really do the synchronization:
+		cmd: replace cmd "rsync --dry-run" "rsync "
+		print rejoin["Running: " cmd]
+		tt:  copy ""
+		err: copy ""
+		call/wait/output/error cmd tt err
+		print tt
+	]
+	print "Press any key to continue..."
+	input
+];}}}
+synchronize_oruxmaps_tracklogs: does [; {{{ } } }
+	; TODO: make this platform-independent:
+	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
+	print "Synchronization process..."
+	; For security first do a --dry-run , then confirm:
+	print {"Dry run:}
+	cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	prin "Perform these actions [Yn]?"
+	if ((lowercase input ) = "y") [
+		; really do the synchronization:
+		cmd: replace cmd "rsync --dry-run" "rsync "
+		print rejoin["Running: " cmd]
+		tt:  copy ""
+		err: copy ""
+		call/wait/output/error cmd tt err
+		print tt
+	]
+	print "Press any key to continue..."
+	input
+];}}}
+get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: {{{ } } }
+; 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name):
+run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+max_waypoint_name: to-integer to-string first (copy sql_result)
+; and, later, only consider data with higher _id
+];}}}
+chk_directories_mount_and_local: does [;{{{ } } }
+	all [
+		exists? dir_mount_geolpda_android
+		exists? dir_geolpda_local
+	]
+];}}}
+
+
+get_geolpda_data_from_csv: does [ ; Inutile si on n'utilise pas le .csv: {{{ } } }
+; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
+;lines/1 == {_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note}
+
+observations: copy []    ; un tableau contenant les observations
+foreach line lines [     ; on remplit ce tableau
+	if line == "" [ break ]
+	t: parse/all line ","
+	append observations reduce [to-list skip t 1]
+]
+;?? observations
+
+; On enlève la première ligne d'en-tête:
+remove observations
+
+; On trie la table: {{{ } } }
+;sort observations
+; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{ } } }
+;TotBol1
+;TotBol10
+;TotBol11
+;TotBol12
+;TotBol13
+;TotBol14
+;TotBol15
+;TotBol16
+;TotBol17
+;TotBol18
+;TotBol19
+;TotBol2
+;TotBol20
+;TotBol21
+;TotBol22
+;TotBol3
+;TotBol4
+;TotBol5
+;TotBol6
+;TotBol7
+;TotBol8
+;TotBol9
+;] ;}}}
+; Donc on trie la table par timestamp, plutôt:
+field: 2    ; le champ sur lequel trier: timestamp = 2, en l'occurrence
+sort/compare observations func [a b] [(at a field) < (at b field)]
+; }}}
+
+; TODO récupérer les données d'orientations
+] ;}}}
+get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{ } } }
+; Library to access sqlite geolpda database:
+do %~/rebol/library/scripts/btn-sqlite.r
+
+print "Open GeolPDA database..."
+change-dir dir_geolpda_local
+copy-file %geolpda %geolpda_copy.db
+	; => not terrible; this file copy is /only due to the 
+	;    fact that the btn (better than nothing) driver does
+	;    not support sqlite file without extension...
+db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
+
+; Get data: as db is the same name as defined for default
+; database connexion in gll_routines.r, we can use the functions:
+; observations: {{{ } } }
+run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par la suite
+	; DEBUG TODO remove ça
+	; write %qq1 sql_result_csv
+
+; Comparison of field list: to be sure that the table structure matches the 
+; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
+unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
+	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "Error, halting"
+	halt
+]
+geolpda_observations:        copy sql_result
+geolpda_observations_fields: copy sql_result_fields
+;print rejoin [tab length? geolpda_observations " records in observations table"]
+;}}}
+; orientations:{{{ } } }
+run_query "SELECT * FROM orientation"
+; Comparison of field list: to be sure that the table structure matches the 
+; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
+unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"] [
+	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "Error, halting"
+	halt
+]
+; If we reached here, we are ok; now, it is necessary to also fetch the full id from observations by JOINing:
+;run_query "SELECT poiname, orientation._id, poi_id, orientationtype, rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9, v1, v2, v3 FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id"
+; also, make a block from the matrix measurements:
+run_query "SELECT poiname, orientation._id, poi_id, orientationtype, '[' || rot1 || ' ' || rot2 || ' ' || rot3 || ' ' || rot4 || ' ' || rot5 || ' ' || rot6 || ' ' || rot7 || ' ' || rot8 || ' ' || rot9 || ']' AS rotation_matrix FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id"
+
+geolpda_orientations: 			copy sql_result
+geolpda_orientations_fields: 	copy sql_result_fields
+;non: == ["poiname" "_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"]
+;     == ["poiname" "_id" "poi_id" "orientationtype" "rotation_matrix"]
+print rejoin [tab length? geolpda_orientations " records in orientations measurements table"]
+
+;}}}
+
+; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
+; on construit une liste vide:
+dates: copy []
+; qui contiendra
+; toutes les dates:
+foreach o geolpda_observations [
+    append dates o/3             ;c'est le champ poitime
+]
+
+; Il faut trouver les jours.
+; Les dates sont au format epoch en millisecondes;
+; on utilise la fonction pour convertir les epoch en date 
+; dans gll_routines.r
+
+; Faisons une liste contenant les jours:
+jours: copy []
+
+;compteur: 0
+; et on y met tous les jours (au format date):
+foreach i dates [
+;compteur: compteur + 1
+;print compteur
+    ;tmp: to-date epoch-to-date (to-integer ((to-decimal i) / 1000))
+    ; => marche plus pour une date:
+	;** Script Error: Invalid argument: 7-Dec-2012/23:57:591:00
+	;** Where: to-date
+	;** Near: to date! :value
+    ; => contournement de l'obstacle:
+    tmp1: epoch-to-date (to-integer ((to-decimal i) / 1000))
+    tmp: to-date (first parse tmp1 "/")
+    append jours tmp/date
+]
+
+; On ne garde que les jours uniques, en les plaçant dans la liste jours:
+jours: unique jours
+; que l'on trie:
+sort jours
+;}}}]
+prin "Jours: "
+if (none? date_start) [
+	foreach j jours [print j]   ; <= la liste des jours, triée
+]
+] ;}}}
+get_geolpda_data_from_postgresql: does [;{{{ } } }
+; if we are not yet connected to the database:
+connection_db
+print rejoin ["Open GeolPDA data in field_observations table on " dbname " database hosted by " dbhost "..."]
+; observations: {{{ } } }
+;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
+; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
+;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
+;>> print geolpda_observations_fields   
+; opid year        obs_id         date waypoint_name               x              y        z  description                                                                                                                                                                                                                                                                    code_litho code_unit srid geologist icon_descr comments sample_id datasource numauto photos                                                                                                        audio timestamp_epoch_ms db_update_timestamp          username  device                        time
+;>> print mold geolpda_observations/3500
+;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
+
+run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY évitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
+	; DEBUG TODO remove ça
+	; write %qq1 sql_result_csv
+geolpda_observations:        copy sql_result
+geolpda_observations_fields: copy sql_result_fields
+print rejoin [tab length? geolpda_observations " records in observations table"]
+;}}}
+; orientations:{{{ } } }
+run_query "SELECT * FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
+;>> ?? sql_result_fields 
+;sql_result_fields: ["opid" "obs_id" "measure_type" "structure_type" "north_ref" "direction" "dip" "dip_quadrant" "pitch" "pitch_quadrant" "movement" "valid" "comments" "numauto" "db_update_timestamp" "username" "datasource" "rotation_matrix" "geolpda_id" "geolpda_poi_id" "sortgroup"]
+; non, pas bon, il faut reconstruire les champs tels qu'issus du GeolPDA:
+;poiname _id poi_id orientationtype rot1 rot2 rot3 rot4 rot5 rot6 rot7 rot8 rot9 v1 v2 v3
+;>> print geolpda_orientations/1      
+;PCh2012_0276 1 0 L -0.825988829135895 0.563685536384583 -0.0010570005979389 -0.562389075756073 -0.823959052562714 0.0693530738353729 0.0382223948836327 0.0578793101012707 0.997591555118561 0.0 0.0 0.0
+
+;SELECT 
+;obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix  
+;/*
+;opid, 
+;structure_type, north_ref, 
+;direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments, numauto, db_update_timestamp, username, datasource, 
+;sortgroup 
+;*/
+;FROM public.field_observations_struct_measures WHERE obs_id ILIKE 'PCh2012_____' ORDER BY obs_id, geolpda_poi_id, geolpda_id;
+
+run_query "SELECT obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
+
+geolpda_orientations: 			copy sql_result
+geolpda_orientations_fields: 	copy sql_result_fields
+print rejoin [tab length? geolpda_orientations " records in orientations measurements table"]
+
+;}}}
+
+; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
+run_query "SELECT DISTINCT date FROM public.field_observations ORDER BY date"	; nettement plus aisé en sql qu'à partir des données du .csv!
+jours: copy []
+foreach i sql_result [
+	unless any [(none? i) ((to-string i) = "none")] [
+		append jours to-date to-string i
+	]
+]
+;length? jours 
+;}}}]
+if (none? date_start) [
+	prin "Jours: "
+	foreach j jours [print j]   ; <= la liste des jours, triée
+]
+] ;}}}
+
+
+;}}}
+
 
 ; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
 dd2dms: func ["Converts decimal degrees to degrees, minutes, seconds" dd] [ ;{{{ } } }
