@@ -463,52 +463,52 @@ Begin MDIForm MDI
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe a"
             Index           =   1
-            Shortcut        =   {F5}
+            Shortcut        =   {F1}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe b"
             Index           =   2
-            Shortcut        =   {F6}
+            Shortcut        =   {F2}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe c"
             Index           =   3
-            Shortcut        =   {F7}
+            Shortcut        =   {F3}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe d"
             Index           =   4
-            Shortcut        =   {F8}
+            Shortcut        =   {F4}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe e"
             Index           =   5
-            Shortcut        =   +{F5}
+            Shortcut        =   {F5}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe f"
             Index           =   6
-            Shortcut        =   +{F6}
+            Shortcut        =   {F6}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe g"
             Index           =   7
-            Shortcut        =   +{F7}
+            Shortcut        =   {F7}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe h"
             Index           =   8
-            Shortcut        =   +{F8}
+            Shortcut        =   {F8}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe i"
             Index           =   9
-            Shortcut        =   +^{F5}
+            Shortcut        =   {F9}
          End
          Begin Menu menu_projettegroupe 
             Caption         =   "Projection groupe j"
             Index           =   10
-            Shortcut        =   +^{F6}
+            Shortcut        =   {F11}
          End
       End
       Begin Menu zzzzzz 
@@ -689,7 +689,7 @@ Begin MDIForm MDI
       End
       Begin Menu menu_remkstereo 
          Caption         =   "&Retracer stéréo"
-         Shortcut        =   {F9}
+         Shortcut        =   {F12}
       End
       Begin Menu menu_clear_remkstereo 
          Caption         =   "&Effacer et retracer stéréo"
