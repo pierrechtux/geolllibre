@@ -199,9 +199,9 @@ print "..."
 ; orientations: {{{ } } }
 ; if anything to add:
 if (length? geolpda_orientations) > 0 [
-	append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (device,                  opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id   ) VALUES } ]
+	append sql_string rejoin [newline newline {INSERT INTO public.field_observations_struct_measures (device,                  opid,    obs_id     , measure_type , north_ref ,  datasource ,        rotation_matrix                                                                ,   geolpda_id , geolpda_poi_id, valid  ) VALUES } ]
 	foreach m geolpda_orientations [
-		append sql_string rejoin [newline {(}                                                         {'} geolpda_device {'} _ opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3        {),}        ]
+		append sql_string rejoin [newline {(}                                                         {'} geolpda_device {'} _ opid _ {'} m/1 {'}  _  {'} m/4 {'} _    {'Nm'} _  datasource _   {'[}  m/5 " " m/6 " " m/7 " " m/8 " " m/9 " " m/10 " " m/11 " " m/12 " " m/13  {]'} _       m/2    _      m/3      _ {TRUE  ),}        ]
 	]
 	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
 ]
