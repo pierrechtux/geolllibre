@@ -169,10 +169,10 @@ either system/options/args = none [
 	generate_sql_string_update new_datasource_id file_in
 	print "-- SQL instruction to be run:"
 	print sql_string_update
-	reponse: (ask rejoin ["Générer l'enregistrement dans public.lex_datasource:^/" sql_string_update "^/(Y/n) ?"])
+	reponse: (ask rejoin ["Générer l'enregistrement dans public.lex_datasource:^/" sql_string_update "^/? (Y/n)"])
 	if any [(reponse = "y") (reponse = "")] [
 		run_sql_string_update ]
-	reponse: (ask "Commit changes to database (undoable)?")
+	reponse: (ask "Commit changes to database (undoable)? (Y/n)")
 	if any [(reponse = "y") (reponse = "")] [
 		insert db "COMMIT;"
 		prin "New datasource generated: "
