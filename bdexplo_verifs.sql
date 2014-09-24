@@ -1,6 +1,6 @@
 --###############################################
---##    une série de scripts pour maintenir    ##
---##      la bd géol/explo en postgresql       ##
+--##      a suite of scripts to maintain       ##
+--##       bdexplo bdgeol in postgresql        ##
 --###############################################
 
 --[ ;{{{ } } }
@@ -38,9 +38,31 @@
 
 
 --------------------------------------------------------------------------------------------------------------------
+-- usage:
+-- For report generation, things are coded as follows:
+-- any comment to be used is prefixed with # after --
+-- --#BEGIN{{{ starting tag
+-- --#{{{nHoles collars                                 Title of query, on one line only.
+--                                                      indentation level is n (after -- and   
+--                                                      curly braces, makes the hierarchy of
+--                                                      the report.
+--
+-- --#List of drill-holes and trenches collars          If second comment just after title line, 
+--                                                      texte to be printed.
+--                                                      If empty line just after title line, the
+--                                                      title is a section title, not a query's title.
+--
+-- --query to be optimised, later on                    if comment without #, off, ignored.
+--
+-- SELECT * FROM dh_collar;                             SQL query
+--                                                      etc.
+-- --#}}}                                               end of a paragraph
+-- --#END}}} end
+
+
+-- (usage, in French:)
 -- Pour la génération d'un rapport, on code comme suit:
 -- tout commentaire devant servir est préfixé par # après le --
---
 -- --#BEGIN{{{ la balise de début
 -- --#{{{nLes têtes d'ouvrages                          Titre de la requête, sur une seule ligne.
 --                                                      l'indentation /*en nombre de + au début*/

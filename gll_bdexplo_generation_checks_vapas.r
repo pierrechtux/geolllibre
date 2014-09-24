@@ -34,23 +34,23 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
     See LICENSE file.
 	}
 	Description: {
-	Ce script va chercher un fichier contenant une série de requêtes SQL:
+	This script opens a file containing a suite of SQL queries:
 	    bdexplo_verifs.sql
-	puis génère une sortie en .html reprenant les sorties des requêtes.
-	Le fichier des requêtes est structuré comme suit, à base de lignes commençant par --#:
-	    --#BEGIN{{{                                               <= tout ce qui est avant cette ligne est ignoré
+	then it generates an HTML output with the result of all queries.
+	The file containing queries is structured as follows, based on lines beginning with --#:
+	    --#BEGIN{{{                                               <= anything before this line is ignored
 	    --#+Check drill holes and trenches data
-	    --#+Titre de niveau 1
-	    --commentaire quelconque                                  <= commentaire n'apparaissant pas
-	                                                              <= ligne vide avant chaque élément
-	    --#+Titre de niveau 1
+	    --#+Title level 1
+	    --any comment                                             <= comment, ignored
+	                                                              <= empty line preceding any item
+	    --#+Title level 1
 	
-	    --#++Titre de niveau 2
-	    --#Texte qui sera affiché sur la sortie
-	    SELECT split_part(id, '_', 1) AS id_left_part,            <= requête SQL, peut s'étager sur 
-	    location, count(*) AS nb_records FROM collars;               plusieurs lignes
+	    --#++Title level 2
+	    --#Text displayed on output
+	    SELECT split_part(id, '_', 1) AS id_left_part,            <= SQL query, may span on 
+	    location, count(*) AS nb_records FROM collars;               several lines
 	    
-	    --#END}}}                                                 <= tout ce qui est après la ligne précédente est ignoré.
+	    --#END}}}                                                 <= anything after this is ignored
 	}
 	History: [
 	1.0.0 [	{Première version en python}]
@@ -61,24 +61,27 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 		version opérationnelle, tests en cours}]
 	1.1.2 [15-Sep-2013               {
 		version opérationnelle, tests au quai}]
+	1.1.3 [14-Jun-2014/12:34:30+2:00 {
+		Get rid of Frenglish}
+		]
 	]
 ]
 
-;TOUT ÇA ROULE: {{{ } } }
+;ALL THIS CODE RUNS FINE: {{{ } } }
 ; initialisation: {{{ } } }
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines (et des préférences) et connexion à la base
-if error? try [ type? journal_sql ] [journal_sql: [] ]	; si pas de journal des instructions SQL, on en crée un vide
+do load to-file system/options/home/bin/gll_routines.r	; Get routines (and preferences) and connect to database
+if error? try [ type? journal_sql ] [journal_sql: [] ]	; if no journal of SQL instructions, create an empty one
 
-; début de transaction:
+; beginning of transaction:
 insert db "BEGIN TRANSACTION;"
 ;}}}
 
-runQueryToReport: func ["Prend du SQL en entrée, sort une boîte en .html avec le résultat de la requête passée à psql" sql_text] [ ;{{{ } } }
-	sortie: rejoin ["<div><i><small>" sql_text "</small></i><p><pre>" newline]
-	append sortie do_psql sql_text
-	append sortie "</pre></div><p>"
-	;append output sortie
-	return sortie
+runQueryToReport: func ["Takes some SQL, returns a box in .html with the query result, once passed to psql" sql_text] [ ;{{{ } } }
+	output: rejoin ["<div><i><small>" sql_text "</small></i><p><pre>" newline]
+	append output do_psql sql_text
+	append output "</pre></div><p>"
+	;append output output
+	return output
 	] ;}}}
 ;test: {{{ } } }
 
@@ -251,7 +254,7 @@ ensb_requete: make object! [ ;class ensb_requete: ;#{{{ } } }
 ;# |        fonctions, exécution               |
 ;# +-------------------------------------------+
 
-;le gros texte en sortie (plutôt que de faire des print): variable sortie_generale
+;le gros texte en sortie (plutôt que de faire des print): variable output_generale
 sortie_generale: copy ""
 append sortie_generale entete
 
