@@ -109,8 +109,8 @@
    End Type
    Global frm_Station() As New frmStation 'impossible d'inclure 1 objet dans le type site
    Type type_site
-      Faille(140)  As type_faille '****reprendre ça!!
-      NbMes  As Integer
+      Faille(149)  As type_faille '****reprendre ça!!
+      NbMes As Integer
       Situation As String
       'Repertoire As String
       NomFichier As String

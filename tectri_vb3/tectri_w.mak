@@ -18,8 +18,8 @@ SAISIE_M.FRM
 DEBA.FRM
 CHERCHE.FRM
 METASTER.FRM
-ProjWinSize=78,885,211,544
+ProjWinSize=79,886,211,544
 ProjWinShow=2
 IconForm="MDI"
-Title="TecTri - 22/7/2014 - Pib"
-ExeName="tectri.exe"
+Title="TecTri - 11/09/2014 - Pib"
+ExeName="TECTRI.EXE"

@@ -2,15 +2,15 @@ VERSION 2.00
 Begin MDIForm MDI 
    Caption         =   "TecTri"
    ClientHeight    =   4605
-   ClientLeft      =   285
-   ClientTop       =   1710
+   ClientLeft      =   2685
+   ClientTop       =   2190
    ClientWidth     =   6645
    Height          =   5295
-   Icon            =   MDI.frx:0000
-   Left            =   225
+   Icon            =   MDI.FRX:0000
+   Left            =   2625
    LinkMode        =   1  'Source
    LinkTopic       =   "Form1"
-   Top             =   1080
+   Top             =   1560
    Width           =   6765
    Begin PictureBox Image2 
       Align           =   2  'Align Bottom
@@ -178,7 +178,7 @@ Begin MDIForm MDI
          Font3D          =   3  'Inset w/light shading
          Height          =   345
          Left            =   825
-         Picture         =   MDI.frx:0302
+         Picture         =   MDI.FRX:0302
          TabIndex        =   9
          Top             =   75
          Width           =   360
@@ -188,7 +188,7 @@ Begin MDIForm MDI
          Font3D          =   3  'Inset w/light shading
          Height          =   345
          Left            =   450
-         Picture         =   MDI.frx:03F4
+         Picture         =   MDI.FRX:03F4
          TabIndex        =   8
          Top             =   75
          Width           =   360
@@ -198,7 +198,7 @@ Begin MDIForm MDI
          Font3D          =   3  'Inset w/light shading
          Height          =   345
          Left            =   75
-         Picture         =   MDI.frx:04E6
+         Picture         =   MDI.FRX:04E6
          TabIndex        =   7
          Top             =   75
          Width           =   360
@@ -238,7 +238,7 @@ Begin MDIForm MDI
          Height          =   480
          Index           =   1
          Left            =   5100
-         Picture         =   MDI.frx:05D8
+         Picture         =   MDI.FRX:05D8
          ScaleHeight     =   480
          ScaleWidth      =   480
          TabIndex        =   1
@@ -254,7 +254,7 @@ Begin MDIForm MDI
          Height          =   480
          Index           =   2
          Left            =   5100
-         Picture         =   MDI.frx:08DA
+         Picture         =   MDI.FRX:08DA
          ScaleHeight     =   480
          ScaleWidth      =   480
          TabIndex        =   2
@@ -272,7 +272,7 @@ Begin MDIForm MDI
       Begin Image desPasteButtonDn 
          Height          =   330
          Left            =   9840
-         Picture         =   MDI.frx:0BDC
+         Picture         =   MDI.FRX:0BDC
          Top             =   480
          Visible         =   0   'False
          Width           =   375
@@ -280,7 +280,7 @@ Begin MDIForm MDI
       Begin Image desPasteButtonUp 
          Height          =   330
          Left            =   10200
-         Picture         =   MDI.frx:0DB6
+         Picture         =   MDI.FRX:0DB6
          Top             =   480
          Visible         =   0   'False
          Width           =   375
@@ -451,6 +451,70 @@ Begin MDIForm MDI
             Caption         =   "Classement dans &j"
             Index           =   10
          End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &k"
+            Index           =   11
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &l"
+            Index           =   12
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &m"
+            Index           =   13
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &n"
+            Index           =   14
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &o"
+            Index           =   15
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &p"
+            Index           =   16
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &q"
+            Index           =   17
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &r"
+            Index           =   18
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &s"
+            Index           =   19
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &t"
+            Index           =   20
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &u"
+            Index           =   21
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &v"
+            Index           =   22
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &w"
+            Index           =   23
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &x"
+            Index           =   24
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &y"
+            Index           =   25
+         End
+         Begin Menu menu_class_mesure 
+            Caption         =   "Classement dans &z"
+            Index           =   26
+         End
          Begin Menu zzzzzzzz 
             Caption         =   "-"
          End
@@ -509,6 +573,70 @@ Begin MDIForm MDI
             Caption         =   "Projection groupe j"
             Index           =   10
             Shortcut        =   {F11}
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe k"
+            Index           =   11
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe l"
+            Index           =   12
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe m"
+            Index           =   13
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe n"
+            Index           =   14
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe o"
+            Index           =   15
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe p"
+            Index           =   16
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe q"
+            Index           =   17
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe r"
+            Index           =   18
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe s"
+            Index           =   19
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe t"
+            Index           =   20
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe u"
+            Index           =   21
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe v"
+            Index           =   22
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe w"
+            Index           =   23
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe x"
+            Index           =   24
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe y"
+            Index           =   25
+         End
+         Begin Menu menu_projettegroupe 
+            Caption         =   "Projection groupe z"
+            Index           =   26
          End
       End
       Begin Menu zzzzzz 

@@ -1,7 +1,7 @@
 VERSION 2.00
 Begin Form grouptri 
    Caption         =   "Groupes de tri"
-   ClientHeight    =   2685
+   ClientHeight    =   6765
    ClientLeft      =   4245
    ClientTop       =   2460
    ClientWidth     =   3180
@@ -11,16 +11,576 @@ Begin Form grouptri
    FontSize        =   8.25
    FontStrikethru  =   0   'False
    FontUnderline   =   0   'False
-   Height          =   3090
+   Height          =   7170
    Icon            =   GROUPTRI.FRX:0000
    Left            =   4185
    LinkTopic       =   "Feuille3"
    MaxButton       =   0   'False
    MDIChild        =   -1  'True
-   ScaleHeight     =   2685
+   ScaleHeight     =   6765
    ScaleWidth      =   3180
    Top             =   2115
    Width           =   3300
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   26
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   106
+      TabStop         =   0   'False
+      Top             =   6240
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   26
+      Left            =   450
+      TabIndex        =   105
+      Top             =   6240
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   26
+      Left            =   0
+      TabIndex        =   104
+      Top             =   6240
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   25
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   102
+      TabStop         =   0   'False
+      Top             =   6000
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   25
+      Left            =   450
+      TabIndex        =   101
+      Top             =   6000
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   25
+      Left            =   0
+      TabIndex        =   100
+      Top             =   6000
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   24
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   98
+      TabStop         =   0   'False
+      Top             =   5760
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   24
+      Left            =   450
+      TabIndex        =   97
+      Top             =   5760
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   24
+      Left            =   0
+      TabIndex        =   96
+      Top             =   5760
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   23
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   94
+      TabStop         =   0   'False
+      Top             =   5520
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   23
+      Left            =   450
+      TabIndex        =   93
+      Top             =   5520
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   23
+      Left            =   0
+      TabIndex        =   92
+      Top             =   5520
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   22
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   90
+      TabStop         =   0   'False
+      Top             =   5280
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   22
+      Left            =   450
+      TabIndex        =   89
+      Top             =   5280
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   22
+      Left            =   0
+      TabIndex        =   88
+      Top             =   5280
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   21
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   86
+      TabStop         =   0   'False
+      Top             =   5040
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   21
+      Left            =   450
+      TabIndex        =   85
+      Top             =   5040
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   21
+      Left            =   0
+      TabIndex        =   84
+      Top             =   5040
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   20
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   82
+      TabStop         =   0   'False
+      Top             =   4800
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   20
+      Left            =   450
+      TabIndex        =   81
+      Top             =   4800
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   20
+      Left            =   0
+      TabIndex        =   80
+      Top             =   4800
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   19
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   78
+      TabStop         =   0   'False
+      Top             =   4560
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   19
+      Left            =   450
+      TabIndex        =   77
+      Top             =   4560
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   19
+      Left            =   0
+      TabIndex        =   76
+      Top             =   4560
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   18
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   74
+      TabStop         =   0   'False
+      Top             =   4320
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   18
+      Left            =   450
+      TabIndex        =   73
+      Top             =   4320
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   18
+      Left            =   0
+      TabIndex        =   72
+      Top             =   4320
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   17
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   70
+      TabStop         =   0   'False
+      Top             =   4080
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   17
+      Left            =   450
+      TabIndex        =   69
+      Top             =   4080
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   17
+      Left            =   0
+      TabIndex        =   68
+      Top             =   4080
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   16
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   66
+      TabStop         =   0   'False
+      Top             =   3840
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   16
+      Left            =   450
+      TabIndex        =   65
+      Top             =   3840
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   16
+      Left            =   0
+      TabIndex        =   64
+      Top             =   3840
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   15
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   62
+      TabStop         =   0   'False
+      Top             =   3600
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   15
+      Left            =   450
+      TabIndex        =   61
+      Top             =   3600
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   15
+      Left            =   0
+      TabIndex        =   60
+      Top             =   3600
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   14
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   58
+      TabStop         =   0   'False
+      Top             =   3360
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   14
+      Left            =   450
+      TabIndex        =   57
+      Top             =   3360
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   14
+      Left            =   0
+      TabIndex        =   56
+      Top             =   3360
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   13
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   54
+      TabStop         =   0   'False
+      Top             =   3120
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   13
+      Left            =   450
+      TabIndex        =   53
+      Top             =   3120
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   13
+      Left            =   0
+      TabIndex        =   52
+      Top             =   3120
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   12
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   50
+      TabStop         =   0   'False
+      Top             =   2880
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   12
+      Left            =   450
+      TabIndex        =   49
+      Top             =   2880
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   12
+      Left            =   0
+      TabIndex        =   48
+      Top             =   2880
+      Width           =   255
+   End
+   Begin PictureBox PopulationGroupe 
+      AutoRedraw      =   -1  'True
+      DragMode        =   1  'Automatic
+      Height          =   255
+      Index           =   11
+      Left            =   2145
+      ScaleHeight     =   225
+      ScaleWidth      =   975
+      TabIndex        =   46
+      TabStop         =   0   'False
+      Top             =   2640
+      Width           =   1000
+   End
+   Begin TextBox CommentaireGroupe 
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "MS Sans Serif"
+      FontSize        =   8.25
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   285
+      Index           =   11
+      Left            =   450
+      TabIndex        =   45
+      Top             =   2640
+      Width           =   1695
+   End
+   Begin CheckBox CocheProjectionGroupe 
+      Height          =   255
+      Index           =   11
+      Left            =   0
+      TabIndex        =   44
+      Top             =   2640
+      Width           =   255
+   End
    Begin PictureBox PopulationGroupe 
       AutoRedraw      =   -1  'True
       DragMode        =   1  'Automatic
@@ -408,6 +968,262 @@ Begin Form grouptri
       TabStop         =   0   'False
       Top             =   960
       Width           =   1000
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "z"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   26
+      Left            =   240
+      TabIndex        =   107
+      Top             =   6240
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "y"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   25
+      Left            =   240
+      TabIndex        =   103
+      Top             =   6000
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "x"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   24
+      Left            =   240
+      TabIndex        =   99
+      Top             =   5760
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "w"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   23
+      Left            =   240
+      TabIndex        =   95
+      Top             =   5520
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "v"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   22
+      Left            =   240
+      TabIndex        =   91
+      Top             =   5280
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "u"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   21
+      Left            =   240
+      TabIndex        =   87
+      Top             =   5040
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "t"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   20
+      Left            =   240
+      TabIndex        =   83
+      Top             =   4800
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "s"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   19
+      Left            =   240
+      TabIndex        =   79
+      Top             =   4560
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "r"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   18
+      Left            =   240
+      TabIndex        =   75
+      Top             =   4320
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "q"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   17
+      Left            =   240
+      TabIndex        =   71
+      Top             =   4080
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "p"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   16
+      Left            =   240
+      TabIndex        =   67
+      Top             =   3840
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "o"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   15
+      Left            =   240
+      TabIndex        =   63
+      Top             =   3600
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "n"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   14
+      Left            =   240
+      TabIndex        =   59
+      Top             =   3360
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "m"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   13
+      Left            =   240
+      TabIndex        =   55
+      Top             =   3120
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "l"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   12
+      Left            =   240
+      TabIndex        =   51
+      Top             =   2880
+      Width           =   255
+   End
+   Begin Label EtiqSymboleGroupe 
+      Alignment       =   2  'Center
+      Caption         =   "k"
+      FontBold        =   0   'False
+      FontItalic      =   0   'False
+      FontName        =   "Arial"
+      FontSize        =   10.5
+      FontStrikethru  =   0   'False
+      FontUnderline   =   0   'False
+      Height          =   255
+      Index           =   11
+      Left            =   240
+      TabIndex        =   47
+      Top             =   2640
+      Width           =   255
    End
    Begin Label EtiqSymboleGroupe 
       Alignment       =   2  'Center
