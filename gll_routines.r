@@ -714,7 +714,7 @@ Mold-CSV: function [
 
 ]
 ;}}}
-do [	; inclusion de l'utilitaire csv-tools.r:;/*{{{*/ } } }
+do [	; inclusion de l'utilitaire csv-tools.r:;{{{ } } }
 
 ;do %~/rebol/library/scripts/csv.r
 ;:r ~/rebol/library/scripts/csv-tools.r
@@ -1183,7 +1183,7 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 	return Mold-CSV tt
 ] ;}}}
 
-; fonctions utilitaires:
+; utility functions:
 ; Definition of standard charsets useful for PARSEing: {{{ } } } 
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
 	digit: charset  [#"0" - #"9"]
@@ -1206,19 +1206,32 @@ trim_last_char: func ["Trims last character from a given string" txt] [ ;{{{ } }
 substring: func ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{ } } }
     copy/part at string offset length
 ];}}}
-pad: func [ ;{{{ } } }
- "Pads a value with leading zeroes or a specified fill character."
+left:  func ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{ } } }
+    copy/part string length
+] ;}}}
+right: func ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{ } } }
+	offset: (length? string) - length + 1
+    copy/part at string offset length
+] ;}}}
+;>> right "bonjour" 4
+;== "jour"
+;>> left "bonjour" 3
+;== "bon"
+
+pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{{{ } } }
   val [string! number!] n [integer!]
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-; continue: as in python; to use in a loop, do: "loop [catch[...]]"/*{{{*/ } } }
+; continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
 continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
-
 throw 'continue]
-;/*}}}*/
+;}}}
+timestamp_: does [; an underscored timestamp{{{
+trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
+;}}}
 ; Les dates du geolpda sont au format epoch en millisecondes;
-; voici une fonction pour convertir les epoch en date: [{{{ TODO erase this function from gll_geolpda_report_generator.r
+; voici une fonction pour convertir les epoch en date: [{{{
 epoch-to-date: func [
 	"Return REBOL date from unix time format"
 	epoch [integer!] "Date in unix time format"
@@ -1262,8 +1275,8 @@ synchronize_geolpda: does [; {{{ } } }
 	err: copy ""
 	call/wait/output/error cmd tt err
 	print tt
-	prin "Perform these actions [Yn]?"
-	if ((lowercase input ) = "y") [
+	prin "Perform these actions: y/n?"
+	either ((lowercase input ) = "y") [
 		; really do the synchronization:
 		cmd: replace cmd "rsync --dry-run" "rsync "
 		print rejoin["Running: " cmd]
@@ -1271,9 +1284,9 @@ synchronize_geolpda: does [; {{{ } } }
 		err: copy ""
 		call/wait/output/error cmd tt err
 		print tt
-	]
-	print "Press any key to continue..."
-	input
+		print "Press any key to continue..."
+		input
+	] [ print "No synchronization done."]
 ];}}}
 synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	; TODO: make this platform-independent:
@@ -1301,8 +1314,14 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 ];}}}
 get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: {{{ } } }
 ; 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name):
-run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
-max_waypoint_name: to-integer to-string first (copy sql_result)
+if error? try [
+	run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+	max_waypoint_name: to-integer to-string first (copy sql_result)
+	]
+	[
+	print rejoin ["Error: there are certainly non-numeric values in waypoint_name field from public.field_observations table in " dbname " database."
+	flag_ERROR: true]
+	]
 ; and, later, only consider data with higher _id
 ];}}}
 chk_directories_mount_and_local: does [;{{{ } } }
@@ -1518,33 +1537,151 @@ if (none? date_start) [
 	foreach j jours [print j]   ; <= la liste des jours, triée
 ]
 ] ;}}}
+update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ } } } ; old name: computes_structural_measurements_from_geolpda_matrix
+	"Updates field_observations_struct_measures table in bdexplo database, fields (north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement) are computed from rotation_matrix field, which comes from GeolPDA measurements"
+	/criteria {optional criteria to select records to be updated}
+	sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
+	/overwrite "if specified, overwrites existing data in fields; by default, records with data in north_ref, direction, etc. are *not* updated"
+][
+; local variables
+sql_string measures m o
+][
+; on va chercher les informations, avec les restrictions si besoin:
+; gather informations, with restrictions, if necessary:
+sql_string: copy "SELECT opid, obs_id, rotation_matrix, numauto FROM public.field_observations_struct_measures "
+if criteria [ append sql_string sql_criteria ]
+unless overwrite [
+	either find sql_string "WHERE" [
+		append sql_string " AND "
+	][	append sql_string " WHERE "]
+	append sql_string " (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL) "
+]
+either find sql_string "WHERE" [
+	append sql_string " AND "
+][	append sql_string " WHERE "]
+append sql_string " rotation_matrix IS NOT NULL;" ; it would not make sense to run this function on records without a GeolPDA measurement...
+run_query sql_string
+measures: copy sql_result
+;print-list measures
+sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
+foreach m measures [ ; iteration over structural measurements in measures
+	; NB: SELECT opid, obs_id, rotation_matrix, numauto
+	; on crée un objet mesure structurale:
+	o: orientation/new first (to-block m/3)
+	; on en prend les informations, et on les met dans le sql à faire jouer:
+	append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
 
+either overwrite [
+	append sql_string rejoin [";" newline]
+][
+	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline]
+]
+		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); c'est ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
+]
+
+comment: [; prudemment, dans la phase de débogage:
+;, on ne fait qu'imprimer sur stdout la requête à faire tourner:
+;print sql_string
+; on la copie dans le presse-papiers:
+write clipboard:// sql_string
+print "=> résultat dans le clipboard"
+; on la range dans un féchier à la noix:
+fileout: %qqzz
+write fileout sql_string
+print "=> résultat dans fichier qqzz"
+]
+; actually do the work: insert the generated query string sql_string into the database:
+insert db sql_string
+
+] ; }}}
 
 ;}}}
 
+;****************************************************************************************************************
+;TODO spécifier les variables dans les fonctions comme locales, pour éviter trop d'effets de bord indésirables***
+;****************************************************************************************************************
 
 ; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
-dd2dms: func ["Converts decimal degrees to degrees, minutes, seconds" dd] [ ;{{{ } } }
+dd2dms: func [;{{{ } } }
+	{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"}
+	dd [string! decimal!]
+	/quadrant_lat "Appends latitude N or S to output"
+	/quadrant_lon "Appends longtude E or W to output"
+	/seconds_accuracy "Specify accuracy for seconds value in output; default is 3 decimal places"
+	seconds_decplaces [integer!] "Must be a positive integer value"
+	] [
+	default_seconds_decplaces: 3
 	;my $dd = shift;
 	;print dd
+	sign: sign? dd
+	dd: absolute dd
 	minutes: (dd - (round/down dd)) * 60
 	seconds: (minutes - (round/down minutes)) * 60
 	minutes: round/down minutes
-	degrees: round/down dd
-	return rejoin [degrees "," minutes "," seconds]
+	degrees: modulo (round/down dd) 356
+	output: copy ""
+	unless any [quadrant_lon quadrant_lat] [
+		if (sign == -1) [
+			if (degrees = 0) 	[
+				print "Error, value < 0 and degrees = 0: must specify latitude or longitude using /quadrant_lat or /quadrant_lon"
+				return none 	]
+		degrees: degrees * sign		]	]
+	if quadrant_lon [
+		either (dd < 0) [output: "W"] [output: "E"] ]
+	if quadrant_lat [
+		either (dd < 0) [output: "S"] [output: "N"] ]
+	either seconds_accuracy [
+		if (seconds_decplaces < 0) [
+			print "Error: seconds_decplaces negative amount => default"
+			seconds_decplaces: default_seconds_decplaces ]
+	] [
+		seconds_decplaces: default_seconds_decplaces 
+	]
+	seconds: round/to seconds (to-decimal rejoin ["1E-" seconds_decplaces])
+	;append output rejoin [degrees "°" minutes "'" seconds {"}]	; TODO BUG: "°" does not appear on output: probably an extended character related error => check with other flavours of Rebol
+	append output rejoin [degrees "d" minutes "m" seconds "s"]	; FIXME:    for the moment, use of d m s instead of ° ' "
+	return output
 	] ;}}}
-dms2dd: func ["Converts degrees, minutes, seconds to decimal degrees" dms] [ ;{{{ } } }
-	; 	dms: {48 deg 17' 33.39"}	; test
+
+dms2dd: func ["Converts degrees, minutes, seconds to decimal degrees" dms [string!]] [ ;{{{ } } }
+	comment [
+		; sort of unit tests:
+				dms: {48 deg 17' 33.39"}	; test
+				(dms2dd dms) == 48.2926083333333
+				dms: {11°21'18"W"}			; autre test
+				(dms2dd dms) == 11.355
+				dms: {W24deg42min3.33"}		; encore un
+				(dms2dd dms) == -24.700925
+				dms: {E24deg42min3.33"}		; encore un
+				(dms2dd dms) == 24.700925
+				dms: {24deg42min3.33E"}		; encore un
+				(dms2dd dms) == 24.700925
+				dms: {W4°55'65.6"}			; en encore un
+				(dms2dd dms) == -4.93488888888889
+	]
 	replace/all dms " " ""	; remove all whitespaces
-	rule_degree: ["degrees" | "deg" | "d" | "°"]
-	rule_minute: ["minutes" | "min" | "m" | "'"]
-	rule_second: ["seconds" | "sec" | "s" | {"}]
+	; detect if positive (longitude East or latitude North) or not:
+	sign: 1	; defaults to positive
+	rule_quadrant: [ [["N" | "E"] (sign: 1)] | [["S" | "W" | "O"] (sign: -1)] ] ; signs switches to -1 if S or W
+	; gets quadrant if any, and gets rid of it, at both ends of input string:
+	if parse/case to-string (first dms) rule_quadrant [
+		dms: right dms ((length? dms) - 1) ]
+	if parse/case to-string (last  dms) rule_quadrant [
+		dms: left  dms ((length? dms) - 1) ]
+	; parse remaining input string using various symbols for degrees, minutes and seconds:
+	rule_degree: ["degrees" | "degres"   | "degree"  | "degrés" | "degré" | "deg" | "d" | "°" | "o" ]
+	rule_minute: ["minutes" | "minute"   | "mn"                           | "min" | "m" | "'"       ]
+	rule_second: ["seconds" | "secondes" | "seconde" | "second"           | "sec" | "s" | {"}       ]
+	;?? dms	;DEBUG
 	degrees: minutes: seconds: none
 	parse/all dms [copy degrees any digit-decimalplace rule_degree copy minutes any digit-decimalplace rule_minute copy seconds any digit-decimalplace rule_second to end]
+	;?? degrees		;DEBUG
+	;?? minutes		;DEBUG
+	;?? seconds		;DEBUG
 	degrees: to-decimal degrees
 	minutes: to-decimal minutes
 	seconds: to-decimal seconds
-	dd: degrees + (minutes / 60) + (seconds / 3600)
+	dd: (degrees + (minutes / 60) + (seconds / 3600)) * sign
 	return dd
 	] ;}}}
 
@@ -1576,7 +1713,7 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 ]; }}}
 
 ; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
-; exemple: /*{{{*/ } } }
+; exemple: {{{ } } }
  ; une matrice de cas, volontairement simple, avec des tabulations séparant les choses, de manière à pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la dernière chaîne qui correspond à ce que renverra la fonction:
 
 ;case_matrix: {
@@ -1593,7 +1730,7 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 ;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return " pas bon"]
 ;if (all [(v1 > 1) (v2 = 0) (v3 >= 1)]) [return "bon"]
 ;if (all [(v1 < 1) (v2 = 0) (v3 >1)] [return "moyen"]
-;/*}}}*/
+;}}}
 process_cases_table: function ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{ } } }
 	mm: parse/all case_matrix "^/"
 	foreach ii mm [if ((to-string first mm) = "") [remove first mm mm: next mm ]] 	; skip empty lines, if any
@@ -1738,7 +1875,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 ;== [["lab_ana_results" 207.0]]
 ;}}}
 ;}}}
-delete_datasource_and_dependant_information: func ["Delete a datasource from all tables from bdexplo where its datasource_id is mentioned" datasource] [ ; {{{ } } }
+delete_datasource_and_dependant_information: func ["Deletes a datasource from all tables from bdexplo where its datasource_id is mentioned" datasource] [ ; {{{ } } }
 	if (none? datasource) [
 		prin "Identifiant de datasource (champ datasource_id de la table lex_datasource), champs datasource des autres tables): "
 		datasource: to-integer input
@@ -2413,6 +2550,136 @@ parse_tecto_measure: func [{Converts a string structural measurement in the form
 	]
 	return output
 	] ;}}}
+generate_tectri_file: function [ ;{{{ } } }
+	"Generates a file for TecTri from structural measurements contained in bdexplo database in field_observations_struct_measures table"
+	/criteria {optional criteria to select records to be exported}
+		sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
+	/unique_filename "specifies a unique output filename for all measurements"
+		filename [string! file!] "output filename, default extension is .tec"
+	/onefileperobservation "generates one file per observation; if no file prefix is specified, files are named according to observation identifier (obs_id field) followed by .tec extension"
+	/fileprefix "option to set a prefix to output filename"
+		prefix [string!] "file prefix"
+][
+	; local variables:
+	sql_string measures newline_ newline obs_id_current obs_id_previous i header_written
+][
+	; 21_07_2014__10_18_56
+	; get data:
+		sql_string: copy "SELECT tmp.*, field_observations.description FROM (SELECT opid, obs_id, measure_type, structure_type, north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, comments, datasource, sortgroup, device, numauto FROM public.field_observations_struct_measures "
+		if criteria [ append sql_string sql_criteria ]
+		append sql_string " ) AS tmp JOIN public.field_observations ON (tmp.opid = field_observations.opid AND tmp.obs_id = field_observations.obs_id) ORDER BY tmp.opid, tmp.obs_id, tmp.numauto;"
+		;write clipboard:// sql_string
+		run_query sql_string
+		measures: copy sql_result
+		print rejoin [length? measures " structural measurements selected"]
+		;print-list measures
+
+	; definitions so that TecTri can correctly read the generated file, with CRLF ending lines:
+		crlf: #{0D0A}
+		newline_: newline
+		newline: crlf
+	; initiate some variables:
+		;sep: " " ; separator: space
+		sep: "^-" ; separator: tabulation
+		obs_id_current:   copy ""
+		obs_id_previous: copy ""
+		i: 0
+		unless prefix [prefix: copy ""]
+		header_written: false
+		comment: copy ""
+		filenames: copy []
+
+	; determine filename, if unique:
+	if unique_filename [
+		replace filename " " "_"
+		filename: lowercase filename
+		if ((substring filename ((length? filename) - 3) 4) != ".tec") [append filename ".tec"]
+		filename: to-file filename
+		print rejoin ["Unique output filename: " filename]
+		append filenames filename
+	]
+
+	; iteration over list of structural measurements
+	foreach m measures [
+		;print i
+		i: i + 1
+		obs_id_current: copy m/2
+		; convert the none values to empty strings "", to avoid having "none" written in the file contents:
+		for j 1 (length? m) 1 [
+			if none? m/:j [ poke m j "" ]
+		]
+		either (obs_id_current != obs_id_previous) [ ; test if we are in the same observation (obs_id)
+			; new obs_id
+			obs_id_previous: copy obs_id_current
+			unless unique_filename [
+				filename: to-file rejoin [prefix lowercase obs_id_current ".tec"]	; define one output filename per individual observation
+				print rejoin ["Output filename: " filename]
+				append filenames filename
+			]
+			unless header_written [
+				unless unique_filename [
+					write filename rejoin [m/12 " " m/17 " - "]
+				]
+				write filename rejoin ["File generated from " dbhost " host, " dbname " database, field_observations_struct_measures table on " now ]
+				if criteria [ write/append/binary filename rejoin [" with criteria: " sql_criteria] ]
+				write/append/binary filename newline
+				if unique_filename [header_written: true]
+			]
+			;write/append/binary filename line_measure m
+			;write/append/binary filename newline
+		][
+			; same obs_id
+			;write/append/binary filename to-string m/2	; test
+			;write/append/binary filename line_measure m
+			;write/append/binary filename newline
+		]
+	; write the measurement line in TecTri-readable format:
+	set [dir dip dipq pi piqd mov] reduce [m/6 m/7 m/8 m/9 m/10 m/11]
+		; first, in order to TecTri to be able to correctly parse data, fill undefined data concerning lines with fake data, with a warning:
+		warning: copy ""
+		if pi = "" [
+			pi: "33"
+			append warning "undefined pitch => FAKE; "
+		]
+		if piqd = "" [
+			either (any [dipq = "N" dipq = "S"]) [piqd: "E"] [piqd: "S"]
+			append warning "undefined pitch quadrant => FAKE; "
+		]
+		if mov = "" [
+			mov: "N"
+			append warning "undefined movement => FAKE; "
+		]
+		unless warning = "" [
+			warning: rejoin ["(WARNING: " (substring warning 1 (length? warning) - 2) ") "]
+		]
+
+		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep] 
+		; if unique_filename, add the description from field_observations to the comments output column:
+		;if unique_filename [		;=> in fact, even if data is not in a unique file, probably better
+			comment: rejoin [m/2 " <" m/3 "> " "<" m/4 "> " warning]
+			if (m/12 = "") and (m/17 != "") [append comment m/17]
+			if (m/12 != "") and (m/17 = "") [append comment m/12]
+			if (m/12 != "") and (m/17 != "") [append comment rejoin [m/12 " - " m/17]]
+		;]
+		append line comment
+		; if a sort group is mentioned, append it to line:
+		unless (m/14 = "") [ append line rejoin ["[" m/14 "]"] ]
+		write/append/binary filename line
+		write/append/binary filename newline
+	]
+	prin "File "
+	if ((length? filenames) > 1) [prin "s"]
+	print "conversion to ISO-8859-1 for TecTri use:"
+	foreach filename filenames [
+		cmd:  rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
+		print cmd
+		call/wait cmd
+		;print filename
+	]
+	newline: newline_
+];}}}
+
+
 
 ; Fonctions utilisées pour faire des programmes de sondages:
 cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
@@ -2422,8 +2689,8 @@ cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ 
 ];}}}
 xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" id] [ ;{{{ } } }
     sql: rejoin ["SELECT x, y, z FROM dh_collars WHERE id = '" id "'"]
-	resultat: run_query sql
-    return reduce [to-decimal resultat/1/1 to-decimal resultat/1/2 to-decimal resultat/1/3]
+	result: run_query sql
+    return reduce [to-decimal result/1/1 to-decimal result/1/2 to-decimal result/1/3]
 ]
 ;# /*}}}*/
 plante_un_sondage_ici: func [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{ } } }
