@@ -2725,6 +2725,21 @@ mark_go: does [  ; go back to a previously marked place; {{{ } } }
 	z: mark_z
 ];}}}
 
+; Functions used for maintenance of geolllibre.org server, aka linutopch, hosted in Gers as of 2014:
+gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [block!]] [ ; {{{ } } }
+	foreach p pads [
+		p: to-string p
+		url: rejoin ["https://geolllibre.org/pad/p/" p]
+		browse url
+		if (confirm "Deleter ce pad?") [
+			urldel: rejoin ["http://geolllibre.org/pad/api/1/deletePad?apikey=8df54105a3fb53511dd37a9df4c9325971dc2a6f25e349bbe715ea1aa4d11cc4&padID=" p]
+			browse urldel
+		] ] ]
+;}}}
+
+
+
+
 ; === fin des définitions de fonctions ==========
 
 
