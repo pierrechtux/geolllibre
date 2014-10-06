@@ -67,6 +67,7 @@ do load to-file %gll_routines.r				; ou sinon là où se trouve le script prése
 ] [
 do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~/geolllibre
 ]
+flag_ERROR: false
 ;}}}
 ; functions, libraries: {{{ } } }
 ; => all moved to gll_routines.r
@@ -74,6 +75,7 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 
 ; Execution
 get_bdexplo_max__id
+if flag_ERROR [ print "Error, quitting." quit ]
 
 ; Connect geolpda android device, copy to local directory:{{{ } } }
 ; default directories are stored in .gll_preferences
@@ -91,7 +93,7 @@ unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local di
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
-if ( confirm "synchronize geolpda data?" ) [ synchronize_geolpda ]
+if ( confirm "synchronize geolpda data files?" ) [ synchronize_geolpda ]
 ;}}}
 
 ; Open sqlite geolpda, get data:{{{ } } }
