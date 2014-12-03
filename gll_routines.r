@@ -1,6 +1,6 @@
 rebol [ 
 	Title:   "Rebol routines called by geolllibre gll_* programs"
-	IDEA:    "TODO make an automatic system of imports, where a program named abc_ghea_jh_lkk.r would automatically include any file named abc_ghea_jh_*.r and any file named abc_ghea_jh_routines.r. Doing tis recursively would make an easy to maintain tree of dependencies"
+	IDEA:    "TODO make an automatic system of imports, where a program named abc_ghea_jh_lkk.r would automatically include any file named abc_ghea_jh_*.r and any file named abc_ghea_jh_routines.r. Doing this recursively would make an easy to maintain tree of dependencies"
 	Name:    gll_routines.r
 	Version: 1.0.4
 	Date:    26-Jan-2014/18:27:07+1:00
@@ -37,11 +37,11 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	1.0.1	[21-Aug-2013/16:25:11+2:00 {Ajout d'utilitaires, de fonctions communes, etc.}]
 	1.0.2	[22-Sep-2013/10:31:32+2:00 {Mise au point de la comparaison de structures de bases}]
 	1.0.3	[26-Jan-2014/18:27:07+1:00 {Inclusion d'objets et fonction en liaison avec des structures}]
-	1.0.4	[8-Mar-2014/0:08:07+1:00   {Calculs de structures à partir des mesures d'orientations du GeolPDA semblent corrects}]
+	1.0.4	[8-Mar-2014/0:08:07+1:00   {Calculs de structures Ã  partir des mesures d'orientations du GeolPDA semblent corrects}]
 	1.0.5	[23-Apr-2014/14:44:58+1:00 {Functions concerning GeolPDA moved here, from gll_geolpda_fetch_data.r and gll_geolpda_report_generator.r}]
 ]	]
 
-; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
+; RÃ©cupÃ©ration des prÃ©fÃ©rences (dbname dbhost user passw opid tmp_schema): {{{ } } }
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
@@ -1409,7 +1409,7 @@ make root-protocol [
 ] ;}}}
 
 connection_db: does [ ;{{{ } } }
-	; on fait une connexion à la base de données:
+	; on fait une connexion Ã  la base de donnÃ©es:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	if error? try 	[
 			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname]
@@ -1849,10 +1849,10 @@ do %~/rebol/library/scripts/btn-sqlite.r
 ; functions related to database:
 run_query: func ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
 	if error? try [	insert db sql  ; send a SQL query
-			] [ print "**Error**"	; TODO mieux gérer l'erreur
+			] [ print "**Error**"	; TODO mieux gÃ©rer l'erreur
 			]
 	sql_result: copy db
-	; TODO prendre en compte le résultat de requêtes de type UPDATE ou DELETE
+	; TODO prendre en compte le rÃ©sultat de requÃªtes de type UPDATE ou DELETE
 	;either requete_select: [][]
 	sql_result_fields: make block! []
 	foreach field db/locals/columns [
@@ -1872,9 +1872,9 @@ run_sql_string_update: does [ ;{{{ } } }
 	insert db sql_string_update
 	?? journal_sql
 	] ;}}}
-do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
+do_psql: func ["Prend du SQL en entrÃ©e, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
-	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
+	;TODO: pouvoir choisir psql (pour les plateformes Ã  la noix qui l'ont pas dans le $PATH...)
 	cmd: rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost]
 	tt:  copy ""
 	err: copy ""
@@ -1883,12 +1883,12 @@ do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant 
 	] ;}}}
 compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }
 	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
-	;TODO à déplacer dans un module utilitaire plus général, à distribuer hors gll, pour tout postgresql
+	;TODO Ã  dÃ©placer dans un module utilitaire plus gÃ©nÃ©ral, Ã  distribuer hors gll, pour tout postgresql
 	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin"]
 
-	; première solution: on fait un pg_dump de la base
-	;   => 	abandonné, le résultat n'est pas trié, et incomparable,
-	;	même avec le secours de pg_dump_splitsort.py	{{{ } } }
+	; premiÃ¨re solution: on fait un pg_dump de la base
+	;   => 	abandonnÃ©, le rÃ©sultat n'est pas triÃ©, et incomparable,
+	;	mÃªme avec le secours de pg_dump_splitsort.py	{{{ } } }
 	;fabrique_cmd: does [
 	;	cmd: rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres"]
 	;	foreach s schemas_exclus [
@@ -1932,10 +1932,10 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	] ; }}}
 	;}}}
 
-	; seconde solution: on fait pour chaque table un pg_dump, qu'on agrège au fur et à mesure
+	; seconde solution: on fait pour chaque table un pg_dump, qu'on agrÃ¨ge au fur et Ã  mesure
 	fabrique_cmd: does [ ;{{{ } } }
 		write to-file filename rejoin ["-- bdexplo dump generated by gll_routines.r/compare_schemas_2_bdexplos: " newline "-- host:" dbhost " dbname: " dbname newline "-- " now]
-		; la liste des tables avec leurs schémas:
+		; la liste des tables avec leurs schÃ©mas:
 		tables: run_query "SELECT schemaname, tablename FROM pg_tables WHERE tableowner <> 'postgres' ORDER BY schemaname, tablename;"
 		cmd: copy {}
 		foreach t tables [	; pour chaque table
@@ -1943,7 +1943,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 			;?? t
 			;print t/1
 			;print t/2
-			if not (find schemas_exclus t/1) [ ; si le schéma n'est pas dans la liste des schémas exclus, on procède:
+			if not (find schemas_exclus t/1) [ ; si le schÃ©ma n'est pas dans la liste des schÃ©mas exclus, on procÃ¨de:
 				;filename: rejoin ["tt_" dbhost "_" dbname "_" t/1 "_" t/2]
 				;?? filename
 				append cmd rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres -t " t/1 "." t/2 { | grep -v "^^--" >> } filename newline]
@@ -1973,7 +1973,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	call/wait/error cmd err
 	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 
-	; les dumps sont générés, on les compare:
+	; les dumps sont gÃ©nÃ©rÃ©s, on les compare:
 	print "Structure dumps generated, comparison: "
 	cmd: rejoin ["diff " filename1 " " filename2]
 	print cmd
@@ -2053,10 +2053,10 @@ epoch-to-date: func [
 	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone 
 															   ; ^ TODO un 
 															   ;beau jour, 
-															   ;remettre ça;
-															   ;ça boguait.
+															   ;remettre Ã§a;
+															   ;Ã§a boguait.
 ] ;}}}]
-; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
+; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par dÃ©faut d'android, Ã  savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
 epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
@@ -2143,7 +2143,7 @@ chk_directories_mount_and_local: does [;{{{ } } }
 
 
 get_geolpda_data_from_csv: does [ ; Inutile si on n'utilise pas le .csv: {{{ } } }
-; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
+; l'en-tÃªte du csv => (TODO: les noms de champs sont Ã  rÃ©viser!):
 ;lines/1 == {_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note}
 
 observations: copy []    ; un tableau contenant les observations
@@ -2154,12 +2154,12 @@ foreach line lines [     ; on remplit ce tableau
 ]
 ;?? observations
 
-; On enlève la première ligne d'en-tête:
+; On enlÃ¨ve la premiÃ¨re ligne d'en-tÃªte:
 remove observations
 
 ; On trie la table: {{{ } } }
 ;sort observations
-; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{ } } }
+; non, Ã§a dÃ©connait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zÃ©ros prÃ©fixant, donc des tris asciibÃ©tiques aberrants: [ ;{{{ } } }
 ;TotBol1
 ;TotBol10
 ;TotBol11
@@ -2183,12 +2183,12 @@ remove observations
 ;TotBol8
 ;TotBol9
 ;] ;}}}
-; Donc on trie la table par timestamp, plutôt:
+; Donc on trie la table par timestamp, plutÃ´t:
 field: 2    ; le champ sur lequel trier: timestamp = 2, en l'occurrence
 sort/compare observations func [a b] [(at a field) < (at b field)]
 ; }}}
 
-; TODO récupérer les données d'orientations
+; TODO rÃ©cupÃ©rer les donnÃ©es d'orientations
 ] ;}}}
 get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{ } } }
 ; Library to access sqlite geolpda database:
@@ -2205,8 +2205,8 @@ db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
 ; Get data: as db is the same name as defined for default
 ; database connexion in gll_routines.r, we can use the functions:
 ; observations: {{{ } } }
-run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par la suite
-	; DEBUG TODO remove ça
+run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY Ã©vitera de trier par la suite
+	; DEBUG TODO remove Ã§a
 	; write %qq1 sql_result_csv
 
 ; Comparison of field list: to be sure that the table structure matches the 
@@ -2242,7 +2242,7 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 
 ;}}}
 
-; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
+; Il s'agit maintenant de dÃ©terminer les jours oÃ¹ il y a eu des observations: [{{{
 ; on construit une liste vide:
 dates: copy []
 ; qui contiendra
@@ -2275,14 +2275,14 @@ foreach i dates [
     append jours tmp/date
 ]
 
-; On ne garde que les jours uniques, en les plaçant dans la liste jours:
+; On ne garde que les jours uniques, en les plaÃ§ant dans la liste jours:
 jours: unique jours
 ; que l'on trie:
 sort jours
 ;}}}]
 prin "Jours: "
 if (none? date_start) [
-	foreach j jours [print j]   ; <= la liste des jours, triée
+	foreach j jours [print j]   ; <= la liste des jours, triÃ©e
 ]
 ] ;}}}
 get_geolpda_data_from_postgresql: does [;{{{ } } }
@@ -2290,16 +2290,16 @@ get_geolpda_data_from_postgresql: does [;{{{ } } }
 connection_db
 print rejoin ["Open GeolPDA data in field_observations table on " dbname " database hosted by " dbhost "..."]
 ; observations: {{{ } } }
-;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
-; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
+;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY Ã©vitera de trier par la suite
+; mettre les mÃªmes champs que dans get_geolpda_data_from_sqlite:
 ;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
 ;>> print geolpda_observations_fields   
 ; opid year        obs_id         date waypoint_name               x              y        z  description                                                                                                                                                                                                                                                                    code_litho code_unit srid geologist icon_descr comments sample_id datasource numauto photos                                                                                                        audio timestamp_epoch_ms db_update_timestamp          username  device                        time
 ;>> print mold geolpda_observations/3500
-;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
+;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches Ã  microboulettes (br.Ã  microc), plans pÃ©nÃ©tratifs, pX striÃ©s et lustrÃ©s. TrÃ¨s prÃ¨s surface (probt 3Ã 4m, en tenant compte du dÃ©capage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriÃ©s dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
 
-run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY évitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
-	; DEBUG TODO remove ça
+run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY Ã©vitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
+	; DEBUG TODO remove Ã§a
 	; write %qq1 sql_result_csv
 geolpda_observations:        copy sql_result
 geolpda_observations_fields: copy sql_result_fields
@@ -2332,8 +2332,8 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 
 ;}}}
 
-; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
-run_query "SELECT DISTINCT date FROM public.field_observations ORDER BY date"	; nettement plus aisé en sql qu'à partir des données du .csv!
+; Il s'agit maintenant de dÃ©terminer les jours oÃ¹ il y a eu des observations: [{{{
+run_query "SELECT DISTINCT date FROM public.field_observations ORDER BY date"	; nettement plus aisÃ© en sql qu'Ã  partir des donnÃ©es du .csv!
 jours: copy []
 foreach i sql_result [
 	unless any [(none? i) ((to-string i) = "none")] [
@@ -2344,7 +2344,7 @@ foreach i sql_result [
 ;}}}]
 if (none? date_start) [
 	prin "Jours: "
-	foreach j jours [print j]   ; <= la liste des jours, triée
+	foreach j jours [print j]   ; <= la liste des jours, triÃ©e
 ]
 ] ;}}}
 update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ } } } ; old name: computes_structural_measurements_from_geolpda_matrix
@@ -2376,9 +2376,9 @@ measures: copy sql_result
 sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
 foreach m measures [ ; iteration over structural measurements in measures
 	; NB: SELECT opid, obs_id, rotation_matrix, numauto
-	; on crée un objet mesure structurale:
+	; on crÃ©e un objet mesure structurale:
 	o: orientation/new first (to-block m/3)
-	; on en prend les informations, et on les met dans le sql à faire jouer:
+	; on en prend les informations, et on les met dans le sql Ã  faire jouer:
 	append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
 
 either overwrite [
@@ -2386,19 +2386,19 @@ either overwrite [
 ][
 	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline]
 ]
-		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); c'est ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
+		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de gÃ©omÃ©trie (plan, plan-ligne, ligne...); c'est ultÃ©rieurement qu'on piochera les valeurs utiles dans les champs appropriÃ©s, en fonction du type de gÃ©omÃ©trie.
 ]
 
-comment: [; prudemment, dans la phase de débogage:
-;, on ne fait qu'imprimer sur stdout la requête à faire tourner:
+comment: [; prudemment, dans la phase de dÃ©bogage:
+;, on ne fait qu'imprimer sur stdout la requÃªte Ã  faire tourner:
 ;print sql_string
 ; on la copie dans le presse-papiers:
 write clipboard:// sql_string
-print "=> résultat dans le clipboard"
-; on la range dans un féchier à la noix:
+print "=> rÃ©sultat dans le clipboard"
+; on la range dans un fÃ©chier Ã  la noix:
 fileout: %qqzz
 write fileout sql_string
-print "=> résultat dans fichier qqzz"
+print "=> rÃ©sultat dans fichier qqzz"
 ]
 ; actually do the work: insert the generated query string sql_string into the database:
 insert db sql_string
@@ -2408,18 +2408,22 @@ insert db sql_string
 ;}}}
 
 ;****************************************************************************************************************
-;TODO spécifier les variables dans les fonctions comme locales, pour éviter trop d'effets de bord indésirables***
+;TODO spÃ©cifier les variables dans les fonctions comme locales, pour Ã©viter trop d'effets de bord indÃ©sirables***
 ;****************************************************************************************************************
 
 ; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
-dd2dms: func [;{{{ } } }
-	{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"}
+dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, formatted as DDÂ°MM'SS.SSS"} ;{{{ } } }
 	dd [string! decimal!]
 	/quadrant_lat "Appends latitude N or S to output"
 	/quadrant_lon "Appends longtude E or W to output"
 	/seconds_accuracy "Specify accuracy for seconds value in output; default is 3 decimal places"
 	seconds_decplaces [integer!] "Must be a positive integer value"
-	] [
+	]
+	[
+	default_seconds_decplaces sign minutes seconds degrees output 
+
+	]
+	[
 	default_seconds_decplaces: 3
 	;my $dd = shift;
 	;print dd
@@ -2448,25 +2452,26 @@ dd2dms: func [;{{{ } } }
 		seconds_decplaces: default_seconds_decplaces 
 	]
 	seconds: round/to seconds (to-decimal rejoin ["1E-" seconds_decplaces])
-	;append output rejoin [degrees "°" minutes "'" seconds {"}]	; TODO BUG: "°" does not appear on output: probably an extended character related error => check with other flavours of Rebol
-	append output rejoin [degrees "d" minutes "m" seconds "s"]	; FIXME:    for the moment, use of d m s instead of ° ' "
+	;append output rejoin [degrees "Â°" minutes "'" seconds {"}]	; TODO BUG: "Â°" does not appear on output: probably an extended character related error => check with other flavours of Rebol
+	append output rejoin [degrees "d" minutes "m" seconds "s"]	; FIXME:    for the moment, use of d m s instead of Â° ' "
 	return output
 	] ;}}}
-
-dms2dd: func ["Converts degrees, minutes, seconds to decimal degrees" dms [string!]] [ ;{{{ } } }
+dms2dd: function ["Converts degrees, minutes, seconds to decimal degrees" dms [string!] ] ;{{{ } } }
+	[ sign rule_quadrant rule_degree rule_minute rule_second degrees minutes seconds ]
+	[
 	comment [
-		; sort of unit tests:
+		; sort of unit tests: expression must return almost zero
 				dms: {48 deg 17' 33.39"}	; test
 				print (dms2dd dms) - 48.2926083333333		; must return zero
-				dms: {11°21'18"W"}			; autre test
-				print (dms2dd dms) - 11.355
+				dms: {11d21'18"W}			; autre test	; *FAIL* if written with Â°: dms: {11Â°21'18"W}
+				print (dms2dd dms) - ( -11.355)
 				dms: {W24deg42min3.33"}		; encore un
 				print (dms2dd dms) - -24.700925
 				dms: {E24deg42min3.33"}		; encore un
 				print (dms2dd dms) - 24.700925
 				dms: {24deg42min3.33E"}		; encore un
 				print (dms2dd dms) - 24.700925
-				dms: {W4°55'65.6"}			; en encore un
+				dms: {W4d55'65.6"}			; en encore un	; *FAIL* if written with Â°: dms: {W4Â°55'65.6"}
 				print (dms2dd dms) - -4.93488888888889
 	]
 	replace/all dms " " ""	; remove all whitespaces
@@ -2474,31 +2479,28 @@ dms2dd: func ["Converts degrees, minutes, seconds to decimal degrees" dms [strin
 	sign: 1	; defaults to positive
 	rule_quadrant: [ [["N" | "E"] (sign: 1)] | [["S" | "W" | "O"] (sign: -1)] ] ; signs switches to -1 if S or W
 	; gets quadrant if any, and gets rid of it, at both ends of input string:
-	if parse/case to-string (first dms) rule_quadrant [
+	if (parse/case to-string (first dms) rule_quadrant) [
 		dms: right dms ((length? dms) - 1) ]
-	if parse/case to-string (last  dms) rule_quadrant [
+	if (parse/case to-string (last  dms) rule_quadrant) [
 		dms: left  dms ((length? dms) - 1) ]
-PRINT DMS	; DEBUG
-PRINT SIGN	; DEBUG
+	;PRINT DMS	; DEBUG
+	;PRINT SIGN	; DEBUG
 	; parse remaining input string using various symbols for degrees, minutes and seconds:
-	rule_degree: ["degrees" | "degres"   | "degree"  | "degrés" | "degré" | "deg" | "d" | "°" | "o" ]
+	rule_degree: ["degrees" | "degres"   | "degree"  | "degrÃ©s" | "degrÃ©" | "deg" | "d" | "Â°" | "o" ]
 	rule_minute: ["minutes" | "minute"   | "mn"                           | "min" | "m" | "'"       ]
 	rule_second: ["seconds" | "secondes" | "seconde" | "second"           | "sec" | "s" | {"}       ]
 	;?? dms	;DEBUG
 	degrees: minutes: seconds: none
 	parse/all dms [copy degrees any digit-decimalplace rule_degree copy minutes any digit-decimalplace rule_minute copy seconds any digit-decimalplace rule_second to end]
-	;?? degrees		;DEBUG
-	;?? minutes		;DEBUG
-	;?? seconds		;DEBUG
-	if none? seconds [seconds: 0]	; cases when seconds are not mentioned
-	if none? minutes [minutes: 0]	; RARE cases when minutes are not mentioned
+	;?? dms ?? degrees	?? minutes ?? seconds		;DEBUG
+	if (none? seconds) [seconds: 0]	; cases when seconds are not mentioned
+	if (none? minutes) [minutes: 0]	; RARE cases when minutes are not mentioned
 	degrees: to-decimal degrees
 	minutes: to-decimal minutes
 	seconds: to-decimal seconds
-	dd: (degrees + (minutes / 60) + (seconds / 3600)) * sign
-	;?? dd	; DEBUG
-	return dd
-	] ;}}}
+	return ((degrees + (minutes / 60) + (seconds / 3600)) * sign)
+	]
+;}}}
 
 ; from LouGit:
 copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
@@ -2517,7 +2519,7 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 		; file exists!
 		if (not (request/confirm rejoin ["Overwrite existing file " target "?"])) [ return none ]
 	]
-	; solution proposée sur stackoverflow
+	; solution proposÃ©e sur stackoverflow
 	port_target: open/direct/binary/write to-file target
 	bytes_per: 1024 * 100
 	while [not none? data: copy/part port_source bytes_per] [insert port_target data]
@@ -2529,7 +2531,7 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 
 ; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
 ; exemple: {{{ } } }
- ; une matrice de cas, volontairement simple, avec des tabulations séparant les choses, de manière à pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la dernière chaîne qui correspond à ce que renverra la fonction:
+ ; une matrice de cas, volontairement simple, avec des tabulations sÃ©parant les choses, de maniÃ¨re Ã  pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la derniÃ¨re chaÃƒÂ®ne qui correspond Ã  ce que renverra la fonction:
 
 ;case_matrix: {
 ;v1 v2  v3
@@ -2539,7 +2541,7 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 ;}
 
 ;process_cases_table case_matrix
-;On doit aboutir à un bloc de code du type:
+;On doit aboutir Ã  un bloc de code du type:
 ;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return "pas bon"]
 ;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return "pas bon"]
 ;if (all [(v1 < 1) (v2 = 0) (v3 > 1)]) [return " pas bon"]
@@ -2583,7 +2585,7 @@ test_datasource_available: func ["Teste si new_datasource_id est libre dans la b
 	 ;print probe res
 	 either ( res = "") [ return true ] [return false ]
 	] ;}}}
-get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } }
+get_new_datasource_id: does [ ; rÃ©cupÃ¨re le premier datasource_id libre {{{ } } }
 	; 2013_07_09__09_13_51
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
 	tt: run_query rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
@@ -2592,7 +2594,7 @@ get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } 
 		] [
 		max_datasource_id: to-integer to-string tt
 		new_datasource_id: max_datasource_id + 1
-		;TODO: il faudrait plutôt faire un return new_datasource_id, pour éviter la pollution de l'espace de noms principal, et tous les effets de bords qui s'ensuivent; également, cloisonner les variables locales des fonctions, ce pour toutes les fonctions.
+		;TODO: il faudrait plutÃ´t faire un return new_datasource_id, pour Ã©viter la pollution de l'espace de noms principal, et tous les effets de bords qui s'ensuivent; Ã©galement, cloisonner les variables locales des fonctions, ce pour toutes les fonctions.
 	]
 	] ;}}}
 
@@ -2602,7 +2604,7 @@ generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO 
 get_datasource_dependant_information: func [ ;{{{ } } }
 	"Returns the list of tables where a given datasource is mentioned in the current opid, with the count of records concerned" datasource] [
 	tables: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> 'postgres';"
-	; ôt des tables inutiles, où datasource n'est pas référencé:
+	; Ã”t des tables inutiles, oÃ¹ datasource n'est pas rÃ©fÃ©rencÃ©:
 	;length? tables
 	; == 43
 	tables_inutiles: [
@@ -2623,11 +2625,11 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 	;== 34
 	sort tables
 	
-	; vérifions en premier lieu que le datasource demandé existe bien dans lex_datasource:
+	; vÃ©rifions en premier lieu que le datasource demandÃ© existe bien dans lex_datasource:
 	lex_datasource_record: run_query rejoin ["SELECT * FROM public.lex_datasource WHERE opid = "opid " AND datasource_id = " datasource ";"]
 	if ((length? lex_datasource_record) = 0) [
-		print rejoin ["-- Attention! datasource " datasource " introuvable dans public.lex_datasource pour l'opération " opid ", pas d'arrêt néanmoins."]
-		;return none 	; on laisse aller, pour pouvoir traiter des cas improbables où des datasources "fantômes" se promènent
+		print rejoin ["-- Attention! datasource " datasource " introuvable dans public.lex_datasource pour l'opÃ©ration " opid ", pas d'arrÃªt nÃ©anmoins."]
+		;return none 	; on laisse aller, pour pouvoir traiter des cas improbables oÃ¹ des datasources "fantÃ´mes" se promÃ¨nent
 	]
 	output: make block! []
 	foreach t tables [
@@ -2639,7 +2641,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 			print rejoin ["-- Erreur (certainement: pas de champ datasource dans la table " t "); continue"]
 		] [
 			either ((to-integer nb_records_du_datasource) = 0) [
-				;print rejoin ["-- Table " t ": datasource " datasource " non mentionné pour opération " opid]
+				;print rejoin ["-- Table " t ": datasource " datasource " non mentionnÃ© pour opÃ©ration " opid]
 			] [
 				print rejoin ["-- Table " t " contient " nb_records_du_datasource " enregistrements correspondant au datasource " datasource " pour l'opid " opid ]
 				append/only output reduce [t nb_records_du_datasource]
@@ -2653,40 +2655,40 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 ;get_datasource_dependant_information 912
 ;== [["lab_ana_results" 207.0]]
 ;>> get_datasource_dependant_information 912
-;-- Table ancient_workings: datasource 912 non mentionné pour opération 18
-;-- Table baselines: datasource 912 non mentionné pour opération 18
-;-- Table dh_core_boxes: datasource 912 non mentionné pour opération 18
-;-- Table dh_density: datasource 912 non mentionné pour opération 18
-;-- Table dh_devia: datasource 912 non mentionné pour opération 18
-;-- Table dh_litho: datasource 912 non mentionné pour opération 18
-;-- Table dh_quicklog: datasource 912 non mentionné pour opération 18
-;-- Table dh_sampling_bottle_roll: datasource 912 non mentionné pour opération 18
-;-- Table dh_sampling_grades: datasource 912 non mentionné pour opération 18
-;-- Table dh_struct_measures: datasource 912 non mentionné pour opération 18
-;-- Table dh_tech: datasource 912 non mentionné pour opération 18
-;-- Table dh_thinsections: datasource 912 non mentionné pour opération 18
-;-- Table field_observations: datasource 912 non mentionné pour opération 18
-;-- Table field_observations_struct_measures: datasource 912 non mentionné pour opération 18
-;-- Table field_photos: datasource 912 non mentionné pour opération 18
-;-- Table geoch_ana: datasource 912 non mentionné pour opération 18
-;-- Table geoch_sampling: datasource 912 non mentionné pour opération 18
-;-- Table geoch_sampling_grades: datasource 912 non mentionné pour opération 18
-;-- Table gpy_mag_ground: datasource 912 non mentionné pour opération 18
-;-- Table grade_ctrl: datasource 912 non mentionné pour opération 18
-;-- Table index_geo_documentation: datasource 912 non mentionné pour opération 18
-;-- Table lab_ana_batches_reception: datasource 912 non mentionné pour opération 18
-;-- Table lab_ana_qaqc_results: datasource 912 non mentionné pour opération 18
-;-- **Table lab_ana_results contient 207.0 enregistrements correspondant au datasource 912 pour l'opération 18
-;-- Table lex_codes: datasource 912 non mentionné pour opération 18
-;-- Table lex_standard: datasource 912 non mentionné pour opération 18
-;-- Table licences: datasource 912 non mentionné pour opération 18
-;-- Table mag_declination: datasource 912 non mentionné pour opération 18
-;-- Table occurrences: datasource 912 non mentionné pour opération 18
-;-- Table qc_sampling: datasource 912 non mentionné pour opération 18
-;-- Table qc_standards: datasource 912 non mentionné pour opération 18
-;-- Table shift_reports: datasource 912 non mentionné pour opération 18
-;-- Table surface_samples_grades: datasource 912 non mentionné pour opération 18
-;-- Table topo_points: datasource 912 non mentionné pour opération 18
+;-- Table ancient_workings: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table baselines: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_core_boxes: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_density: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_devia: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_litho: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_quicklog: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_sampling_bottle_roll: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_sampling_grades: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_struct_measures: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_tech: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table dh_thinsections: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table field_observations: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table field_observations_struct_measures: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table field_photos: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table geoch_ana: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table geoch_sampling: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table geoch_sampling_grades: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table gpy_mag_ground: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table grade_ctrl: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table index_geo_documentation: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table lab_ana_batches_reception: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table lab_ana_qaqc_results: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- **Table lab_ana_results contient 207.0 enregistrements correspondant au datasource 912 pour l'opÃ©ration 18
+;-- Table lex_codes: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table lex_standard: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table licences: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table mag_declination: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table occurrences: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table qc_sampling: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table qc_standards: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table shift_reports: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table surface_samples_grades: datasource 912 non mentionnÃ© pour opÃ©ration 18
+;-- Table topo_points: datasource 912 non mentionnÃ© pour opÃ©ration 18
 ;== [["lab_ana_results" 207.0]]
 ;}}}
 ;}}}
@@ -2701,26 +2703,26 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 		t: i/1
 		n: i/2
 		print rejoin ["-- "t tab n]
-		;prin rejoin ["-- DÉTRUIRE LES " i/2 "ENREGISTREMENTS DANS " i/1 " (yYoO/nN)? "]
+		;prin rejoin ["-- DÃƒÂ‰TRUIRE LES " i/2 "ENREGISTREMENTS DANS " i/1 " (yYoO/nN)? "]
 		;r: input
 		;either any [(r = 'y') (r = 'Y') (r = 'o') (r = 'O')]  [
 			sql: rejoin ["DELETE FROM public." t " WHERE opid = "opid " AND datasource = " datasource "; -- (" n " records should be deleted)"]
 			print sql
-			;print "--on est timide pour le moment, on ne fait qu'afficher le SQL qui fera le boulot: à vous de le coller où il convient"
+			;print "--on est timide pour le moment, on ne fait qu'afficher le SQL qui fera le boulot: Ã  vous de le coller oÃ¹ il convient"
 		;] [
 		;print " Records kept"
 		;]
 	]
-	; éliminons de lex_datasource, bien sûr:
+	; Ã©liminons de lex_datasource, bien sÃƒÂ»r:
 	sql: rejoin ["DELETE FROM public.lex_datasource WHERE opid = " opid " AND datasource_id = " datasource ";"]
 	print sql
 ] ;}}}
 
-; fonctions et objets utilisés pour les structures: géométrie dans l'espace, vecteurs, objets structuraux, etc.
+; fonctions et objets utilisÃ©s pour les structures: gÃ©omÃ©trie dans l'espace, vecteurs, objets structuraux, etc.
 	azimuth_vector: func [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{ } } }
 		x: v/1
 		y: v/2
-		either (x = 0) [azim: 0] [azim: 90 - arctangent (y / x )] ;(nota bene: calculs directement en degrés chez rebol)
+		either (x = 0) [azim: 0] [azim: 90 - arctangent (y / x )] ;(nota bene: calculs directement en degrÃ©s chez rebol)
 		case [
 			(x  = 0) and (y  = 0) 	[
 									;print "-  "
@@ -2764,13 +2766,13 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 
 ;=======================================
 orientation: make object! [ ;--## An orientation object, which fully characterises a plane and/or a line: ;==={{{ } } }
-	; ## Les données initiales: {{{ } } }
+	; ## Les donnÃ©es initiales: {{{ } } }
 	;# J'ai pris une mesure de ma planchette dans ma position de
-	;# travail chez moi, avec le téléphone pitchant vers la
+	;# travail chez moi, avec le tÃ©lÃ©phone pitchant vers la
 	;# gauche.
-	;# Ça revient à une mesure de faille Nm30/60/E/55/S/N.
-	;# en tous cas, sans intérêt pour nous.
-	;# À l'écran du GeolPDA, ça se présentait à peu près
+	;# ÃƒÂ‡a revient Ã  une mesure de faille Nm30/60/E/55/S/N.
+	;# en tous cas, sans intÃ©rÃªt pour nous.
+	;# ÃƒÂ€ l'Ã©cran du GeolPDA, Ã§a se prÃ©sentait Ã  peu prÃ¨s
 	;# ainsi:
 	;#
 	;#       |  -0.7 |   0   |   0.7 |   0   |
@@ -2778,16 +2780,16 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;#       |   0.4 |   0.8 |   0.4 |   0   |
 	;#       |   0   |   0   |   0   |   1   |
 	;#
-	;# J'ai recopié ça depuis l'écran du GeolPDA, en
-	;# omettant la dernière colonne et la dernière
-	;# ligne, qui sont insignifiantes (une réminiscence
-	;# de la matrice identité; peut-être l'accélération?)
+	;# J'ai recopiÃ© Ã§a depuis l'Ã©cran du GeolPDA, en
+	;# omettant la derniÃ¨re colonne et la derniÃ¨re
+	;# ligne, qui sont insignifiantes (une rÃ©miniscence
+	;# de la matrice identitÃ©; peut-Ãªtre l'accÃ©lÃ©ration?)
 	;# (J'ai aussi un peu arrondi les valeurs; pas
-	;# facile de les lire quand ça bouge dans tous les
+	;# facile de les lire quand Ã§a bouge dans tous les
 	;# sens lors de la mesure): peu importe.
 	;#
 	;# J'ai mis la matrice de rotation 3x3 sous
-	;# la forme linéaire suivante:
+	;# la forme linÃ©aire suivante:
 	;rotation_matrix:	 [ -0.7   0     0.7
 	;					    0.6   0.6  -0.5
 	;					    0.4   0.8   0.4]
@@ -2808,7 +2810,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	plane_normal_vector: 		copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement overturned
 	axis_vector: 				make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
 	plane_downdip_azimuth: 		make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
-	plane_direction: 			make decimal! 0	; direction of the plane, from 0 to 180°:
+	plane_direction: 			make decimal! 0	; direction of the plane, from 0 to 180Â°:
 	plane_dip: 					make decimal! 0	; Pendage du plan
 	plane_quadrant_dip: 		copy ""			; quadrant (N, E, S, W) towards where plane dips
 	line_azimuth: 				make decimal! 0	; line azimuth
@@ -2829,7 +2831,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; Convert matrix m to a block of blocks named matrix:
 			foreach [u v w] m [append/only matrix to-block reduce [u v w]]
 			; variables abcdefghi: juste pour un souci d'ergonomie du codeur: {{{ } } }
-			; la notation de la matrice de rotation est bien plus pratique à manier sous forme de abcdefghi, dans les formules:
+			; la notation de la matrice de rotation est bien plus pratique Ã  manier sous forme de abcdefghi, dans les formules:
 			; No: too ringard: => yes, ringard, but works... (cf.infra)
 			a: self/matrix/1/1
 			b: self/matrix/1/2
@@ -2863,7 +2865,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;do code
 			;}}}
 			;}}}
-			;1) on détecte les jeux et l'overturn: {{{ } } }
+			;1) on dÃ©tecte les jeux et l'overturn: {{{ } } }
 			; As if the measurement was a fault, determination of the attitude (overturned or not) and movement, both vertical and horizontal components.
 			; Cancelled: nice tentative, but merdalors, fonctionne pas, zut: {{{ } } }
 			comment [
@@ -2882,7 +2884,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; case determination
 			code: process_cases_table table_cases_rotation_movements
 			res: do code
-			; BUG: une fois le code appelé, les variables i et autres ont été oubliées: ???
+			; BUG: une fois le code appelÃ©, les variables i et autres ont Ã©tÃ© oubliÃ©es: ???
 			?? res	;DEBUG
 			overturned:               to-logic  to-integer to-string res/1
 			line_movement_vertical:   to-string res/2
@@ -2906,12 +2908,12 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			; plane normal vector:: {{{ } } }
 			;=======================================================
 			;# ON ou N (plane_Normal_vector): vecteur unitaire normal
-			;# au plan du GeolPDA, se définit par xn,
+			;# au plan du GeolPDA, se dÃ©finit par xn,
 			;# yn, zn: les calculs matriciels sont simplistes,
-			;# il suffit de prendre la dernière colonne de la
-			;# matrice de rotation matrix; ça se démontre en un tournemain;
-			;# je mets plane_normal_vector sous forme linéaire:
-			; ATTENTION! les indices changent, entre python et rebol, début 0 ou 1:
+			;# il suffit de prendre la derniÃ¨re colonne de la
+			;# matrice de rotation matrix; Ã§a se dÃ©montre en un tournemain;
+			;# je mets plane_normal_vector sous forme linÃ©aire:
+			; ATTENTION! les indices changent, entre python et rebol, dÃ©but 0 ou 1:
 			;plane_normal_vector: reduce [	matrix/1/3
 			;								matrix/2/3
 			;								matrix/3/3 ]
@@ -2934,16 +2936,16 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;;ON: product_matrix_vector rotation_matrix [0 0 1]
 			;;;>> probe ON
 			;;;[0.7 -0.5 0.4]
-			;;; => semble correct ; mais je préfère le vecteur, finaloumen.
+			;;; => semble correct ; mais je prÃ©fÃ¨re le vecteur, finaloumen.
 			;;}}}
 			; }}}
 			; axis vector: : {{{ } } }
 			;=======================================================
-			; OA ou A est le vecteur de l'Axe du téléphone, vers le haut
-			; quand on tient le téléphone normalement.
+			; OA ou A est le vecteur de l'Axe du tÃ©lÃ©phone, vers le haut
+			; quand on tient le tÃ©lÃ©phone normalement.
 			; Si l'on mesure une faille, il s'agit du vecteur mouvement du bloc 
-			; en place (opposé de celui de la mesure), de sorte qu'une faille
-			; _normale_ avec le bloc supérieur érodé se mesure avec le téléphone 
+			; en place (opposÃ© de celui de la mesure), de sorte qu'une faille
+			; _normale_ avec le bloc supÃ©rieur Ã©rodÃ© se mesure avec le tÃ©lÃ©phone 
 			; en position _normale_.
 			;OA: product_matrix_line rotation_matrix [0 1 0]
 			;OA: to-vector OA
@@ -2953,7 +2955,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;OA/is_unit
 			;OA/norm
 			;# et A (axis_vector), vecteur unitaire dans
-			;# l'allongement du GeolPDA, se définit par
+			;# l'allongement du GeolPDA, se dÃ©finit par
 			;# xa, ya, za: pareil, calculs simplistes,
 			;# c'est la seconde colonne de la matrice
 			;# rotation_matrix:
@@ -2962,7 +2964,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;						self/matrix/3/2 ]
 			axis_vector: reduce [ b e h ]
 			;}}}
-	;down_dip_vect: func [] [;{{{ } } } ;=> annulé: en fait, on s'en fout.
+	;down_dip_vect: func [] [;{{{ } } } ;=> annulÃ©: en fait, on s'en fout.
 	;	; OD est le vecteur aval-pendage; D pour Down-Dip:
 	;	down_dip_vect: reduce [
 	;		x: i / (square-root 3) 
@@ -3002,21 +3004,21 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;	;return down_dip_vect
 	;];}}}
 			; other variables:
-			;2) on met les vecteurs tous dans le même sens:
+			;2) on met les vecteurs tous dans le mÃªme sens:
 			; la normale vers le haut,
 			if overturned [
 				plane_normal_vector: reduce [plane_normal_vector/1 * -1 plane_normal_vector/2 * -1 plane_normal_vector/3 * -1]
 			]
-			; la linéation vers le bas.
+			; la linÃ©ation vers le bas.
 			if (axis_vector/3 > 0) [
 				axis_vector: reduce [axis_vector/1 * -1 axis_vector/2 * -1 axis_vector/3 * -1]
 			]
-			;3) on calcule les angles pour la représentation conventionnelle
+			;3) on calcule les angles pour la reprÃ©sentation conventionnelle
 			plane_downdip_azimuth: azimuth_vector plane_normal_vector
 			plane_direction: plane_downdip_azimuth - 90
 			if (plane_direction <   0) [plane_direction: plane_direction + 180]
 			if (plane_direction > 180) [plane_direction: plane_direction - 180]
-			; dip of the plane, from 0 to 90°:
+			; dip of the plane, from 0 to 90Â°:
 			plane_dip: absolute arccosine ( plane_normal_vector/3 ) ; = plongement de OD: ;== 39.8452276492299 ; => correct ; absolute, to avoid problem in arcsine for pitch angle
 			case [
 				((plane_downdip_azimuth >   315) or (plane_downdip_azimuth <=  45))	[plane_quadrant_dip: "N"]
@@ -3028,13 +3030,13 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;if (axis_vector/3 > 0) [line_azimuth: line_azimuth + 180] ; case when line upwards; convention is azimuth of down lineation <= eliminated case, see above
 			;line_plunge: -90 + (arccosine ( axis_vector/3 ))
 			line_plunge: absolute arcsine (axis_vector/3)
-			;line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )	;###BUG? recorrigé en relisant article:
+			;line_pitch: arcsine ( sine (line_plunge) / sine (plane_dip) )	;###BUG? recorrigÃ© en relisant article:
 			;line_pitch: arctangent ( (tangent line_plunge) / (sine plane_dip) )	; non...
 			;line_pitch: arctangent ( (tangent (line_azimuth - plane_direction)) / (sine plane_dip) )	; toujours VRAIMENT pas...
 			;line_pitch: arctangent ((sine plane_dip) / ((sine (line_azimuth - plane_direction)) * tangent plane_dip))	; non!
 			;line_pitch: arctangent ((tangent (line_azimuth - plane_direction)) / (cosine plane_dip) * (sine plane_dip))	; toujours pas...
-			;line_pitch: absolute arcsine ( ( sine line_plunge ) / ( sine plane_dip ) )	; tout refait; ah, je retombe sur ma première formule.
-			line_pitch: absolute arcsine ( minimum 1 ( ( sine line_plunge ) / ( sine plane_dip ) ) )   ; tout refait; ah, je retombe sur ma première formule. Workaround for case where ( sine line_plunge ) / ( sine plane_dip ) slightly exceeds 1 (due to ? it is theoretically impossible that plane_dip < line_plunge; in present case, probably a precision problem for a pitch 90 case)
+			;line_pitch: absolute arcsine ( ( sine line_plunge ) / ( sine plane_dip ) )	; tout refait; ah, je retombe sur ma premiÃ¨re formule.
+			line_pitch: absolute arcsine ( minimum 1 ( ( sine line_plunge ) / ( sine plane_dip ) ) )   ; tout refait; ah, je retombe sur ma premiÃ¨re formule. Workaround for case where ( sine line_plunge ) / ( sine plane_dip ) slightly exceeds 1 (due to ? it is theoretically impossible that plane_dip < line_plunge; in present case, probably a precision problem for a pitch 90 case)
 			comment [;PAS BON:==========================================
 				case [
 					(parse plane_quadrant_dip [ "E" | "W" ]) [
@@ -3049,14 +3051,14 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						]
 				]
 			];==========================================================
-			either (line_azimuth - plane_downdip_azimuth < 0) [	; la ligne est à "gauche" de la plus grande pente		
+			either (line_azimuth - plane_downdip_azimuth < 0) [	; la ligne est Ã  "gauche" de la plus grande pente		
 				case [
 					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "N" ]
 					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "E" ]
 					(plane_quadrant_dip = "W") [ line_pitch_quadrant: "S" ]
 					(plane_quadrant_dip = "N") [ line_pitch_quadrant: "W" ]
 					]
-				][												; la ligne est à "droite" de la plus grande pente
+				][												; la ligne est Ã  "droite" de la plus grande pente
 				case [
 					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "S" ]
 					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "W" ]
@@ -3067,19 +3069,19 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		
 			;;line_movement: => inutile {{{ } } }
 			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une 
-			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
-			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé 
+			;		; mesure de faille normale sans surplomb), Ã§a va Ãªtre ON ^ AO qui tourne 
+			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincÃ© 
 			;		; dans la faille en mouvement ou dans la guimauve qui flue).
-			;	; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
+			;	; Mais dÃ©terminons le mouvement de maniÃ¨re un peu moins lyrique et plus pragmatique:
 			;	; la composante verticale du mouvement:
-			;	; on prend le delta azimut de la ligne (mouvement bloc inférieur) - azimut de la
+			;	; on prend le delta azimut de la ligne (mouvement bloc infÃ©rieur) - azimut de la
 			;	; ligne de plus grande pente du plan, comme discriminant:
 			;	delta_azim_line_plane: line_azimuth - plane_downdip_azimuth
 			;	if (delta_azim_line_plane <   0) [ delta_azim_line_plane: delta_azim_line_plane + 360 ]
 			;	if (delta_azim_line_plane > 360) [ delta_azim_line_plane: delta_azim_line_plane - 360 ]
 			;	either (delta_azim_line_plane >  90)    [ line_movement_vertical:   "N" ] [ line_movement_vertical:   "I" ]
 			;	either (delta_azim_line_plane > 180)    [ line_movement_horizontal: "D" ] [ line_movement_horizontal: "S" ]
-			; TODO il faudra certainement déterminer un line_pitch_noorient, qui est très probablement l'angle qu'on vient d'obtenir
+			; TODO il faudra certainement dÃ©terminer un line_pitch_noorient, qui est trÃ¨s probablement l'angle qu'on vient d'obtenir
 			; In fact, result is that line_pitch is < 0 when movement inverse:
 			;either (line_pitch < 0) [
 			;							line_pitch: -1 * line_pitch
@@ -3101,7 +3103,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;;]	;}}}
 			; also, reset line_plunge to a positive value:
 			;line_plunge: absolute line_plunge	; => done already
-			either (line_pitch < 45) [ line_movement: line_movement_horizontal] [ line_movement: line_movement_vertical ]     ; pitch petit: mouvement décrochant dominant; pitch grand: mouvement vertical dominant
+			either (line_pitch < 45) [ line_movement: line_movement_horizontal] [ line_movement: line_movement_vertical ]     ; pitch petit: mouvement dÃ©crochant dominant; pitch grand: mouvement vertical dominant
 		]
 	];}}}
 	; outputs:
@@ -3155,96 +3157,96 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 
 
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
-		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
-		;# Il s'agit maintenant de tracer le Té de
+		;Je tente de passer en rebol le code python que je fis pour tracer le tÃ© de pendage dans le geolpda: {{{ } } }
+		;# Il s'agit maintenant de tracer le TÃ© de
 		;# pendage:
-		;# Les coordonnées sont centrées autour de
-		;# O(0,0) autour du croisement des lignes du Té;
-		;# le Té s'inscrit dans un cercle de rayon 1:
+		;# Les coordonnÃ©es sont centrÃ©es autour de
+		;# O(0,0) autour du croisement des lignes du TÃ©;
+		;# le TÃ© s'inscrit dans un cercle de rayon 1:
 		;#
 		;#          O(0,0)
-		;#    ------x-------  Exemple d'un Té
+		;#    ------x-------  Exemple d'un TÃ©
 		;#          |         de pendage pour
 		;#          |         un plan Nm90/45/S
 		;#         45
 		;#
 		;#
 		;#   B(-1,0)        A(1,0)
-		;#    x-----+------x  Même Té, points du
-		;#          |         symbole, avec coordonnées
+		;#    x-----+------x  MÃªme TÃ©, points du
+		;#          |         symbole, avec coordonnÃ©es
 		;#          x
 		;#         C(0,-0.3)
 		;#
 		;#
-		;# La "queue" du Té a ici une longueur de 0.3;
-		;# question de goût et d'esthétique; on met ça
+		;# La "queue" du TÃ© a ici une longueur de 0.3;
+		;# question de goÃƒÂ»t et d'esthÃ©tique; on met Ã§a
 		;# dans la variable len_queue_t:	
 		len_queue_t: 0.3
 		;
 		;# Il faudra tracer la ligne symbolisant
-		;# la linéation, mesurée par l'axe A du
+		;# la linÃ©ation, mesurÃ©e par l'axe A du
 		;# GeolPDA:
 		;#
 		;#   B              A
-		;#    x-----+------x  Même Té, avec une
-		;#         /|         linéation en plus;
-		;#        / x         exemple d'une linéation
+		;#    x-----+------x  MÃªme TÃ©, avec une
+		;#         /|         linÃ©ation en plus;
+		;#        / x         exemple d'une linÃ©ation
 		;#       /  C         d'azimut environ Nm45
 		;#      x
 		;#     L
 		;#
 		;}}}
-		;# Calcul des coordonnées des points A,B,C,L: {{{ } } }
-		;# Un point tmp, colinéaire au projeté de plane_normal_vector
-		;# sur le plan horizontal, à 1 de l'origine:
+		;# Calcul des coordonnÃ©es des points A,B,C,L: {{{ } } }
+		;# Un point tmp, colinÃ©aire au projetÃ© de plane_normal_vector
+		;# sur le plan horizontal, Ã  1 de l'origine:
 		tmp: reduce [
 			self/plane_normal_vector/1 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2)))) 
 			self/plane_normal_vector/2 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2)))) 
 		]
 		;
 		;##   FIXME: pour un plan strictement horizontal,
-		;##   on aura une division par zéro: faut gérer ça!
-		;##     Pour le moment, lors de la démo, il faudra
-		;##     simplement éviter de poser le GeolPDA à plat...
+		;##   on aura une division par zÃ©ro: faut gÃ©rer Ã§a!
+		;##     Pour le moment, lors de la dÃ©mo, il faudra
+		;##     simplement Ã©viter de poser le GeolPDA Ã  plat...
 		;
-		;# Le point origine O, par convénience...
+		;# Le point origine O, par convÃ©nience...
 		O: [0 0]
 		;
-		;# on définit les points A et B comme les bouts
-		;# de la barre du Té:
-		;# A: on part de tmp et on tourne à gauche de 90°:
+		;# on dÃ©finit les points A et B comme les bouts
+		;# de la barre du TÃ©:
+		;# A: on part de tmp et on tourne Ã  gauche de 90Â°:
 		A: reduce [   - tmp/2
 						tmp/1]
-		;# B: on repart de tmp et on tourne à droite de 90°:
+		;# B: on repart de tmp et on tourne Ã  droite de 90Â°:
 		B: reduce  [    tmp/2
 					0 - tmp/1]
-		;; => TRÈS piégeux en Rebol; si on met:{{{ } } }
+		;; => TRÃƒÂˆS piÃ©geux en Rebol; si on met:{{{ } } }
 		;;B: reduce  [  tmp/2             - tmp/1]
 		;;>> B: reduce  [  tmp/2                - tmp/1]
 		;;== [-1.39497166492583]  <= erreur!
 		;;}}}
 		;
-		;# On définit le point C comme le bout
-		;# de la queue du Té:
+		;# On dÃ©finit le point C comme le bout
+		;# de la queue du TÃ©:
 		C: reduce [ 	tmp/1 * len_queue_t
 						tmp/2 * len_queue_t]
 		;
-		;# On définit L comme le bout du symbole de
-		;# la linéation; il s'agit de -axis_vect
+		;# On dÃ©finit L comme le bout du symbole de
+		;# la linÃ©ation; il s'agit de -axis_vect
 		;# (compte tenu de la convention de mouvement),
-		;# projeté sur l'horizontale, donc le vecteur
+		;# projetÃ© sur l'horizontale, donc le vecteur
 		;# axis_vector[0:2]
 		L: reduce [	  - self/axis_vector/1
 					0 - self/axis_vector/2]
 		;}}}
-		;# Maintenant, il n'y a plus qu'à tracer
+		;# Maintenant, il n'y a plus qu'Ã  tracer
 		;# le symbole: en pseudo-code:
 		;#    trace_ligne (A, B)
 		;#    trace_ligne (O, C)
 		;#    trace_ligne (O, L)
-		; en python tk => passé à la poubelle =>
-		; => en VID, plutôt:;{{{ } } }
-		; tracé of elements:
+		; en python tk => passÃ© Ã  la poubelle =>
+		; => en VID, plutÃ´t:;{{{ } } }
+		; tracÃ© of elements:
 		;A: [0 0]
 		;B: [0.5 0.5]
 		;C: [-.5 0]
@@ -3292,7 +3294,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW string with t
 	; "constructor": rest of the code:
 		; axes:
 			append plot [pen gray]
-			; un réticule:
+			; un rÃ©ticule:
 			;trace_line [0 -1.1] [0 1.1]
 			;trace_line [-1.1 0] [1.1 0]
 	; trace a rondibet:
@@ -3496,7 +3498,7 @@ generate_tectri_file: function [ ;{{{ } } }
 
 
 
-; Fonctions utilisées pour faire des programmes de sondages:
+; Fonctions utilisÃ©es pour faire des programmes de sondages:
 cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
     x: x + (distance * (sine    azim))
     y: y + (distance * (cosine  azim))
@@ -3534,7 +3536,7 @@ mark_set: does [ ; set a mark, to go back afterwards; {{{ } } }
 	mark_y: y
 	mark_z: z
 ];}}}
-mark_go: does [  ; go back to a previously marked place; {{{ } } }
+mark_go: does [  ; go back to a previously marked place; {{{ } } }
 	x: mark_x
 	y: mark_y
 	z: mark_z
@@ -3555,10 +3557,10 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 
 
 
-; === fin des définitions de fonctions ==========
+; === fin des dÃ©finitions de fonctions ==========
 
 
-; on se met dans le répertoire courant
+; on se met dans le rÂ©pertoire courant
 change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
@@ -3569,6 +3571,6 @@ print "Gll preferences loaded: "
 ?? tmp_schema
 print rejoin ["Current working directory: " what-dir ]
 
-; on lance la connexion à la base
+; on lance la connexion Ã  la base
 connection_db
 
