@@ -93,7 +93,11 @@ unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local di
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
-if ( confirm "synchronize geolpda data files?" ) [ synchronize_geolpda ]
+if ( confirm "get geolpda database from android device?" ) [
+	copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak"]
+	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
+]
+if ( confirm "synchronize geolpda files (pictures, audio files)?" ) [ synchronize_geolpda ]
 ;}}}
 
 ; Open sqlite geolpda, get data:{{{ } } }
