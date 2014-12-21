@@ -1,4 +1,4 @@
-#!/usr/bin/rebol_core -qs
+#!/usr/bin/rebol -qs
 rebol	[
 	Title:   "Création des vues de bdexplo"
 	Name:    gll_bdexplo_views_create.r
@@ -121,21 +121,116 @@ append sql_string {
 -- 4. vues pour postgis:{{{
 
 -- 2014_02_01__17_55_45
-CREATE VIEW        dh_collars_points AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM        dh_collars;
-CREATE VIEW        dh_traces_3d AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM        dh_collars) tmp ORDER BY tmp.id;
-CREATE VIEW        field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        field_observations;
-CREATE VIEW        geoch_sampling_grades_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        geoch_sampling_grades;
-CREATE VIEW        index_geo_documentation_rectangles AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM        index_geo_documentation;
-CREATE VIEW        licences_quadrangles AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM        licences ORDER BY licences.licence_name;
-CREATE VIEW        operations_quadrangles AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))') FROM        operations ORDER BY operation;
-CREATE VIEW        surface_samples_grade_points AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM        surface_samples_grades;
-CREATE VIEW        dh_collars_points_marrec AS SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM        dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
+CREATE VIEW        dh_collars_points                              AS SELECT *, GeomFromewkt('SRID='|| srid || ';POINT('|| x || ' ' || y || ' ' || z || ')') FROM        dh_collars;
+CREATE VIEW        dh_traces_3d                                   AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1 FROM        dh_collars) tmp ORDER BY tmp.id;
+CREATE VIEW        field_observations_points                      AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        field_observations;
+CREATE VIEW        geoch_sampling_grades_points                   AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || z || ')') FROM        geoch_sampling_grades;
+CREATE VIEW        index_geo_documentation_rectangles             AS SELECT id, title, lat_min, lat_max, lon_min, lon_max, geomfromtext('RECTANGLE (' || lon_min || ' ' || lat_min || ' ' || lon_max || ' ' || lat_max || '), 20136') AS geomfromtext FROM        index_geo_documentation;
+CREATE VIEW        licences_quadrangles                           AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM        licences ORDER BY licences.licence_name;
+CREATE VIEW        operations_quadrangles                         AS SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))') FROM        operations ORDER BY operation;
+CREATE VIEW        surface_samples_grade_points                   AS SELECT *, GeomFromewkt('SRID= 20136; POINT ('|| x || ' ' || y || ' ' || 0 || ')') FROM        surface_samples_grades;
+CREATE VIEW        dh_collars_points_marrec                       AS SELECT *, GeomFromewkt('POINT('|| x_local  || ' ' || y_local || ' )') FROM        dh_collars WHERE x_local IS NOT NULL AND y_local IS NOT NULL;
 CREATE VIEW        petro_mineralo_study_field_observations_points AS SELECT * FROM        field_observations_points WHERE sample_id IN ('PCh854', 'PCh856', 'PCh865', 'PCh873', 'PCh875A, PCh875B') ORDER BY obs_id;
-CREATE VIEW pierre.petro_mineralo_study_dh_collars AS SELECT * FROM        dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
+CREATE VIEW        petro_mineralo_study_dh_collars                AS SELECT * FROM        dh_collars_points WHERE id IN ('S430', 'W08-573', 'W08-597', 'W08-593', 'W08-598', 'W08-598', 'W08-601', 'GB09-889', 'GB09-889', 'GB09-893') ORDER BY id;
+
+CREATE VIEW public.dh_collars_points_latlon                       AS SELECT *, ST_Transform( geomfromewkt( 'SRID=' || srid || '; POINT (' || x || ' ' || y || ')') , 4326) AS geometry FROM public.dh_collars WHERE x IS NOT NULL AND y IS NOT NULL AND srid IS NOT NULL AND srid <> 999;
+-- les règles associées: {{{
+CREATE RULE dh_collars_points_latlon_rule_upd AS ON UPDATE TO public.dh_collars_points_latlon
+ DO INSTEAD
+  UPDATE public.dh_collars
+   SET 
+    id = new.id,shid = new.shid,location = new.location,profile = new.profile,srid = new.srid,x = new.x ,y = new.y ,z = new.z ,azim_ng = new.azim_ng,azim_nm = new.azim_nm,dip_hz = new.dip_hz,dh_type = new.dh_type,date_start = new.date_start,contractor = new.contractor,geologist = new.geologist,length = new.length,nb_samples = new.nb_samples,comments = new.comments,completed = new.completed,numauto = new.numauto,date_completed = new.date_completed,opid = new.opid,purpose = new.purpose,x_local = new.x_local,y_local = new.y_local,z_local = new.z_local,accusum = new.accusum,id_pject = new.id_pject,x_pject = new.x_pject,y_pject = new.y_pject,z_pject = new.z_pject,topo_survey_type = new.topo_survey_type,datasource = new.datasource
+   WHERE numauto = old.numauto;
+
+CREATE RULE dh_collars_points_latlon_rule_del AS ON DELETE TO public.dh_collars_points_latlon
+ DO INSTEAD
+  DELETE FROM public.dh_collars
+   WHERE numauto = old.numauto;
+
+CREATE RULE dh_collars_points_latlon_rule_ins AS ON INSERT TO public.dh_collars_points_latlon
+ DO INSTEAD 
+  INSERT INTO public.dh_collars (id,shid,location,profile,srid,x,y,z,azim_ng,azim_nm,dip_hz,dh_type,date_start,contractor,geologist,length,nb_samples,comments,completed,date_completed,opid,purpose,x_local,y_local,z_local,accusum,id_pject,x_pject,y_pject,z_pject,topo_survey_type,datasource)
+  VALUES (new.id,new.shid,new.location,new.profile,new.srid,new.x,new.y,new.z,new.azim_ng,new.azim_nm,new.dip_hz,new.dh_type,new.date_start,new.contractor,new.geologist,new.length,new.nb_samples,new.comments,new.completed,new.date_completed,new.opid,new.purpose,new.x_local,new.y_local,new.z_local,new.accusum,new.id_pject,new.x_pject,new.y_pject,new.z_pject,new.topo_survey_type,new.datasource );
+--}}}
+
+CREATE VIEW public.field_observations_points AS SELECT *, GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')') FROM public.field_observations;
+-- les règles associées: {{{
+
+CREATE RULE field_observations_rule_update_no_geom as on UPDATE TO public.field_observations_points
+--WHERE geomfromewkt = NEW.geomfromewkt 
+WHERE OLD.numauto = NEW.numauto 
+DO INSTEAD UPDATE public.field_observations 
+SET opid = NEW.opid,
+year = NEW.year,
+obs_id = NEW.obs_id,
+date = NEW.date,
+waypoint_name = NEW.waypoint_name,
+x = NEW.x,
+y = NEW.y,
+z = NEW.z,
+description = NEW.description,
+code_litho = NEW.code_litho,
+code_unit = NEW.code_unit,
+srid = NEW.srid,
+geologist = NEW.geologist,
+icon_descr = NEW.icon_descr,
+comments = NEW.comments,
+sample_id = NEW.sample_id,
+datasource = NEW.datasource,
+photos = NEW.photos,
+audio = NEW.audio,
+timestamp_epoch_ms = NEW.timestamp_epoch_ms
+WHERE NEW.numauto = OLD.numauto;
+
+CREATE RULE field_observations_points_upd AS ON UPDATE TO public.field_observations_points 
+ DO INSTEAD 
+  UPDATE public.field_observations 
+   SET 
+    opid = new.opid, 
+    year = new.year, 
+    obs_id = new.obs_id, 
+    date = new.date, 
+    waypoint_name = new.waypoint_name, 
+    x = new.x, 
+    y = new.y, 
+    z = new.z, 
+    description = new.description, 
+    code_litho = new.code_litho, 
+    code_unit = new.code_unit, 
+    srid = new.srid, 
+    geologist = new.geologist, 
+    icon_descr = new.icon_descr, 
+    comments = new.comments, 
+    sample_id = new.sample_id, 
+    datasource = new.datasource, 
+    photos = new.photos, 
+    audio = new.audio, 
+    timestamp_epoch_ms = new.timestamp_epoch_ms
+  WHERE numauto = old.numauto;
+
+CREATE RULE field_observations_points_del AS ON DELETE TO public.field_observations_points 
+ DO INSTEAD 
+  DELETE FROM public.field_observations 
+   WHERE numauto = OLD.numauto;
+
+CREATE RULE field_observations_points_ins_xy AS 
+ ON INSERT TO public.field_observations_points 
+ WHERE x IS NOT NULL AND y IS NOT NULL AND geomfromewkt IS NULL 
+  DO INSTEAD 
+   INSERT INTO public.field_observations (opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms)
+    VALUES (new.opid,new.year,new.obs_id,new.date,new.waypoint_name,new.x,new.y,new.z,new.description,new.code_litho,new.code_unit,new.srid,new.geologist,new.icon_descr,new.comments,new.sample_id,new.datasource,new.photos,new.audio,new.timestamp_epoch_ms);
+
+CREATE RULE field_observations_points_ins_geom AS 
+ ON INSERT TO public.field_observations_points 
+ WHERE x IS NULL AND y IS NULL AND geomfromewkt IS NOT NULL 
+  DO INSTEAD 
+   INSERT INTO public.field_observations (opid,year,obs_id,date,waypoint_name,x,y,z,description,code_litho,code_unit,srid,geologist,icon_descr,comments,sample_id,datasource,photos,audio,timestamp_epoch_ms)
+    VALUES (new.opid,new.year,new.obs_id,new.date,new.waypoint_name,ST_X(new.geomfromewkt),ST_Y(new.geomfromewkt),ST_Z(new.geomfromewkt),new.description,new.code_litho,new.code_unit,new.srid,new.geologist,new.icon_descr,new.comments,new.sample_id,new.datasource,new.photos,new.audio,new.timestamp_epoch_ms);
+--}}}
 
 
 --DROP cascade sur vue dh_mineralised_intervals0_traces_3d/*{{{*/
-CREATE OR REPLACE VIEW        dh_mineralised_intervals0_traces_3d AS 
+CREATE OR REPLACE VIEW        dh_mineralised_intervals2_traces_3d AS 
 SELECT *, 
 GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || 
 x1 || ' ' || 
@@ -249,6 +344,7 @@ ORDER BY tmp.opid, tmp.id, tmp.depto;
 -- 5. vues des analyses en colonnes:{{{
 
 -- la fonction qui va bien: {{{
+/*
 CREATE OR REPLACE FUNCTION create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar) RETURNS pg_catalog.void AS
 \$body\$
 DECLARE
@@ -272,10 +368,13 @@ EXECUTE dynsql;
 END
 \$body\$
 LANGUAGE 'plpgsql' VOLATILE CALLED ON NULL INPUT SECURITY INVOKER;
+*/
 --}}}
-
+--  Ça semble bien ne plus fonctionner, le 2014_11_23__21_23_20 => cancellé
 
 --une vue temporaire pour avoir analyte, unité et scheme dans le libellé pour crosstabber dessus, en allant chercher le libellé des colonnes dans une table annexe, lab_ana_columns_definition:
+
+/*
 CREATE OR REPLACE VIEW tmp_lab_ana_results AS 
 SELECT lab_ana_results.opid, sample_id, colid, 
 (CASE WHEN value_num < 0 THEN 0 ELSE value_num END) AS value_num 
@@ -288,22 +387,23 @@ lab_ana_results.analyte = lab_ana_columns_definition.analyte AND
 lab_ana_results.scheme  = lab_ana_columns_definition.scheme  AND 
 lab_ana_results.unit    = lab_ana_columns_definition.unit
 );
+*/
 
-
-
-
+/*
 --on crosstabbe sur cette vue:
 SELECT create_crosstab_view ('SELECT * FROM tmp_lab_ana_results', 'lab_ana_results_columns_avg',   'sample_id', 'colid', 'value_num', 'avg'  );
 SELECT create_crosstab_view ('SELECT * FROM tmp_lab_ana_results', 'lab_ana_results_columns_min',   'sample_id', 'colid', 'value_num', 'min'  );
 SELECT create_crosstab_view ('SELECT * FROM tmp_lab_ana_results', 'lab_ana_results_columns_max',   'sample_id', 'colid', 'value_num', 'max'  );
 SELECT create_crosstab_view ('SELECT * FROM tmp_lab_ana_results', 'lab_ana_results_columns_count', 'sample_id', 'colid', 'value_num', 'count');
+*/
 
 --@#attention aux échantillons qui ont leur sample_id commun à 2 opid!!
 
 --CREATE VIEW lab_ana_results_sel AS SELECT * FROM lab_ana_results WHERE orderno = 'VMS_001';
 --}}}
 -- 6. vues des échantillons et analyses en colonnes: {{{
-CREATE VIEW dh_sampling_ana AS SELECT opid, id, depfrom, depto, lab_ana_results_columns_avg.* FROM dh_sampling_grades JOIN lab_ana_results_columns_avg ON (dh_sampling_grades.sample_id = lab_ana_results_columns_avg.sample_id);
+--CREATE VIEW dh_sampling_ana AS SELECT opid, id, depfrom, depto, lab_ana_results_columns_avg.* FROM dh_sampling_grades JOIN lab_ana_results_columns_avg ON (dh_sampling_grades.sample_id = lab_ana_results_columns_avg.sample_id);
+--cancellé, le 2014_11_23__21_23_20
 --}}}
 -- 8. les sondages ouverts:/*{{{*/
 

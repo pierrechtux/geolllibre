@@ -1,4 +1,4 @@
-#!/usr/bin/rebol_core -qs
+#!/usr/bin/rebol -qs
 rebol	[
 	Title:   "Démolition des vues de bdexplo"
 	Name:    gll_bdexplo_views_create.r
@@ -53,7 +53,7 @@ do load to-file system/options/home/bin/gll_routines.r	; Récupération des rout
 ?? dbname
 
 
-;# on fabrique un gros texte en sql, qu'on fera tourner à la fin {{ {
+;# on fabrique un gros texte en sql, qu'on fera tourner à la fin {{{
 sql_text: {
 --destruction des vues de la bdexplo
 --tout est listé dans l'ordre inverse du script de création
@@ -207,7 +207,8 @@ DROP VIEW IF EXISTS lab_ana_results_columns_max;
 DROP VIEW IF EXISTS lab_ana_results_columns_min;
 DROP VIEW IF EXISTS lab_ana_results_columns_avg;
 DROP VIEW IF EXISTS tmp_lab_ana_results;
-DROP FUNCTION create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar);
+--DROP FUNCTION create_crosstab_view (eavsql_inarg varchar, resview varchar, rowid varchar, colid varchar, val varchar, agr varchar);
+-- create_crosstab_view ne semble plus fonctionner/exister, le 2014_11_23__21_23_20 
 --
 
 -- 3. des vues genre alias pratique: 
@@ -228,19 +229,10 @@ DROP VIEW IF EXISTS collars_selection;
 --DROP VIEW IF EXISTS tmp_coupes_seriees_plines;
 --DROP VIEW IF EXISTS soil_geoch_bondoukou_points;
 
-DROP VIEW IF EXISTS dh_collars_points_marrec ;
-
-DROP VIEW IF EXISTS surface_samples_grade_points;
-DROP VIEW IF EXISTS operations_quadrangles;
-DROP VIEW IF EXISTS licences_quadrangles;
 DROP VIEW IF EXISTS dh_mineralised_intervals0_traces_3d;
-DROP VIEW IF EXISTS index_geo_documentation_rectangles;
 DROP VIEW IF EXISTS grid_points;
 
-
 DROP VIEW IF EXISTS geoch_sampling_grades_points;
-
-
 
 --#################################################################
 DROP VIEW IF EXISTS topo_points_points;
@@ -248,6 +240,30 @@ DROP VIEW IF EXISTS petro_mineralo_study_field_observations_points;
 DROP VIEW IF EXISTS petro_mineralo_study_dh_collars;
 --#################################################################
 
+
+
+DROP RULE IF EXISTS dh_collars_points_latlon_rule_ins ON public.dh_collars_points_latlon;
+DROP RULE IF EXISTS dh_collars_points_latlon_rule_del ON public.dh_collars_points_latlon;
+DROP RULE IF EXISTS dh_collars_points_latlon_rule_upd ON public.dh_collars_points_latlon;
+DROP VIEW IF EXISTS public.dh_collars_points_latlon;
+
+
+
+
+DROP RULE IF EXISTS field_observations_points_ins_geom ON public.field_observations_points;
+DROP RULE IF EXISTS field_observations_points_ins_xy ON public.field_observations_points;
+DROP RULE IF EXISTS field_observations_points_del ON public.field_observations_points;
+DROP RULE IF EXISTS field_observations_points_upd ON public.field_observations_points;
+DROP RULE IF EXISTS field_observations_rule_update_no_geom ON public.field_observations_points;
+DROP VIEW IF EXISTS public.field_observations_points;
+
+
+
+
+DROP VIEW IF EXISTS dh_collars_points_marrec ;
+DROP VIEW IF EXISTS surface_samples_grade_points;
+DROP VIEW IF EXISTS operations_quadrangles;
+DROP VIEW IF EXISTS licences_quadrangles;
 
 DROP VIEW IF EXISTS index_geo_documentation_rectangles;
 DROP VIEW IF EXISTS geoch_sampling_grades_points;
