@@ -80,6 +80,8 @@ CREATE TABLE dh_collars (
     opid integer NOT NULL,
     id character varying(20) NOT NULL,
     location character varying,
+    campaign character varying,
+    purpose character varying DEFAULT 'EXPLO'::character varying,
     profile character varying(10),
     srid integer,
     x numeric(12,3),
@@ -92,7 +94,6 @@ CREATE TABLE dh_collars (
     dh_type character varying(10),
     date_start date,
     date_completed date,
-    purpose character varying DEFAULT 'EXPLO'::character varying,
     completed boolean DEFAULT false,
     contractor character varying(20),
     geologist character varying,
@@ -125,6 +126,7 @@ COMMENT ON COLUMN dh_collars.opid                   IS 'Operation identifier';
 COMMENT ON COLUMN dh_collars.id                     IS 'Full identifier for borehole or trench, may include zone code, type and sequential number';
 COMMENT ON COLUMN dh_collars.shid                   IS 'Short identifier: type _ sequential number';
 COMMENT ON COLUMN dh_collars.location               IS 'Investigated area code, refers to occurrences table';
+COMMENT ON COLUMN dh_collars.campaign               IS 'Campaign: year, type, etc. i.e. DDH exploration 1967';
 COMMENT ON COLUMN dh_collars.profile                IS 'Profile number';
 COMMENT ON COLUMN dh_collars.srid                   IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
 COMMENT ON COLUMN dh_collars.x                      IS 'X coordinate (Easting),  in coordinate system srid';
