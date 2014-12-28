@@ -13,7 +13,7 @@ import sqlalchemy, os, pickle, csv, decimal
 # - données: #{{{
 # Une table contenant les données, correctement faite; une chaîne de connexion à une base:
 table          = 'dh_sampling_grades'
-connection_str =  'postgresql://pierre:pp@autan/bdexplo'
+connection_str =  'postgresql://pierre:pp@localhost/bdexplo'
 
 # => @#passer ça en paramètres comme variables shell, $GLL_BD_HOST $GLL_BD_NAME
 
