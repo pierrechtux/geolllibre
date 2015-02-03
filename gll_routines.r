@@ -3376,10 +3376,27 @@ generate_tectri_file: function [ ;{{{ } } }
 	/onefileperobservation "generates one file per observation; if no file prefix is specified, files are named according to observation identifier (obs_id field) followed by .tec extension"
 	/fileprefix "option to set a prefix to output filename"
 		prefix [string!] "file prefix"
+	;/table "table to query data from"
+	;	structures_measures_table [string!] "table name: default is field_observations_struct_measures , it can also be dh_struct_measures"
 ][
 	; local variables:
 	sql_string measures newline_ newline obs_id_current obs_id_previous i header_written
 ][
+	; 2015_02_03__15_19_08 add possibility to query from drill hole structural data
+	; => no, table structures should be homogeneised first; rather, make another similar function.
+	;either table [
+	;	; an alternative table is provided: check if it exists:
+	;	if error? try [
+	;		sql_string: rejoin ["SELECT * FROM " structures_measures_table " LIMIT 0"] 
+	;		print sql_string
+	;		run_query sql_string
+	;		] [
+	;		print rejoin ["Error: table " structures_measures_table " cannote be queried."]
+	;		return none
+	;		]
+	;	] [
+	;	structures_measures_table: "public.field_observations_struct_measures"	; default
+	;	]
 	; 21_07_2014__10_18_56
 	; get data:
 		sql_string: copy "SELECT tmp.*, field_observations.description FROM (SELECT opid, obs_id, measure_type, structure_type, north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, comments, datasource, sortgroup, device, numauto FROM public.field_observations_struct_measures "
@@ -3496,6 +3513,132 @@ generate_tectri_file: function [ ;{{{ } } }
 	newline: newline_
 ];}}}
 
+generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
+	"Generates a file for TecTri from structural measurements contained in bdexplo database in dh_struct_measures table"
+	/criteria {optional criteria to select records to be exported}
+		sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
+	/unique_filename "specifies a unique output filename for all measurements"
+		filename [string! file!] "output filename, default extension is .tec"
+	/onefileperobservation "generates one file per observation; if no file prefix is specified, files are named according to observation identifier (obs_id field) followed by .tec extension"
+	/fileprefix "option to set a prefix to output filename"
+		prefix [string!] "file prefix"
+][
+	; local variables:
+	sql_string measures newline_ newline id_current id_previous i header_written
+][
+	; 2015_02_03__15_19_08 made another function similar to generate_tectri_file ; should be merged into a single one, once data table structures are similar enough.
+	; get data:
+		sql_string: copy "SELECT tmp.*, dh_struct_measures.struct_description FROM (SELECT opid, id, depto, measure_type, structure_type, north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, datasource, sortgroup, numauto FROM public.dh_struct_measures  "
+		if criteria [ append sql_string sql_criteria ]
+		append sql_string " ) AS tmp JOIN public.dh_struct_measures ON (tmp.opid = dh_struct_measures.opid AND tmp.id = dh_struct_measures.id AND tmp.depto = dh_struct_measures.depto) ORDER BY tmp.opid, tmp.id, tmp.depto, tmp.numauto;"
+		;write clipboard:// sql_string
+		run_query sql_string
+		measures: copy sql_result
+		print rejoin [length? measures " structural measurements selected"]
+		;print-list measures
+
+	; definitions so that TecTri can correctly read the generated file, with CRLF ending lines:
+		crlf: #{0D0A}
+		newline_: newline
+		newline: crlf
+	; initiate some variables:
+		;sep: " " ; separator: space
+		sep: "^-" ; separator: tabulation
+		id_current:   copy ""
+		id_previous: copy ""
+		i: 0
+		unless prefix [prefix: copy ""]
+		header_written: false
+		comment: copy ""
+		filenames: copy []
+
+	; determine filename, if unique:
+	if unique_filename [
+		replace filename " " "_"
+		filename: lowercase filename
+		if ((substring filename ((length? filename) - 3) 4) != ".tec") [append filename ".tec"]
+		filename: to-file filename
+		print rejoin ["Unique output filename: " filename]
+		append filenames filename
+	]
+
+	; iteration over list of structural measurements
+	foreach m measures [
+		;print i
+		i: i + 1
+		id_current: copy m/2
+		; convert the none values to empty strings "", to avoid having "none" written in the file contents:
+		for j 1 (length? m) 1 [
+			if none? m/:j [ poke m j "" ]
+		]
+		either (id_current != id_previous) [ ; test if we are in the same observation (obs_id)
+			; new obs_id
+			id_previous: copy id_current
+			unless unique_filename [
+				filename: to-file rejoin [prefix lowercase id_current ".tec"]	; define one output filename per individual observation
+				print rejoin ["Output filename: " filename]
+				append filenames filename
+			]
+			unless header_written [
+				unless unique_filename [
+					write filename rejoin [m/16 " - "]
+				]
+				write filename rejoin ["File generated from " dbhost " host, " dbname " database, dh_struct_measures table on " now ]
+				if criteria [ write/append/binary filename rejoin [" with criteria: " sql_criteria] ]
+				write/append/binary filename newline
+				if unique_filename [header_written: true]
+			]
+			;write/append/binary filename line_measure m
+			;write/append/binary filename newline
+		][
+			; same obs_id
+			;write/append/binary filename to-string m/2	; test
+			;write/append/binary filename line_measure m
+			;write/append/binary filename newline
+		]
+	; write the measurement line in TecTri-readable format:
+	set [dir dip dipq pi piqd mov] reduce [m/7 m/8 m/9 m/10 m/11 m/12]
+		; first, in order to TecTri to be able to correctly parse data, fill undefined data concerning lines with fake data, with a warning:
+		warning: copy ""
+		if pi = "" [
+			pi: "33"
+			append warning "undefined pitch => FAKE; "
+		]
+		if piqd = "" [
+			either (any [dipq = "N" dipq = "S"]) [piqd: "E"] [piqd: "S"]
+			append warning "undefined pitch quadrant => FAKE; "
+		]
+		if mov = "" [
+			mov: "N"
+			append warning "undefined movement => FAKE; "
+		]
+		unless warning = "" [
+			warning: rejoin ["(WARNING: " (substring warning 1 (length? warning) - 2) ") "]
+		]
+
+		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep] 
+		; if unique_filename, add the description from field_observations to the comments output column:
+		;if unique_filename [		;=> in fact, even if data is not in a unique file, probably better
+			comment: rejoin [m/2 "/" m/3 " <" m/4 "> " "<" m/5 "> " warning]
+			if (m/16 != "") [append comment m/16]
+		;]
+		append line comment
+		; if a sort group is mentioned, append it to line:
+		unless (m/14 = "") [ append line rejoin ["[" m/14 "]"] ]
+		write/append/binary filename line
+		write/append/binary filename newline
+	]
+	prin "File "
+	if ((length? filenames) > 1) [prin "s"]
+	print "conversion to ISO-8859-1 for TecTri use:"
+	foreach filename filenames [
+		cmd:  rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
+		print cmd
+		call/wait cmd
+		;print filename
+	]
+	newline: newline_
+];}}}
 
 
 ; Fonctions utilisées pour faire des programmes de sondages:
