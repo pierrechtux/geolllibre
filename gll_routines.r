@@ -2122,11 +2122,17 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	print "Press any key to continue..."
 	input
 ];}}}
-get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: {{{ } } }
-; 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name):
+get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
 if error? try [
-	run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
-	max_waypoint_name: to-integer to-string first (copy sql_result)
+	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+	either ( x/1/1 = 0 ) [
+		; case of an empty database, or if no records are present for the device geolpda_device:
+		max_waypoint_name: 0
+		]
+		[
+		run_query rejoin [{SELECT max(waypoint_name::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+		max_waypoint_name: to-integer to-string first (copy sql_result)
+		]
 	]
 	[
 	print rejoin ["Error: there are certainly non-numeric values in waypoint_name field from public.field_observations table in " dbname " database."
