@@ -228,7 +228,6 @@ CREATE RULE field_observations_points_ins_geom AS
     VALUES (new.opid,new.year,new.obs_id,new.date,new.waypoint_name,ST_X(new.geomfromewkt),ST_Y(new.geomfromewkt),ST_Z(new.geomfromewkt),new.description,new.code_litho,new.code_unit,new.srid,new.geologist,new.icon_descr,new.comments,new.sample_id,new.datasource,new.photos,new.audio,new.timestamp_epoch_ms);
 --}}}
 
-
 --DROP cascade sur vue dh_mineralised_intervals0_traces_3d/*{{{*/
 CREATE OR REPLACE VIEW        dh_mineralised_intervals2_traces_3d AS 
 SELECT *, 
@@ -268,6 +267,9 @@ ORDER BY id, depfrom, depto, mine;
 
 CREATE VIEW        topo_points_points AS
 SELECT *, geomfromewkt('POINT(' || topo_points.x || ' ' || topo_points.y || ' ' || topo_points.z || ')') AS geometry FROM topo_points;
+
+-- pour voir les points de sondages prévus par rapport à là où ils ont réellement été réalisés:
+CREATE VIEW dh_collars_diff_project_actual_line                   AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x_pject || ' ' || y_pject || ' ' || z_pject || ', ' || x || ' ' || y || ' ' || z || ')') FROM dh_collars WHERE x_pject IS NOT NULL AND y_pject IS NOT NULL AND z_pject IS NOT NULL;
 
 
 --}}}

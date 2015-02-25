@@ -109,6 +109,8 @@ DROP VIEW IF EXISTS dh_sampling_avg_grades_3dpoints;
 
 DROP VIEW IF EXISTS dh_collars_points_last_ana_results;
 
+DROP VIEW dh_collars_diff_project_actual_line; -- order no good @#FIX
+
 DROP VIEW IF EXISTS sections_array_plines;
 
 --le marecage de la SMI: /*{{{*/
