@@ -462,8 +462,8 @@ foreach j jours [
 				nb_orientations: to-integer sql_result/1/1
 					if ( nb_orientations > 0 ) [
 						prin rejoin [", " nb_orientations " measures"]
-						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Mesure structurale:</dt><dd>"   ] [ 
-														write/lines/append outputfile "<dl><dt>Mesures structurales:</dt><dd>" ]
+						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Structural measurement:</dt><dd>"   ] [ 
+														write/lines/append outputfile "<dl><dt>Structural measurements:</dt><dd>" ]
 ; sortie de psql en html, pour inspiration: {{{ } } }
 ;comment [
 ;--autan bdexplo=> 
