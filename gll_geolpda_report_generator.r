@@ -461,7 +461,7 @@ foreach j jours [
 				run_query rejoin ["SELECT count(*) FROM public.field_observations_struct_measures WHERE obs_id = '" id "'"]
 				nb_orientations: to-integer sql_result/1/1
 					if ( nb_orientations > 0 ) [
-						prin rejoin [", " nb_orientations " mesures"]
+						prin rejoin [", " nb_orientations " measures"]
 						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Mesure structurale:</dt><dd>"   ] [ 
 														write/lines/append outputfile "<dl><dt>Mesures structurales:</dt><dd>" ]
 ; sortie de psql en html, pour inspiration: {{{ } } }
@@ -595,7 +595,7 @@ foreach j jours [
 							pho 
 							{" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} 
 							pho 
-							{" />} 
+							{"/>} 
 						]
 						; {<img src="file://} system/options/path "photos/" pho {" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} pho {" />}
 						; plutôt, voir thumbnail-maker.r
