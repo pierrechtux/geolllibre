@@ -2583,6 +2583,11 @@ process_cases_table: function ["Processes a matrix (table) of cases, which is a 
 	return code
 ];}}}
 
+mkdiraujourdhui: function ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{ } } }
+tt: now
+make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
+];}}}
+
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
 	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '" 
