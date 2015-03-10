@@ -2358,7 +2358,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 	/criteria {optional criteria to select records to be updated}
 	sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
 	/overwrite "if specified, overwrites existing data in output fields; by default, records with data in north_ref, direction, etc. are *not* updated by this function"
-	] [ sql_string measures m o ; local variables ] [
+	] [ sql_string measures m o  ] [ ; local variables
 	; on va chercher les informations, avec les restrictions si besoin:
 	; gather informations, with restrictions, if necessary:
 	sql_string: copy "SELECT opid, obs_id, rotation_matrix, numauto FROM public.field_observations_struct_measures "
