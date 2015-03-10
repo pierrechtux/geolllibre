@@ -69,9 +69,6 @@ do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~
 ]
 flag_ERROR: false
 ;}}}
-; functions, libraries: {{{ } } }
-; => all moved to gll_routines.r
-;}}}
 
 ; Execution
 get_bdexplo_max__id
