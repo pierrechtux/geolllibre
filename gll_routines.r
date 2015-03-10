@@ -2357,59 +2357,53 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 	"Updates field_observations_struct_measures table in bdexplo database, fields (north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement) are computed from rotation_matrix field, which comes from GeolPDA measurements"
 	/criteria {optional criteria to select records to be updated}
 	sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
-	/overwrite "if specified, overwrites existing data in fields; by default, records with data in north_ref, direction, etc. are *not* updated"
-][
-; local variables
-sql_string measures m o
-][
-; on va chercher les informations, avec les restrictions si besoin:
-; gather informations, with restrictions, if necessary:
-sql_string: copy "SELECT opid, obs_id, rotation_matrix, numauto FROM public.field_observations_struct_measures "
-if criteria [ append sql_string sql_criteria ]
-unless overwrite [
+	/overwrite "if specified, overwrites existing data in output fields; by default, records with data in north_ref, direction, etc. are *not* updated by this function"
+	] [ sql_string measures m o ; local variables ] [
+	; on va chercher les informations, avec les restrictions si besoin:
+	; gather informations, with restrictions, if necessary:
+	sql_string: copy "SELECT opid, obs_id, rotation_matrix, numauto FROM public.field_observations_struct_measures "
+	if criteria [ append sql_string sql_criteria ]
+	unless overwrite [
+		either find sql_string "WHERE" [
+			append sql_string " AND "
+		][	append sql_string " WHERE "]
+		append sql_string " (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL) "
+	]
 	either find sql_string "WHERE" [
 		append sql_string " AND "
 	][	append sql_string " WHERE "]
-	append sql_string " (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL) "
-]
-either find sql_string "WHERE" [
-	append sql_string " AND "
-][	append sql_string " WHERE "]
-append sql_string " rotation_matrix IS NOT NULL;" ; it would not make sense to run this function on records without a GeolPDA measurement...
-run_query sql_string
-measures: copy sql_result
-;print-list measures
-sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
-foreach m measures [ ; iteration over structural measurements in measures
-	; NB: SELECT opid, obs_id, rotation_matrix, numauto
-	; on crée un objet mesure structurale:
-	o: orientation/new first (to-block m/3)
-	; on en prend les informations, et on les met dans le sql à faire jouer:
-	append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
+	append sql_string " rotation_matrix IS NOT NULL;" ; it would not make sense to run this function on records without a GeolPDA measurement, which is stored in rotation_matrix field...
+	run_query sql_string
+	measures: copy sql_result
+	;print-list measures
+	sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
+	foreach m measures [ ; iteration over structural measurements in measures
+		; NB: SELECT opid, obs_id, rotation_matrix, numauto
+		; on crée un objet mesure structurale:
+		o: orientation/new first (to-block m/3)
+		; on en prend les informations, et on les met dans le sql à faire jouer:
+		append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
 
-either overwrite [
-	append sql_string rejoin [";" newline]
-][
-	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline]
-]
-		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); c'est ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
-]
-
-comment: [; prudemment, dans la phase de débogage:
-;, on ne fait qu'imprimer sur stdout la requête à faire tourner:
-;print sql_string
-; on la copie dans le presse-papiers:
-write clipboard:// sql_string
-print "=> résultat dans le clipboard"
-; on la range dans un féchier à la noix:
-fileout: %qqzz
-write fileout sql_string
-print "=> résultat dans fichier qqzz"
-]
-; actually do the work: insert the generated query string sql_string into the database:
-insert db sql_string
-
-] ; }}}
+		either overwrite [
+			append sql_string rejoin [";" newline]
+		][	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline] ]
+		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); ce n'est qu'ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
+	]
+	comment: [; prudemment, dans la phase de débogage:
+		;, on ne fait qu'imprimer sur stdout la requête à faire tourner:
+		;print sql_string
+		; on la copie dans le presse-papiers:
+		write clipboard:// sql_string
+		print "=> résultat dans le clipboard"
+		; on la range dans un féchier à la noix:
+		fileout: %qqzz
+		write fileout sql_string
+		print "=> résultat dans fichier qqzz"
+	]
+	; actually do the work: insert the generated query string sql_string into the database:
+	insert db sql_string
+	; TODO: nothing prints out: it would be neat to have some kind of output, just for information purpose: get the outcome of the query, somehow, and print it?
+	] ; }}}
 
 ;}}}
 
