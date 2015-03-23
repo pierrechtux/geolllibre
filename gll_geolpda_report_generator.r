@@ -439,6 +439,7 @@ foreach j jours [
 				photos:      to-string  o/7
 				audio:       to-string  o/8
 				note:        to-string  o/9
+				sample_id:   to-string  o/10
 				prin rejoin [id ": "]
 				; discret à droite, l'heure:
 				write/lines/append outputfile rejoin [ {<p align="right"><small>} timestamp/time "</small></p>" ]
@@ -455,8 +456,17 @@ foreach j jours [
 				; les notes:
 				prin rejoin ["notes (" (length? note) " characters)"]
 				write/lines/append outputfile rejoin ["<p>" note "</p>"]
+				; les échantillons:
+				unless any [(none? sample_id) (sample_id == "")] [
+					samples: parse/all (replace sample_id " " "") ";"
+					print rejoin [length? samples " samples"]
+					write/append outputfile "Samples: "
+					foreach s samples [
+						write/lines/append outputfile rejoin [ "<dl><dt>Sample:</dt><dd><tt>" s "</tt></dd></dl>" ]
+						; TODO: put assay results, if/when available
+					]
+				]
 				; les mesures structurales:
-				;_____________JEANSUILA_____________________________
 				; first, are there any structural measurements concerning the current observation:
 				run_query rejoin ["SELECT count(*) FROM public.field_observations_struct_measures WHERE obs_id = '" id "'"]
 				nb_orientations: to-integer sql_result/1/1
@@ -567,11 +577,11 @@ foreach j jours [
 							s: orientation/new first (to-block m/7)
 							; which type of geometry is measured:
 							parse m/6 [
-								  "PLMS" (ttt: rejoin ["plan+ligne, mouvement sûr " s/print_plane_line_movement])
-								| "PLM"  (ttt: rejoin ["plan+ligne, mouvement "     s/print_plane_line_movement])
-								| "PL"   (ttt: rejoin ["plan+ligne "                s/print_plane_line         ])
-								| "P"    (ttt: rejoin ["plan "                      s/print_plane              ])
-								| "L"    (ttt: rejoin ["ligne "                     s/print_line               ])
+								  "PLMS" (ttt: rejoin ["plane+line, movement sure " s/print_plane_line_movement])
+								| "PLM"  (ttt: rejoin ["plane+line, movement "      s/print_plane_line_movement])
+								| "PL"   (ttt: rejoin ["plane+line "                s/print_plane_line         ])
+								| "P"    (ttt: rejoin ["plane "                     s/print_plane              ])
+								| "L"    (ttt: rejoin ["line "                      s/print_line               ])
 								]
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 							]
