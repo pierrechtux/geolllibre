@@ -1,8 +1,8 @@
 #!/usr/bin/rebol -qs
 REBOL [
 	Title:   "GeolPDA report generator"
-	Date:    23-Apr-2014
-	Version: 0.9.1
+	Date:    23-Mar-2015/14:45+1:00
+	Version: 0.9.3
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
 		Génération d'un rapport sous forme d'un fichier .html 
@@ -35,7 +35,7 @@ REBOL [
 		0.9.0 9-Mar-2014/22:24:10+1:00  "Include structural measurements in HTML report."
 		0.9.1 23-Apr-2014/19:19:46+1:00 "Moved functions to gll_routines.r"
 		0.9.2 6-Jun-2014/13:01:33+2:00  "Improve date handling from command line arguments: default end date is now; anglicise a few variables names; a bit of code cleaning"
-
+		0.9.3 23-Mar-2015/14:45+1:00	"Add information about saamples in report"
 	]
 	License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
