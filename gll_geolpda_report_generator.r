@@ -141,8 +141,8 @@ unless (none? system/options/args) [
 ;     x à terme, attaquer direct la base sqlite geolpda => auquai
 ;******************************************************************************
 
-; *** on fait tourner la fonction qu'on souhaite, get_geolpda_data_from_csv, get_geolpda_data_from_sqlite ou get_geolpda_data_from_postgresql:
-get_geolpda_data_from_postgresql
+; *** on fait tourner la fonction qu'on souhaite, au choix: get_geolpda_data_from_csv, get_geolpda_data_from_sqlite ou get_geolpda_data_from_postgresql:
+get_geolpda_data_from_postgresql  ;TODO restrain this query to the range of dates defined by date_start and date_end; this will considerably speed things up.
 
 ; On affiche combien on a de lignes (d'observations)								<= non, déjà fait plus haut
 ;print rejoin ["Nombre d'observations: "          length? geolpda_observations]
@@ -443,7 +443,6 @@ foreach j jours [
 				prin rejoin [id ": "]
 				; discret à droite, l'heure:
 				write/lines/append outputfile rejoin [ {<p align="right"><small>} timestamp/time "</small></p>" ]
-				
 				; Un titre de niveau 2 = le waypoint:
 				write/lines/append outputfile rejoin [
 				"<h2>" id ": "
@@ -457,14 +456,27 @@ foreach j jours [
 				prin rejoin ["notes (" (length? note) " characters)"]
 				write/lines/append outputfile rejoin ["<p>" note "</p>"]
 				; les échantillons:
-				unless any [(none? sample_id) (sample_id == "")] [
+				unless any [(sample_id = "none") (none? sample_id) (sample_id == "")] [
 					samples: parse/all (replace sample_id " " "") ";"
-					print rejoin [length? samples " samples"]
-					write/append outputfile "Samples: "
+					prin rejoin [", " length? samples " sample" ]
+					if ((length? samples) > 1) [prin "s"]
+					write/append outputfile {
+					<table border="1">
+					  <tr>
+						<th align="center">Sample ID</th>
+						<th align="center">Assay results</th>
+					  </tr>
+					}
 					foreach s samples [
-						write/lines/append outputfile rejoin [ "<dl><dt>Sample:</dt><dd><tt>" s "</tt></dd></dl>" ]
-						; TODO: put assay results, if/when available
+						write/lines/append outputfile rejoin [ {
+						  <tr valign="top">
+							<td align="center">} s {</td>
+							<td align="right"></td>
+						  </tr>}
+							; TODO: put assay results, if/when available
+						]
 					]
+					write/lines/append outputfile {</table>}
 				]
 				; les mesures structurales:
 				; first, are there any structural measurements concerning the current observation:
@@ -600,7 +612,7 @@ foreach j jours [
 						tt: to-integer ((to-decimal first parse pho ".") / 1000)
 						timestamp_photo: to-date epoch-to-date tt
 						;print timestamp_photo
-						write/lines/append outputfile rejoin [
+						write/append outputfile rejoin [
 							{<img src="} clean-path dir_geolpda_local {photos/} 
 							pho 
 							{" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} 
@@ -612,6 +624,7 @@ foreach j jours [
 						;  {<img alt="} pho {" src="file:///home/pierre/geolpda/copie_android_media_disk/photos/reduit_700/} pho {" " />}
 					]
 				]
+				write/lines/append outputfile ""
 				print ""
 			]
 		]
