@@ -2416,7 +2416,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"} ;{{{ } } }
 	dd [string! decimal!]
 	/quadrant_lat "Appends latitude N or S to output"
-	/quadrant_lon "Appends longtude E or W to output"
+	/quadrant_lon "Appends longitude E or W to output"
 	/seconds_accuracy "Specify accuracy for seconds value in output; default is 3 decimal places"
 	seconds_decplaces [integer!] "Must be a positive integer value"
 	]
@@ -2601,16 +2601,13 @@ gll_create_new_operation: does [ ; {{{ } } }
 	year:      to-integer ask {Starting year of operation (optional): }
 	lat_min:   to-decimal ask {Minimal latitude, decimal degrees: }
 	lat_max:   to-decimal ask {Maximal latitude, decimal degrees: }
-	lon_min:   to-decimal ask {Minimal longtude, decimal degrees: }
-	lon_max:   to-decimal ask {Maximal longtude, decimal degrees: }
+	lon_min:   to-decimal ask {Minimal longitude, decimal degrees: }
+	lon_max:   to-decimal ask {Maximal longitude, decimal degrees: }
 	confidentiality: to-logic ask {Confidentiality (boolean: 1/0: }
 	comments:  ask {Comments (optional): }
 	; TODO: check, re-ask, make sure that information is reliable, plausible, etc.
 	; Now that the information has been gathered, make a SQL INSERT statement:
-	sql_string: rejoin [{INSERT INTO public.operations (opid,operation,full_name,operator,year,confidentiality,lat_min,lon_min,lat_max,lon_max,comments) VALUES (} new_opid " , '" operation "', '" full_name "', '" operator "', " year ", " confidentiality ", " lat_min ", " lat_max ", " lon_min ", " lon_max ", '" comments "');"]
-	;print sql_string
-	; INSERT INTO public.operations (opid,operation,full_name,operator,year,confidentiality,lat_min,lon_min,lat_max,lon_max,comments) VALUES (28 , 'KONT', 'Permis minier pour or de Kontougou, Burkina Faso', 'Soutra Mining', 1996, true, 14.5, 14.75, -0.95, -0.85, '');
-
+	sql_string: rejoin [{INSERT INTO public.operations (opid,operation,full_name,operator,year,confidentiality,lat_min,lon_min,lat_max,lon_max,comments) VALUES (} new_opid " , '" operation "', '" full_name "', '" operator "', " year ", " confidentiality ", " lat_min ", " lon_min ", " lat_max ", " lon_max ", '" comments "');"]
 	insert db sql_string
 	print "Done..."
 	insert db "COMMIT;"
