@@ -1846,7 +1846,7 @@ load-csv: funct [
 do %~/rebol/library/scripts/btn-sqlite.r
 
 ; === functions and objects definitions ==========
-; functions related to database:
+; utility functions related to database:
 run_query: func ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
 	if error? try [	insert db sql  ; send a SQL query
 			] [ print "**Error**"	; TODO mieux gérer l'erreur
@@ -1993,7 +1993,7 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 	return Mold-CSV tt
 ] ;}}}
 
-; utility functions:
+; general utility functions:
 ; Definition of standard charsets useful for PARSEing: {{{ } } } 
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
 	digit: charset  [#"0" - #"9"]
@@ -2040,6 +2040,7 @@ throw 'continue]
 timestamp_: does [; an underscored timestamp{{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
+
 ; Les dates du geolpda sont au format epoch en millisecondes;
 ; voici une fonction pour convertir les epoch en date: [{{{
 epoch-to-date: func [
@@ -2580,6 +2581,43 @@ process_cases_table: function ["Processes a matrix (table) of cases, which is a 
 mkdiraujourdhui: function ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{ } } }
 tt: now
 make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
+];}}}
+
+
+; Functions less general, more specific to GeolLLibre.
+; Creation of a new operation in the public.operations (master table): at the moment, just a mere procedure, to be greatly improved:
+gll_create_new_operation: does [ ; {{{ } } }
+	helptxt: {Creation of a new operation: it INSERTs a record in public.operations table, with a new opid value, which will be the max incremented by 1.  An "operation" is a homogeneous set of data, typically an area, a licence, operated by a single operator over years; or an area studied by a scientific team.}
+	; Define opid as the maximum incremented:
+	new_opid: (first first run_query "SELECT max(opid) + 1 FROM public.operations") + 1
+	; Print the little help text defined above:
+	print helptxt
+	; Inform the user of the new opid number:
+	print rejoin ["New opid: " new_opid]
+	; Ask the user all necessary information:
+	operator:  ask {Operator: typically, company owning a licence (i.e. "GeckoMines SARL"): }
+	full_name: ask {Operation full name (i.e. "Native Hydrogen exploration project"): }
+	operation: ask {Operation short name, 4 characters (i.e. "GKMH"): }
+	year:      to-integer ask {Starting year of operation (optional): }
+	lat_min:   to-decimal ask {Minimal latitude, decimal degrees: }
+	lat_max:   to-decimal ask {Maximal latitude, decimal degrees: }
+	lon_min:   to-decimal ask {Minimal longtude, decimal degrees: }
+	lon_max:   to-decimal ask {Maximal longtude, decimal degrees: }
+	confidentiality: to-logic ask {Confidentiality (boolean: 1/0: }
+	comments:  ask {Comments (optional): }
+	; TODO: check, re-ask, make sure that information is reliable, plausible, etc.
+	; Now that the information has been gathered, make a SQL INSERT statement:
+	sql_string: rejoin [{INSERT INTO public.operations (opid,operation,full_name,operator,year,confidentiality,lat_min,lon_min,lat_max,lon_max,comments) VALUES (} new_opid " , '" operation "', '" full_name "', '" operator "', " year ", " confidentiality ", " lat_min ", " lat_max ", " lon_min ", " lon_max ", '" comments "');"]
+	;print sql_string
+	; INSERT INTO public.operations (opid,operation,full_name,operator,year,confidentiality,lat_min,lon_min,lat_max,lon_max,comments) VALUES (28 , 'KONT', 'Permis minier pour or de Kontougou, Burkina Faso', 'Soutra Mining', 1996, true, 14.5, 14.75, -0.95, -0.85, '');
+
+	insert db sql_string
+	print "Done..."
+	insert db "COMMIT;"
+	print "commited => end."
+	print rejoin ["Inserted record, output from database: " newline
+		(first run_query rejoin ["SELECT * FROM public.operations WHERE opid = " new_opid ";"])
+	]
 ];}}}
 
 ; fonctions pour la gestion des datasource:
