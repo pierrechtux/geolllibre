@@ -3346,8 +3346,8 @@ parse_tecto_measure: func [{Converts a string structural measurement in the form
 		NORTH_REF_: DIP_QUADRANT_: PITCH_QUADRANT_: MOVEMENT_: COMMENTS_: copy ""
 		DIRECTION_: DIP_: PITCH_: 0
 	; rules to parse the structural measurement:
-		rule_north_ref: ["N" ["m" | "g" | "u"]]		; rule for North reference: (m)agnetic, (g)eographic or (u)tm
-		separator: charset ["/" "," "-"]			; separator between elements
+		rule_north_ref:       ["N" ["m" | "g" | "u"]]		; rule for North reference: (m)agnetic, (g)eographic or (u)tm
+		separator: charset    ["/" "," "-"]					; separator between elements
 		rule_angle_direction: [1 3 digit]
 		rule_angle_dip:       [1 2 digit]
 		rule_cardinal_point:  ["N" | "E" | "S" | "W" | "O"]
@@ -3517,7 +3517,8 @@ generate_tectri_file: function [ ;{{{ } } }
 	]
 	newline: newline_
 ];}}}
-
+; WARNING: code duplication between generate_tectri_file and generate_tectri_file_from_dh_structures
+; => TODO remove duplicate code, rationalize.
 generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
 	"Generates a file for TecTri from structural measurements contained in bdexplo database in dh_struct_measures table"
 	/criteria {optional criteria to select records to be exported}
@@ -3645,7 +3646,6 @@ generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
 	newline: newline_
 ];}}}
 
-
 ; Fonctions utilisées pour faire des programmes de sondages:
 cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
     x: x + (distance * (sine    azim))
@@ -3703,12 +3703,10 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 ;}}}
 
 
-
-
 ; === fin des définitions de fonctions ==========
 
 
-; on se met dans le r©pertoire courant
+; on se met dans le répertoire courant
 change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
