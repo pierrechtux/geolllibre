@@ -8,7 +8,7 @@ filename3=sondages_passes_mineralisees_$horodate.csv
 sql2csv "SELECT id, depfrom, depto, mine, depto - depfrom AS longueur, avau AS moyenne_au_ppm, stva AS passe_mineraliseee, accu FROM dh_mineralised_intervals WHERE opid = 18 AND mine = 0 ORDER BY id, depto" > $filename3
 
 ls -trlh | tail -3
-oocalc $filename1
-oocalc $filename2
-oocalc $filename3
+localc $filename1
+localc $filename2
+localc $filename3
 
