@@ -40,19 +40,16 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ];}}}
 
 DEBUG: false
-if DEBUG [; vérif:  ============================ sauve 2 tables obs et mesures en csv AVANT: {{{ } } }
+if DEBUG [; check:  ============================ save 2 tables observations and measurements as csv (no, it is not csv, but just a text dump; it does not matter much) BEFORE: {{{ } } }
 run_query "SELECT * FROM public.field_observations"
 ;write %~/field_observations_avant.csv sql_result_csv
-ww: copy sql_result
-foreach r ww [
+foreach r sql_result [
 	write/append %~/field_observations_avant.csv rejoin [mold r newline]
 ]
-
 run_query "SELECT * FROM public.field_observations_struct_measures"
 ;write/lines %~/field_observations_struct_measures_avant.csv sql_result_csv
-write %~/field_observations_struct_measures_avant.csv newline
-ww: copy sql_result
-foreach r ww [
+;write %~/field_observations_struct_measures_avant.csv newline
+foreach r sql_result [
 	write/append %~/field_observations_struct_measures_avant.csv rejoin [mold r newline]
 ]
 ] ;}}}
@@ -215,7 +212,7 @@ print "..."
 ;}}}
 ;}}}
 
-; Play INSERT queries on database and COMMIT: {{{ } } }
+; Play INSERT queries on database and COMMIT: {{{ } } } ;TODO BUG: Il n'y a pas de TRANSACTION de commencée?? Remédier à cela...
 insert db sql_string
 print "Done..."
 insert db "COMMIT;"

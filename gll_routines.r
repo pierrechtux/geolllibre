@@ -2124,6 +2124,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	input
 ];}}}
 get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
+;TODO function name not very appropriate: to be changed to something better
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
 	either ( x/1/1 = 0 ) [
