@@ -2123,7 +2123,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	print "Press any key to continue..."
 	input
 ];}}}
-get_bdexplo_max__id: does [; Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
+get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
 ;TODO function name not very appropriate: to be changed to something better
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
@@ -2142,6 +2142,25 @@ if error? try [
 	]
 ; and, later, only consider data with higher _id
 ];}}}
+get_bdexplo_max_timestamp_epoch_ms: does [ ; Even more simple than get_bdexplo_max__id: get the maximum of timestamp_epoch_ms in the bdexplo database:{{{ } } }
+if error? try [
+	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+	either ( x/1/1 = 0 ) [
+		; case of an empty database, or if no records are present for the device geolpda_device:
+		max_timestamp_epoch_ms: 1340710529053 ; first time ever the GeolPDA was used in production.
+		]
+		[
+		run_query rejoin [{SELECT max(timestamp_epoch_ms::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
+		max_timestamp_epoch_ms: to-integer to-string first (copy sql_result)
+		]
+	]
+	[
+	print rejoin ["Error: probably some incorrect values in timestamp_epoch_ms field from public.field_observations table in " dbname " database."
+	flag_ERROR: true]
+	]
+; and, later, only consider data with higher timestamp_epoch_ms
+] ;}}}
+
 chk_directories_mount_and_local: does [;{{{ } } }
 	all [
 		exists? dir_mount_geolpda_android
@@ -2423,7 +2442,6 @@ dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, format
 	]
 	[
 	default_seconds_decplaces sign minutes seconds degrees output 
-
 	]
 	[
 	default_seconds_decplaces: 3
@@ -2503,6 +2521,39 @@ dms2dd: function ["Converts degrees, minutes, seconds to decimal degrees" dms [s
 	return ((degrees + (minutes / 60) + (seconds / 3600)) * sign)
 	]
 ;}}}
+dd2dms_lon_lat_from_qgis: function [{Converts a pair of longitude,latitude coordinates separated by a comma, as it comes from the QGIS "Saisie de coordonnées" extension from decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS} ;{{{ } } }
+	xy [string!]
+	/quadrant_lat "Appends latitude N or S to output"
+	/quadrant_lon "Appends longitude E or W to output"
+	/seconds_accuracy "Specify accuracy for seconds value in output; default is 3 decimal places"
+	seconds_decplaces [integer!] "Must be a positive integer value"
+	]
+	[
+	;default_seconds_decplaces sign minutes seconds degrees output 
+	londd latdd
+	]
+	[
+	replace xy " " ""  ; Remove spaces, if any
+	xy: parse xy ","   ; xy has now two coordinates
+	londd: to-decimal xy/1
+	latdd: to-decimal xy/2
+	refined: false
+	cmd: "londms: dd2dms"        		; Construction of command to convert longitude
+	if quadrant_lon [ append cmd "/quadrant_lon" refined: true ]
+	if seconds_accuracy [ append cmd rejoin [ "/seconds_accuracy " seconds_decplaces refined: true ] ]
+	unless refined [ append cmd " " ]	; Add an extra space to separate function name with refinements from argument
+	append cmd londd
+	do cmd								; londms is now defined
+
+	cmd: "latdms: dd2dms"        		; Construction of command to convert latitude
+	if quadrant_lat [ append cmd "/quadrant_lat" refined: true ]
+	if seconds_accuracy [ append cmd rejoin [ "/seconds_accuracy " seconds_decplaces refined: true ] ]
+	unless refined [ append cmd " " ]	; Add an extra space to separate function name with refinements from argument
+	append cmd latdd
+	do cmd								; latdms is now defined
+	return rejoin [ lon ", " lat ]
+] ;}}}
+
 
 ; from LouGit:
 copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
@@ -2590,7 +2641,7 @@ make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
 gll_create_new_operation: does [ ; {{{ } } }
 	helptxt: {Creation of a new operation: it INSERTs a record in public.operations table, with a new opid value, which will be the max incremented by 1.  An "operation" is a homogeneous set of data, typically an area, a licence, operated by a single operator over years; or an area studied by a scientific team.}
 	; Define opid as the maximum incremented:
-	new_opid: (first first run_query "SELECT max(opid) + 1 FROM public.operations") + 1
+	new_opid: (first first run_query "SELECT max(opid) FROM public.operations") + 1
 	; Print the little help text defined above:
 	print helptxt
 	; Inform the user of the new opid number:

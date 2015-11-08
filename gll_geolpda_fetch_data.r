@@ -68,7 +68,10 @@ flag_ERROR: false
 ;}}}
 
 ; Execution
-get_bdexplo_max__id
+;get_bdexplo_max__id ; no, it does not work if a new geolpda database is used: this is the case when a sqlite geolpda database becomes too big, making GeolPDA too slow for field work.
+; So, instead, get the max_timestamp_epoch_ms:
+get_bdexplo_max_timestamp_epoch_ms
+
 if flag_ERROR [ print "Error, quitting." quit ]
 
 ; Connect geolpda android device, copy to local directory:{{{ } } }
@@ -88,7 +91,7 @@ print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_ge
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 if ( confirm "get geolpda database from android device?" ) [
-	copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak"]
+	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak"]] [print "Error while backuping previous geolpda."]
 	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
 ]
 if ( confirm "synchronize geolpda files (pictures, audio files)?" ) [ synchronize_geolpda ]
@@ -106,7 +109,7 @@ db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
 ; Get data: as db is the same name as defined for default
 ; database connexion in gll_routines.r, we can use the functions:
 ; observations: {{{ } } }
-run_query (rejoin ["SELECT * FROM poi WHERE _id > " max_waypoint_name])
+run_query (rejoin ["SELECT * FROM poi WHERE poitime > " max_timestamp_epoch_ms])
 
 ; Comparison of field list: to be sure that the table structure matches the 
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
@@ -117,10 +120,10 @@ unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poil
 ]
 geolpda_observations:        copy sql_result
 ;geolpda_observations_fields: copy sql_result_fields
-print rejoin [tab length? geolpda_observations " records in observations table from GeolPDA with _id superior to maximum waypoint_name in field_observations (" max_waypoint_name ")"]
+print rejoin [tab length? geolpda_observations " records in observations table from GeolPDA with poitime superior to maximum timestamp_epoch_ms in field_observations (" max_timestamp_epoch_ms")"]
 ;}}}
 ; orientations:{{{ } } }
-run_query (rejoin ["SELECT * FROM orientation WHERE _id > " max_waypoint_name])
+run_query (rejoin ["SELECT orientation.* FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id WHERE poitime > " max_timestamp_epoch_ms])
 
 ; Comparison of field list: to be sure that the table structure matches the 
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
@@ -130,10 +133,10 @@ unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3
 	halt
 ]
 ; If we reached here, we are ok; now, it is necessary to also fetch the full id from observations by JOINing:
-run_query rejoin ["SELECT poiname, orientation._id, poi_id, orientationtype, rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9, v1, v2, v3 FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id WHERE orientation.poi_id > " max_waypoint_name]
+run_query rejoin ["SELECT poiname, orientation._id, poi_id, orientationtype, rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9, v1, v2, v3 FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id WHERE poitime > " max_timestamp_epoch_ms ]
 geolpda_orientations: 			copy sql_result
 ;geolpda_orientations_fields: 	copy sql_result_fields
-print rejoin [tab length? geolpda_orientations " records in orientations measurements table from GeolPDA with _id superior to maximum waypoint_name in field_observations (" max_waypoint_name ")"]
+print rejoin [tab length? geolpda_orientations " records in orientations measurements table from GeolPDA with poitime superior to maximum timestamp_epoch_ms in field_observations (" max_timestamp_epoch_ms ")"]
 ;}}}
 ;}}}
 
