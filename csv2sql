@@ -1,26 +1,41 @@
 #!/bin/sh
 # Pierre Chevalier
-# Ce script fait une table tmp_ dans la bd postgresql GLL_BD_NAME 
-# dans l'hôte GLL_BD_HOST, à partir d'un fichier csv 
-# Tous champs en varchar pour le moment; TODO faudrait itérer pour 
-# détecter les numériques, mais bof: faire ça plus tard, en python 
-# par exemple, ou en Redbol
+# Ce script fabrique une table tmp_ dans le schéma tmp_imports de 
+# la bd postgresql GLL_BD_NAME dans l'hôte GLL_BD_HOST, à partir 
+# d'un fichier .csv de départ.
+# Tous les champs sont créés de manière générique en varchar 
+# pour le moment; TODO faudrait itérer pour détecter les numériques, 
+# mais bof: faire ça plus tard, en python par exemple, ou en Red, Rebol.
 # $1: fichier .csv
-#	MARCHE PAS 
-#	 $2: option verbeuse -v
-#	 $1 et $2 sont intervertibles
-# echo "=============================================================="
+	# MARCHE PAS => ce qui marche pas est indénté avec une tabulation
+	#               et commenté.
+	#$2: option verbeuse -v
+	#$1 et $2 sont intervertibles
 
+# This script creates a temporary tmp_ table in the tmp_imports schema 
+# of the GLL_BD_NAME postgresql database served by host GLL_BD_HOST, 
+# from a .csv file.
+# All field types are generically varchar, for the time being; 
+# TODO it should iterate to determine numeric fields, but bof; 
+# do that later, in Red, and/or Rebol, and/or Python.
+# $1: input .csv file
+	# DOES NOT WORK => what doesn't work is indented with a tab and 
+	#                  commented out
+	#$2: option verbeuse -v
+	#$1 et $2 sont intervertibles
+
+
+# echo "=============================================================="
 fichier_orig=$1
-#	MARCHE PAS => ce qui marche pas est indénté avec une tabulation
-#	option=$2
+	#option=$2
 
 #	if [fichier_orig==-v]; then option=$1; fichier_orig=$2; fi
 #	echo "*** DEBUG: option: $option  fichier_orig: $fichier_orig ***"
 
 #	if [option=="-v"]; then echo "Verbose mode"; fi
 
-#assainissement du nom (léger, à améliorer)
+# assainissement du nom (léger, à améliorer; faire appel à sanity.pl? (dépendance...))
+# filename sanitysation (light, to be improved; call sanity.pl ? (dependancy...))
 fichier=`echo $fichier_orig | sed -e 's/" "/_/g' | sed -e 's/-/_/g' | tr "[:upper:]" "[:lower:]"`
 if [ ! $fichier_orig==$fichier ]; then mv fichier_orig fichier; fi
 table=`echo tmp_$fichier | sed -e 's/\.csv//g' `
