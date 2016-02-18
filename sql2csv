@@ -1,0 +1,8 @@
+#!/bin/sh
+# Pierre Chevalier
+# Ce script fait un fichier csv à partir de la bd postgresql GLL_BD_NAME dans l'hôte GLL_BD_HOST, avec la requête en entrée
+#$1: requete
+#$2: fichier .csv => bof, non, on redirigera, plutôt
+#echo "COPY ($1) TO stdout WITH CSV HEADER" | psql -X bdexplo #> $2
+echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X -h $GLL_BD_HOST $GLL_BD_NAME #> $2   #=> non, ça met aussi des guillemets autour des champs non textuels
+#echo "COPY ($1) TO stdout WITH CSV HEADER" | psql pierre #> $2

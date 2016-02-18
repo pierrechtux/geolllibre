@@ -1,0 +1,72 @@
+#!/bin/sh
+# Pierre Chevalier
+# Ce script fait une table tmp_ dans la bd postgresql GLL_BD_NAME 
+# dans l'hôte GLL_BD_HOST, à partir d'un fichier csv 
+# Tous champs en varchar pour le moment; TODO faudrait itérer pour 
+# détecter les numériques, mais bof: faire ça plus tard, en python 
+# par exemple, ou en Redbol
+# $1: fichier .csv
+#	MARCHE PAS 
+#	 $2: option verbeuse -v
+#	 $1 et $2 sont intervertibles
+# echo "=============================================================="
+
+fichier_orig=$1
+#	MARCHE PAS => ce qui marche pas est indénté avec une tabulation
+#	option=$2
+
+#	if [fichier_orig==-v]; then option=$1; fichier_orig=$2; fi
+#	echo "*** DEBUG: option: $option  fichier_orig: $fichier_orig ***"
+
+#	if [option=="-v"]; then echo "Verbose mode"; fi
+
+#assainissement du nom (léger, à améliorer)
+fichier=`echo $fichier_orig | sed -e 's/" "/_/g' | sed -e 's/-/_/g' | tr "[:upper:]" "[:lower:]"`
+if [ ! $fichier_orig==$fichier ]; then mv fichier_orig fichier; fi
+table=`echo tmp_$fichier | sed -e 's/\.csv//g' `
+schema="tmp_imports"
+
+#	if [option=="-v"]; then 
+#	# echo "--------------------------------------------------------------"
+#	echo "Import of data from $fichier into $schema.$table table from $GLL_BD_NAME database."
+#	echo "Input file lines count: `wc -l $fichier`"
+#	fi
+
+# echo "--------------------------------------------------------------"
+cmd_sql="DROP TABLE IF EXISTS $schema.$table;"
+# echo $cmd_sql
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+
+# echo "--------------------------------------------------------------"
+cmd_sql="CREATE TABLE $schema.$table (`head -1 $fichier | sed -e 's/"//g' | sed -e 's/,\ /,/g' | sed -e 's/ /_/g' | sed -e 's/,/ varchar, /g'` varchar);"
+# echo $cmd_sql
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+
+# echo "--------------------------------------------------------------"
+cmd_sql="DELETE FROM $schema.$table;"
+# echo $cmd_sql
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+
+# echo "--------------------------------------------------------------"
+# echo "Import ..."
+tail -n +2 $fichier | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME -c "\COPY $schema.$table FROM stdin WITH CSV"
+# echo "           done."
+# echo "--------------------------------------------------------------"
+
+
+#	if [option=="-v"]; then 
+#	echo "Record count of table $schema.$table: `echo "SELECT count(*) FROM $schema.$table;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | head -3 | tail -1`"
+# echo "--------------------------------------------------------------"
+#	echo "Overview of table $schema.$table (2 first records):"
+#	echo "SELECT * FROM $schema.$table LIMIT 2;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME 
+#	echo "...     (and 2 last records):"
+#	echo "SELECT * FROM $schema.$table OFFSET (SELECT count(*) FROM $schema.$table) -2 ;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | tail -n +3
+# echo "--------------------------------------------------------------"
+
+#	echo "If you saw your data, it is ok in $schema.$table."
+#	fi
+
+echo "Data from $fichier_orig should be in $schema.$table. To browse it:"
+echo "echo \"SELECT * FROM $schema.$table;\" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | less"
+#echo "=============================================================="
+

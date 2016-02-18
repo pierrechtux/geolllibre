@@ -1,0 +1,7 @@
+#!/bin/sh
+# Pierre Chevalier
+# Ce script fait un fichier csv à partir de la bd postgresql pierre, avec la requête en entrée
+#$1: requete
+#$2: fichier .csv => bof, non, on redirigera, plutôt
+echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X pierre  
+
