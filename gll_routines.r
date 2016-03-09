@@ -2013,6 +2013,10 @@ trim_last_char: func ["Trims last character from a given string" txt] [ ;{{{ } }
 	txt: (copy/part txt ((length? txt) - 1))
 	return txt
 	] ;}}}
+trim_first_char: func ["Trims first character from a given string" txt] [ ;{{{ } } }
+	txt: (copy/part at txt 2 ((length? txt) - 1))
+	return txt
+	] ;}}}
 substring: func ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{ } } }
     copy/part at string offset length
 ];}}}
