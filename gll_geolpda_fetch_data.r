@@ -125,13 +125,15 @@ print rejoin [tab length? geolpda_observations " records in observations table f
 ; orientations:{{{ } } }
 run_query (rejoin ["SELECT orientation.* FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id WHERE poitime > " max_timestamp_epoch_ms])
 
+; Unless there is no record:
+unless (length? sql_result) = 0 [
 ; Comparison of field list: to be sure that the table structure matches the 
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"] [
 	print "ATTENTION! field names differ from geolpda reference implementation"
 	print "Error, halting"
 	halt
-]
+] ]
 ; If we reached here, we are ok; now, it is necessary to also fetch the full id from observations by JOINing:
 run_query rejoin ["SELECT poiname, orientation._id, poi_id, orientationtype, rot1, rot2, rot3, rot4, rot5, rot6, rot7, rot8, rot9, v1, v2, v3 FROM orientation LEFT JOIN poi ON poi._id = orientation.poi_id WHERE poitime > " max_timestamp_epoch_ms ]
 geolpda_orientations: 			copy sql_result
