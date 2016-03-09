@@ -882,11 +882,31 @@ COMMENT ON VIEW operations_quadrangles IS 'Rectangles geographically traced arou
 
 
 --les traces des sondages, pareil, pour un srid
-CREATE OR REPLACE VIEW dh_traces_3d_20136 AS 
-SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1
-FROM dh_collars
-WHERE srid = 20136) tmp
+CREATE OR REPLACE VIEW dh_traces_3d_20136 AS
+SELECT *,
+       GeomFromEWKT(
+                    'SRID=' || srid ||
+                    ';LINESTRING (' ||
+                                   x    || ' ' ||
+                                   y    || ' ' ||
+                                   z    || 
+                                          ', ' ||
+                                   x1   || ' ' ||
+                                   y1   || ' ' ||
+                                   z1   ||
+                                ')'
+                   )
+ FROM (
+       SELECT *,
+              x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1,
+              y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1,
+              z - length * sin((dip_hz / 180) * pi())                               AS z1
+       FROM dh_collars
+       WHERE srid = 20136
+     ) tmp
 ORDER BY tmp.id;
+
+
 CREATE OR REPLACE VIEW dh_traces_3d_20137 AS 
 SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1
 FROM dh_collars
