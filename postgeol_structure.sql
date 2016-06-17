@@ -96,9 +96,8 @@ LIGNES:     0     99  rien
 
 
 
-
 --}}}
---OBJETS BDEXPLO:{{{
+--0100 OBJETS BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -500,7 +499,7 @@ tables:{{{
                            Nom                             | Type  | Propriétaire 
 -----------------------------------------------------------+-------+--------------
 doc_bdexplo_table_categories                               | table | pierre
-doc_bdexplo_tables_descriptions                            | table | pierre
+doc_postgeol_tables_descriptions                            | table | pierre
 
 operations                                                 | table | data_admin
 operation_active                                           | table | data_admin
@@ -881,8 +880,9 @@ fonctions:{{{
 (3851 lignes)
 
 }}}
-
-
+  .              .
+ /!\ refactoré! /!\
+`---'          `---'
 
 
 
@@ -898,7 +898,7 @@ fonctions:{{{
 
 
 --}}}
---CRÉATION BASE, SCHÉMAS:{{{
+--0900 CRÉATION BASE, SCHÉMAS:{{{
 */
 
 --TODO faire le rôle data_admin, et les autres rôles "génériques" (groupes)
@@ -914,11 +914,20 @@ fonctions:{{{
 POSTGEOL := 'postgeol';
 postgeol := 'postgeol';
 */
+-- pour l'instant, $POSTGEOL est défini dans mon .bashrc:
+-- export POSTGEOL=postgeol
 
---TODO make a table 'defaults' in the user's schema (or no?) containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file.
+
+--TODO make a table 'defaults' in the user's schema (or no?) containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
 
 
 CREATE DATABASE $POSTGEOL ENCODING='UTF8';
+_______________ENCOURS_______________GEOLLLIBRE --COMMENT APPELER UNE VARIABLE D'ENVIRONNEMENT DEPUIS PSQL??
+
+CREATE DATABASE ${POSTGEOL} ENCODING='UTF8';
+SELECT '${POSTGEOL}';
+
+
 \c $POSTGEOL
 --TODO se connecter en tant qu'utilisateur lambda, plutôt?
 
@@ -986,33 +995,25 @@ COMMENT ON SCHEMA tmp_imports IS 'Temporary place for imported files.  Tables im
 
 
 
-
-
-
-
-
-
-
-
-
 --}}}
 
 -- _______________ENCOURS_______________GEOLLLIBRE v
---tables{{{
+--1000 TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
 --SET search_path = '$user', 'public';
-
 --SET search_path = public, pg_catalog;
---  x doc_bdexplo_table_categories:{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
 
---CREATE TABLE public.doc_bdexplo_table_categories (category VARCHAR PRIMARY KEY, description_fr VARCHAR, numauto SERIAL);
+-- x doc_bdexplo_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+
 CREATE TABLE doc_bdexplo_table_categories (
     category       varchar NOT NULL PRIMARY KEY,
     description_en varchar,
     description_fr varchar,
-    numauto serial
+    numauto        serial
 );
+
+ALTER TABLE public.doc_postgeol_tables_descriptions ADD FOREIGN KEY (category) REFERENCES public.doc_bdexplo_table_categories  ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
 
 -- dump de la table:
 -- --localhost pierre@bdexplo=> 
@@ -1032,6 +1033,20 @@ CREATE TABLE doc_bdexplo_table_categories (
 -- (9 lignes)
 
 --}}}
+-- x doc_postgeol_tables_descriptions --{{{
+
+CREATE TABLE doc_postgeol_tables_descriptions (
+    tablename  VARCHAR PRIMARY KEY, 
+    category   VARCHAR, 
+    comment_en varchar,
+    comment_fr VARCHAR, 
+    numauto SERIAL);
+
+ALTER TABLE ONLY doc_postgeol_tables_descriptions
+    ADD CONSTRAINT doc_postgeol_tables_descriptions_category_fkey FOREIGN KEY (category) REFERENCES doc_bdexplo_table_categories(category) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+
+--}}}
+
 
 -- x operations:{{{
 
@@ -9995,10 +10010,10 @@ CREATE TABLE program (
 
 
 
-
 --}}}
 --_______________ENCOURS_______________GEOLLLIBRE ^
 
+--10000 LE RESTE...
 -- o functions:{{{
 -- x generate_cross_sections_array:{{{
 
