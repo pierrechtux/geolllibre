@@ -1,4 +1,4 @@
-_______________ENCOURS_______________GEOLLLIBRE
+-- _______________ENCOURS_______________GEOLLLIBRE
 --[ ;{{{ } } }
 --	Title:   "Structure of POSTGEOL database: PostgreSQL database for GEOLogical data"
 --	Author:  "Pierre Chevalier"
@@ -31,17 +31,23 @@ _______________ENCOURS_______________GEOLLLIBRE
 --		    See LICENSE file.
 --		}
 --] ;}}}
-LIGNES:     0     99  rien
+/*
+LIGNES:     0     89  licence, rien et TODOs
+           90     99  des trucs en en-tête du dump
           100    899  liste objets de bdexplo, ordonnée
           900    997  création base, schémas
 ==>      1000   9999  création tables  <==
         10000         le reste...
+*/
 
 
+{{{ 
+
+-- x TODO mettre tous les: REFERENCES operations (opid)
+-- e TODO mettre tous les numauto en serial PRIMARY KEY
+-- o TODO mettre des NOT NULL un peu partout
 
 
-
-{{{
 /* NON *****************************************************************
 -- ********************** ça vient de OPM
 -- This program is open source, licensed under the PostgreSQL License.   <= prendre cette license? @#demander Julien
@@ -80,24 +86,18 @@ LIGNES:     0     99  rien
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+--}}}
+-- Ceci était en tête du dump:{{{
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
 
 
 --}}}
---0100 OBJETS BDEXPLO:{{{
+--0100 LISTE OBJETS DE BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -106,8 +106,8 @@ tables:{{{
                                           Liste des relations
        Schéma       |                            Nom                             | Type  | Propriétaire 
 --------------------+------------------------------------------------------------+-------+--------------
- public             | doc_bdexplo_table_categories                               | table | pierre
- public             | doc_bdexplo_tables_descriptions                            | table | pierre
+ public             | doc_bdexplo_table_categories      <= refactoré             | table | pierre
+ public             | doc_bdexplo_tables_descriptions   <= refactoré             | table | pierre
 
  public             | operations                                                 | table | data_admin
  public             | operation_active                                           | table | data_admin
@@ -493,221 +493,221 @@ fonctions:{{{
 
 Pareil, seulement les noms, pour *er plus facilement, à supprimer après usage:
 tables:{{{
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \dt *.*
                     Liste des relations
-                           Nom                             | Type  | Propriétaire 
------------------------------------------------------------+-------+--------------
-doc_bdexplo_table_categories                               | table | pierre
-doc_postgeol_tables_descriptions                            | table | pierre
+                           Nom
+------------------------------------
+doc_postgeol_table_categories
+doc_postgeol_tables_descriptions
 
-operations                                                 | table | data_admin
-operation_active                                           | table | data_admin
+operations
+operation_active
 
-field_observations                                         | table | data_admin
-field_observations_struct_measures                         | table | data_admin
-field_photos                                               | table | data_admin
-formations_group_lithos                                    | table | data_admin
-rock_sampling                                              | table | pierre
-rock_ana                                                   | table | pierre
-surface_samples_grades                                     | table | data_admin
-gps_wpt                                                    | table | pierre
+field_observations
+field_observations_struct_measures
+field_photos
+formations_group_lithos
+rock_sampling
+rock_ana
+surface_samples_grades
+gps_wpt
 
-geoch_sampling                                             | table | data_admin
-geoch_ana                                                  | table | data_admin
-geoch_sampling_grades                                      | table | data_admin
+geoch_sampling
+geoch_ana
+geoch_sampling_grades
 
-gpy_mag_ground                                             | table | data_admin
+gpy_mag_ground
 
-dh_collars                                                 | table | data_admin
-shift_reports                                              | table | data_admin	<= RENOMMÉE en dh_, ATTENTION!
-dh_followup                                                | table | data_admin
-dh_devia                                                   | table | data_admin
-dh_quicklog                                                | table | data_admin
-dh_litho                                                   | table | data_admin
-dh_core_boxes                                              | table | data_admin
-dh_tech                                                    | table | data_admin
-dh_struct_measures                                         | table | data_admin
-dh_photos                                                  | table | pierre
-dh_samples_submission                                      | table | pierre
-dh_sampling_grades                                         | table | data_admin
-dh_mineralised_intervals                                   | table | data_admin
-dh_density                                                 | table | data_admin
-dh_thinsections                                            | table | data_admin
-dh_sampling_bottle_roll                                    | table | data_admin
+dh_collars
+shift_reports     <= RENOMMÉE en dh_, ATTENTION!
+dh_followup
+dh_devia
+dh_quicklog
+dh_litho
+dh_core_boxes
+dh_tech
+dh_struct_measures
+dh_photos
+dh_samples_submission
+dh_sampling_grades
+dh_mineralised_intervals
+dh_density
+dh_thinsections
+dh_sampling_bottle_roll
 
-dh_collars_lengths                                         | table | pierre
+dh_collars_lengths
 
-lab_ana_batches_expedition                                 | table | data_admin
-lab_ana_batches_reception                                  | table | data_admin
-lab_ana_batches_reception_18_corr                          | table | pierre
-lab_ana_columns_definition                                 | table | data_admin
-ana_det_limit                                              | table | pierre
-lab_ana_results                                            | table | data_admin
-lab_analysis_icp                                           | table | pierre
-lab_ana_qaqc_results                                       | table | data_admin
+lab_ana_batches_expedition
+lab_ana_batches_reception
+lab_ana_batches_reception_18_corr
+lab_ana_columns_definition
+ana_det_limit
+lab_ana_results
+lab_analysis_icp
+lab_ana_qaqc_results
 
-qc_sampling                                                | table | data_admin
-qc_standards                                               | table | data_admin
+qc_sampling
+qc_standards
 
-ancient_workings                                           | table | data_admin
-occurrences                                                | table | data_admin
+ancient_workings
+occurrences
 
-licences                                                   | table | data_admin
+licences
 
-grade_ctrl                                                 | table | data_admin
+grade_ctrl
 
-lex_codes                                                  | table | data_admin
-lex_datasource                                             | table | data_admin
-lex_standard                                               | table | data_admin
+lex_codes
+lex_datasource
+lex_standard
 
-mag_declination                                            | table | data_admin
-topo_points                                                | table | data_admin
-survey_lines                                               | table | pierre
-units                                                      | table | pierre
-baselines                                                  | table | data_admin
-sections_definition                                        | table | pierre
-sections_array                                             | table | pierre
-conversions_oxydes_elements                                | table | pierre
-index_geo_documentation                                    | table | data_admin
-layer_styles                                               | table | pierre
-program                                                    | table | pierre
+mag_declination
+topo_points
+survey_lines
+units
+baselines
+sections_definition
+sections_array
+conversions_oxydes_elements
+index_geo_documentation
+layer_styles
+program
 
 _______________ENCOURS_______________GEOLLLIBRE
-occurrences_recup_depuis_dump                              | table | data_admin
+occurrences_recup_depuis_dump
 
-dh_nb_samples                                              | table | pierre	<= inutile
-european_federation_geologists_members                     | table | pierre
-grid                                                       | table | pierre
-pchgeol_rapports                                           | table | pierre
-songs                                                      | table | pierre
-tmp_xy                                                     | table | pierre
-tmp_xyz_marec                                              | table | pierre
-toudoux_dh_sampling_grades_datasource_979                  | table | pierre
-tt_bdexplo_lex_datasource_autan                            | table | pierre
-tt_bdexplo_lex_labo_analysis_autan                         | table | pierre
+dh_nb_samples        <= inutile
+european_federation_geologists_members
+grid
+pchgeol_rapports
+songs
+tmp_xy
+tmp_xyz_marec
+toudoux_dh_sampling_grades_datasource_979
+tt_bdexplo_lex_datasource_autan
+tt_bdexplo_lex_labo_analysis_autan
 
-bondoukou_alain_lambert_acp                                | table | pierre
-bondoukou_alain_lambert_au_ou_icp                          | table | pierre
-bondoukou_alain_lambert_cah                                | table | pierre
-bondoukou_alain_lambert_cah7                               | table | pierre
-bondoukou_alain_lambert_coor                               | table | pierre
-bondoukou_alain_lambert_coor_icp                           | table | pierre
-bondoukou_alain_lambert_icp                                | table | pierre
-bondoukou_alain_lambert_or                                 | table | pierre
-bondoukou_alain_lambert_tarkw_cah_3                        | table | pierre
-bondoukou_alain_lambert_tout                               | table | pierre
-bondoukou_alain_lambert_vx_tvx                             | table | pierre
-soil_geoch_bondoukou                                       | table | pierre
-tmp_auramines_feb_march_sample_list_xlsx_01_main_list      | table | pierre
-tmp_auramines_feb_march_sample_list_xlsx_02_dhl_ireland    | table | pierre
-tmp_auramines_feb_march_sample_list_xlsx_03_dhl_france     | table | pierre
-tmp_auramines_feb_march_sample_list_xlsx_04_sheet_for_omac | table | pierre
-tmp_auramines_field_observations                           | table | pierre
-tmp_bondoukou_geoch_sol                                    | table | pierre
-tmp_bondoukou_sondages_collars                             | table | pierre
-tmp_bondoukou_sondages_sampling_grades                     | table | pierre
-tmp_bv130613_gravi_results                                 | table | pierre
+bondoukou_alain_lambert_acp
+bondoukou_alain_lambert_au_ou_icp
+bondoukou_alain_lambert_cah
+bondoukou_alain_lambert_cah7
+bondoukou_alain_lambert_coor
+bondoukou_alain_lambert_coor_icp
+bondoukou_alain_lambert_icp
+bondoukou_alain_lambert_or
+bondoukou_alain_lambert_tarkw_cah_3
+bondoukou_alain_lambert_tout
+bondoukou_alain_lambert_vx_tvx
+soil_geoch_bondoukou
+tmp_auramines_feb_march_sample_list_xlsx_01_main_list
+tmp_auramines_feb_march_sample_list_xlsx_02_dhl_ireland
+tmp_auramines_feb_march_sample_list_xlsx_03_dhl_france
+tmp_auramines_feb_march_sample_list_xlsx_04_sheet_for_omac
+tmp_auramines_field_observations
+tmp_bondoukou_geoch_sol
+tmp_bondoukou_sondages_collars
+tmp_bondoukou_sondages_sampling_grades
+tmp_bv130613_gravi_results
 
-orientation                                                | table | pierre
-pieces_mouvts                                              | table | pierre
-pieces_stock_fin_2011                                      | table | pierre
-poi                                                        | table | pierre
-tmp_africa_powermining_projects_database                   | table | pierre
-tmp_assay_results_auramines_ns30n                          | table | pierre
-tmp_cme_sampling_grades_150102                             | table | pierre
-tmp_cme_sampling_grades_150102_utf8                        | table | pierre
-tmp_collars_141027_utf8                                    | table | pierre
-tmp_collars_141223                                         | table | pierre
-tmp_collars_141223_utf8                                    | table | pierre
-tmp_entree_donnees_dh_tech                                 | table | pierre
-tmp_erreur_z                                               | table | pierre
-tmp_esp_pgm_cr_140908_                                     | table | pierre
-tmp_european_federation_geologists_members                 | table | pierre
-tmp_export_geolpda_waypoints_descriptions                  | table | pierre
-tmp_ext1                                                   | table | pierre
-tmp_ext2                                                   | table | pierre
-tmp_ext3                                                   | table | pierre
-tmp_ext4                                                   | table | pierre
-tmp_ext5                                                   | table | pierre
-tmp_ext6                                                   | table | pierre
-tmp_ext7                                                   | table | pierre
-tmp_field_observations_struct_measures                     | table | pierre
-tmp_geolpda_orientations                                   | table | pierre
-tmp_geolpda_picks                                          | table | pierre
-tmp_ity_gpspolo_travaux_97et2004                           | table | pierre
-tmp_log_tech                                               | table | pierre
-tmp_lr15201855                                             | table | pierre
-tmp_observations_pch_guyane_2011_2014                      | table | pierre
-tmp_s001                                                   | table | pierre
-tmp_s001_corr                                              | table | pierre
-tmp_s003_corr                                              | table | pierre
-tmp_s005_corr                                              | table | pierre
-tmp_sample_description_and_coords_november_2015_paul       | table | pierre
-tmp_sondages_est_cavally_resume_fiche_tech                 | table | pierre
-tmp_sondages_est_cavally_resume_mineralisation             | table | pierre
-tmp_surface_samples_grades                                 | table | pierre
-tmp_surface_sampling_141027                                | table | pierre
-tmp_surface_sampling_141027_utf8                           | table | pierre
-tmp_survey_141027                                          | table | pierre
-tmp_survey_141223                                          | table | pierre
-tmp_tmp_dactylo_litho                                      | table | pierre
-tmp_tmp_field_observations_struct_measures                 | table | pierre
-tmp_tmp_structures                                         | table | pierre
-tmp_tt                                                     | table | pierre
-tmp_tt_omac_sample_list_update                             | table | pierre
-tmp_tt_pierre_nettoye_uploader_wpt                         | table | pierre
-tmp_tt_programme_esperance                                 | table | pierre
-tmp_tt_pts_gps_mdb_copie                                   | table | pierre
-tmp_tt_pts_gps_mdb_fichiers                                | table | pierre
-tmp_tt_pts_gps_mdb_fsdrg                                   | table | pierre
-tmp_tt_pts_gps_mdb_points_latlong                          | table | pierre
-tmp_tt_pts_gps_mdb_sdqrfgadzrg                             | table | pierre
-tmp_tt_pts_gps_mdb_vireendb                                | table | pierre
-tmp_tt_surface_samples                                     | table | pierre
-tmp_tt_translation_fr2en                                   | table | pierre
-tmp_waypoints_blaz_sudan_2015_02                           | table | pierre
-tmp_waypoints_descriptions                                 | table | pierre
-tmp_waypoints_descriptions_bricolage                       | table | pierre
-tmp_xtr_dh_collars                                         | table | pierre
-tmp_xtr_field_observations                                 | table | pierre
+orientation
+pieces_mouvts
+pieces_stock_fin_2011
+poi
+tmp_africa_powermining_projects_database
+tmp_assay_results_auramines_ns30n
+tmp_cme_sampling_grades_150102
+tmp_cme_sampling_grades_150102_utf8
+tmp_collars_141027_utf8
+tmp_collars_141223
+tmp_collars_141223_utf8
+tmp_entree_donnees_dh_tech
+tmp_erreur_z
+tmp_esp_pgm_cr_140908_
+tmp_european_federation_geologists_members
+tmp_export_geolpda_waypoints_descriptions
+tmp_ext1
+tmp_ext2
+tmp_ext3
+tmp_ext4
+tmp_ext5
+tmp_ext6
+tmp_ext7
+tmp_field_observations_struct_measures
+tmp_geolpda_orientations
+tmp_geolpda_picks
+tmp_ity_gpspolo_travaux_97et2004
+tmp_log_tech
+tmp_lr15201855
+tmp_observations_pch_guyane_2011_2014
+tmp_s001
+tmp_s001_corr
+tmp_s003_corr
+tmp_s005_corr
+tmp_sample_description_and_coords_november_2015_paul
+tmp_sondages_est_cavally_resume_fiche_tech
+tmp_sondages_est_cavally_resume_mineralisation
+tmp_surface_samples_grades
+tmp_surface_sampling_141027
+tmp_surface_sampling_141027_utf8
+tmp_survey_141027
+tmp_survey_141223
+tmp_tmp_dactylo_litho
+tmp_tmp_field_observations_struct_measures
+tmp_tmp_structures
+tmp_tt
+tmp_tt_omac_sample_list_update
+tmp_tt_pierre_nettoye_uploader_wpt
+tmp_tt_programme_esperance
+tmp_tt_pts_gps_mdb_copie
+tmp_tt_pts_gps_mdb_fichiers
+tmp_tt_pts_gps_mdb_fsdrg
+tmp_tt_pts_gps_mdb_points_latlong
+tmp_tt_pts_gps_mdb_sdqrfgadzrg
+tmp_tt_pts_gps_mdb_vireendb
+tmp_tt_surface_samples
+tmp_tt_translation_fr2en
+tmp_waypoints_blaz_sudan_2015_02
+tmp_waypoints_descriptions
+tmp_waypoints_descriptions_bricolage
+tmp_xtr_dh_collars
+tmp_xtr_field_observations
 
-bound_e                                                    | table | pierre
-brgm_au                                                    | table | pierre
-codes                                                      | table | pierre
-contact                                                    | table | pierre
-density                                                    | table | pierre
-devia                                                      | table | pierre
-formatio                                                   | table | pierre
-geotec                                                     | table | pierre
-headers                                                    | table | pierre
-kendril2                                                   | table | pierre
-lithaufu                                                   | table | pierre
-litho                                                      | table | pierre
-mag                                                        | table | pierre
-mask                                                       | table | pierre
-mine                                                       | table | pierre
-outline                                                    | table | pierre
-quicklog                                                   | table | pierre
-rank                                                       | table | pierre
-sampling                                                   | table | pierre
-sgs_au                                                     | table | pierre
-sgsrecod                                                   | table | pierre
-soil                                                       | table | pierre
-statrenc                                                   | table | pierre
-struc                                                      | table | pierre
-submit                                                     | table | pierre
-thisecti                                                   | table | pierre
-tr_au                                                      | table | pierre
-tr_litho                                                   | table | pierre
-vchannau                                                   | table | pierre
-vchannel                                                   | table | pierre
+bound_e
+brgm_au
+codes
+contact
+density
+devia
+formatio
+geotec
+headers
+kendril2
+lithaufu
+litho
+mag
+mask
+mine
+outline
+quicklog
+rank
+sampling
+sgs_au
+sgsrecod
+soil
+statrenc
+struc
+submit
+thisecti
+tr_au
+tr_litho
+vchannau
+vchannel
 
-field_observations_2016_03_09_14h08                        | table | pierre
-field_observations_struct_measures_2016_03_09_14h10        | table | pierre
+field_observations_2016_03_09_14h08
+field_observations_struct_measures_2016_03_09_14h10
 
 
-t2                                                         | table | pierre
+t2
 
 (252 lignes)
 
@@ -896,9 +896,8 @@ fonctions:{{{
 
 
 
-
 --}}}
---0900 CRÉATION BASE, SCHÉMAS:{{{
+--0900 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 */
 
 --TODO faire le rôle data_admin, et les autres rôles "génériques" (groupes)
@@ -918,30 +917,37 @@ postgeol := 'postgeol';
 -- export POSTGEOL=postgeol
 
 
---TODO make a table 'defaults' in the user's schema (or no?) containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
+--TODO make a table 'defaults' in the user's schema (or no?) 
+--     containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
 
 
-CREATE DATABASE $POSTGEOL ENCODING='UTF8';
-_______________ENCOURS_______________GEOLLLIBRE --COMMENT APPELER UNE VARIABLE D'ENVIRONNEMENT DEPUIS PSQL??
+--CREATE DATABASE $POSTGEOL ENCODING='UTF8';
+--CREATE DATABASE ${POSTGEOL} ENCODING='UTF8';
+--SELECT '${POSTGEOL}';
+-- COMMENT APPELER UNE VARIABLE D'ENVIRONNEMENT DEPUIS PSQL??
+-- voilà (ça ne fonctionne que sur un unix...):
+\set postgeol `echo "$POSTGEOL"`
+--\echo :postgeol
+-- (c'est un peu tordu...)
+DROP DATABASE :postgeol; --TODO À INVALIDER, BIEN SÛR!
+CREATE DATABASE :postgeol ENCODING='UTF8';
 
-CREATE DATABASE ${POSTGEOL} ENCODING='UTF8';
-SELECT '${POSTGEOL}';
-
-
-\c $POSTGEOL
---TODO se connecter en tant qu'utilisateur lambda, plutôt?
-
+-- Record the current username, and login to the newly made 
+-- database as superuser postgres:
+\set username :USER
+\c :postgeol postgres
+-- Incorporate some extensions:
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 CREATE OR REPLACE PROCEDURAL LANGUAGE plpythonu;
 ALTER PROCEDURAL LANGUAGE plpythonu OWNER TO postgres;
-
--- postgeol is a spatial database, at least partially: inherit from the famous PostGIS extension:{{{
+-- postgeol is a spatial database, at least partially: inherit from the famous PostGIS extension:
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
---}}}
+-- Re-connect as the initial (normal) user again:
+\c :postgeol :username
 
--- schemas:{{{
+-- Create schemas:{{{
 CREATE SCHEMA checks;
 COMMENT ON SCHEMA checks IS 'Views selecting unconsistent, incoherent, unprobable data';
 
@@ -957,20 +963,11 @@ COMMENT ON SCHEMA stats_reports IS 'Views with statistics and reports, for daily
 CREATE SCHEMA tmp_imports;
 COMMENT ON SCHEMA tmp_imports IS 'Temporary place for imported files.  Tables imported from .csv files by using the csv2sql utility are going in this schema.  Also refer to .gll_preferences file.';
 
+CREATE SCHEMA backups;
+COMMENT ON SCHEMA backups IS 'Just in case, a convenient place to put backups when potentially dangerous changes are to be made.';
+
+
 --}}}
-
--- x TODO mettre tous les: REFERENCES operations (opid)
--- e TODO mettre tous les numauto en serial PRIMARY KEY
--- o TODO mettre des NOT NULL un peu partout
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1004,20 +1001,27 @@ COMMENT ON SCHEMA tmp_imports IS 'Temporary place for imported files.  Tables im
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
--- x doc_bdexplo_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+-- x doc_postgeol_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+----------------------------------------------
+-- TODO utile de garder ça??
 
-CREATE TABLE doc_bdexplo_table_categories (
+CREATE TABLE public.doc_postgeol_table_categories (
     category       varchar NOT NULL PRIMARY KEY,
     description_en varchar,
+    description_es varchar,
     description_fr varchar,
-    numauto        serial
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    numauto        serial,
+    username       varchar DEFAULT current_user
 );
 
-ALTER TABLE public.doc_postgeol_tables_descriptions ADD FOREIGN KEY (category) REFERENCES public.doc_bdexplo_table_categories  ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE public.doc_postgeol_tables_descriptions ADD FOREIGN KEY (category) REFERENCES public.doc_postgeol_table_categories  ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+--COMMENT ON TABLE public.doc_postgeol_table_categories IS ...
+--TODO add comments
 
 -- dump de la table:
 -- --localhost pierre@bdexplo=> 
--- TABLE doc_bdexplo_table_categories
+-- TABLE doc_postgeol_table_categories
 -- ;
 --   category  |                                 description_fr                                 | numauto 
 -- ------------+--------------------------------------------------------------------------------+---------
@@ -1034,38 +1038,43 @@ ALTER TABLE public.doc_postgeol_tables_descriptions ADD FOREIGN KEY (category) R
 
 --}}}
 -- x doc_postgeol_tables_descriptions --{{{
+-- TODO même question: utile à garder?
 
-CREATE TABLE doc_postgeol_tables_descriptions (
-    tablename  VARCHAR PRIMARY KEY, 
-    category   VARCHAR, 
-    comment_en varchar,
-    comment_fr VARCHAR, 
-    numauto SERIAL);
-
-ALTER TABLE ONLY doc_postgeol_tables_descriptions
-    ADD CONSTRAINT doc_postgeol_tables_descriptions_category_fkey FOREIGN KEY (category) REFERENCES doc_bdexplo_table_categories(category) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED;
+CREATE TABLE public.doc_postgeol_tables_descriptions (
+    tablename      varchar PRIMARY KEY, 
+    category       varchar
+        REFERENCES doc_postgeol_table_categories(category) 
+            ON UPDATE CASCADE 
+            ON DELETE CASCADE 
+            DEFERRABLE INITIALLY DEFERRED, 
+    comment_en     varchar,
+    comment_fr     varchar, 
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    numauto        serial,
+    username       varchar DEFAULT current_user
+);
+COMMENT ON TABLE public.doc_postgeol_tables_descriptions IS 'Description of tables';
+-- Hm, should be the same as COMMENT on tables... TODO: make sure it is consistent, check what uses this table, update if necessary, and clean up (get rid of)!
 
 --}}}
-
 
 -- x operations:{{{
 
 CREATE TABLE public.operations (
-    opid            serial PRIMARY KEY,
-    operation       varchar,
-    full_name       varchar,
-    operator        varchar,
-    year            integer,
-    confidentiality boolean DEFAULT TRUE,
+    opid            serial PRIMARY KEY NOT NULL,
+    operation       varchar NOT NULL,
+    full_name       varchar NOT NULL,
+    operator        varchar NOT NULL,
+    year            integer NOT NULL,
+    confidentiality boolean NOT NULL DEFAULT TRUE,
     lat_min         numeric(10,5) NOT NULL,
     lon_min         numeric(10,5) NOT NULL,
-    lat_max         numeric(10,5),
-    lon_max         numeric(10,5),
-    comments        varchar,
+    lat_max         numeric(10,5) NOT NULL,
+    lon_max         numeric(10,5) NOT NULL,
+    comments        varchar NOT NULL,
+    creation_ts     timestamp with time zone DEFAULT now() NOT NULL,
     --numauto         serial UNIQUE NOT NULL,  -- useless, since opid is already the serial PRIMARY KEY
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username        varchar DEFAULT "current_user"()
-    --CONSTRAINT opid PRIMARY KEY (opid)
+    username        varchar DEFAULT current_user NOT NULL
 );
 COMMENT ON TABLE public.operations                         IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
 COMMENT ON COLUMN public.operations.opid                   IS 'Operation identifier, automatic sequence';
@@ -1078,7 +1087,7 @@ COMMENT ON COLUMN public.operations.lat_min                IS 'South latitude, d
 COMMENT ON COLUMN public.operations.lon_min                IS 'West longitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lat_max                IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_max                IS 'East latitude, decimal degrees, WGS84';
-COMMENT ON COLUMN public.operations.db_update_timestamp    IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.operations.creation_ts            IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.operations.username               IS 'User (role) which created data record';
 --COMMENT ON COLUMN public.operations.numauto                IS 'Automatic integer';
 
@@ -1086,51 +1095,55 @@ COMMENT ON COLUMN public.operations.username               IS 'User (role) which
 -- x operation_active:{{{
 
 --SET search_path = current_user $USER, pg_catalog; => in fact, this table should rather be in the user's schema => TODO later
-
+-- => as written here, the table will end up in the current user's schema.
 CREATE TABLE operation_active (
-    opid                integer REFERENCES operations (opid),
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            character varying DEFAULT "current_user"(),
-    numauto             serial PRIMARY KEY
+    opid            integer
+        REFERENCES operations (opid)
+            ON UPDATE CASCADE 
+            ON DELETE CASCADE 
+            DEFERRABLE INITIALLY DEFERRED,
+    creation_ts     timestamp with time zone DEFAULT now() NOT NULL,
+    username        varchar DEFAULT current_user,
+    numauto         serial PRIMARY KEY
 );
-COMMENT ON TABLE operation_active IS 'table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
+COMMENT ON TABLE operation_active                IS 'table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
 COMMENT ON COLUMN operation_active.opid                IS 'Operation identifier';
-COMMENT ON COLUMN operation_active.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN operation_active.creation_ts         IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN operation_active.username            IS 'User (role) which created data record';
 COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
 
 --}}}
-
 -- field work, on surface:{{{
 -- x field_observations:{{{
 
 CREATE TABLE public.field_observations (
-    opid                integer REFERENCES operations (opid),
-    year                integer,
-    obs_id              character varying,
-    date                date,
-    waypoint_name       character varying,
-    x                   numeric(20,10),
-    y                   numeric(20,10),
-    z                   numeric(20,2),
-    srid                integer,
-    description text,
-    code_litho character varying(4),
-    code_unit character varying(4),
-    geologist character varying,
-    icon_descr character varying,
-    comments character varying,
-    sample_id character varying,
-    datasource integer,
-    numauto serial PRIMARY KEY,
-    photos character varying,
-    audio character varying,
-    timestamp_epoch_ms bigint,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
-    device character varying,
-    "time" character varying   -- TODO voir ce que contient ce champ; le renommer mieux
+    opid                integer NOT NULL REFERENCES operations (opid),
+    year                integer NOT NULL,
+    obs_id              varchar NOT NULL,
+    date                date NOT NULL,
+    waypoint_name       varchar NOT NULL,
+    x                   numeric(20,10) NOT NULL,
+    y                   numeric(20,10) NOT NULL,
+    z                   numeric(20,2) NOT NULL,
+    srid                integer NOT NULL,
+    description         varchar NOT NULL,
+    code_litho          varchar(4) NOT NULL,
+    code_unit           varchar(4) NOT NULL,
+    sample_id           varchar NOT NULL,
+    audio               varchar NOT NULL,
+    photos              varchar NOT NULL,
+    geologist           varchar NOT NULL,
+    device              varchar NOT NULL,
+    icon_descr          varchar NOT NULL,
+    comments            varchar NOT NULL,
+    datasource          integer NOT NULL,
+    "time"              varchar NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux
+    timestamp_epoch_ms  bigint NOT NULL,
+    creation_ts         timestamp with time zone DEFAULT now() NOT NULL,,
+    numauto             serial  NOT NULLPRIMARY KEY,
+    username            varchar NOT NULL DEFAULT current_user
 );
+
 COMMENT ON TABLE field_observations IS 'Field observations: geological observations, on outcrops, floats, or any other observations; coherent with GeolPDA';
 COMMENT ON COLUMN field_observations.opid                  IS 'Operation identifier';
 COMMENT ON COLUMN field_observations.year                  IS 'Year when observation is done (TODO DROP COLUMN redundant with date field)';
@@ -1144,50 +1157,54 @@ COMMENT ON COLUMN field_observations.srid                  IS 'Spatial Reference
 COMMENT ON COLUMN field_observations.description           IS 'Naturalist description';
 COMMENT ON COLUMN field_observations.code_litho            IS 'Lithological code';
 COMMENT ON COLUMN field_observations.code_unit             IS 'Unit code: lithostratigraphic, and/or cartographic';
+COMMENT ON COLUMN field_observations.sample_id             IS 'If relevant, sample identifier';
+COMMENT ON COLUMN field_observations.audio                 IS 'Audio recording files, if relevant';
+COMMENT ON COLUMN field_observations.photos                IS 'List of photographs pictures files, if relevant';
 COMMENT ON COLUMN field_observations.geologist             IS 'Geologist or prospector name';
+COMMENT ON COLUMN field_observations.device                IS 'Device used to record data: good old fieldbook, PDA, smartphone, tablet, dictaphone, raw human memory (not recommended), etc.';
 COMMENT ON COLUMN field_observations.icon_descr            IS 'If relevant, icon description from some GPS devices/programs';
 COMMENT ON COLUMN field_observations.comments              IS 'Comments';
-COMMENT ON COLUMN field_observations.sample_id             IS 'If relevant, sample identifier';
 COMMENT ON COLUMN field_observations.datasource            IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN field_observations.numauto               IS 'Automatic integer primary key';
-COMMENT ON COLUMN field_observations.photos                IS 'List of photographs pictures files, if relevant';
-COMMENT ON COLUMN field_observations.audio                 IS 'Audio recording files, if relevant';
+COMMENT ON COLUMN field_observations."time"                IS '?';
 COMMENT ON COLUMN field_observations.timestamp_epoch_ms    IS 'Timestamp of observation: as defined in GeolPDA devices, as epoch in ms';
-COMMENT ON COLUMN field_observations.db_update_timestamp   IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN field_observations.creation_ts           IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN field_observations.numauto               IS 'Automatic integer primary key';
 COMMENT ON COLUMN field_observations.username              IS 'User (role) which created data record';
 
 --}}}
 -- x field_observations_struct_measures_points:{{{
 
 CREATE TABLE public.field_observations_struct_measures (
-    opid integer REFERENCES operations (opid),
-    obs_id character varying, -- REFERENCES field_observations (obs_id),
-    measure_type character varying,
-    device character varying,
-    structure_type character varying,
-    rotation_matrix character varying,
-    north_ref character varying,
-    direction integer,
-    dip integer,
-    dip_quadrant character varying,
-    pitch integer,
-    pitch_quadrant character varying,
-    movement character varying,
-    valid boolean,
-    comments character varying,
-    geolpda_id integer,
-    geolpda_poi_id integer,
-    sortgroup character(1),
-    datasource integer,
-    numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    opid            integer NOT NULL REFERENCES operations (opid),
+    obs_id          varchar NOT NULL, -- REFERENCES field_observations (obs_id),
+    measure_type    varchar NOT NULL,
+    device          varchar NOT NULL,
+    structure_type  varchar NOT NULL,
+    rotation_matrix varchar NOT NULL,
+    north_ref       varchar NOT NULL,
+    direction       integer NOT NULL,
+    dip             integer NOT NULL,
+    dip_quadrant    varchar NOT NULL,
+    pitch           integer NOT NULL,
+    pitch_quadrant  varchar NOT NULL,
+    movement        varchar NOT NULL,
+    valid           boolean NOT NULL,
+    comments        varchar NOT NULL,
+    geolpda_id      integer NOT NULL,
+    geolpda_poi_id  integer NOT NULL,
+    sortgroup       character(1) NOT NULL,
+    datasource      integer NOT NULL,
+    numauto         serial PRIMARY KEY NOT NULL,
+    creation_ts     timestamp with time zone DEFAULT now() NOT NULL,
+    username        varchar DEFAULT current_user
 );
 COMMENT ON TABLE public.field_observations_struct_measures IS 'Structural measurements, related to an observation; coherent with GeolPDA';
 COMMENT ON COLUMN public.field_observations_struct_measures.opid                IS 'Operation identifier';
 COMMENT ON COLUMN public.field_observations_struct_measures.obs_id              IS 'Observation identifier: refers to field_observations table';
 COMMENT ON COLUMN public.field_observations_struct_measures.measure_type        IS 'Type of measurement: [P: plane L: line PL: plane line PLM: plane line movement PLMS: plane line movement sure]';
+COMMENT ON COLUMN public.field_observations_struct_measures.device              IS 'Measuring device: compass, electronic device';
 COMMENT ON COLUMN public.field_observations_struct_measures.structure_type      IS 'Measured structure type: [VEIN , FRACTURE , C , SCHISTOSITY , FOLIATION , MYLONITE , CONTACT , VEIN_FAULT , FOLD_PAX_AX , FOLIATION_LINE , FAULT , CATACLASE , MINERALISED_STRUCTURE]';
+COMMENT ON COLUMN public.field_observations_struct_measures.rotation_matrix     IS '3x3 rotation matrix, fully describing any orientation: initial state: [X axis points East, Y axis points North, Z axis points up] => measurement state = rotation applied. Corresponds to function public static float[] getOrientation (float[] R, float[] values) from android API as described in http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation%28float[],%20float[]%29';
 COMMENT ON COLUMN public.field_observations_struct_measures.north_ref           IS 'North reference for azimuths and directions measurements: [Nm: magnetic North, Ng: geographic North, Nu: UTM north, Nl: local grid Y axis]';
 COMMENT ON COLUMN public.field_observations_struct_measures.direction           IS 'Plane direction, 0-180°';
 COMMENT ON COLUMN public.field_observations_struct_measures.dip                 IS 'Plane dip, 0-90°';
@@ -1197,70 +1214,81 @@ COMMENT ON COLUMN public.field_observations_struct_measures.pitch_quadrant      
 COMMENT ON COLUMN public.field_observations_struct_measures.movement            IS 'Relative movement of fault/C: [N: normal, I: inverse = R = reverse, D: dextral, S: sinistral]';
 COMMENT ON COLUMN public.field_observations_struct_measures.valid               IS 'Measure is valid or not (impossible cases = not valid)';
 COMMENT ON COLUMN public.field_observations_struct_measures.comments            IS 'Comments';
-COMMENT ON COLUMN public.field_observations_struct_measures.numauto             IS 'Automatic integer primary key';
-COMMENT ON COLUMN public.field_observations_struct_measures.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.field_observations_struct_measures.username            IS 'User (role) which created data record';
-COMMENT ON COLUMN public.field_observations_struct_measures.datasource          IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN public.field_observations_struct_measures.rotation_matrix     IS '3x3 rotation matrix, fully describing any orientation: initial state: [X axis points East, Y axis points North, Z axis points up] => measurement state = rotation applied. Corresponds to function public static float[] getOrientation (float[] R, float[] values) from android API as described in http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation%28float[],%20float[]%29';
+COMMENT ON COLUMN public.field_observations_struct_measures.geolpda_id          IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_id field';
+COMMENT ON COLUMN public field_observations_struct_measures.geolpda_poi_id      IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_poi_id field';
 COMMENT ON COLUMN public.field_observations_struct_measures.sortgroup           IS 'Sorting group, for discriminated of various phases: a, b, c, ...';
-COMMENT ON COLUMN public.field_observations_struct_measures.device              IS 'Measuring device: compass, electronic device';
+--COMMENT ON COLUMN public.field_observations_struct_measures.sortgroup           IS 'In case of sorting measurements using TecTri, letter referring to sort group';
+COMMENT ON COLUMN public.field_observations_struct_measures.datasource          IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN public.field_observations_struct_measures.numauto             IS 'Automatic integer primary key';
+COMMENT ON COLUMN public.field_observations_struct_measures.creation_ts         IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.field_observations_struct_measures.username            IS 'User (role) which created data record';
 
 --}}}
 -- x field_photos:{{{
 
 CREATE TABLE public.field_photos (
-    opid integer REFERENCES operations (opid),
-    pho_id character varying NOT NULL,
-    obs_id character varying,
-    file character varying,
-    description character varying,
-    azim_nm numeric,  --ATTENTION, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
-    dip_hz numeric,   --ATTENTION, field renamed from dip to something a bit more meaningful.
-    author character varying,
-    datasource integer,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
-    numauto serial PRIMARY KEY
+    opid           integer REFERENCES operations (opid),
+    pho_id         varchar NOT NULL,
+    obs_id         varchar,
+    file           varchar,   --TODO reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary?
+    description    varchar,
+    azim_nm        numeric,   --WARNING, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
+    dip_hz         numeric,   --WARNING, field renamed from dip to something a bit more meaningful.
+    author         varchar,   --hm, useful? Geologist from field_observations should do it, no? TODO drop this field, if unnecessary.
+    datasource     integer,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    numauto        serial PRIMARY KEY,
+    username       varchar DEFAULT current_user,
+    FOREIGN KEY (opid, obs_id) REFERENCES public.field_observations(opid, obs_id)
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+      DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE  public.field_photos                     IS 'Photographs taken in field, related to an observation';
 COMMENT ON COLUMN public.field_photos.opid                IS 'Operation identifier';
+COMMENT ON COLUMN public.field_photos.pho_id              IS 'Photograph identifier';
+COMMENT ON COLUMN public.field_photos.filename            IS 'Photograph full filename, with relative or full path included; to be made consistent and usable';
+COMMENT ON COLUMN public.field_photos.azim_nm             IS 'Azimuth of camera axis, refers to magnetic North (°)';
+COMMENT ON COLUMN public.field_photos.dip_hz              IS 'Dip of camera axis, relative to horizontal (°)';
+COMMENT ON COLUMN public.field_photos.author              IS 'Photograph author; not very useful, as it generally is the geologist, as defined in field_observations table';
 COMMENT ON COLUMN public.field_photos.datasource          IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN public.field_photos.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.field_photos.username            IS 'User (role) which created data record';
+COMMENT ON COLUMN public.field_photos.creation_ts         IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.field_photos.numauto             IS 'Automatic integer';
+COMMENT ON COLUMN public.field_photos.username            IS 'User (role) which created data record';
 
 --}}}
 -- x formations_group_lithos:{{{
 
-CREATE TABLE public.formations_group_lithos (
-    opid integer REFERENCES operations (opid),
-    formation_name character varying(25),
-    code_litho character varying(4),
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
-    numauto serial PRIMARY KEY,
-    datasource integer
+CREATE TABLE public.formations_group_lithos (  --TODO name formations_group_lithos is discutable; formations_lithostrati would be better?
+    opid           integer REFERENCES operations (opid),
+    formation_name varchar(25),
+    code_litho     varchar(4),
+    datasource     integer,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    numauto        serial PRIMARY KEY,
+    username       varchar DEFAULT current_user
 );
-COMMENT ON TABLE public.formations_group_lithos                      IS 'Groups of lithologies, for simplification, typically for drill holes sections';
-COMMENT ON COLUMN public.formations_group_lithos.opid                IS 'Operation identifier';
-COMMENT ON COLUMN public.formations_group_lithos.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.formations_group_lithos.username            IS 'User (role) which created data record';
-COMMENT ON COLUMN public.formations_group_lithos.numauto             IS 'Automatic integer primary key';
+COMMENT ON TABLE public.formations_group_lithos              IS 'Groups of lithologies, for simplification; typically for mapping outcrop points, or plotting drill holes sections';
+COMMENT ON COLUMN public.formations_group_lithos.opid        IS 'Operation identifier';
+COMMENT ON COLUMN public.formations_group_lithos.creation_ts IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.formations_group_lithos.username    IS 'User (role) which created data record';
+COMMENT ON COLUMN public.formations_group_lithos.numauto     IS 'Automatic integer primary key';
 
 --}}}
 -- x rock_sampling:{{{
+_______________ENCOURS_______________GEOLLLIBRE
 
 CREATE TABLE rock_sampling (
-    opid integer REFERENCES operations (opid),
-    location character varying(250),
-    num character varying(20),  -- renommer sample_id
-    hammer_index integer NOT NULL, -- HM!
-    geologist character varying(20),
-    description character varying(250),
-    x numeric(10,2),
-    y numeric(10,2),
-    z numeric(10,2),
-    datasource integer
+    opid           integer REFERENCES operations (opid),
+    location       varchar(250),
+    num            varchar(20),  -- renommer sample_id
+    hammer_index   integer NOT NULL, -- HM!
+    geologist      varchar(20),
+    description    varchar(250),
+    x              numeric(10,2),
+    y              numeric(10,2),
+    z              numeric(10,2),
+    datasource     integer
 );
 COMMENT ON TABLE  public.rock_sampling              IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
 COMMENT ON COLUMN public.rock_sampling.geologist    IS 'geologist name';
@@ -1277,13 +1305,13 @@ CREATE TABLE public.rock_ana (
     opid integer REFERENCES operations (opid),
     hammer_index integer,  --TODO rectifier ça...
     shipment date,
-    ticket_id character varying(25),
+    ticket_id varchar(25),
     reception date,
     ana_type integer,
-    amc_batch character varying(20),
-    labo_batch character varying(20),
+    amc_batch varchar(20),
+    labo_batch varchar(20),
     value numeric(10,2),
-    comments character varying(20),
+    comments varchar(20),
     numauto serial PRIMARY KEY
 );
 COMMENT ON COLUMN public.rock_ana.hammer_index IS 'Sample identification related to the hammer_sampling table';
@@ -1295,18 +1323,18 @@ COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
 
 CREATE TABLE surface_samples_grades (
     opid integer REFERENCES operations (opid),
-    sample_id character varying,
+    sample_id varchar,
     x double precision,
     y double precision,
     z double precision,
     srid integer,
-    description character varying,
-    sample_type character varying,
-    outcrop_id character varying,
-    trend character varying,
-    dip character varying,
-    length_m character varying,
-    width_m character varying,
+    description varchar,
+    sample_type varchar,
+    outcrop_id varchar,
+    trend varchar,
+    dip varchar,
+    length_m varchar,
+    width_m varchar,
     au1_ppm double precision,
     au2_ppm double precision,
     ag1_ double precision,
@@ -1347,15 +1375,15 @@ CREATE TABLE surface_samples_grades (
     cd_ double precision,
     spp2 double precision,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer,
-    campaign character varying
+    campaign varchar
 );
 COMMENT ON TABLE public.surface_samples_grades                      IS 'Ponctual samples taken from surface: stream sediments, alluvial sediments, till, soils, termite mounds, rock outcrops, floats, etc. with grades';
 COMMENT ON COLUMN public.surface_samples_grades.opid                IS 'Operation identifier';
 COMMENT ON COLUMN public.surface_samples_grades.numauto             IS 'Automatic integer primary key';
-COMMENT ON COLUMN public.surface_samples_grades.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.surface_samples_grades.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.surface_samples_grades.username            IS 'User (role) which created data record';
 COMMENT ON COLUMN public.surface_samples_grades.datasource          IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN public.surface_samples_grades.campaign            IS 'Campaign: year, type, etc. i.e. till exploration 1967';
@@ -1367,20 +1395,20 @@ CREATE TABLE gps_wpt (
     opid integer REFERENCES operations (opid), --TODO ATTENTION, CHAMP RAJOUTÉ
     gid integer,
     numberofpo integer,
-    nameofpoin character varying(50),
-    altitude character varying(10),
-    comment character varying,
-    symbol character varying(5),
-    display1 character varying(3),
-    geolog character varying(10),
-    descriptio character varying(254),
-    code character varying(4),
+    nameofpoin varchar(50),
+    altitude varchar(10),
+    comment varchar,
+    symbol varchar(5),
+    display1 varchar(3),
+    geolog varchar(10),
+    descriptio varchar(254),
+    code varchar(4),
     the_geom public.geometry,
     x numeric,
     y numeric,
-    date character varying,
-    "time" character varying,
-    device character varying
+    date varchar,
+    "time" varchar,
+    device varchar
 );
 
 --}}}
@@ -1392,43 +1420,43 @@ CREATE TABLE gps_wpt (
 -- x geoch_sampling:{{{
 
 CREATE TABLE public.geoch_sampling (
-    opid integer REFERENCES operations (opid),
-    id character varying(20),
-    lab_id character varying(50),
-    labo_ref character varying(20),
-    amc_ref character varying(20),
+    opid               integer REFERENCES operations (opid),
+    id varchar(20),
+    lab_id varchar(50),
+    labo_ref varchar(20),
+    amc_ref varchar(20),
     recep_date date,
-    type character varying(20),
-    sampl_index character varying NOT NULL,
+    type varchar(20),
+    sampl_index varchar NOT NULL,
     x numeric(15,4),
     y numeric(15,4),
     z numeric(10,4),
-    soil_color character varying(50),
-    type_sort character varying(20),
+    soil_color varchar(50),
+    type_sort varchar(20),
     depth_cm numeric(10,2),
-    reg_type character varying(20),
-    geomorphology character varying(20),
-    rock_type character varying(50),
-    comment character varying(200),
-    utm_zone character varying(3),
-    geologist character varying(20),
-    float_sampl character varying(20),
-    host_rock character varying(200),
-    prospect character varying(20),
-    spacing character varying(20),
-    horizon character varying(20),
+    reg_type varchar(20),
+    geomorphology varchar(20),
+    rock_type varchar(50),
+    comment varchar(200),
+    utm_zone varchar(3),
+    geologist varchar(20),
+    float_sampl varchar(20),
+    host_rock varchar(200),
+    prospect varchar(20),
+    spacing varchar(20),
+    horizon varchar(20),
     datasource integer,
     date date,
-    survey_type character varying(50),
-    grid_line character varying,
-    grid_station character varying,
-    alteration character varying,
-    occ_soil character varying,
-    slope character varying,
-    slope_dir character varying,
-    soil_description character varying,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    survey_type varchar(50),
+    grid_line varchar,
+    grid_station varchar,
+    alteration varchar,
+    occ_soil varchar,
+    slope varchar,
+    slope_dir varchar,
+    soil_description varchar,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY
 );
 COMMENT ON TABLE public.geoch_sampling                      IS 'Geochemistry samples, from soil or stream sediments, location and description';
@@ -1456,7 +1484,7 @@ COMMENT ON COLUMN public.geoch_sampling.float_sampl         IS 'sample designati
 COMMENT ON COLUMN public.geoch_sampling.host_rock           IS 'host rock';
 COMMENT ON COLUMN public.geoch_sampling.datasource          IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN public.geoch_sampling.date                IS 'type of survey (ex : HHGPS)';
-COMMENT ON COLUMN public.geoch_sampling.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.geoch_sampling.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.geoch_sampling.username            IS 'User (role) which created data record';
 COMMENT ON COLUMN public.geoch_sampling.numauto             IS 'Automatic integer';
 
@@ -1466,15 +1494,15 @@ COMMENT ON COLUMN public.geoch_sampling.numauto             IS 'Automatic intege
 CREATE TABLE public.geoch_ana (
     opid integer REFERENCES operations (opid),
     sampl_index integer,
-    ana_type character varying(20),
-    unit character varying(10),
+    ana_type varchar(20),
+    unit varchar(10),
     det_lim numeric(6,4),
-    scheme character varying(20),
-    comment character varying(20),
+    scheme varchar(20),
+    comment varchar(20),
     value numeric(10,3),
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE  public.geoch_ana                     IS 'Assay results from geochemistry samples';
@@ -1487,7 +1515,7 @@ COMMENT ON COLUMN public.geoch_ana.scheme              IS 'Analysis method';
 COMMENT ON COLUMN public.geoch_ana.comment             IS 'Some comments';
 COMMENT ON COLUMN public.geoch_ana.value               IS 'Analysis value';
 COMMENT ON COLUMN public.geoch_ana.numauto             IS 'Automatic integer primary key';
-COMMENT ON COLUMN public.geoch_ana.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.geoch_ana.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.geoch_ana.username            IS 'User (role) which created data record';
 COMMENT ON COLUMN public.geoch_ana.datasource          IS 'Datasource identifier, refers to lex_datasource';
 
@@ -1524,14 +1552,14 @@ CREATE TABLE gpy_mag_ground (
     y_local numeric(10,2),
     mag_nanotesla double precision,
     val_corr_mag_nanotesla double precision,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY,
     datasource integer
 );
 COMMENT ON TABLE gpy_mag_ground IS 'Geophysics: ground mag';
 COMMENT ON COLUMN gpy_mag_ground.opid IS 'Operation identifier';
-COMMENT ON COLUMN gpy_mag_ground.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN gpy_mag_ground.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN gpy_mag_ground.username IS 'User (role) which created data record';
 COMMENT ON COLUMN gpy_mag_ground.numauto IS 'Automatic integer primary key';
 COMMENT ON COLUMN gpy_mag_ground.datasource IS 'Datasource identifier, refers to lex_datasource';
@@ -1576,8 +1604,8 @@ CREATE TABLE public.dh_collars (
     datasource          integer,
     shid                varchar,
     numauto             serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            varchar DEFAULT "current_user"()
+    creation_ts         timestamp with time zone DEFAULT now() NOT NULL,
+    username            varchar DEFAULT current_user
 );
 
 -- Fields from previous versions, dropped:
@@ -1624,7 +1652,7 @@ COMMENT ON COLUMN dh_collars.z_pject                IS 'Planned z coordinate';
 COMMENT ON COLUMN dh_collars.datasource             IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_collars.shid                   IS 'Short identifier: e.g. _ sequential number (rarely used)';
 COMMENT ON COLUMN dh_collars.numauto                IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_collars.db_update_timestamp    IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_collars.creation_ts            IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_collars.username               IS 'User (role) which created data record';
 
 --COMMENT ON COLUMN dh_collars.old_flid               IS 'Old identifier, as in original data files';              -- field dropped
@@ -1642,21 +1670,21 @@ COMMENT ON COLUMN dh_collars.username               IS 'User (role) which create
 CREATE TABLE dh_shift_reports (
     opid integer REFERENCES operations (opid),
     date date,
-    shift character varying(1),
+    shift varchar(1),
     no_fichette integer NOT NULL,
-    rig character varying(50),
-    geologist character varying(50),
+    rig varchar(50),
+    geologist varchar(50),
     time_start time without time zone,
     time_end time without time zone,
-    id character varying(20),
-    peg_number character varying(5),
+    id varchar(20),
+    peg_number varchar(5),
     planned_length numeric(10,2),
-    tool character varying(20),
+    tool varchar(20),
     drilled_length_during_shift numeric(10,2),
     drilled_length numeric(10,2),
     completed boolean,
-    profile character varying(10),
-    comments character varying(254),
+    profile varchar(10),
+    comments varchar(254),
     invoice_nr integer,
     drilled_shift_destr numeric,
     drilled_shift_pq numeric,
@@ -1667,10 +1695,10 @@ CREATE TABLE dh_shift_reports (
     stdby_time2_h numeric,
     stdby_time3_h numeric,
     moving_time_h numeric,
-    driller_name character varying,
-    geologist_supervisor character varying,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    driller_name varchar,
+    geologist_supervisor varchar,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY,
     datasource integer
 );
@@ -1704,7 +1732,7 @@ COMMENT ON COLUMN dh_shift_reports.stdby_time3_h IS 'Standby time hours, due to 
 COMMENT ON COLUMN dh_shift_reports.moving_time_h IS 'Moving time hours';
 COMMENT ON COLUMN dh_shift_reports.driller_name IS 'Driller supervisor name';
 COMMENT ON COLUMN dh_shift_reports.geologist_supervisor IS 'Geologist supervisor name';
-COMMENT ON COLUMN dh_shift_reports.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_shift_reports.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_shift_reports.username IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_shift_reports.numauto IS 'Automatic integer';
 COMMENT ON COLUMN dh_shift_reports.datasource IS 'Datasource identifier, refers to lex_datasource';
@@ -1715,18 +1743,18 @@ COMMENT ON COLUMN dh_shift_reports.datasource IS 'Datasource identifier, refers 
 CREATE TABLE dh_followup (
     opid                integer REFERENCES operations (opid),
     id                  varchar,
-    devia               character varying(3),
-    quick_log           character varying(3),
-    log_tech            character varying(3),
-    log_lith            character varying(3),
-    sampling            character varying(3),
-    results             character varying(3),
-    relogging           character varying(3),
-    beacon              character varying(3),
-    in_gdm              character varying(1),
+    devia               varchar(3),
+    quick_log           varchar(3),
+    log_tech            varchar(3),
+    log_lith            varchar(3),
+    sampling            varchar(3),
+    results             varchar(3),
+    relogging           varchar(3),
+    beacon              varchar(3),
+    in_gdm              varchar(1),
     numauto             serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            character varying DEFAULT "current_user"()
+    creation_ts         timestamp with time zone DEFAULT now() NOT NULL,
+    username            varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_followup IS 'Simple table for daily drill holes followup';
 COMMENT ON COLUMN dh_followup.opid                  IS 'Operation identifier';
@@ -1740,7 +1768,7 @@ COMMENT ON COLUMN dh_followup.results               IS 'Assay results back from 
 COMMENT ON COLUMN dh_followup.relogging             IS 'Geological log done afterwards on mineralised intervals (x: done; xx: done, data entered; xxx: data verified)';
 COMMENT ON COLUMN dh_followup.beacon                IS 'Beacon or any other permanent hole marker on field (PVC pipe, concrete beacon, cement, etc.) (x: done)';
 COMMENT ON COLUMN dh_followup.in_gdm                IS 'Data exported to GDM; implicitely: data clean, checked by GDM procedures (x: done)';
-COMMENT ON COLUMN dh_followup.db_update_timestamp   IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_followup.creation_ts           IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_followup.username              IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_followup.numauto               IS 'Automatic integer primary key';
 
@@ -1749,9 +1777,9 @@ COMMENT ON COLUMN dh_followup.numauto               IS 'Automatic integer primar
 
 CREATE TABLE dh_devia (
     opid                integer REFERENCES operations (opid),
-    id                  character varying(20),
+    id                  varchar(20),
     depto               numeric(10,2),
-    device              character varying,
+    device              varchar,
     azim_ng             numeric(10,2),
     azim_nm             numeric(10,2),
     dip_hz              numeric(10,2),
@@ -1760,12 +1788,12 @@ CREATE TABLE dh_devia (
     date                date,
     roll                numeric(10,2),
     "time"              integer,                --TODO change field name
-    comments            character varying,
+    comments            varchar,
     valid               boolean DEFAULT true,
     datasource          integer,
     numauto             serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            character varying DEFAULT "current_user"()
+    creation_ts         timestamp with time zone DEFAULT now() NOT NULL,
+    username            varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_devia IS 'Drill holes or trenches deviations measurements';
 COMMENT ON COLUMN dh_devia.opid                     IS 'Operation identifier';
@@ -1784,7 +1812,7 @@ COMMENT ON COLUMN dh_devia.comments                 IS 'Various comments; concer
 COMMENT ON COLUMN dh_devia.valid                    IS 'True when a deviation measurement is usable; queries should take into account only valid records';
 COMMENT ON COLUMN dh_devia.datasource               IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_devia.numauto                  IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_devia.db_update_timestamp      IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_devia.creation_ts              IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_devia.username                 IS 'User (role) which created data record';
 
 -- TODO convert the json-like data into a real json field.
@@ -1797,13 +1825,13 @@ CREATE TABLE dh_quicklog (
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
-    description character varying,
-    oxid character varying(4),
+    description varchar,
+    oxid varchar(4),
     alt smallint,
     def smallint,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE dh_quicklog IS 'Quick geological log, typically done on hole finish, for an A4 log plot';
@@ -1816,7 +1844,7 @@ COMMENT ON COLUMN dh_quicklog.oxid IS 'Oxidation state: O, PO, U';
 COMMENT ON COLUMN dh_quicklog.alt IS 'Alteration intensity: 0: none, 1: weak, 2: moderate, 3: strong';
 COMMENT ON COLUMN dh_quicklog.def IS 'Deformation intensity: 0: none, 1: weak, 2: moderate, 3: strong';
 COMMENT ON COLUMN dh_quicklog.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_quicklog.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_quicklog.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_quicklog.username IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_quicklog.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -1826,27 +1854,27 @@ COMMENT ON COLUMN dh_quicklog.datasource IS 'Datasource identifier, refers to le
 
 CREATE TABLE dh_litho (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
-    description character varying,
-    description1 character varying,
-    description2 character varying,
-    code1 character varying(4),
-    code2 character varying(4),
-    code3 character varying(4),
-    code4 character varying(4),
+    description varchar,
+    description1 varchar,
+    description2 varchar,
+    code1 varchar(4),
+    code2 varchar(4),
+    code3 varchar(4),
+    code4 varchar(4),
     value1 integer,
     value2 integer,
     value3 integer,
     value4 integer,
     value5 integer,
     value6 integer,
-    colour character varying,
+    colour varchar,
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 
 COMMENT ON TABLE dh_litho IS 
@@ -1882,7 +1910,7 @@ COMMENT ON COLUMN dh_litho.value6                   IS 'Integer value. Refer to 
 --COMMENT ON COLUMN public.dh_litho.value6 IS          'Integer value. Refer to def_litho_code_value_fields table';
 COMMENT ON COLUMN dh_litho.datasource               IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_litho.numauto                  IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_litho.db_update_timestamp      IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_litho.creation_ts              IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_litho.username                 IS 'User (role) which created data record';
 
 --}}}
@@ -1890,14 +1918,14 @@ COMMENT ON COLUMN dh_litho.username                 IS 'User (role) which create
 
 CREATE TABLE dh_core_boxes (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
     box_number integer,
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_core_boxes IS 'Core drill holes boxes';
 COMMENT ON COLUMN dh_core_boxes.opid                IS 'Operation identifier';
@@ -1907,7 +1935,7 @@ COMMENT ON COLUMN dh_core_boxes.depto               IS 'Core box contents ending
 COMMENT ON COLUMN dh_core_boxes.box_number          IS 'Core box number';
 COMMENT ON COLUMN dh_core_boxes.datasource          IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_core_boxes.numauto             IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_core_boxes.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_core_boxes.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_core_boxes.username            IS 'User (role) which created data record';
 
 --}}}
@@ -1915,22 +1943,22 @@ COMMENT ON COLUMN dh_core_boxes.username            IS 'User (role) which create
 
 CREATE TABLE dh_tech (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
     drilled_len numeric(10,2),
     reco_len numeric(10,2),
     rqd_len numeric(10,2),
-    diam character varying(10),
+    diam varchar(10),
     datasource integer,
-    comments character varying,
+    comments varchar,
     drillers_depto numeric(10,2),
     core_loss_cm integer,
-    joints_description character varying,
+    joints_description varchar,
     nb_joints integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_tech IS 'Technical drilling data, and geotechnical parameters';
 COMMENT ON COLUMN dh_tech.opid                      IS 'Operation identifier';
@@ -1947,7 +1975,7 @@ COMMENT ON COLUMN dh_tech.drillers_depto            IS 'Driller end-of-run depth
 COMMENT ON COLUMN dh_tech.core_loss_cm              IS 'Core loss along drilled run';
 COMMENT ON COLUMN dh_tech.joints_description        IS 'Joints description: rugosity, fillings, etc.';
 COMMENT ON COLUMN dh_tech.nb_joints                 IS 'Count of natural joints along drilled run';
-COMMENT ON COLUMN dh_tech.db_update_timestamp       IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_tech.creation_ts       IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_tech.username                  IS 'User (role) which created data record';
 
 --}}}                
@@ -1955,27 +1983,27 @@ COMMENT ON COLUMN dh_tech.username                  IS 'User (role) which create
 
 CREATE TABLE dh_struct_measures (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depto numeric(10,2),
-    measure_type character varying,
-    structure_type character varying,
+    measure_type varchar,
+    structure_type varchar,
     alpha_tca numeric,
     beta numeric,
     gamma numeric,
-    north_ref character varying,
+    north_ref varchar,
     direction integer,
     dip integer,
-    dip_quadrant character varying,
+    dip_quadrant varchar,
     pitch integer,
-    pitch_quadrant character varying,
-    movement character varying,
+    pitch_quadrant varchar,
+    movement varchar,
     valid boolean,
-    struct_description character varying,
+    struct_description varchar,
     sortgroup character(1),
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_struct_measures IS 'Structural measurements done on core, or in trenches';
 COMMENT ON COLUMN dh_struct_measures.opid           IS 'Operation identifier';
@@ -1998,7 +2026,7 @@ COMMENT ON COLUMN dh_struct_measures.struct_description IS 'Naturalist descripti
 COMMENT ON COLUMN dh_struct_measures.sortgroup      IS 'Sorting group, for discriminated of various phases: a, b, c, ...';
 COMMENT ON COLUMN dh_struct_measures.datasource     IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_struct_measures.numauto        IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_struct_measures.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_struct_measures.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_struct_measures.username       IS 'User (role) which created data record';
 
 --}}}        
@@ -2006,9 +2034,9 @@ COMMENT ON COLUMN dh_struct_measures.username       IS 'User (role) which create
 
 CREATE TABLE dh_photos (
     opid integer REFERENCES operations (opid),
-    pho_id character varying,
-    file character varying,
-    author character varying,
+    pho_id varchar,
+    file varchar,
+    author varchar,
     datasource integer
 );
 --TODO il manque BEAUCOUP de choses: profondeurs...
@@ -2018,14 +2046,14 @@ CREATE TABLE dh_photos (
 
 CREATE TABLE dh_samples_submission (
     opid integer REFERENCES operations (opid),
-    id character varying(4),
+    id varchar(4),
     sampfrom smallint,
     sampto smallint,
     nb smallint,
     mspu_sub date,
     sgs_subm date,
-    final_interm character varying(1),
-    results character varying(15)
+    final_interm varchar(1),
+    results varchar(15)
 );
 
 --}}}
@@ -2033,14 +2061,14 @@ CREATE TABLE dh_samples_submission (
 
 CREATE TABLE dh_sampling_grades (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
     core_loss_cm numeric(5,1),
     weight_kg numeric(6,2),
-    sample_type character varying(8),
-    sample_id character varying(20),
-    comments character varying,
+    sample_type varchar(8),
+    sample_id varchar(20),
+    comments varchar,
     batch_id integer,
     datasource integer,
     au1_ppm numeric(8,3),
@@ -2054,8 +2082,8 @@ CREATE TABLE dh_sampling_grades (
     au_specks integer,
     quartering integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 
 COMMENT ON TABLE dh_sampling_grades IS 
@@ -2082,7 +2110,7 @@ COMMENT ON COLUMN dh_sampling_grades.moisture       IS 'Moisture content (for pe
 COMMENT ON COLUMN dh_sampling_grades.numauto        IS 'Automatic integer primary key';
 COMMENT ON COLUMN dh_sampling_grades.au_specks      IS 'Number of gold specks seen in drill hole or trench; typically, after panning destructive drilling chips, also gold specks seen in core drilling';
 COMMENT ON COLUMN dh_sampling_grades.quartering     IS 'Sample quartering, if any (for percussion drilling samples split on site, mainly)';
-COMMENT ON COLUMN dh_sampling_grades.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_sampling_grades.creation_ts    IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_sampling_grades.username       IS 'User (role) which created data record';
 
 --}}}
@@ -2090,20 +2118,20 @@ COMMENT ON COLUMN dh_sampling_grades.username       IS 'User (role) which create
 
 CREATE TABLE dh_mineralised_intervals (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
     mine integer DEFAULT 1,
     avau numeric(10,2),
-    stva character varying(150),
+    stva varchar(150),
     accu numeric(10,2),
     recu numeric(10,2),
     dens numeric(10,2),
-    comments character varying(100),
+    comments varchar(100),
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_mineralised_intervals IS 'Drill holes mineralised intercepts: stretch values over mineralised intervals, along drill holes or trenches';
 COMMENT ON COLUMN dh_mineralised_intervals.opid     IS 'Operation identifier';
@@ -2117,7 +2145,7 @@ COMMENT ON COLUMN dh_mineralised_intervals.accu     IS 'Accumulation in m.g/t ov
 COMMENT ON COLUMN dh_mineralised_intervals.recu     IS 'recovery';
 COMMENT ON COLUMN dh_mineralised_intervals.dens     IS 'density';
 COMMENT ON COLUMN dh_mineralised_intervals.numauto  IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_mineralised_intervals.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_mineralised_intervals.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_mineralised_intervals.username IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_mineralised_intervals.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -2126,16 +2154,16 @@ COMMENT ON COLUMN dh_mineralised_intervals.datasource IS 'Datasource identifier,
 
 CREATE TABLE dh_density (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     depfrom numeric(10,2),
     depto numeric(10,2),
     density numeric(10,2),
     density_humid numeric,
     moisture numeric,
-    method character varying,
+    method varchar,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE dh_density IS 'Density measurements along drill holes or trenches';
@@ -2148,7 +2176,7 @@ COMMENT ON COLUMN dh_density.density_humid          IS 'Density, unitless, or co
 COMMENT ON COLUMN dh_density.moisture               IS 'Moisture contents';
 COMMENT ON COLUMN dh_density.method                 IS 'Procedure used to determine specific gravity';
 COMMENT ON COLUMN dh_density.numauto                IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_density.db_update_timestamp    IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_density.creation_ts    IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_density.username               IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_density.datasource             IS 'Datasource identifier, refers to lex_datasource';
 
@@ -2157,19 +2185,19 @@ COMMENT ON COLUMN dh_density.datasource             IS 'Datasource identifier, r
 
 CREATE TABLE dh_thinsections (
     opid integer REFERENCES operations (opid),
-    id character varying,
+    id varchar,
     depto numeric(10,2),
-    core_quarter character varying,
-    questions character varying,
-    name character varying,
-    texture character varying,
-    mineralogy character varying,
-    metamorphism_deformations character varying,
-    mineralisations character varying,
-    origin character varying,
+    core_quarter varchar,
+    questions varchar,
+    name varchar,
+    texture varchar,
+    mineralogy varchar,
+    metamorphism_deformations varchar,
+    mineralisations varchar,
+    origin varchar,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE dh_thinsections IS 'Thin sections for petrological studies';
@@ -2185,7 +2213,7 @@ COMMENT ON COLUMN dh_thinsections.metamorphism_deformations IS 'Result of diagno
 COMMENT ON COLUMN dh_thinsections.mineralisations   IS 'Result of diagnose: mineralisations';
 COMMENT ON COLUMN dh_thinsections.origin            IS 'Result of diagnose: origin: in case of highly transformed rock, protore';
 COMMENT ON COLUMN dh_thinsections.numauto           IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_thinsections.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_thinsections.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_thinsections.username          IS 'User (role) which created data record';
 COMMENT ON COLUMN dh_thinsections.datasource        IS 'Datasource identifier, refers to lex_datasource';
 
@@ -2197,7 +2225,7 @@ CREATE TABLE dh_sampling_bottle_roll (
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
-    sample_id character varying,
+    sample_id varchar,
     au_total numeric(10,2),
     au_24h numeric(10,2),
     au_48h numeric(10,2),
@@ -2208,8 +2236,8 @@ CREATE TABLE dh_sampling_bottle_roll (
     rec_72h_pc numeric(10,2),
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE dh_sampling_bottle_roll IS 'Mineralurgical samples, bottle-roll tests results';
 COMMENT ON COLUMN dh_sampling_bottle_roll.opid                IS 'Operation identifier';
@@ -2227,7 +2255,7 @@ COMMENT ON COLUMN dh_sampling_bottle_roll.rec_48h_pc          IS 'Recovery after
 COMMENT ON COLUMN dh_sampling_bottle_roll.rec_72h_pc          IS 'Recovery after 72 hours, percent';
 COMMENT ON COLUMN dh_sampling_bottle_roll.datasource          IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_sampling_bottle_roll.numauto             IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_sampling_bottle_roll.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_sampling_bottle_roll.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_sampling_bottle_roll.username            IS 'User (role) which created data record';
 
 --}}}
@@ -2237,7 +2265,7 @@ COMMENT ON COLUMN dh_sampling_bottle_roll.username            IS 'User (role) wh
 
 CREATE TABLE dh_collars_lengths (
     opid integer REFERENCES operations (opid),
-    id character varying(20),
+    id varchar(20),
     len_destr numeric(10,2),
     len_pq numeric(10,2),
     len_hq numeric(10,2),
@@ -2264,24 +2292,24 @@ SET search_path = public, pg_catalog;
 CREATE TABLE lab_ana_batches_expedition (
     opid integer REFERENCES operations (opid),
     batch_id integer,
-    labname character varying(50),
-    expedition_id character varying(20),
-    order_id character varying(20),
-    description character varying,
-    preparation character varying(10),
-    process_labo character varying(10),
-    scheme character varying,
+    labname varchar(50),
+    expedition_id varchar(20),
+    order_id varchar(20),
+    description varchar,
+    preparation varchar(10),
+    process_labo varchar(10),
+    scheme varchar,
     shipment_date date,
     sent_to_lab boolean,
     reception_date date,
     results_received boolean,
-    lab_batches character varying,
-    comments character varying,
+    lab_batches varchar,
+    comments varchar,
     samples_amount integer,
-    sample_id_first character varying,
-    sample_id_last character varying,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    sample_id_first varchar,
+    sample_id_last varchar,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY,
     datasource integer
 );
@@ -2304,7 +2332,7 @@ COMMENT ON COLUMN lab_ana_batches_expedition.comments IS 'Specific comments, rea
 COMMENT ON COLUMN lab_ana_batches_expedition.samples_amount IS 'Number of samples';
 COMMENT ON COLUMN lab_ana_batches_expedition.sample_id_first IS 'First sample identifier; only relevant if samples in sequence';
 COMMENT ON COLUMN lab_ana_batches_expedition.sample_id_last IS 'Last sample identifier; only relevant if samples in sequence';
-COMMENT ON COLUMN lab_ana_batches_expedition.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_batches_expedition.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_batches_expedition.username IS 'User (role) which created data record';
 COMMENT ON COLUMN lab_ana_batches_expedition.numauto IS 'Automatic integer primary key';
 COMMENT ON COLUMN lab_ana_batches_expedition.datasource IS 'Datasource identifier, refers to lex_datasource';
@@ -2315,22 +2343,22 @@ COMMENT ON COLUMN lab_ana_batches_expedition.datasource IS 'Datasource identifie
 SET search_path = public, pg_catalog;
 CREATE TABLE lab_ana_batches_reception (
     opid integer REFERENCES operations (opid),
-    jobno character varying,
-    generic_txt character varying,
+    jobno varchar,
+    generic_txt varchar,
     numauto serial PRIMARY KEY,
     datasource integer,
-    labname character varying,
-    client character varying,
+    labname varchar,
+    client varchar,
     validated date,
     number_of_samples integer,
-    project character varying,
-    shipment_id character varying,
-    p_o_number character varying,
+    project varchar,
+    shipment_id varchar,
+    p_o_number varchar,
     received date,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
-    certificate_comments character varying,
-    info_suppl_json character varying
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
+    certificate_comments varchar,
+    info_suppl_json varchar
 );
 COMMENT ON TABLE lab_ana_batches_reception IS 'Batches of samples results received from laboratory';
 COMMENT ON COLUMN lab_ana_batches_reception.opid IS 'Operation identifier';
@@ -2346,7 +2374,7 @@ COMMENT ON COLUMN lab_ana_batches_reception.project IS 'As in files received fro
 COMMENT ON COLUMN lab_ana_batches_reception.shipment_id IS 'As in files received from laboratory: shipment id';
 COMMENT ON COLUMN lab_ana_batches_reception.p_o_number IS 'As in files received from laboratory: P.O. number';
 COMMENT ON COLUMN lab_ana_batches_reception.received IS 'As in files received from laboratory: reception date';
-COMMENT ON COLUMN lab_ana_batches_reception.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_batches_reception.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_batches_reception.username IS 'User (role) which created data record';
 COMMENT ON COLUMN lab_ana_batches_reception.certificate_comments IS 'As in files received from laboratory: certificate comments';
 COMMENT ON COLUMN lab_ana_batches_reception.info_suppl_json IS 'Supplementary information, serialised as a JSON (validated by json_xs)';
@@ -2356,22 +2384,22 @@ COMMENT ON COLUMN lab_ana_batches_reception.info_suppl_json IS 'Supplementary in
 
 CREATE TABLE lab_ana_batches_reception_18_corr (
     opid integer REFERENCES operations (opid),
-    jobno character varying,
-    generic_txt character varying,
+    jobno varchar,
+    generic_txt varchar,
     numauto serial PRIMARY KEY,
     datasource integer,
-    labname character varying,
-    client character varying,
+    labname varchar,
+    client varchar,
     validated date,
     number_of_samples integer,
-    project character varying,
-    shipment_id character varying,
-    p_o_number character varying,
+    project varchar,
+    shipment_id varchar,
+    p_o_number varchar,
     received date,
-    db_update_timestamp timestamp without time zone,
-    username character varying,
-    certificate_comments character varying,
-    info_suppl_json character varying
+    creation_ts timestamp without time zone,
+    username varchar,
+    certificate_comments varchar,
+    info_suppl_json varchar
 );
 
 --}}}
@@ -2380,12 +2408,12 @@ CREATE TABLE lab_ana_batches_reception_18_corr (
 
 CREATE TABLE lab_ana_columns_definition (
     opid integer REFERENCES operations (opid),
-    analyte character varying(20),
-    unit character varying,
-    scheme character varying(20),
+    analyte varchar(20),
+    unit varchar,
+    scheme varchar(20),
     colid text,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY
 );
 COMMENT ON TABLE lab_ana_columns_definition IS 'Definition of columns; obsolete';
@@ -2393,7 +2421,7 @@ COMMENT ON COLUMN lab_ana_columns_definition.opid IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_columns_definition.analyte IS 'Analyte';
 COMMENT ON COLUMN lab_ana_columns_definition.unit IS 'Unit (PPM, PPB, etc.)';
 COMMENT ON COLUMN lab_ana_columns_definition.colid IS 'Column identifier, used for groupings in cross-tab queries';
-COMMENT ON COLUMN lab_ana_columns_definition.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_columns_definition.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_columns_definition.username IS 'User (role) which created data record';
 COMMENT ON COLUMN lab_ana_columns_definition.numauto IS 'Automatic integer primary key';
 
@@ -2402,10 +2430,10 @@ COMMENT ON COLUMN lab_ana_columns_definition.numauto IS 'Automatic integer prima
 
 CREATE TABLE ana_det_limit (
     opid integer REFERENCES operations (opid),
-    batch_id character varying,
-    elem_code character varying,
-    elem_name character varying,
-    unit character varying,
+    batch_id varchar,
+    elem_code varchar,
+    elem_name varchar,
+    unit varchar,
     detlim_inf integer,
     detlim_sup integer
 );
@@ -2421,25 +2449,25 @@ COMMENT ON TABLE ana_det_limit IS 'Analyses detections limits';
 
 CREATE TABLE lab_ana_results (
     opid integer REFERENCES operations (opid),
-    labname character varying(10),
-    jobno character varying(20),
-    orderno character varying(40),
+    labname varchar(10),
+    jobno varchar(20),
+    orderno varchar(40),
     batch_id integer,
-    sample_id character varying(40),
-    sample_id_lab character varying,
-    sampletype character varying,
-    scheme character varying(20),
-    analyte character varying(20),
-    value character varying(20),
+    sample_id varchar(40),
+    sample_id_lab varchar,
+    sampletype varchar,
+    scheme varchar(20),
+    analyte varchar(20),
+    value varchar(20),
     value_num numeric,
-    unit character varying,
+    unit varchar,
     detlim numeric,
     uplim numeric,
     valid boolean DEFAULT true,
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE lab_ana_results IS 'Laboratory results table, after laboratory instructions, related to LIMS system';
 COMMENT ON COLUMN lab_ana_results.opid                IS 'Operation identifier';
@@ -2450,7 +2478,7 @@ COMMENT ON COLUMN lab_ana_results.sample_id           IS 'Sample Identifier';
 COMMENT ON COLUMN lab_ana_results.scheme              IS 'pjcsa.sch_code,          --> Scheme Code (Intertek Internal Code - which probably reported to Client as well) (VarChar(20))';
 COMMENT ON COLUMN lab_ana_results.analyte             IS 'pjcsa.analytecode,       --> Analyte Code (Intertek Internal Code - which probably reported to Client as well) (VarChar(20))';
 COMMENT ON COLUMN lab_ana_results.value               IS 'pjcsa.formattedvalue     --> Reported Value (VarChar(20))';
-COMMENT ON COLUMN lab_ana_results.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_results.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_results.value_num           IS 'Reported value, converted to numeric. IS becomes -999, LNR -9999, < -, > nothing';
 COMMENT ON COLUMN lab_ana_results.batch_id            IS 'Batch identifier';
 COMMENT ON COLUMN lab_ana_results.sampletype          IS 'Sample type: DUP: duplicate, STD: standard, REP: repeat, etc.';
@@ -2563,7 +2591,7 @@ CREATE TABLE lab_ana_results (
  lab_pjcsa_analytecode varchar(20),
  lab_pjcsa_formattedvalue varchar(20),
  --batch_no integer,
- db_update_timestamp timestamp DEFAULT current_timestamp,
+ creation_ts timestamp DEFAULT current_timestamp,
  value_num numeric
 );
 COMMENT ON TABLE lab_ana_results                    IS 'Laboratory results table, after laboratory instructions, related to LIMS system';
@@ -2576,7 +2604,7 @@ COMMENT ON COLUMN lab_ana_results.lab_pjcsa_sch_code       IS 'pjcsa.sch_code,  
 COMMENT ON COLUMN lab_ana_results.lab_pjcsa_analytecode    IS 'pjcsa.analytecode,       --> Analyte Code (Intertek Internal Code - which probably reported to Client as well) (VarChar(20))';
 COMMENT ON COLUMN lab_ana_results.lab_pjcsa_formattedvalue IS 'pjcsa.formattedvalue     --> Reported Value (VarChar(20))';
 COMMENT ON COLUMN lab_ana_results.batch_id          IS 'Batch number';
-COMMENT ON COLUMN lab_ana_results.db_update_timestamp      IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_results.creation_ts      IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_results.value_num         IS 'Reported value, converted to numeric. IS becomes -999, LNR -9999, < -, > nothing';
 
 CREATE OR REPLACE FUNCTION lab_ana_results_sample_id_default()
@@ -2604,27 +2632,27 @@ CREATE TRIGGER lab_ana_results_insert AFTER INSERT ON lab_ana_results FOR EACH S
 CREATE TABLE lab_analysis_icp (
     opid integer REFERENCES operations (opid),
     num integer,
-    sample_id character varying(20),
-    elem_code character varying(8),
-    unit character varying(4),
+    sample_id varchar(20),
+    elem_code varchar(8),
+    unit varchar(4),
     value numeric(20,2),
-    batch_id character varying
+    batch_id varchar
 );
 --}}}
 -- x lab_ana_qaqc_results:{{{
 
 CREATE TABLE lab_ana_qaqc_results (
     opid integer REFERENCES operations (opid),
-    jobno character varying,
-    generic_txt_col1 character varying,
-    generic_txt_col2 character varying,
-    generic_txt_col3 character varying,
-    generic_txt_col4 character varying,
-    generic_txt_col5 character varying,
+    jobno varchar,
+    generic_txt_col1 varchar,
+    generic_txt_col2 varchar,
+    generic_txt_col3 varchar,
+    generic_txt_col4 varchar,
+    generic_txt_col5 varchar,
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE lab_ana_qaqc_results IS 'Quality control assay results, internal to analytical laboratory';
 COMMENT ON COLUMN lab_ana_qaqc_results.opid IS 'Operation identifier';
@@ -2636,7 +2664,7 @@ COMMENT ON COLUMN lab_ana_qaqc_results.generic_txt_col4 IS 'Generic text field, 
 COMMENT ON COLUMN lab_ana_qaqc_results.generic_txt_col5 IS 'Generic text field, receiving any text from original file, as is';
 COMMENT ON COLUMN lab_ana_qaqc_results.datasource IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN lab_ana_qaqc_results.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN lab_ana_qaqc_results.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lab_ana_qaqc_results.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_qaqc_results.username IS 'User (role) which created data record';
 
 --}}}
@@ -2649,22 +2677,22 @@ COMMENT ON COLUMN lab_ana_qaqc_results.username IS 'User (role) which created da
 --
 CREATE TABLE qc_sampling (
     opid integer,
-    sample_id character varying(20),
-    qc_type character varying,
-    comments character varying,
+    sample_id varchar(20),
+    qc_type varchar,
+    comments varchar,
     batch_id integer,
-    refers_to character varying,
+    refers_to varchar,
     datasource integer,
     weight_kg numeric(6,2),
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE qc_sampling IS 'Quality control samples: duplicates, blanks, standards';
 COMMENT ON COLUMN qc_sampling.opid IS 'Operation identifier';
 COMMENT ON COLUMN qc_sampling.datasource IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN qc_sampling.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN qc_sampling.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN qc_sampling.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN qc_sampling.username IS 'User (role) which created data record';
 --}}}
 -- x qc_standards{{{
@@ -2674,10 +2702,10 @@ COMMENT ON COLUMN qc_sampling.username IS 'User (role) which created data record
 --
 CREATE TABLE qc_standards (
     opid integer,
-    qc_id character varying(20) NOT NULL,
-    labo character varying(50),
-    matrix character varying(50),
-    presentation character varying(50),
+    qc_id varchar(20) NOT NULL,
+    labo varchar(50),
+    matrix varchar(50),
+    presentation varchar(50),
     au_ppm numeric(10,3),
     cu_ppm numeric(10,3),
     zn_ppm numeric(10,3),
@@ -2691,8 +2719,8 @@ CREATE TABLE qc_standards (
     ag_ppm_95pc_conf_interval numeric,
     ni_ppm_95pc_conf_interval numeric,
     datasource integer,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY
 );
 COMMENT ON TABLE qc_standards IS 'Quality Control standard samples, most of them are CRM (Certified Reference Materials)';
@@ -2708,7 +2736,7 @@ COMMENT ON COLUMN qc_standards.pb_ppm IS 'sample analysis value';
 COMMENT ON COLUMN qc_standards.ag_ppm IS 'sample analysis value';
 COMMENT ON COLUMN qc_standards.ni_ppm IS 'sample analysis value';
 COMMENT ON COLUMN qc_standards.datasource IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN qc_standards.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN qc_standards.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN qc_standards.username IS 'User (role) which created data record';
 COMMENT ON COLUMN qc_standards.numauto IS 'Automatic integer primary key';
 
@@ -2722,7 +2750,7 @@ COMMENT ON COLUMN qc_standards.numauto IS 'Automatic integer primary key';
 CREATE TABLE ancient_workings (
     opid integer REFERENCES operations (opid),
     gid integer NOT NULL,
-    description character varying(254),
+    description varchar(254),
     the_geom geometry,
     numauto serial PRIMARY KEY,
     datasource integer,
@@ -2752,10 +2780,10 @@ CREATE TABLE occurrences (
     comments            varchar,
     geom                geometry,
     datasource          integer,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            varchar DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username            varchar DEFAULT current_user,
     numauto             serial PRIMARY KEY,
-    --CONSTRAINT chk_status CHECK (status = ANY (ARRAY[('OCCUR'::character varying)::text, ('OREB'::character varying)::text, ('MINE'::character varying)::text, ('MINED'::character varying)::text, ('MCO'::character varying)::text, ('DISTRICT'::character varying)::text])),
+    --CONSTRAINT chk_status CHECK (status = ANY (ARRAY[('OCCUR'::varchar)::text, ('OREB'::varchar)::text, ('MINE'::varchar)::text, ('MINED'::varchar)::text, ('MCO'::varchar)::text, ('DISTRICT'::varchar)::text])),
     CONSTRAINT chk_status CHECK (status IN ('OCCUR', 'OREB', 'MINE', 'MINED', 'MCO', 'DISTRICT')),  -- Another solution would be to make entries in lex_codes lookup table.  Probably better, more flexible, i18nable; TODO later.
     CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL)  -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
 );
@@ -2769,7 +2797,7 @@ COMMENT ON COLUMN occurrences.description IS 'Occurence description: geological 
 COMMENT ON COLUMN occurrences.w_done IS 'Exploration work done, codified field: PROSPection (rock sampling on surface), SOIL geochemistry, MAPping, DECAPage, TRenches, Drill Holes';
 COMMENT ON COLUMN occurrences.w_todo IS 'Exploration work to be done, codified field: PROSPection (rock sampling on surface), SOIL geochemistry, MAPping, DECAPage, TRenches, Drill Holes';
 COMMENT ON COLUMN occurrences.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN occurrences.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN occurrences.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN occurrences.username IS 'User (role) which created data record';
 COMMENT ON COLUMN occurrences.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -2785,14 +2813,14 @@ DROP TABLE IF EXISTS licences CASCADE;
 CREATE TABLE licences (
     opid integer,
     id serial NOT NULL,
-    licence_name character varying(50),
-    operator character varying(20),
+    licence_name varchar(50),
+    operator varchar(20),
     year integer,
     lat_min numeric(10,5) NOT NULL,
     lon_min numeric(10,5) NOT NULL,
     lat_max numeric(10,5) NOT NULL,
     lon_max numeric(10,5) NOT NULL,
-    comments character varying(500),
+    comments varchar(500),
     CONSTRAINT licence_id PRIMARY KEY (id)
 );
 COMMENT ON TABLE licences IS 'Licences, tenements';
@@ -2817,8 +2845,8 @@ CREATE TABLE licences (
     lat_max             numeric(10,5) NOT NULL,
     lon_max             numeric(10,5) NOT NULL,
     comments            varchar,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username            varchar DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username            varchar DEFAULT current_user,
     numauto             serial PRIMARY KEY,
     datasource          integer,
     geometry_literal_description_plain_txt varchar,
@@ -2842,7 +2870,7 @@ COMMENT ON COLUMN licences.lat_max IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN licences.lon_max IS 'East latitude, decimal degrees, WGS84';
 
 COMMENT ON COLUMN licences.comments                        IS 'Comments';
-COMMENT ON COLUMN licences.db_update_timestamp             IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN licences.creation_ts             IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN licences.username                        IS 'User (role) which created data record';
 COMMENT ON COLUMN licences.numauto                         IS 'Automatic integer';
 COMMENT ON COLUMN licences.datasource                      IS 'Datasource identifier, refers to lex_datasource';
@@ -2862,8 +2890,8 @@ FROM licences ORDER BY licence_name;
 -- x grade_ctrl:{{{
 CREATE TABLE grade_ctrl (
     opid integer REFERENCES operations (opid),
-    id character varying(4),
-    num character varying(10),
+    id varchar(4),
+    num varchar(10),
     x numeric(10,2),
     y numeric(10,2),
     z numeric(10,2),
@@ -2871,12 +2899,12 @@ CREATE TABLE grade_ctrl (
     aucy numeric(10,2),
     aucy2 numeric(10,2),
     autot numeric(10,2),
-    litho character varying(20),
-    old_id character varying(20),
+    litho varchar(20),
+    old_id varchar(20),
     numauto serial PRIMARY KEY,
     datasource integer,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE grade_ctrl IS 'Grade-control samples during mining exploitation';
 COMMENT ON COLUMN grade_ctrl.opid IS 'Operation identifier';
@@ -2892,7 +2920,7 @@ COMMENT ON COLUMN grade_ctrl.litho IS 'Sample lithology in GDM or Sermine code';
 COMMENT ON COLUMN grade_ctrl.old_id IS 'Quarry and block old identification ';
 COMMENT ON COLUMN grade_ctrl.numauto IS 'Automatic integer primary key';
 COMMENT ON COLUMN grade_ctrl.datasource IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN grade_ctrl.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN grade_ctrl.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN grade_ctrl.username IS 'User (role) which created data record';
 --}}}
 
@@ -2904,29 +2932,29 @@ CREATE TABLE lex_codes (
     opid integer REFERENCES operations (opid),
     tablename text,
     field text,
-    code character varying,
-    description character varying,
+    code varchar,
+    description varchar,
     datasource integer,
     numauto serial PRIMARY KEY,
-    comments character varying,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    comments varchar,
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE lex_codes IS 'General look-up table with codes for various tables and coded fields';
 COMMENT ON COLUMN lex_codes.opid IS 'Operation identifier';
 COMMENT ON COLUMN lex_codes.datasource IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN lex_codes.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN lex_codes.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lex_codes.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lex_codes.username IS 'User (role) which created data record';
 
 
 CREATE TABLE lex_datasource (
     opid integer REFERENCES operations (opid),
-    filename character varying(500),
-    comments character varying,
+    filename varchar(500),
+    comments varchar,
     datasource_id integer NOT NULL,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY
 );
 COMMENT ON TABLE lex_datasource IS 'Lexicon of data sources, keeping track of imported file, for reference';
@@ -2934,13 +2962,13 @@ COMMENT ON COLUMN lex_datasource.opid IS 'Operation identifier';
 COMMENT ON COLUMN lex_datasource.filename IS 'Data imported: file name with full path, to be kept for permanent reference';
 COMMENT ON COLUMN lex_datasource.comments IS 'Various comments';
 COMMENT ON COLUMN lex_datasource.datasource_id IS 'datasource field in various tables refer to this datasource_id field';
-COMMENT ON COLUMN lex_datasource.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lex_datasource.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lex_datasource.username IS 'User (role) which created data record';
 COMMENT ON COLUMN lex_datasource.numauto IS 'Automatic integer primary key';
 
 CREATE TABLE lex_standard (
     opid integer REFERENCES operations (opid),
-    std_id character varying NOT NULL,
+    std_id varchar NOT NULL,
     unit character(5) NOT NULL,
     element character(5) NOT NULL,
     value numeric NOT NULL,
@@ -2949,14 +2977,14 @@ CREATE TABLE lex_standard (
     std_origin character(25),
     type_analyse character(25) NOT NULL,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE lex_standard IS 'table contenant les valeurs des standards or et multi elements';
 COMMENT ON COLUMN lex_standard.opid IS 'Operation identifier';
 COMMENT ON COLUMN lex_standard.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN lex_standard.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN lex_standard.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lex_standard.username IS 'User (role) which created data record';
 COMMENT ON COLUMN lex_standard.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -2984,14 +3012,14 @@ CREATE TABLE mag_declination (
     mag_decl numeric,
     numauto serial PRIMARY KEY,
     date date,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE mag_declination IS 'Magnetic declination';
 COMMENT ON COLUMN mag_declination.opid IS 'Operation identifier';
 COMMENT ON COLUMN mag_declination.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN mag_declination.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN mag_declination.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN mag_declination.username IS 'User (role) which created data record';
 COMMENT ON COLUMN mag_declination.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -3001,20 +3029,20 @@ COMMENT ON COLUMN mag_declination.datasource IS 'Datasource identifier, refers t
 
 CREATE TABLE topo_points (
     opid integer REFERENCES operations (opid),
-    location character varying(20),
-    id character varying(20),
+    location varchar(20),
+    id varchar(20),
     num numeric(10,0),
     x numeric(10,3),
     y numeric(10,3),
     z numeric(10,3),
     survey_date date,
-    topo_survey_type character varying,
-    coordsys character varying,
-    surveyor character varying,
+    topo_survey_type varchar,
+    coordsys varchar,
+    surveyor varchar,
     datasource integer,
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"()
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user
 );
 COMMENT ON TABLE topo_points IS 'topographical data, points';
 COMMENT ON COLUMN topo_points.opid IS                      'Operation identifier';
@@ -3027,14 +3055,14 @@ COMMENT ON COLUMN topo_points.z IS                         'Z coordinate, projec
 COMMENT ON COLUMN topo_points.numauto IS                   'Automatic integer primary key';
 COMMENT ON COLUMN topo_points.datasource IS                'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN topo_points.username IS                  'User (role) which created data record';
-COMMENT ON COLUMN topo_points.db_update_timestamp IS       'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN topo_points.creation_ts IS       'Current date and time stamp when data is loaded in table';
 
 --}}}
 
 -- x survey_lines:{{{
 CREATE TABLE survey_lines (
     opid numeric REFERENCES operations (opid),
-    id character varying,
+    id varchar,
     x_start numeric,
     y_start numeric,
     x_end numeric,
@@ -3050,7 +3078,7 @@ COMMENT ON TABLE survey_lines IS 'Survey lines, for geophysics or other types of
 -- x units:{{{
 
 CREATE TABLE units (
-    unit_name character varying,
+    unit_name varchar,
     unit_factor real
 );
 COMMENT ON TABLE units                                      IS 'Units, with multiplicator factor';
@@ -3064,7 +3092,7 @@ COMMENT ON COLUMN units.unit_factor                         IS 'Multiplication f
 CREATE TABLE baselines (
     opid integer REFERENCES operations (opid),
     id integer,
-    location character varying,
+    location varchar,
     x1 numeric(10,3),
     y1 numeric(10,3),
     z1 numeric(10,3),
@@ -3072,8 +3100,8 @@ CREATE TABLE baselines (
     y2 numeric(10,3),
     z2 numeric(10,3),
     numauto serial PRIMARY KEY,
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     datasource integer
 );
 COMMENT ON TABLE baselines IS 'Baselines, for each prospect, defined as a theoritical line between two points';
@@ -3086,7 +3114,7 @@ COMMENT ON COLUMN baselines.x2 IS 'Baseline ending point x coordinate';
 COMMENT ON COLUMN baselines.y2 IS 'Baseline ending point y coordinate';
 COMMENT ON COLUMN baselines.z2 IS 'Baseline ending point z coordinate';
 COMMENT ON COLUMN baselines.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN baselines.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN baselines.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN baselines.username IS 'User (role) which created data record';
 COMMENT ON COLUMN baselines.datasource IS 'Datasource identifier, refers to lex_datasource';
 
@@ -3096,7 +3124,7 @@ COMMENT ON COLUMN baselines.datasource IS 'Datasource identifier, refers to lex_
 CREATE TABLE sections_definition (
     opid integer REFERENCES operations (opid),
     id integer NOT NULL,
-    location character varying(20),
+    location varchar(20),
     srid integer,
     ll_corner_x numeric(10,2),
     ll_corner_y numeric(10,2),
@@ -3106,7 +3134,7 @@ CREATE TABLE sections_definition (
     num_start integer DEFAULT 1,
     count numeric(3,0),
     length numeric(5,0),
-    title character varying(254)
+    title varchar(254)
 );
 COMMENT ON COLUMN sections_definition.opid IS 'Operation identifier';
 COMMENT ON COLUMN sections_definition.location IS 'Drilling area';
@@ -3132,9 +3160,9 @@ CREATE SEQUENCE sections_definition_id_seq
 
 CREATE TABLE sections_array (
     opid integer REFERENCES operations (opid),
-    location character varying,
-    id character varying(20),
-    title character varying(254),
+    location varchar,
+    id varchar(20),
+    title varchar(254),
     srid integer,
     x1 numeric(10,2),
     y1 numeric(10,2),
@@ -3152,7 +3180,7 @@ COMMENT ON TABLE sections_array IS 'Arrays of cross-sections: table automaticall
 -- x conversions_oxydes_elements:{{{
 
 CREATE TABLE conversions_oxydes_elements (
-    oxide character varying,
+    oxide varchar,
     molecular_weight numeric,
     factor numeric
 );
@@ -3165,20 +3193,20 @@ COMMENT ON TABLE conversions_oxydes_elements IS 'Molecular weights of some oxide
 CREATE TABLE index_geo_documentation (
     opid integer REFERENCES operations (opid),
     id integer NOT NULL,
-    title character varying(100),
+    title varchar(100),
     lat_min numeric(20,8),
     lat_max numeric(20,8),
     lon_min numeric(20,8),
     lon_max numeric(20,8),
-    db_update_timestamp timestamp without time zone DEFAULT now(),
-    username character varying DEFAULT "current_user"(),
+    creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
+    username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY,
     datasource integer,
-    filename character varying
+    filename varchar
 );
 COMMENT ON TABLE index_geo_documentation IS 'Index for any documentation, with lat-lon rectangles, so that any documentation may be accessed geographically';
 COMMENT ON COLUMN index_geo_documentation.opid IS 'Operation identifier';
-COMMENT ON COLUMN index_geo_documentation.db_update_timestamp IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN index_geo_documentation.creation_ts IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN index_geo_documentation.username IS 'User (role) which created data record';
 COMMENT ON COLUMN index_geo_documentation.numauto IS 'Automatic integer primary key';
 COMMENT ON COLUMN index_geo_documentation.datasource IS 'Datasource identifier, refers to lex_datasource';
@@ -3186,25 +3214,25 @@ COMMENT ON COLUMN index_geo_documentation.datasource IS 'Datasource identifier, 
 --}}}
 
 -- x layer_styles:{{{
-
+/*
 CREATE TABLE layer_styles (
     id integer NOT NULL,
-    f_table_catalog character varying(256),
-    f_table_schema character varying(256),
-    f_table_name character varying(256),
-    f_geometry_column character varying(256),
-    stylename character varying(30),
+    f_table_catalog varchar(256),
+    f_table_schema varchar(256),
+    f_table_name varchar(256),
+    f_geometry_column varchar(256),
+    stylename varchar(30),
     styleqml xml,
     stylesld xml,
     useasdefault boolean,
     description text,
-    owner character varying(30),
+    owner varchar(30),
     ui xml,
     update_time timestamp without time zone DEFAULT now()
 );
 
+-- => table vide => exclue */
 --}}}
-
 -- x program:{{{ TODO useful?? junk???
 -- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace: 
 --
@@ -3213,51 +3241,12 @@ CREATE TABLE program (
     gid integer NOT NULL,
     myid integer,
     geometry public.geometry,
-    id character varying,
+    id varchar,
     completed boolean,
     CONSTRAINT enforce_geotype_geometry CHECK (((public.geometrytype(geometry) = 'POINT'::text) OR (geometry IS NULL)))
 );
 --}}}
 --}}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -10187,7 +10176,7 @@ SELECT dh_type,sum(length)/1000 as km_explored_length FROM dh_collars GROUP BY d
 
 
 --}}}
--- o checks views:{{{
+-- o check views:{{{
 
 --CREATE OR REPLACE VIEW checks.collars_location_vs_sector AS 
 --SELECT location, sector FROM dh_collars GROUP BY location,sector ORDER BY sector;
@@ -10265,6 +10254,27 @@ SELECT /*drill_hole_id*/ id, max(completed::integer) FROM /*drilling_daily_repor
 
 --}}}
 
+-- @#TODO vue inutile?? (dh_sampling = ??) => non, semble utile, appelée par d'autres vues checks.*:{{{
+--
+-- Name: dh_sampling; Type: VIEW; Schema: pierre; Owner: pierre
+--
+CREATE VIEW dh_sampling AS
+ SELECT dh_sampling_grades.id,
+    dh_sampling_grades.depfrom,
+    dh_sampling_grades.depto,
+    dh_sampling_grades.core_loss_cm,
+    dh_sampling_grades.weight_kg,
+    dh_sampling_grades.sample_type,
+    dh_sampling_grades.sample_id,
+    dh_sampling_grades.comments,
+    dh_sampling_grades.opid,
+    dh_sampling_grades.batch_id,
+    dh_sampling_grades.datasource
+   FROM dh_sampling_grades;
+ALTER TABLE dh_sampling OWNER TO pierre;
+
+
+}}}
 --_______________ENCOURS_______________GEOLLLIBRE
 
 --les traces des sondages, pareil, pour un srid:{{{
@@ -10311,9 +10321,9 @@ CREATE VIEW collars_program AS SELECT * FROM dh_collars WHERE NOT(completed);
 -- ? locations {{{
 
 CREATE TABLE locations (
-    operation character varying(4) NOT NULL,
-    location character varying(20) NOT NULL,
-    full_name character varying(100),
+    operation varchar(4) NOT NULL,
+    location varchar(20) NOT NULL,
+    full_name varchar(100),
     lat_min numeric(10,5) NOT NULL,
     lon_min numeric(10,5) NOT NULL,
     lat_max numeric(10,5),
@@ -10350,14 +10360,14 @@ COMMENT ON COLUMN locations.lon_max                 IS 'East latitude, decimal d
 -- o quick plot of xy {{{
 DROP TABLE IF EXISTS tmp_xy CASCADE;
 CREATE TABLE tmp_xy (
-    shid character varying(10) NOT NULL,
+    shid varchar(10) NOT NULL,
     id serial NOT NULL,
     srid integer,
     x numeric(10,2),
     y numeric(10,2),
     z numeric(10,2),
     val numeric(10,2),
-    comment character varying(254),
+    comment varchar(254),
     CONSTRAINT tmp_xy_id PRIMARY KEY (id)
     );
 
@@ -10373,8 +10383,8 @@ FROM tmp_xy;
 --
 CREATE TABLE grid (
     opid integer
-    line character varying,
-    station character varying,
+    line varchar,
+    station varchar,
     x numeric,
     y numeric,
     srid integer,
