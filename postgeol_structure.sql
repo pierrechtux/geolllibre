@@ -13,13 +13,13 @@
 -- o mettre les numauto en:     numauto             serial UNIQUE NOT NULL,
 -- o check all owners to data_admin
 -- o d'autres rôles du genre db_admin, etc.
--- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire, 
+-- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire,
 --   ou plutôt des trucs comme: ("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
 -- x mettre tous les: REFERENCES operations (opid)
 -- e mettre tous les numauto en serial PRIMARY KEY
 -- o mettre des NOT NULL un peu partout
 
--- o Il faudrait lancer ce script comme un administrateur, 
+-- o Il faudrait lancer ce script comme un administrateur,
 --     avec des arguments:
 --       - le rôle "utilisateur lambda" à utiliser;
 --       - le ou les rôles "utilsateur admin"
@@ -1472,7 +1472,11 @@ COMMENT ON COLUMN public.formations_group_lithos.numauto     IS 'Automatic integ
 -- _______________ENCOURS_______________GEOLLLIBRE
 
 CREATE TABLE field_sampling (  -- Nota bene: used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
-    opid           integer,
+    opid           integer
+      REFERENCES public.operations(opid)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE
+       DEFERRABLE INITIALLY DEFERRED
     location       varchar,
     num            varchar(20),      -- renommer sample_id
     hammer_index   integer NOT NULL, -- HM! Garder pour le moment, pour la jointure avec rock_ana, puis virer.
@@ -1484,7 +1488,7 @@ CREATE TABLE field_sampling (  -- Nota bene: used to be called rock_sampling; ac
     datasource     integer,
     FOREIGN KEY (opid) REFERENCES operations
 );
-
+-- {{{
 /* Kept for history only
 COMMENT ON TABLE  public.rock_sampling              IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
 COMMENT ON COLUMN public.rock_sampling.geologist    IS 'geologist name';
@@ -1501,11 +1505,9 @@ COMMENT ON COLUMN public.field_sampling.x            IS 'X coordinate';
 COMMENT ON COLUMN public.field_sampling.y            IS 'Y coordinate';
 COMMENT ON COLUMN public.field_sampling.z            IS 'Z coordinate';
 COMMENT ON COLUMN public.field_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
-
-
---}}}
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT *** _______________ENCOURS_______________GEOLLLIBRE
--- x rock_ana:{{{ TODO rename table
+-- }}}
+--} }}
+-- x rock_ana:{ {{ TODO rename table
 
 CREATE TABLE public.rock_ana (
     opid integer REFERENCES operations (opid)
@@ -1530,6 +1532,7 @@ COMMENT ON COLUMN public.rock_ana.value IS 'Analysis value';
 COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
 
 --}}}
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT *** _______________ENCOURS_______________GEOLLLIBRE
 -- x surface_samples_grades:{{{
 
 CREATE TABLE surface_samples_grades (
