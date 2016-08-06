@@ -1413,7 +1413,7 @@ CREATE TABLE public.field_photos (
       DEFERRABLE INITIALLY DEFERRED,
     pho_id         varchar NOT NULL,
     obs_id         varchar,
-    filename       varchar,   --TODO reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
+    filename       varchar,   --xTODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
     description    varchar,
     azim_nm        numeric,   --WARNING, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
     dip_hz         numeric,   --WARNING, field renamed from dip to something a bit more meaningful.
@@ -1532,7 +1532,8 @@ COMMENT ON COLUMN public.rock_ana.value IS 'Analysis value';
 COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
 
 --}}}
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT *** _______________ENCOURS_______________GEOLLLIBRE
+-- _______________ENCOURS_______________GEOLLLIBRE
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- x surface_samples_grades:{{{
 
 CREATE TABLE surface_samples_grades (
@@ -1994,9 +1995,12 @@ CREATE TABLE dh_devia (
     id                  varchar(20),
     depto               numeric(10,2),
     device              varchar,
-    azim_ng             numeric(10,2),
     azim_nm             numeric(10,2),
+    azim_ng             numeric(10,2),
     dip_hz              numeric(10,2),
+    x_offset            numeric(10,2),
+    y_offset            numeric(10,2),
+    z_offset            numeric(10,2),
     temperature         numeric(10,2),
     magnetic            numeric(10,2),
     date                date,
@@ -2017,6 +2021,9 @@ COMMENT ON COLUMN dh_devia.device                   IS 'Device used for deviatio
 COMMENT ON COLUMN dh_devia.azim_nm                  IS 'Hole azimuth (°) relative to magnetic North (normally, this should be the actual measurement, with a magnetic orientation tool)';
 COMMENT ON COLUMN dh_devia.azim_ng                  IS 'Hole azimuth (°) relative to geographic North';
 COMMENT ON COLUMN dh_devia.dip_hz                   IS 'Drill hole dip relative to horizontal (°), positive down';
+COMMENT ON COLUMN public.dh_devia.x_offset          IS 'Offset of hole in x';
+COMMENT ON COLUMN public.dh_devia.y_offset          IS 'Offset of hole in y';
+COMMENT ON COLUMN public.dh_devia.z_offset          IS 'True vertical depth';
 COMMENT ON COLUMN dh_devia.temperature              IS 'temperature';
 COMMENT ON COLUMN dh_devia.magnetic                 IS 'Magnetic field intensity measurement';
 COMMENT ON COLUMN dh_devia.date                     IS 'Date of deviation measurement';
@@ -2039,6 +2046,7 @@ CREATE TABLE dh_quicklog (
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
+    code            varchar,
     description varchar,
     oxid varchar(4),
     alt smallint,
@@ -2048,19 +2056,20 @@ CREATE TABLE dh_quicklog (
     username varchar DEFAULT current_user,
     datasource integer
 );
-COMMENT ON TABLE dh_quicklog IS 'Quick geological log, typically done on hole finish, for an A4 log plot';
-COMMENT ON COLUMN dh_quicklog.opid IS 'Operation identifier';
-COMMENT ON COLUMN dh_quicklog.id IS 'Full identifier for borehole or trench';
-COMMENT ON COLUMN dh_quicklog.depfrom IS 'Interval beginning depth';
-COMMENT ON COLUMN dh_quicklog.depto IS 'Interval ending depth';
-COMMENT ON COLUMN dh_quicklog.description IS 'Quick geological description, logging wide intervals and/or only representative portions';
-COMMENT ON COLUMN dh_quicklog.oxid IS 'Oxidation state: O, PO, U';
-COMMENT ON COLUMN dh_quicklog.alt IS 'Alteration intensity: 0: none, 1: weak, 2: moderate, 3: strong';
-COMMENT ON COLUMN dh_quicklog.def IS 'Deformation intensity: 0: none, 1: weak, 2: moderate, 3: strong';
-COMMENT ON COLUMN dh_quicklog.numauto IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_quicklog.creation_ts IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN dh_quicklog.username IS 'User (role) which created data record';
-COMMENT ON COLUMN dh_quicklog.datasource IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON TABLE public.dh_quicklog IS 'Quick geological log, typically done on hole finish, for an A4 log plot';
+COMMENT ON COLUMN public.dh_quicklog.opid IS 'Operation identifier';
+COMMENT ON COLUMN public.dh_quicklog.id IS 'Full identifier for borehole or trench';
+COMMENT ON COLUMN public.dh_quicklog.depfrom IS 'Interval beginning depth';
+COMMENT ON COLUMN public.dh_quicklog.depto IS 'Interval ending depth';
+COMMENT ON COLUMN public.dh_quicklog.code IS 'Codification for main unit; similar to unit code in dh_litho table';
+COMMENT ON COLUMN public.dh_quicklog.description IS 'Quick geological description, logging wide intervals and/or only representative portions';
+COMMENT ON COLUMN public.dh_quicklog.oxid IS 'Oxidation state: O, PO, U';
+COMMENT ON COLUMN public.dh_quicklog.alt IS 'Alteration intensity: 0: none, 1: weak, 2: moderate, 3: strong';
+COMMENT ON COLUMN public.dh_quicklog.def IS 'Deformation intensity: 0: none, 1: weak, 2: moderate, 3: strong';
+COMMENT ON COLUMN public.dh_quicklog.numauto IS 'Automatic integer primary key';
+COMMENT ON COLUMN public.dh_quicklog.creation_ts IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.dh_quicklog.username IS 'User (role) which created data record';
+COMMENT ON COLUMN public.dh_quicklog.datasource IS 'Datasource identifier, refers to lex_datasource';
 
 --}}}
 -- x dh_litho {{{
@@ -2271,7 +2280,7 @@ CREATE TABLE dh_samples_submission (
 );
 
 --}}}
--- x dh_sampling_grades {{{
+-- x dh_sampling_grades: {{{
 
 CREATE TABLE dh_sampling_grades (
     opid integer REFERENCES operations (opid),
@@ -2327,6 +2336,63 @@ COMMENT ON COLUMN dh_sampling_grades.quartering     IS 'Sample quartering, if an
 COMMENT ON COLUMN dh_sampling_grades.creation_ts    IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_sampling_grades.username       IS 'User (role) which created data record';
 
+--}}}
+-- x resistivity:{{{
+CREATE TABLE public.dh_resistivity (
+    opid            integer,
+    id              varchar,
+    depfrom         numeric(10,2),
+    depto           numeric(10,2),
+    rlld            numeric(10,2),
+    rlls            numeric(10,2),
+    creation_ts     timestamp with time zone DEFAULT now() NOT NULL,
+    username        varchar DEFAULT current_user,
+    numauto         serial PRIMARY KEY,
+    FOREIGN KEY (opid, id) REFERENCES public.dh_collars(opid, id)
+      ON UPDATE CASCADE 
+      ON DELETE CASCADE 
+      DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE public.dh_collars ry IS 'Down-hole probing: resistivity measurements';
+COMMENT ON COLUMN public.dh_resistivity.opid                IS 'Operation identifier';
+COMMENT ON COLUMN public.dh_resistivity.id                       IS 'Full identifier for borehole or trench';
+COMMENT ON COLUMN public.dh_resistivity.depfrom                  IS 'Interval beginning depth';
+COMMENT ON COLUMN public.dh_resistivity.depto                    IS 'Interval ending depth';
+COMMENT ON COLUMN public.dh_resistivity.lld                      IS ''; --TODO
+COMMENT ON COLUMN public.dh_resistivity.lls                      IS ''; --TODO
+COMMENT ON COLUMN operation_active.creation_ts         IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN operation_active.username            IS 'User (role) which created data record';
+COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
+--}}}
+-- x dh_radiometry:{{{
+CREATE TABLE public.dh_radiometry (
+    opid            integer,
+    id              varchar,
+    depfrom         numeric(10,2),
+    depto           numeric(10,2),
+    a               varchar,
+    probe           varchar,
+    radiometry      numeric,
+    comments        varchar,
+    creation_ts     timestamp with time zone DEFAULT now() NOT NULL,
+    username        varchar DEFAULT current_user,
+    numauto         serial PRIMARY KEY,
+    FOREIGN KEY (opid, id) REFERENCES public.dh_collars(opid, id)
+      ON UPDATE CASCADE 
+      ON DELETE CASCADE 
+      DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE public.dh_radiometry IS 'Down-hole probing: radiometry measurements';
+COMMENT ON COLUMN public.dh_radiometry.opid                IS 'Operation identifier';
+COMMENT ON COLUMN public.dh_radiometry.id                       IS 'Full identifier for borehole or trench';
+COMMENT ON COLUMN public.dh_radiometry.depfrom                  IS 'Interval beginning depth';
+COMMENT ON COLUMN public.dh_radiometry.depto                    IS 'Interval ending depth';
+COMMENT ON COLUMN public.dh_radiometry.a IS 'Mysterious field containing only A value'; --TODO to be clarified
+COMMENT ON COLUMN public.dh_radiometry.probe IS 'Probe type: ST22, ST33, DHT-';
+COMMENT ON COLUMN public.dh_radiometry.radiometry IS 'Radiometry measurement, equivalent AVP units (hits per second)';
+COMMENT ON COLUMN operation_active.creation_ts         IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN operation_active.username            IS 'User (role) which created data record';
+COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
 --}}}
 -- x dh_mineralised_intervals {{{
 
