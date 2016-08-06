@@ -1,11 +1,22 @@
--- _______________ENCOURS_______________GEOLLLIBRE
+ENLEVER TOUT CE QUI A TRAIT À:
 
--- LIGNES:     0     89  en-tête, licence, rien et TODOs
---            90     99  des trucs en en-tête du dump
---           100    899  liste objets de bdexplo, ordonnée
---           900    997  création base, schémas
--- ==>      1000   9999  création tables  <==
---         10000         le reste...
+european_federation_geologists_members
+pchgeol_rapports
+songs
+pieces_mouvts
+pieces_stock_fin_2011
+tmp_africa_powermining_projects_database
+tmp_european_federation_geologists_members
+
+
+-- _______________ENCOURS_______________GEOLLLIBRE 0
+
+-- LIGNES:     0 en-tête, licence, rien et TODOs
+--            90 des trucs en en-tête du dump
+--           100 liste objets de bdexplo, ordonnée
+--          1100 création base, schémas
+-- ==>      1200 création tables  <==
+--         10000 le reste...
 
 
 --TODO liste:{{{
@@ -30,7 +41,6 @@
 -- }}}
 
 -- DEBUG: ATTENTION AUX /* */  =>  /\/\*\|\*\/
-
 
 
 --[ ;{{{ } } }
@@ -66,8 +76,6 @@
 --		}
 --] ;}}}
 
-
-
 --{{{ 
 
 
@@ -86,8 +94,11 @@
 
 
 
+
+
+
 --}}}
--- Ceci était en tête du dump:{{{
+--  0090 Ceci était en tête du dump:{{{
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -97,7 +108,7 @@ SET client_min_messages = warning;
 
 
 --}}}
---0100 LISTE OBJETS DE BDEXPLO:{{{
+-- 0100 LISTE OBJETS DE BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -181,7 +192,6 @@ tables:{{{
  pierre             | layer_styles                                               | table | pierre
  pierre             | program                                                    | table | pierre
 
-_______________ENCOURS_______________GEOLLLIBRE
  public             | occurrences_recup_depuis_dump                              | table | data_admin
 
  pierre             | dh_nb_samples                                              | table | pierre    <= inutile
@@ -490,7 +500,6 @@ fonctions:{{{
 -- }}}
 
 
-
 Pareil, seulement les noms, pour *er plus facilement, à supprimer après usage:
 tables:{{{
 --localhost pierre@bdexplo=>
@@ -573,14 +582,11 @@ index_geo_documentation
 layer_styles
 program
 
-_______________ENCOURS_______________GEOLLLIBRE
+_______________ENCOURS_______________GEOLLLIBRE 1
 occurrences_recup_depuis_dump
 
 dh_nb_samples        <= inutile
-european_federation_geologists_members
 grid
-pchgeol_rapports
-songs
 tmp_xy
 tmp_xyz_marec
 toudoux_dh_sampling_grades_datasource_979
@@ -610,10 +616,7 @@ tmp_bondoukou_sondages_sampling_grades
 tmp_bv130613_gravi_results
 
 orientation
-pieces_mouvts
-pieces_stock_fin_2011
 poi
-tmp_africa_powermining_projects_database
 tmp_assay_results_auramines_ns30n
 tmp_cme_sampling_grades_150102
 tmp_cme_sampling_grades_150102_utf8
@@ -623,7 +626,6 @@ tmp_collars_141223_utf8
 tmp_entree_donnees_dh_tech
 tmp_erreur_z
 tmp_esp_pgm_cr_140908_
-tmp_european_federation_geologists_members
 tmp_export_geolpda_waypoints_descriptions
 tmp_ext1
 tmp_ext2
@@ -716,149 +718,149 @@ vues:{{{
 --localhost pierre@bdexplo=> 
 \dv *.*
                                            Liste des relations
-       Schéma       |                             Nom                              | Type | Propriétaire 
---------------------+--------------------------------------------------------------+------+--------------
- checks             | collars_lengths_vs_dh_litho_depths                           | vue  | pierre
- checks             | collars_lengths_vs_dh_sampling_depths                        | vue  | pierre
- checks             | collars_vs_temp_topo_id_topo_sans_collars                    | vue  | pierre
- checks             | collars_vs_topo_xyz_en_face_et_differences_importantes       | vue  | pierre
- checks             | dh_collars_to_topo_points_lines                              | vue  | pierre
- checks             | doublons_collars_id                                          | vue  | pierre
- checks             | doublons_collars_xyz                                         | vue  | pierre
- checks             | doublons_collars_xyz_ouvrages_concernes                      | vue  | pierre
- checks             | doublons_dh_litho_id_depto                                   | vue  | pierre
- checks             | doublons_dh_sampling_id_depto                                | vue  | pierre
- checks             | fichettes_infos_incoherentes_drilled_lengths                 | vue  | pierre
- checks             | fichettes_infos_incoherentes_heures                          | vue  | pierre
- checks             | fichettes_infos_redondantes_incoherentes                     | vue  | pierre
- checks             | fichettes_infos_redondantes_incoherentes_quels_ouvrages      | vue  | pierre
- checks             | fichettes_longueurs_incoherentes                             | vue  | pierre
- checks             | fichettes_ouvrages_non_completed                             | vue  | pierre
- checks             | fichettes_vs_collars_completed_incoherents                   | vue  | pierre
- checks             | fichettes_vs_collars_longueurs_incoherentes                  | vue  | pierre
- checks             | fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars     | vue  | pierre
- checks             | tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho    | vue  | pierre
- checks             | tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling | vue  | pierre
- checks             | tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho    | vue  | pierre
- checks             | tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling | vue  | pierre
+                            Nom                             
+------------------------------------------------------------
+collars_lengths_vs_dh_litho_depths                          
+collars_lengths_vs_dh_sampling_depths                       
+collars_vs_temp_topo_id_topo_sans_collars                   
+collars_vs_topo_xyz_en_face_et_differences_importantes      
+dh_collars_to_topo_points_lines                             
+doublons_collars_id                                         
+doublons_collars_xyz                                        
+doublons_collars_xyz_ouvrages_concernes                     
+doublons_dh_litho_id_depto                                  
+doublons_dh_sampling_id_depto                               
+fichettes_infos_incoherentes_drilled_lengths                
+fichettes_infos_incoherentes_heures                         
+fichettes_infos_redondantes_incoherentes                    
+fichettes_infos_redondantes_incoherentes_quels_ouvrages     
+fichettes_longueurs_incoherentes                            
+fichettes_ouvrages_non_completed                            
+fichettes_vs_collars_completed_incoherents                  
+fichettes_vs_collars_longueurs_incoherentes                 
+fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars    
+tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho   
+tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling
+tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho   
+tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling
 
- gdm                | gdm_dh_devia                                                 | vue  | pierre
- gdm                | gdm_sections_array                                           | vue  | pierre
- gdm                | gdm_selection                                                | vue  | pierre
+gdm_dh_devia                                                
+gdm_sections_array                                          
+gdm_selection                                               
 
- pierre             | ancient_workings                                             | vue  | pierre
- pierre             | baselines                                                    | vue  | pierre
- pierre             | collars_selection                                            | vue  | pierre
- pierre             | coords_points                                                | vue  | pierre
- pierre             | dh_collars                                                   | vue  | pierre
- pierre             | dh_collars_                                                  | vue  | pierre
- pierre             | dh_collars_diff_project_actual_line                          | vue  | pierre
- pierre             | dh_collars_for_gpx                                           | vue  | pierre
- pierre             | dh_collars_points                                            | vue  | pierre
- pierre             | dh_collars_points_last_ana_results                           | vue  | pierre
- pierre             | dh_collars_points_marrec                                     | vue  | pierre
- pierre             | dh_core_boxes                                                | vue  | pierre
- pierre             | dh_density                                                   | vue  | pierre
- pierre             | dh_devia                                                     | vue  | pierre
- pierre             | dh_followup                                                  | vue  | pierre
- pierre             | dh_litho                                                     | vue  | pierre
- pierre             | dh_mineralised_intervals                                     | vue  | pierre
- pierre             | dh_mineralised_intervals0_traces_3d                          | vue  | pierre
- pierre             | dh_quicklog                                                  | vue  | pierre
- pierre             | dh_sampling                                                  | vue  | pierre
- pierre             | dh_sampling_avg_grades_3dpoints                              | vue  | pierre
- pierre             | dh_sampling_bottle_roll                                      | vue  | pierre
- pierre             | dh_sampling_grades                                           | vue  | pierre
- pierre             | dh_sampling_grades_graph_au_6                                | vue  | pierre
- pierre             | dh_sampling_grades_open_ended_au_tail                        | vue  | pierre
- pierre             | dh_sampling_grades_open_ended_au_top                         | vue  | pierre
- pierre             | dh_sampling_mineralised_intervals_graph_au6                  | vue  | pierre
- pierre             | dh_struct_measures                                           | vue  | pierre
- pierre             | dh_tech                                                      | vue  | pierre
- pierre             | dh_thinsections                                              | vue  | pierre
- pierre             | dh_traces_3d                                                 | vue  | pierre
- pierre             | european_federation_geologists_members_latest                | vue  | pierre
- pierre             | field_observations                                           | vue  | pierre
- pierre             | field_observations_points                                    | vue  | pierre
- pierre             | field_observations_struct_measures                           | vue  | pierre
- pierre             | field_photos                                                 | vue  | pierre
- pierre             | formations_group_lithos                                      | vue  | pierre
- pierre             | gdm_baselines                                                | vue  | pierre
- pierre             | gdm_dh_devia                                                 | vue  | pierre
- pierre             | gdm_dh_litho                                                 | vue  | pierre
- pierre             | gdm_dh_mine_0                                                | vue  | pierre
- pierre             | gdm_dh_mine_1                                                | vue  | pierre
- pierre             | gdm_dh_planned                                               | vue  | pierre
- pierre             | gdm_dh_sampling_grades                                       | vue  | pierre
- pierre             | gdm_dh_sampling_grades_open_ended_au_tail                    | vue  | pierre
- pierre             | gdm_dh_sampling_grades_open_ended_au_top                     | vue  | pierre
- pierre             | gdm_sections_array                                           | vue  | pierre
- pierre             | gdm_selection                                                | vue  | pierre
- pierre             | geoch_ana                                                    | vue  | pierre
- pierre             | geoch_sampling                                               | vue  | pierre
- pierre             | geoch_sampling_grades                                        | vue  | pierre
- pierre             | geoch_sampling_grades_points                                 | vue  | pierre
- pierre             | gpy_mag_ground                                               | vue  | pierre
- pierre             | grade_ctrl                                                   | vue  | pierre
- pierre             | index_geo_documentation                                      | vue  | pierre
- pierre             | lab_ana_batches_expedition                                   | vue  | pierre
- pierre             | lab_ana_batches_reception                                    | vue  | pierre
- pierre             | lab_ana_columns_definition                                   | vue  | pierre
- pierre             | lab_ana_qaqc_results                                         | vue  | pierre
- pierre             | lab_ana_results                                              | vue  | pierre
- pierre             | lex_codes                                                    | vue  | pierre
- pierre             | lex_datasource                                               | vue  | pierre
- pierre             | lex_standard                                                 | vue  | pierre
- pierre             | licences                                                     | vue  | pierre
- pierre             | licences_quadrangles                                         | vue  | pierre
- pierre             | mag_declination                                              | vue  | pierre
- pierre             | occurrences                                                  | vue  | pierre
- pierre             | occurrences_                                                 | vue  | pierre
- pierre             | occurrences_bal_200km                                        | vue  | pierre
- pierre             | operations_quadrangles                                       | vue  | pierre
- pierre             | pchgeol_rapports_liste_biblio_cv                             | vue  | pierre
- pierre             | petro_mineralo_study_dh_collars                              | vue  | pierre
- pierre             | petro_mineralo_study_field_observations_points               | vue  | pierre
- pierre             | qc_sampling                                                  | vue  | pierre
- pierre             | qc_standards                                                 | vue  | pierre
- pierre             | shift_reports                                                | vue  | pierre
- pierre             | surface_samples_grades                                       | vue  | pierre
- pierre             | surface_samples_grades_points                                | vue  | pierre
- pierre             | surpac_survey                                                | vue  | pierre
- pierre             | tanguysurp_project                                           | vue  | postgres
- pierre             | tanguysurp_survey                                            | vue  | postgres
- pierre             | tmp_xy_points                                                | vue  | pierre
- pierre             | topo_points                                                  | vue  | pierre
- pierre             | topo_points_points                                           | vue  | pierre
- pierre             | tt_obs_abusives                                              | vue  | pierre
+ancient_workings                                            
+baselines                                                   
+collars_selection                                           
+coords_points                                               
+dh_collars                                                  
+dh_collars_                                                 
+dh_collars_diff_project_actual_line                         
+dh_collars_for_gpx                                          
+dh_collars_points                                           
+dh_collars_points_last_ana_results                          
+dh_collars_points_marrec                                    
+dh_core_boxes                                               
+dh_density                                                  
+dh_devia                                                    
+dh_followup                                                 
+dh_litho                                                    
+dh_mineralised_intervals                                    
+dh_mineralised_intervals0_traces_3d                         
+dh_quicklog                                                 
+dh_sampling                                                 
+dh_sampling_avg_grades_3dpoints                             
+dh_sampling_bottle_roll                                     
+dh_sampling_grades                                          
+dh_sampling_grades_graph_au_6                               
+dh_sampling_grades_open_ended_au_tail                       
+dh_sampling_grades_open_ended_au_top                        
+dh_sampling_mineralised_intervals_graph_au6                 
+dh_struct_measures                                          
+dh_tech                                                     
+dh_thinsections                                             
+dh_traces_3d                                                
+european_federation_geologists_members_latest               
+field_observations                                          
+field_observations_points                                   
+field_observations_struct_measures                          
+field_photos                                                
+formations_group_lithos                                     
+gdm_baselines                                               
+gdm_dh_devia                                                
+gdm_dh_litho                                                
+gdm_dh_mine_0                                               
+gdm_dh_mine_1                                               
+gdm_dh_planned                                              
+gdm_dh_sampling_grades                                      
+gdm_dh_sampling_grades_open_ended_au_tail                   
+gdm_dh_sampling_grades_open_ended_au_top                    
+gdm_sections_array                                          
+gdm_selection                                               
+geoch_ana                                                   
+geoch_sampling                                              
+geoch_sampling_grades                                       
+geoch_sampling_grades_points                                
+gpy_mag_ground                                              
+grade_ctrl                                                  
+index_geo_documentation                                     
+lab_ana_batches_expedition                                  
+lab_ana_batches_reception                                   
+lab_ana_columns_definition                                  
+lab_ana_qaqc_results                                        
+lab_ana_results                                             
+lex_codes                                                   
+lex_datasource                                              
+lex_standard                                                
+licences                                                    
+licences_quadrangles                                        
+mag_declination                                             
+occurrences                                                 
+occurrences_                                                
+occurrences_bal_200km                                       
+operations_quadrangles                                      
+pchgeol_rapports_liste_biblio_cv                            
+petro_mineralo_study_dh_collars                             
+petro_mineralo_study_field_observations_points              
+qc_sampling                                                 
+qc_standards                                                
+shift_reports                                               
+surface_samples_grades                                      
+surface_samples_grades_points                               
+surpac_survey                                               
+tanguysurp_project                                          
+tanguysurp_survey                                           
+tmp_xy_points                                               
+topo_points                                                 
+topo_points_points                                          
+tt_obs_abusives                                             
 
- public             | dh_collars_points_latlon                                     | vue  | pierre
- public             | field_observations_points                                    | vue  | pierre
- public             | field_observations_struct_measures_points                    | vue  | pierre
- public             | licences_polygons                                            | vue  | pierre
- public             | licences_quadrangles                                         | vue  | pierre
- public             | survey_lines_plines                                          | vue  | pierre
+dh_collars_points_latlon                                    
+field_observations_points                                   
+field_observations_struct_measures_points                   
+licences_polygons                                           
+licences_quadrangles                                        
+survey_lines_plines                                         
 
- stats_reports      | avancements_sondages_stats_annuelles                         | vue  | pierre
- stats_reports      | avancements_sondages_stats_annuelles_par_objectif            | vue  | pierre
- stats_reports      | avancements_sondages_stats_mensuelles                        | vue  | pierre
- stats_reports      | avancements_sondages_stats_mensuelles_par_objectif           | vue  | pierre
- stats_reports      | avancements_sondages_stats_quotidiennes                      | vue  | pierre
- stats_reports      | longueur_exploree_par_location                               | vue  | pierre
- stats_reports      | longueur_exploree_par_location_et_type                       | vue  | pierre
- stats_reports      | longueur_exploree_par_type_km                                | vue  | pierre
- stats_reports      | recap_file_results_drill_holes                               | vue  | pierre
- stats_reports      | verif_attachements_journaliers_sondeur                       | vue  | pierre
+avancements_sondages_stats_annuelles                        
+avancements_sondages_stats_annuelles_par_objectif           
+avancements_sondages_stats_mensuelles                       
+avancements_sondages_stats_mensuelles_par_objectif          
+avancements_sondages_stats_quotidiennes                     
+longueur_exploree_par_location                              
+longueur_exploree_par_location_et_type                      
+longueur_exploree_par_type_km                               
+recap_file_results_drill_holes                              
+verif_attachements_journaliers_sondeur                      
 
- tmp_imports        | cme_sampling_grades_last                                     | vue  | pierre
- tmp_imports        | tmp_auramines_feb_march_sample_list_xlsx_01_main_list_points | vue  | pierre
- tmp_imports        | tmp_sample_description_and_coords_november_2015_paul_points  | vue  | pierre
- tmp_imports        | tmp_tt_pierre_nettoye_uploader_wpt_points                    | vue  | pierre
- tmp_imports        | tmp_tt_pts_gps_mdb_copie_points                              | vue  | pierre
- tmp_imports        | tmp_tt_pts_gps_mdb_points_latlong_points                     | vue  | pierre
- tmp_imports        | tmp_tt_pts_gps_mdb_sdqrfgadzrg_points                        | vue  | pierre
- tmp_imports        | tmp_tt_pts_gps_mdb_vireendb_points                           | vue  | pierre
-(246 lignes)
+cme_sampling_grades_last                                    
+tmp_auramines_feb_march_sample_list_xlsx_01_main_list_points
+tmp_sample_description_and_coords_november_2015_paul_points 
+tmp_tt_pierre_nettoye_uploader_wpt_points                   
+tmp_tt_pts_gps_mdb_copie_points                             
+tmp_tt_pts_gps_mdb_points_latlong_points                    
+tmp_tt_pts_gps_mdb_sdqrfgadzrg_points                       
+tmp_tt_pts_gps_mdb_vireendb_points                          
+
 
 -- }}}
 fonctions:{{{
@@ -866,16 +868,16 @@ fonctions:{{{
 --localhost pierre@bdexplo=> 
 \df *.*
                                                                                                                                                                                                                                                                                                                                                                                     Liste des fonctions
-       Schéma       |                     Nom                      |        Type de données du résultat         |                                                                                                                                                                                                                                                                                                                 Type de données des paramètres                                                                                                                                                                                                                                                                                                                  |  Type   
---------------------+----------------------------------------------+--------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------
- information_schema | ...
- public             | ...
- public             | ...
- public             | generate_cross_sections_array                | trigger                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | trigger
- public             | ...
- public             | lab_ana_results_sample_id_default_value_num  | trigger                                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | trigger
- public             | ...
- topology           | ...
+                    Nom                      
+---------------------------------------------
+...
+...
+...
+generate_cross_sections_array                
+...
+lab_ana_results_sample_id_default_value_num  
+...
+...
 
 (3851 lignes)
 
@@ -898,7 +900,7 @@ Pareil, / des instructions de CREATion de TABLEs:
 /CREATE TABLE.*field_observations_struct_measures
 /CREATE TABLE.*field_photos
 /CREATE TABLE.*formations_group_lithos
-_______________ENCOURS_______________GEOLLLIBRE
+_______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*rock_sampling
 /CREATE TABLE.*rock_ana
 /CREATE TABLE.*surface_samples_grades
@@ -926,7 +928,6 @@ _______________ENCOURS_______________GEOLLLIBRE
 /CREATE TABLE.*dh_collars_lengths
 /CREATE TABLE.*lab_ana_batches_expedition
 /CREATE TABLE.*lab_ana_batches_reception
-/CREATE TABLE.*lab_ana_batches_reception_18_corr
 /CREATE TABLE.*lab_ana_columns_definition
 /CREATE TABLE.*ana_det_limit
 /CREATE TABLE.*lab_ana_results
@@ -954,8 +955,6 @@ _______________ENCOURS_______________GEOLLLIBRE
 /CREATE TABLE.*program
 /CREATE TABLE.*occurrences_recup_depuis_dump
 /CREATE TABLE.*dh_nb_samples
-/CREATE TABLE.*<=
-/CREATE TABLE.*inutile
 /CREATE TABLE.*european_federation_geologists_members
 /CREATE TABLE.*grid
 /CREATE TABLE.*pchgeol_rapports
@@ -1078,18 +1077,38 @@ _______________ENCOURS_______________GEOLLLIBRE
 /CREATE TABLE.*tr_litho
 /CREATE TABLE.*vchannau
 /CREATE TABLE.*vchannel
-/CREATE TABLE.*field_observations_2016_03_09_14h08
-/CREATE TABLE.*field_observations_struct_measures_2016_03_09_14h10
-/CREATE TABLE.*t2
 
+/CREATE TABLE.*lab_ana_batches_reception_18_corr
 --}}}
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --}}}
---0900 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
+--  1100 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 
 --echo "CREATE DATABASE postgeol WITH TEMPLATE=template_postgis ENCODING='UTF8'OWNER=pierre;" | psql
 -- => no, refer to postgeol_database_creation.sh
@@ -1155,11 +1174,41 @@ COMMENT ON SCHEMA backups IS 'Just in case, a convenient place to put backups wh
 --}}}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --}}}
 
 */ BEGIN TRANSACTION;
--- _______________ENCOURS_______________GEOLLLIBRE v
---1000 TABLES{{{
+-- _______________ENCOURS_______________GEOLLLIBRE v 3
+-- 1200 TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
 --SET search_path = '$user', 'public';
@@ -1469,8 +1518,9 @@ COMMENT ON COLUMN public.formations_group_lithos.numauto     IS 'Automatic integ
 
 --}}}
 -- x field_sampling (used to be rock_sampling):{{{
--- _______________ENCOURS_______________GEOLLLIBRE
 
+-- _______________ENCOURS_______________GEOLLLIBRE 4
+-- TODO table très vide: contenu à verser, plutôt, dans surface_sampling (SI CE N'EST DÉJÀ FAIT!)
 CREATE TABLE field_sampling (  -- Nota bene: used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
     opid           integer
       REFERENCES public.operations(opid)
@@ -1506,8 +1556,8 @@ COMMENT ON COLUMN public.field_sampling.y            IS 'Y coordinate';
 COMMENT ON COLUMN public.field_sampling.z            IS 'Z coordinate';
 COMMENT ON COLUMN public.field_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
 -- }}}
---} }}
--- x rock_ana:{ {{ TODO rename table
+--}}}
+-- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
 
 CREATE TABLE public.rock_ana (
     opid integer REFERENCES operations (opid)
@@ -1532,7 +1582,6 @@ COMMENT ON COLUMN public.rock_ana.value IS 'Analysis value';
 COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
 
 --}}}
--- _______________ENCOURS_______________GEOLLLIBRE
 /*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- x surface_samples_grades:{{{
 
@@ -1629,7 +1678,7 @@ CREATE TABLE gps_wpt (
 --}}}
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^
+--_______________ENCOURS_______________GEOLLLIBRE 5
 -- geochemistry:{{{
 
 -- x geoch_sampling:{{{
@@ -1779,8 +1828,13 @@ COMMENT ON COLUMN gpy_mag_ground.username IS 'User (role) which created data rec
 COMMENT ON COLUMN gpy_mag_ground.numauto IS 'Automatic integer primary key';
 COMMENT ON COLUMN gpy_mag_ground.datasource IS 'Datasource identifier, refers to lex_datasource';
 --}}}
+-- o gpy_radiometry{{{
+-- TODO plans compteurs
+}}}
+-- o other methods: TODO
+
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE vv
+--_______________ENCOURS_______________GEOLLLIBRE vv 6
 -- x drill holes: table names prefixed with dh_ {{{
 -- x dh_collars {{{
 
@@ -2563,7 +2617,7 @@ COMMENT ON COLUMN dh_collars_lengths.len_bq IS 'Core BQ length (m)';
 --}}}
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^^
+--_______________ENCOURS_______________GEOLLLIBRE ^^ 7
 -- x laboratory analyses: {{{
 
 -- x lab_ana_batches_expedition:{{{
@@ -10076,7 +10130,7 @@ CREATE TABLE program (
 
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^
+--_______________ENCOURS_______________GEOLLLIBRE ^ 8
 
 --10000 LE RESTE...
 -- o functions:{{{
@@ -10453,7 +10507,7 @@ ALTER TABLE dh_sampling OWNER TO pierre;
 
 
 -- }}}
---_______________ENCOURS_______________GEOLLLIBRE
+--_______________ENCOURS_______________GEOLLLIBRE 9
 
 --les traces des sondages, pareil, pour un srid:{{{
 CREATE OR REPLACE VIEW dh_traces_3d AS
