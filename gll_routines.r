@@ -1,4 +1,4 @@
-rebol [ 
+rebol [
 	Title:   "Rebol routines called by geolllibre gll_* programs"
 	IDEA:    "TODO make an automatic system of imports, where a program named abc_ghea_jh_lkk.r would automatically include any file named abc_ghea_jh_*.r and any file named abc_ghea_jh_routines.r. Doing this recursively would make an easy to maintain tree of dependencies"
 	Name:    gll_routines.r
@@ -16,7 +16,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##                                                                       ##
 ###########################################################################
   Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
- 
+
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
-    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+    or write to the Free Software Foundation, Inc., 51 Franklin Street,
     Fifth Floor, Boston, MA 02110-1301, USA.
     See LICENSE file.
 }
@@ -295,7 +295,7 @@ make root-protocol [
 		if negative? len [throw "IO error"]
 		len
     ]
-    
+
 	read-stream: func [port [port!] /wait f-state [word!] /records rows /part count
 		/local final complete msg pl pos stopped row stop error test-error test-exit a-data
 	][
@@ -325,7 +325,7 @@ make root-protocol [
 	]
 
 	protocol-rules: [
-		some [ 
+		some [
 			pos: (stop: either any test-exit [length? pos tail pos][pos]) :stop ; exit from parser when needed
 			[																	; in a Core2.5 compatible way.
 				#"A" [
@@ -398,7 +398,7 @@ make root-protocol [
 							1 [unsupported "Kerberos V4"]
 							2 [unsupported "Kerberos V5"]
 							3 [
-								reply-password port none 
+								reply-password port none
 								pl/state: 'pass-required
 							]
 							4 [unsupported "Crypt"]
@@ -448,7 +448,7 @@ make root-protocol [
 	write-string: func [value [string!]][head sys-insert tail sys-copy value #"^@"]
 
 	write-lim-string: func [len [integer!] value [string!]][
-		head sys-insert/dup tail sys-copy value #"^@" (len - length? value) 
+		head sys-insert/dup tail sys-copy value #"^@" (len - length? value)
 	]
 	
 	send-packet: func [port [port!] data [string!]][
@@ -507,11 +507,11 @@ make root-protocol [
 			port/target: sys-copy/part port/target args
 			dehex sys-copy next args
 		][none]
-        scheme: port/scheme 
-        port/url: spec 
+        scheme: port/scheme
+        port/url: spec
         if none? port/host [
             net-error reform ["No network server for" scheme "is specified"]
-        ] 
+        ]
         if none? port/port-id [
             net-error reform ["No port address for" scheme "is specified"]
         ]
@@ -522,9 +522,9 @@ make root-protocol [
         if none? port/pass [port/pass: make string! 0]
         if port/pass = "?" [port/pass: ask/hide "Password: "]
     ]
-    
+
     open: func [port [port!]][
-        open-proto port   
+        open-proto port
         port/sub-port/state/flags: 524835 ; force /direct/binary mode
         do-handshake port
         port/locals/stream-end?: true	; force stream-end, so 'copy won't timeout !
@@ -534,7 +534,7 @@ make root-protocol [
         ]
         port/state/tail: 10		; for 'pick to work properly
     ]
-    
+
     close: func [port [port!]][
     	port/sub-port/timeout: 4
     	either error? try [
@@ -594,7 +594,7 @@ make root-protocol [
 	; init 'conv-model
 	extract-conv-list
 	
-	;--- Register ourselves. 
+	;--- Register ourselves.
 	net-utils/net-install pgSQL self 5432
 ]
 ] ;}}}
@@ -658,7 +658,7 @@ make root-protocol [
 		refresh [
 			grant		1	; Refresh grant tables
 			log			2	; Start on new log file
-			tables		4	; Close all tables 
+			tables		4	; Close all tables
 			hosts		8	; Flush host cache
 			status		16	; Flush status variables
 			threads		32	; Flush status variables
@@ -822,7 +822,7 @@ make root-protocol [
 		total
 	]
 
-	sql-escape: func [value [string!] /local chars no-chars want escaped 
+	sql-escape: func [value [string!] /local chars no-chars want escaped
 		escape mark
 	][
 		chars: charset want: {^(00)^/^-^M^(08)'"\}
@@ -1012,7 +1012,7 @@ make root-protocol [
 	read-long: [
 		read-byte (b0: byte)
 		read-byte (b1: byte)
-		read-byte (b2: byte) 
+		read-byte (b2: byte)
 		read-byte (
 			b3: byte
 			long: to integer! b0 + (256 * b1) + (65536 * b2) + (16777216.0 * b3)
@@ -1047,10 +1047,10 @@ make root-protocol [
 			sys-close port/sub-port
 			throw throws/closed
 		]
-		net-log ["low level read of " len "bytes"] 
+		net-log ["low level read of " len "bytes"]
 		len
     ]
-    
+
 	defrag-read: func [port [port!] buf [binary!] expected [integer!]][
 		clear buf
 		while [expected > length? buf][
@@ -1113,7 +1113,7 @@ make root-protocol [
 		parse/all/case read-packet port [
 			read-length (if zero? colnb: len [port/locals/stream-end?: true])
 			read-length	(port/locals/matched-rows: len)
-			read-length 
+			read-length
 		]
 		if not zero? colnb [port/locals/matched-rows: none]
 		colnb
@@ -1130,8 +1130,8 @@ make root-protocol [
 				read-nbytes	(col/length: len)
 				read-nbytes	(col/type: decode/type len)
 				read-field	(
-					col/flags: decode/flags to integer! field/1 
-					col/decimals: to integer! field/2 
+					col/flags: decode/flags to integer! field/1
+					col/decimals: to integer! field/2
 				)
 			]
 			append pl/columns :col
@@ -1141,7 +1141,7 @@ make root-protocol [
 			flush-pending-data port
 			net-error "Error: end of columns stream not found"
 		]
-		pl/stream-end?: false		; prepare correct state for 
+		pl/stream-end?: false		; prepare correct state for
 		clear pl/cache				; rows reading.
 	]
 
@@ -1181,7 +1181,7 @@ make root-protocol [
 			until [
 				clear pl/buffer
 				len: read port pl/buffer pl/buf-size
-				pl/buf-size > len 
+				pl/buf-size > len
 			]
 			net-log "flush end."
 			pl/stream-end?: true
@@ -1327,12 +1327,12 @@ make root-protocol [
     	][
     		fast-query: none
     	]
-        if url? spec [net-utils/url-parser/parse-url port spec] 
-        scheme: port/scheme 
-        port/url: spec 
+        if url? spec [net-utils/url-parser/parse-url port spec]
+        scheme: port/scheme
+        port/url: spec
         if none? port/host [
             net-error reform ["No network server for" scheme "is specified"]
-        ] 
+        ]
         if none? port/port-id [
             net-error reform ["No port address for" scheme "is specified"]
         ]
@@ -1343,9 +1343,9 @@ make root-protocol [
         if none? port/pass [port/pass: make string! 0]
         if port/pass = "?" [port/pass: ask/hide "Password: "]
     ]
-    
+
     open: func [port [port!]][
-        open-proto port    
+        open-proto port
         port/sub-port/state/flags: 524835	; force /direct/binary mode
         do-handshake port
         port/locals/stream-end?: true	; force stream-end, so 'copy won't timeout !
@@ -1355,7 +1355,7 @@ make root-protocol [
         ]
         port/state/tail: 10		; for 'pick to work properly
     ]
-    
+
     close: func [port [port!]][
     	port/sub-port/timeout: 4
     	either error? try [
@@ -1401,7 +1401,7 @@ make root-protocol [
 		][none]
 	]
 
-	;--- Register ourselves. 
+	;--- Register ourselves.
 	net-utils/net-install mySQL self 3306
 ]
 
@@ -1432,22 +1432,22 @@ REBOL [
     Web: http://valley.150m.com
     Example: [
     write %Test.csv Mold-CSV [
-        ["Column One" "Column Two" "Total Column"] 
-        [1 2 3] 
-        [2 3 5] 
+        ["Column One" "Column Two" "Total Column"]
+        [1 2 3]
+        [2 3 5]
         [3 4 7]
-    ] 
-    read %Test.csv 
+    ]
+    read %Test.csv
     delete %Test.csv
 ]
     library: [
-        level: 'beginner 
-        platform: none 
-        type: 'tool 
-        domain: 'DB 
-        tested-under: none 
-        support: none 
-        license: none 
+        level: 'beginner
+        platform: none
+        type: 'tool
+        domain: 'DB
+        tested-under: none
+        support: none
+        license: none
         see-also: none
     ]
 ]
@@ -1842,8 +1842,220 @@ load-csv: funct [
 
 ]
 ;/*}}}*/
+do [ ; inclusion de l'utilitaire btn-sqlite.r:;{{{ } } }
 ; Library to access sqlite geolpda database:
-do %~/rebol/library/scripts/btn-sqlite.r
+;{{{
+;do %~/rebol/library/scripts/btn-sqlite.r
+
+REBOL [
+	Title: "better-than-nothing sqlite3 handler"
+	Purpose: "easy access to sqlite3 database without /Pro or /Command features"
+	Comment: "based on mysql-protocol 1.0.2 by Nenad Rakocevic / SOFTINNOV"
+	Author: "Piotr Gapinski"
+	Email: {news [at] rowery! olsztyn.pl}
+	File: %btn-sqlite.r
+	Date: 2006-01-30
+	Version: 0.2.2
+	Copyright: "Olsztynska Strona Rowerowa http://www.rowery.olsztyn.pl/"
+	License: "GNU General Public License (GPL)"
+	History: [0.1.0 2006-01-20 0.1.1 2006-01-20 0.2.0 2006-01-25 0.2.1 2006-01-27 0.2.2 2006-01-30]
+	Library: [
+		level: 'intermediate
+		platform: [Linux Windows]
+		type: [protocol tool]
+		domain: [protocol database]
+		tested-under: [
+			view 1.3.2 on [Linux WinXP]
+			core 2.6.2 on [Linux WinXP]
+		]
+		support: none
+		license: 'GPL
+	]
+]
+
+make root-protocol [
+	scheme: 'btn
+	port-id: 0
+	port-flags: system/standard/port-flags/pass-thru
+	awake: none
+	open-check: none
+
+	sqlite: none
+	options: none
+	linux?: equal? fourth system/version 4
+
+	sys-copy: get in system/words 'copy
+	sys-insert: get in system/words 'insert
+	sys-pick: get in system/words 'pick
+	sys-close: get in system/words 'close
+	sys-write: get in system/words 'write
+	net-log: get in net-utils 'net-log	
+
+	init: func [[catch] port spec] [
+	        if not url? spec [net-error "Bad URL"]
+		net-utils/url-parser/parse-url port spec
+		if none? port/target [net-error reform ["No database name for" port/scheme "is specified"]]
+
+		port/locals: make object! [columns: none rows: 0 values: none sqlite-rc: 0 index: 0]
+		port/url: spec 
+
+		sqlite: any [
+			select [3 "sqlite3.exe" 4 "/usr/bin/sqlite3"] (fourth system/version)
+			"sqlite3"
+		]
+		options: {-html -header}
+	]
+
+	open: func [port [port!]][
+		port/state/flags: port/state/flags or port-flags
+	]
+
+	close: func [port [port!]][]
+
+	sql-escape: func [value [string!] /local chars no-chars want escaped escape mark] [
+		chars: charset want: {^(00)^/^-^M^(08)'"\}
+		no-chars: complement chars
+		escaped: ["\0" "\n" "\t" "\r" "\b" "\'" {\"} "\\"]
+		escape: func [value][
+			mark: sys-insert remove mark sys-pick escaped index? find want value
+		]
+		parse/all value [any [mark: chars (escape mark/1) :mark | no-chars]]
+		value
+	]
+
+	to-sql: func [value /local res] [
+		switch/default type?/word value [
+			none!	["NULL"]
+			date!	[
+				rejoin ["'" value/year "-" value/month "-" value/day
+					either value: value/time [
+						rejoin [" " value/hour ":" value/minute ":" value/second]
+					][""] "'"
+				]
+			]
+			time!	[join "'" [value/hour ":" value/minute ":" value/second "'"]]
+			money!	[head remove find mold value "$"]
+			string!	[join "'" [sql-escape sys-copy value "'"]]
+			binary!	[to-sql to string! value]
+			block!	[
+					if empty? value: reduce value [return "(NULL)"]
+					res: append make string! 100 #"("
+					forall value [repend res [to-sql value/1 #","]]
+					head change back tail res #")"
+				]
+		][form value]
+	]
+
+	map-rebol-values: func [data [block!] /local args sql mark] [
+		args: reduce next data
+		sql: sys-copy sys-pick data 1
+		mark: sql
+		while [found? mark: find mark #"?"][
+			mark: sys-insert remove mark either tail? args ["NULL"] [to-sql args/1]
+			if not tail? args [args: next args]
+		]
+		sql
+	]
+
+	insert-query: func [port [port!] data [string! block!] /local cmd] [
+		cmd: reform [sqlite options port/target rejoin [{"} data {"}]]
+		net-log ["call" cmd]
+		port/locals/sqlite-rc: call/wait/output cmd port/state/inBuffer
+	]
+
+	parse-schema: func [port [port!] /local headers parts] [
+		headers: sys-copy []
+		parts: [<th> copy header to </th> (append headers any [header ""]) | skip]
+
+		parse/all port/state/inBuffer [some parts to end]
+		net-log ["found" (length? headers) "columns"]
+		headers
+	]
+
+	parse-rows: func [port [port!] items-per-row [integer!] /local values parts rows] [
+		values: sys-copy []
+		parts: [<td> copy value to </td> (append values any [value ""]) | skip]
+
+		parse/all port/state/inBuffer [some parts to end]
+		rows: sys-copy []
+
+		if all [
+			not empty? values
+			not zero? items-per-row
+		][
+			net-log ["found" ((length? values) / items-per-row) "rows" items-per-row "columns per row"]
+			forskip values items-per-row [append/only rows sys-copy/part values items-per-row]
+		]
+		rows
+	]
+
+	insert: func [[throw] port [port!] data [string! block!] /local items-per-row] [
+		port/state/inBuffer: make string! 4096
+		port/locals/values: none
+		port/locals/rows: 0
+		port/locals/index: 0
+
+		;; execute sql
+
+		if all [(string? data) (data/1 = #"[")] [data: load data]
+		either block? data [
+			if empty? data [net-error "No data!"]
+			insert-query port data: map-rebol-values data
+		][
+			insert-query port data: replace/all data {"} {'}
+		]
+
+		;; parse output
+
+		port/locals/columns: parse-schema port
+		items-per-row: length? port/locals/columns
+
+		port/locals/values: parse-rows port items-per-row
+		port/locals/rows: length? port/locals/values
+
+		zero? port/locals/sqlite-rc
+	]
+
+	read-rows-html: func [port [port!] /part n [integer!] /local rows] [
+		if any [
+			not zero? port/locals/sqlite-rc	;; sqlite error
+			empty? port/locals/values	;; no sql output
+		][
+			return []
+		]
+
+		values: skip port/locals/values port/locals/index
+		either all [value? 'part n] [sys-copy/part values n] [sys-copy values]
+	]
+
+	copy: func [port /part data [integer!] /local rows][
+		rows: either all [value? 'part part] [read-rows-html/part port data] [read-rows-html port]
+		net-log ["copy" (length? rows) "rows" "at" "index" port/locals/index]
+		port/locals/index:  port/locals/index + length? rows
+		rows
+	]
+
+	net-utils/net-install :scheme self :port-id
+]
+
+comment {
+	; example
+	db: open btn://localhost/test.db3
+	insert db "CREATE TABLE t1 (a int, b text, c text)"
+	repeat i 25 [
+		insert db [{INSERT INTO t1 VALUES (?, ?, ?)} i (join "cool" i) (join "cool" (25 + 1 - i))]
+	]
+	insert db "SELECT * FROM t1"
+	probe db/locals/columns
+	res: copy/part db 10
+	probe res
+	probe length? res
+	insert db "DROP TABLE t1"
+	close db
+	halt
+}
+;}}}
+;/*}}}*/
 
 ; === functions and objects definitions ==========
 ; utility functions related to database:
@@ -1925,7 +2137,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	comment [ ; {{{ } } }
 	;pg_dump -s -h autan bdexplo -N amc -N  amc                -N  backups             -N  bof                -N information_schema  -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  smi                 -N  tanguy              -N  tmp_a_traiter       -N  tmp_imports         -N  tmp_ntoto           -N  zz_poubelle        > schema_bdexplo_autan_.sql
 	;pg_dump -U postgres -s -h duran bdexplo -N information_schema -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  tanguy              -N  tmp_imports         -N  zz_poubelle        > schema_bdexplo_duran_.sql
-	;#vimdiff schema_bdexplo_autan_.sql schema_bdexplo_duran_.sql 
+	;#vimdiff schema_bdexplo_autan_.sql schema_bdexplo_duran_.sql
 	;grep -v '^--' < schema_bdexplo_autan_.sql | grep -v '^$' > schema_bdexplo_autan_nocomment_.sql
 	;grep -v '^--' < schema_bdexplo_duran_.sql | grep -v '^$' > schema_bdexplo_duran_nocomment_.sql
 	;vimdiff schema_bdexplo_autan_nocomment_.sql schema_bdexplo_duran_nocomment_.sql
@@ -1994,7 +2206,7 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 ] ;}}}
 
 ; general utility functions:
-; Definition of standard charsets useful for PARSEing: {{{ } } } 
+; Definition of standard charsets useful for PARSEing: {{{ } } }
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
 	digit: charset  [#"0" - #"9"]
 	space: charset  [#" "]
@@ -2044,6 +2256,13 @@ throw 'continue]
 timestamp_: does [; an underscored timestamp{{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
+; a very simple function, to quickly print a list:{{{
+print-list: func [ l [block!]] [
+	foreach i l [
+		print i
+	]
+]
+;}}}
 
 ; Les dates du geolpda sont au format epoch en millisecondes;
 ; voici une fonction pour convertir les epoch en date: [{{{
@@ -2055,9 +2274,9 @@ epoch-to-date: func [
 	hours:     to-integer   (((epoch // 86400)) /  3600)
 	minutes:   to-integer  ((((epoch // 86400)) // 3600) /  60)
 	seconds:   to-integer  ((((epoch // 86400)) // 3600) // 60)
-	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone 
-															   ; ^ TODO un 
-															   ;beau jour, 
+	return (rejoin [day "/" hours ":" minutes ":" seconds]) ; + now/zone
+															   ; ^ TODO un
+															   ;beau jour,
 															   ;remettre ça;
 															   ;ça boguait.
 ] ;}}}]
@@ -2067,25 +2286,22 @@ epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (p
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
 ]
 ;}}}
-; a very simple function, to quickly print a list:{{{
-print-list: func [ l [block!]] [
-	foreach i l [
-		print i
-	]
-]
-;}}}
 
 ; Functions concerning GeolPDA data management: {{{ } } }
 synchronize_geolpda: does [; {{{ } } }
 	; TODO: make this platform-independent:
 	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
 	print "Synchronization process..."
+	; Get photos listing:
+	;ls_photos: read to-file rejoin [dir_geolpda_local "photos/" ]
+	ls_photos: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
 	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
 	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
 	;###################### RE-ENABLED, bravement...     ################################################
 	; For security (some files were just deleted...), first do a --dry-run , then confirm:
 	print {"Dry run:}
-	cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
+	;cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
+	cmd: rejoin [{rsync --dry-run -azcv --exclude="photos_transferred/" } dir_mount_geolpda_android { } dir_geolpda_local ]  ; way more prudent options
 	tt:  copy ""
 	err: copy ""
 	call/wait/output/error cmd tt err
@@ -2102,6 +2318,42 @@ synchronize_geolpda: does [; {{{ } } }
 		print "Press any key to continue..."
 		input
 	] [ print "No synchronization done."]
+	; Reduce geolpda pictures sizes in the local copy:{{{
+	size_max: 700
+	print rejoin ["Reduction of pictures to " size_max " pixels:"]
+	dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
+	dir_ori: rejoin [dir_geolpda_local "photos/original"]
+	unless exists? dir_red [ make-dir dir_red ]
+	unless exists? dir_ori [ make-dir dir_ori ]
+	foreach f ls_photos [
+		if find f "jpg" [
+			cmd: rejoin ["convert -geometry 700 " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
+			print rejoin["Running: " cmd]
+			tt:  copy ""
+			err: copy ""
+			call/wait/output/error cmd tt err
+			print tt
+			if (err != "") [print rejoin ["Error: " newline err]]
+			cmd: rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
+			tt:  copy ""
+			err: copy ""
+			call/wait/output/error cmd tt err
+			print tt
+			if (err != "") [print rejoin ["Error: " newline err]]			
+		]
+	]
+	cmd: rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	if (err != "") [print rejoin ["Error: " newline err]]
+	
+	; TODO apply rotation, if any, to file
+	; TODO set timestamp to exif timestamp
+	; TODO add geotags, if any gpx?
+
+	;}}}
 ];}}}
 synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	; TODO: make this platform-independent:
@@ -2123,6 +2375,36 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 		err: copy ""
 		call/wait/output/error cmd tt err
 		print tt
+		if (err != "") [print rejoin ["Error: " newline err]]
+		; Apparently due to the new MTP protocol used to connect to Android devices,
+		; directories with abundant (actual use case: 133) files lead to errors in
+		; the MTP mounted filesystem.  Therefore, we make another directory to store
+		; archived photos which have already been synchronised, this directory being
+		; ignored:
+		dir_photos_transferred: rejoin [dir_mount_geolpda_android "photos_transferred"]
+		unless exists? dir_photos_transferred [
+			; directory does not already exists: create it:
+			make-dir dir_photos_transferred
+		]
+		; Make a timestamped subdirectory, in order to avoid, as much as possible,
+		; the "photos_transferred" directory saturation (which may well lock MTP).
+		append dir_photos_transferred rejoin ["/" timestamp_]
+		make-dir dir_photos_transferred
+		; Move photos there:
+		; Rebol apparently does not provide a way to move files to directories,
+		; so the shell will do:
+		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
+		print "On android device, move photo files to an archive directory:"
+		;__________________________________________________________________________________________________________________________________________________________
+		;TODO make a wrapper call_wait_output_error including this code, and replace all call/... by this wrapper in the geolllibre codebase
+		print rejoin["Running: " cmd]
+		tt:  copy ""
+		err: copy ""
+		call/wait/output/error cmd tt err
+		print tt
+		if (err != "") [print rejoin ["Error: " newline err]]
+		;__________________________________________________________________________________________________________________________________________________________
+		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid directory saturation).
 	]
 	print "Press any key to continue..."
 	input
@@ -2146,22 +2428,23 @@ if error? try [
 	]
 ; and, later, only consider data with higher _id
 ];}}}
-get_bdexplo_max_timestamp_epoch_ms: does [ ; Even more simple than get_bdexplo_max__id: get the maximum of timestamp_epoch_ms in the bdexplo database:{{{ } } }
+get_postgeol_max_timestamp_epoch_ms: does [ ; Even more simple than get_postgeol_max__id: get the maximum of timestamp_epoch_ms in the postgeol database:{{{ } } }
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
 	either ( x/1/1 = 0 ) [
 		; case of an empty database, or if no records are present for the device geolpda_device:
-		max_timestamp_epoch_ms: 1340710529053 ; first time ever the GeolPDA was used in production.
+		tmp: 1340710529053 ; first time ever the GeolPDA was used in production.
 		]
 		[
 		run_query rejoin [{SELECT max(timestamp_epoch_ms::numeric) FROM public.field_observations WHERE device = '} geolpda_device {';}]
-		max_timestamp_epoch_ms: to-integer to-string first (copy sql_result)
+		tmp: to-integer to-string first (copy sql_result)
 		]
 	]
 	[
 	print rejoin ["Error: probably some incorrect values in timestamp_epoch_ms field from public.field_observations table in " dbname " database."
 	flag_ERROR: true]
 	]
+	return tmp		; the function used to set a global variable max_timestamp_epoch_ms => replaced by a tmp variable, and return its value
 ; and, later, only consider data with higher timestamp_epoch_ms
 ] ;}}}
 
@@ -2228,7 +2511,7 @@ do %~/rebol/library/scripts/btn-sqlite.r
 print "Open GeolPDA database..."
 change-dir dir_geolpda_local
 copy-file %geolpda %geolpda_copy.db
-	; => not terrible; this file copy is /only due to the 
+	; => not terrible; this file copy is /only due to the
 	;    fact that the btn (better than nothing) driver does
 	;    not support sqlite file without extension...
 db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
@@ -2240,7 +2523,7 @@ run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par 
 	; DEBUG TODO remove ça
 	; write %qq1 sql_result_csv
 
-; Comparison of field list: to be sure that the table structure matches the 
+; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
 	print "ATTENTION! field names differ from geolpda reference implementation"
@@ -2253,7 +2536,7 @@ geolpda_observations_fields: copy sql_result_fields
 ;}}}
 ; orientations:{{{ } } }
 run_query "SELECT * FROM orientation"
-; Comparison of field list: to be sure that the table structure matches the 
+; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"] [
 	print "ATTENTION! field names differ from geolpda reference implementation"
@@ -2284,7 +2567,7 @@ foreach o geolpda_observations [
 
 ; Il faut trouver les jours.
 ; Les dates sont au format epoch en millisecondes;
-; on utilise la fonction pour convertir les epoch en date 
+; on utilise la fonction pour convertir les epoch en date
 ; dans gll_routines.r
 
 ; Faisons une liste contenant les jours:
@@ -2324,7 +2607,7 @@ print rejoin ["Open GeolPDA data in field_observations table on " dbname " datab
 ;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
 ; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
 ;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
-;>> print geolpda_observations_fields   
+;>> print geolpda_observations_fields
 ; opid year        obs_id         date waypoint_name               x              y        z  description                                                                                                                                                                                                                                                                    code_litho code_unit srid geologist icon_descr comments sample_id datasource numauto photos                                                                                                        audio timestamp_epoch_ms db_update_timestamp          username  device                        time
 ;>> print mold geolpda_observations/3500
 ;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
@@ -2338,20 +2621,20 @@ print rejoin [tab length? geolpda_observations " records in observations table"]
 ;}}}
 ; orientations:{{{ } } }
 run_query "SELECT * FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
-;>> ?? sql_result_fields 
+;>> ?? sql_result_fields
 ;sql_result_fields: ["opid" "obs_id" "measure_type" "structure_type" "north_ref" "direction" "dip" "dip_quadrant" "pitch" "pitch_quadrant" "movement" "valid" "comments" "numauto" "db_update_timestamp" "username" "datasource" "rotation_matrix" "geolpda_id" "geolpda_poi_id" "sortgroup"]
 ; non, pas bon, il faut reconstruire les champs tels qu'issus du GeolPDA:
 ;poiname _id poi_id orientationtype rot1 rot2 rot3 rot4 rot5 rot6 rot7 rot8 rot9 v1 v2 v3
-;>> print geolpda_orientations/1      
+;>> print geolpda_orientations/1
 ;PCh2012_0276 1 0 L -0.825988829135895 0.563685536384583 -0.0010570005979389 -0.562389075756073 -0.823959052562714 0.0693530738353729 0.0382223948836327 0.0578793101012707 0.997591555118561 0.0 0.0 0.0
 
-;SELECT 
-;obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix  
+;SELECT
+;obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix
 ;/*
-;opid, 
-;structure_type, north_ref, 
-;direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments, numauto, db_update_timestamp, username, datasource, 
-;sortgroup 
+;opid,
+;structure_type, north_ref,
+;direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments, numauto, db_update_timestamp, username, datasource,
+;sortgroup
 ;*/
 ;FROM public.field_observations_struct_measures WHERE obs_id ILIKE 'PCh2012_____' ORDER BY obs_id, geolpda_poi_id, geolpda_id;
 
@@ -2371,7 +2654,7 @@ foreach i sql_result [
 		append jours to-date to-string i
 	]
 ]
-;length? jours 
+;length? jours
 ;}}}]
 if (none? date_start) [
 	prin "Jours: "
@@ -2445,7 +2728,7 @@ dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, format
 	seconds_decplaces [integer!] "Must be a positive integer value"
 	]
 	[
-	default_seconds_decplaces sign minutes seconds degrees output 
+	default_seconds_decplaces sign minutes seconds degrees output
 	]
 	[
 	default_seconds_decplaces: 3
@@ -2473,7 +2756,7 @@ dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, format
 			print "Error: seconds_decplaces negative amount => default"
 			seconds_decplaces: default_seconds_decplaces ]
 	] [
-		seconds_decplaces: default_seconds_decplaces 
+		seconds_decplaces: default_seconds_decplaces
 	]
 	seconds: round/to seconds (to-decimal rejoin ["1E-" seconds_decplaces])
 	;append output rejoin [degrees "°" minutes "'" seconds {"}]	; TODO BUG: "°" does not appear on output: probably an extended character related error => check with other flavours of Rebol
@@ -2533,7 +2816,7 @@ dd2dms_lon_lat_from_qgis: function [{Converts a pair of longitude,latitude coord
 	seconds_decplaces [integer!] "Must be a positive integer value"
 	]
 	[
-	;default_seconds_decplaces sign minutes seconds degrees output 
+	;default_seconds_decplaces sign minutes seconds degrees output
 	londd latdd
 	]
 	[
@@ -2675,7 +2958,7 @@ gll_create_new_operation: does [ ; {{{ } } }
 
 ; fonctions pour la gestion des datasource:
 test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
-	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '" 
+	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '"
 	                      opid "' AND datasource_id = " new_datasource_id ";"]
 	 res: to-string run_query sql_string
 	 ;print probe res
@@ -2745,7 +3028,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 		]
 	]
 	return output
-] 
+]
 
 ; usage: {{{ } } }
 ;get_datasource_dependant_information 912
@@ -2836,16 +3119,16 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 									;prin  "SE "
 									]
 			(x  = 0) and (y <  0) 	[
-									;prin  "S  " 
+									;prin  "S  "
 									azim: azim + 180]
 			(x <  0) and (y <  0) 	[
-									;prin  "SO " 
+									;prin  "SO "
 									azim: azim + 180]
 			(x <  0) and (y  = 0) 	[
-									;prin  "O  " 
+									;prin  "O  "
 									azim: azim + 180]
 			(x <  0) and (y >  0) 	[
-									;prin  "NO " 
+									;prin  "NO "
 									azim: azim + 180]
 		]
 		return azim
@@ -2890,7 +3173,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;					    0.6   0.6  -0.5
 	;					    0.4   0.8   0.4]
 
-	; L'exemple de matrice pour cette pseudomesure de faille 
+	; L'exemple de matrice pour cette pseudomesure de faille
 	; Nm30/60/E/55/S/N:
 	;	rotation_matrix: [ -0.7   0     0.7    0.6   0.6  -0.5    0.4   0.8   0.4]
 
@@ -3015,7 +3298,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;								matrix/3/3 ]
 			plane_normal_vector: reduce [ c f i ]
 			;; une autre formulation: {{{
-			;; ON est la normale du plan vers le haut (utile pour 
+			;; ON est la normale du plan vers le haut (utile pour
 			;; les pendages inverses, par exemple):
 			;ON: make vector [x: c y: f z: i]
 			;;>> probe ON
@@ -3025,7 +3308,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;;    z: 0.4
 			;;]
 			;;>>
-			;; => semble correct 
+			;; => semble correct
 			;; }}}
 			;; encore une autre:{{{
 			;;; mieux (plus "propre", "lisible"):
@@ -3039,9 +3322,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;=======================================================
 			; OA ou A est le vecteur de l'Axe du téléphone, vers le haut
 			; quand on tient le téléphone normalement.
-			; Si l'on mesure une faille, il s'agit du vecteur mouvement du bloc 
+			; Si l'on mesure une faille, il s'agit du vecteur mouvement du bloc
 			; en place (opposé de celui de la mesure), de sorte qu'une faille
-			; _normale_ avec le bloc supérieur érodé se mesure avec le téléphone 
+			; _normale_ avec le bloc supérieur érodé se mesure avec le téléphone
 			; en position _normale_.
 			;OA: product_matrix_line rotation_matrix [0 1 0]
 			;OA: to-vector OA
@@ -3063,8 +3346,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;down_dip_vect: func [] [;{{{ } } } ;=> annulé: en fait, on s'en fout.
 	;	; OD est le vecteur aval-pendage; D pour Down-Dip:
 	;	down_dip_vect: reduce [
-	;		x: i / (square-root 3) 
-	;		y: i * f / ((square-root 2) * c) 
+	;		x: i / (square-root 3)
+	;		y: i * f / ((square-root 2) * c)
 	;		z: square-root ( 1 - (( ( i ** 2 ) / 2 ) - ( ( ( i ** 2 ) * ( f ** 2 ) ) / ( 2 * ( c ** 2 ) ) ) ) )
 	;	]
 	;	;>> probe OD
@@ -3075,7 +3358,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;	;    norm: func [][return (x ** 2) + (y ** 2) + (z ** 2)]
 	;	;    is_unit: func [][return ((norm) - 1) ** 2 < 0.0001]
 	;	;    azim: func [][
-	;	;        tt: arcsine (x / ((x ** 2) + (y ** 2) + (z ** 2))) 
+	;	;        tt: arcsine (x / ((x ** 2) + (y ** 2) + (z ** 2)))
 	;	;        return tt
 	;	;    ]
 	;	;    dip: func [][return arccosine (z / ((x ** 2) + (y ** 2) + (z ** 2)))]
@@ -3164,9 +3447,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 				]
 		
 			;;line_movement: => inutile {{{ } } }
-			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une 
-			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne 
-			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé 
+			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une
+			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne
+			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé
 			;		; dans la faille en mouvement ou dans la guimauve qui flue).
 			;	; Mais déterminons le mouvement de manière un peu moins lyrique et plus pragmatique:
 			;	; la composante verticale du mouvement:
@@ -3296,8 +3579,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;# Un point tmp, colinéaire au projeté de plane_normal_vector
 		;# sur le plan horizontal, à 1 de l'origine:
 		tmp: reduce [
-			self/plane_normal_vector/1 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2)))) 
-			self/plane_normal_vector/2 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2)))) 
+			self/plane_normal_vector/1 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2))))
+			self/plane_normal_vector/2 / (square-root (((self/plane_normal_vector/1 ** 2) + (self/plane_normal_vector/2 ** 2))))
 		]
 		;
 		;##   FIXME: pour un plan strictement horizontal,
@@ -3483,7 +3766,7 @@ generate_tectri_file: function [ ;{{{ } } }
 	;either table [
 	;	; an alternative table is provided: check if it exists:
 	;	if error? try [
-	;		sql_string: rejoin ["SELECT * FROM " structures_measures_table " LIMIT 0"] 
+	;		sql_string: rejoin ["SELECT * FROM " structures_measures_table " LIMIT 0"]
 	;		print sql_string
 	;		run_query sql_string
 	;		] [
@@ -3583,7 +3866,7 @@ generate_tectri_file: function [ ;{{{ } } }
 			warning: rejoin ["(WARNING: " (substring warning 1 (length? warning) - 2) ") "]
 		]
 
-		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep] 
+		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep]
 		; if unique_filename, add the description from field_observations to the comments output column:
 		;if unique_filename [		;=> in fact, even if data is not in a unique file, probably better
 			comment: rejoin [m/2 " <" m/3 "> " "<" m/4 "> " warning]
@@ -3713,7 +3996,7 @@ generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
 			warning: rejoin ["(WARNING: " (substring warning 1 (length? warning) - 2) ") "]
 		]
 
-		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep] 
+		line: rejoin [dir sep dip sep dipq sep pi sep piqd sep mov sep]
 		; if unique_filename, add the description from field_observations to the comments output column:
 		;if unique_filename [		;=> in fact, even if data is not in a unique file, probably better
 			comment: rejoin [m/2 "/" m/3 " <" m/4 "> " "<" m/5 "> " warning]

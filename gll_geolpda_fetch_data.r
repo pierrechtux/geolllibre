@@ -1,13 +1,15 @@
 #!/usr/bin/rebol -qs
 REBOL [;{{{ } } }
-	Title:   "Gets information from GeolPDA android device, and uploads it to a database"
-	Date:    == 12-Feb-2014/12:18:12+1:00
-	Version: 0.0.1
+	Title:   "Gets information from GeolPDA android device, and uploads it to a PostGeol database"
+	;Date:    == 12-Feb-2014/12:18:12+1:00
+	;Date:    == 27-Aug-2016/15:59:30+2:00
+	Version: 0.1.0
 	Purpose: {
 	}
 	History: [
 		22-Oct-2013/17:23:33+2:00 {Version operational}
 		12-Feb-2014/12:18:12+1:00 {Clean-up}
+		27-Aug-2016/15:59:30+2:00 {Re-write to access Android device through MTP protocol}
 	]
 	License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
@@ -19,7 +21,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
+  Copyright (C) 2016 Pierre Chevalier <pierrechevaliergeol@free.fr>
  
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,14 +57,14 @@ foreach r sql_result [
 ] ;}}}
 
 ; initialisation: ;{{{ } } }
-if error? try [						; Récupération des routines (et des préférences) et connexion à la base
-if error? try [						; Récupération des routines (et des préférences) et connexion à la base
-do load to-file system/options/home/bin/gll_routines.r	; soit depuis ~/bin
+if error? try [													; Get routines (and preferences) and database connection
+if error? try [
+do load to-file system/options/home/bin/gll_routines.r			; either from ~/bin,
 ] [
-do load to-file %gll_routines.r				; ou sinon là où se trouve le script présent
+do load to-file %gll_routines.r				 					; or where the current script is located,
 ]
 ] [
-do load to-file system/options/home/geolllibre/gll_routines.r		; ou sinon dans ~/geolllibre
+do load to-file system/options/home/geolllibre/gll_routines.r	; or from ~/geolllibre
 ]
 flag_ERROR: false
 ;}}}
@@ -70,11 +72,13 @@ flag_ERROR: false
 ; Execution
 ;get_bdexplo_max__id ; no, it does not work if a new geolpda database is used: this is the case when a sqlite geolpda database becomes too big, making GeolPDA too slow for field work.
 ; So, instead, get the max_timestamp_epoch_ms:
-get_bdexplo_max_timestamp_epoch_ms
+max_timestamp_epoch_ms: get_postgeol_max_timestamp_epoch_ms
 
 if flag_ERROR [ print "Error, quitting." quit ]
 
 ; Connect geolpda android device, copy to local directory:{{{ } } }
+; Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
+COMMENT: [
 ; default directories are stored in .gll_preferences
 
 ; Get the user to properly mount the android device:
@@ -88,13 +92,39 @@ alert {now locate the local directory where geolpda data is (or will be) replica
 unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
+] ;}}}
+; Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): {{{
+ 
+; default directories are stored in .gll_preferences
+
+; Get the user to properly mount the android device:
+print ["Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."]
+nothing: input
+;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+
+dir: copy to-string dir_mount_geolpda_android
+replace dir "/Phone/geolpda/" ""
+call rejoin ["jmtpfs " dir]
+
+; Get the location where it is mounted:
+print {locate where android device is mounted, pick up "geolpda" subdirectory}
+
+unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {pick up "geolpda" subdirectory} dir_mount_geolpda_android ]
+
+; Get the location of the local image of geolpda data:
+print {now locate the local directory where geolpda data is (or will be) replicated}
+unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
+
+print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
+;}}}
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 if ( confirm "get geolpda database from android device?" ) [
-	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak"]] [print "Error while backuping previous geolpda."]
+	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak." timestamp_]] [print "Error while backuping previous geolpda."]
 	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
+	print "Database copied from android device."
 ]
-if ( confirm "synchronize geolpda files (pictures, audio files)?" ) [ synchronize_geolpda ]
+if ( confirm "Synchronize geolpda files (pictures, audio files)?" ) [ synchronize_geolpda ]
 ;}}}
 
 ; Open sqlite geolpda, get data:{{{ } } }
@@ -263,4 +293,11 @@ if confirm {Synchronize oruxmaps tracklogs?} [
 
 ;/*}}}*/
 ; Finished.
+
+
+; à la fin, faire: 
+;call rejoin ["jmtpfs " dir]
+;fusermount -u /mnt/galaxy1
+
+
 
