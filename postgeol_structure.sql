@@ -1,15 +1,4 @@
-ENLEVER TOUT CE QUI A TRAIT À:
-
-european_federation_geologists_members
-pchgeol_rapports
-songs
-pieces_mouvts
-pieces_stock_fin_2011
-tmp_africa_powermining_projects_database
-tmp_european_federation_geologists_members
-
-
--- _______________ENCOURS_______________GEOLLLIBRE 0
+-- _______________ENCOURS_______________GEOLLLIBRE 1
 
 -- LIGNES:     0 en-tête, licence, rien et TODOs
 --            90 des trucs en en-tête du dump
@@ -108,7 +97,7 @@ SET client_min_messages = warning;
 
 
 --}}}
--- 0100 LISTE OBJETS DE BDEXPLO:{{{
+--  0100 LISTE OBJETS DE BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -195,10 +184,7 @@ tables:{{{
  public             | occurrences_recup_depuis_dump                              | table | data_admin
 
  pierre             | dh_nb_samples                                              | table | pierre    <= inutile
- pierre             | european_federation_geologists_members                     | table | pierre
  pierre             | grid                                                       | table | pierre
- pierre             | pchgeol_rapports                                           | table | pierre
- pierre             | songs                                                      | table | pierre
  pierre             | tmp_xy                                                     | table | pierre
  pierre             | tmp_xyz_marec                                              | table | pierre
  pierre             | toudoux_dh_sampling_grades_datasource_979                  | table | pierre
@@ -228,10 +214,7 @@ tables:{{{
  tmp_a_traiter      | tmp_bv130613_gravi_results                                 | table | pierre
 
  tmp_imports        | orientation                                                | table | pierre
- tmp_imports        | pieces_mouvts                                              | table | pierre
- tmp_imports        | pieces_stock_fin_2011                                      | table | pierre
  tmp_imports        | poi                                                        | table | pierre
- tmp_imports        | tmp_africa_powermining_projects_database                   | table | pierre
  tmp_imports        | tmp_assay_results_auramines_ns30n                          | table | pierre
  tmp_imports        | tmp_cme_sampling_grades_150102                             | table | pierre
  tmp_imports        | tmp_cme_sampling_grades_150102_utf8                        | table | pierre
@@ -241,7 +224,6 @@ tables:{{{
  tmp_imports        | tmp_entree_donnees_dh_tech                                 | table | pierre
  tmp_imports        | tmp_erreur_z                                               | table | pierre
  tmp_imports        | tmp_esp_pgm_cr_140908_                                     | table | pierre
- tmp_imports        | tmp_european_federation_geologists_members                 | table | pierre
  tmp_imports        | tmp_export_geolpda_waypoints_descriptions                  | table | pierre
  tmp_imports        | tmp_ext1                                                   | table | pierre
  tmp_imports        | tmp_ext2                                                   | table | pierre
@@ -395,7 +377,6 @@ vues:{{{
  pierre             | dh_tech                                                      | vue  | pierre
  pierre             | dh_thinsections                                              | vue  | pierre
  pierre             | dh_traces_3d                                                 | vue  | pierre
- pierre             | european_federation_geologists_members_latest                | vue  | pierre
  pierre             | field_observations                                           | vue  | pierre
  pierre             | field_observations_points                                    | vue  | pierre
  pierre             | field_observations_struct_measures                           | vue  | pierre
@@ -434,7 +415,6 @@ vues:{{{
  pierre             | occurrences_                                                 | vue  | pierre
  pierre             | occurrences_bal_200km                                        | vue  | pierre
  pierre             | operations_quadrangles                                       | vue  | pierre
- pierre             | pchgeol_rapports_liste_biblio_cv                             | vue  | pierre
  pierre             | petro_mineralo_study_dh_collars                              | vue  | pierre
  pierre             | petro_mineralo_study_field_observations_points               | vue  | pierre
  pierre             | qc_sampling                                                  | vue  | pierre
@@ -582,10 +562,8 @@ index_geo_documentation
 layer_styles
 program
 
-_______________ENCOURS_______________GEOLLLIBRE 1
-occurrences_recup_depuis_dump
 
-dh_nb_samples        <= inutile
+dh_nb_samples
 grid
 tmp_xy
 tmp_xyz_marec
@@ -779,7 +757,6 @@ dh_struct_measures
 dh_tech                                                     
 dh_thinsections                                             
 dh_traces_3d                                                
-european_federation_geologists_members_latest               
 field_observations                                          
 field_observations_points                                   
 field_observations_struct_measures                          
@@ -818,7 +795,6 @@ occurrences
 occurrences_                                                
 occurrences_bal_200km                                       
 operations_quadrangles                                      
-pchgeol_rapports_liste_biblio_cv                            
 petro_mineralo_study_dh_collars                             
 petro_mineralo_study_field_observations_points              
 qc_sampling                                                 
@@ -891,9 +867,9 @@ Pareil, / des instructions de CREATion de TABLEs:
 
 /CREATE TABLE.*doc_bdexplo_table_categories
 /CREATE TABLE.*doc_postgeol_table_categories
-
 /CREATE TABLE.*doc_bdexplo_tables_descriptions
 /CREATE TABLE.*doc_postgeol_tables_descriptions
+
 /CREATE TABLE.*operations
 /CREATE TABLE.*operation_active
 /CREATE TABLE.*field_observations
@@ -901,7 +877,7 @@ Pareil, / des instructions de CREATion de TABLEs:
 /CREATE TABLE.*field_photos
 /CREATE TABLE.*formations_group_lithos
 _______________ENCOURS_______________GEOLLLIBRE 2
-/CREATE TABLE.*rock_sampling
+/CREATE TABLE.*field_sampling
 /CREATE TABLE.*rock_ana
 /CREATE TABLE.*surface_samples_grades
 /CREATE TABLE.*gps_wpt
@@ -953,12 +929,8 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*index_geo_documentation
 /CREATE TABLE.*layer_styles
 /CREATE TABLE.*program
-/CREATE TABLE.*occurrences_recup_depuis_dump
 /CREATE TABLE.*dh_nb_samples
-/CREATE TABLE.*european_federation_geologists_members
 /CREATE TABLE.*grid
-/CREATE TABLE.*pchgeol_rapports
-/CREATE TABLE.*songs
 /CREATE TABLE.*tmp_xy
 /CREATE TABLE.*tmp_xyz_marec
 /CREATE TABLE.*toudoux_dh_sampling_grades_datasource_979
@@ -986,10 +958,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*tmp_bondoukou_sondages_sampling_grades
 /CREATE TABLE.*tmp_bv130613_gravi_results
 /CREATE TABLE.*orientation
-/CREATE TABLE.*pieces_mouvts
-/CREATE TABLE.*pieces_stock_fin_2011
 /CREATE TABLE.*poi
-/CREATE TABLE.*tmp_africa_powermining_projects_database
 /CREATE TABLE.*tmp_assay_results_auramines_ns30n
 /CREATE TABLE.*tmp_cme_sampling_grades_150102
 /CREATE TABLE.*tmp_cme_sampling_grades_150102_utf8
@@ -999,7 +968,6 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*tmp_entree_donnees_dh_tech
 /CREATE TABLE.*tmp_erreur_z
 /CREATE TABLE.*tmp_esp_pgm_cr_140908_
-/CREATE TABLE.*tmp_european_federation_geologists_members
 /CREATE TABLE.*tmp_export_geolpda_waypoints_descriptions
 /CREATE TABLE.*tmp_ext1
 /CREATE TABLE.*tmp_ext2
@@ -1080,6 +1048,26 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 
 /CREATE TABLE.*lab_ana_batches_reception_18_corr
 --}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1218,7 +1206,7 @@ COMMENT ON SCHEMA backups IS 'Just in case, a convenient place to put backups wh
 ----------------------------------------------
 
 -- TODO utile de garder ça??
-CREATE TABLE public.doc_postgeol_table_categories (
+CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdexplo_table_categories
     category       varchar NOT NULL PRIMARY KEY,
     description_en varchar,
     description_es varchar,
@@ -1255,7 +1243,7 @@ CREATE TABLE public.doc_postgeol_table_categories (
 -- x doc_postgeol_tables_descriptions --{{{
 -- TODO même question: utile à garder?
 
-CREATE TABLE public.doc_postgeol_tables_descriptions (
+CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
     tablename      varchar PRIMARY KEY, 
     category       varchar
         REFERENCES doc_postgeol_table_categories(category) 
@@ -1295,7 +1283,7 @@ CREATE TABLE public.operations (
     username        varchar DEFAULT current_user NOT NULL
 );
 COMMENT ON TABLE public.operations                         IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
-COMMENT ON COLUMN public.operations.opid                   IS 'Operation identifier, automatic sequence';
+COMMENT ON COLUMN public.operations.opid                   IS 'Operation identifier, automatic sequence; referred by all tables, since all data contained belongs to an operation'; -- TODO ideally, to avoid any collisions, a centralised operations reference should be put in place, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.
 COMMENT ON COLUMN public.operations.operation              IS 'Operation code';
 COMMENT ON COLUMN public.operations.full_name              IS 'Complete operation name';
 COMMENT ON COLUMN public.operations.operator               IS 'Operator: mining operator, exploration company, client name';
@@ -1325,13 +1313,13 @@ CREATE TABLE operation_active (
     numauto         serial PRIMARY KEY
 );
 COMMENT ON TABLE operation_active                IS 'table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
-COMMENT ON COLUMN operation_active.opid                IS 'Operation identifier';
-COMMENT ON COLUMN operation_active.creation_ts         IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN operation_active.username            IS 'User (role) which created data record';
-COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
+COMMENT ON COLUMN operation_active.opid          IS 'Operation identifier';
+COMMENT ON COLUMN operation_active.creation_ts   IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN operation_active.username      IS 'User (role) which created data record';
+COMMENT ON COLUMN operation_active.numauto       IS 'Automatic integer';
 
 --}}}
--- e field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
+-- x field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
 -- x field_observations:{{{
 
 CREATE TABLE public.field_observations (
@@ -1517,132 +1505,66 @@ COMMENT ON COLUMN public.formations_group_lithos.username    IS 'User (role) whi
 COMMENT ON COLUMN public.formations_group_lithos.numauto     IS 'Automatic integer primary key';
 
 --}}}
--- x field_sampling (used to be rock_sampling):{{{
-
--- _______________ENCOURS_______________GEOLLLIBRE 4
--- TODO table très vide: contenu à verser, plutôt, dans surface_sampling (SI CE N'EST DÉJÀ FAIT!)
-CREATE TABLE field_sampling (  -- Nota bene: used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
-    opid           integer
-      REFERENCES public.operations(opid)
-      ON UPDATE CASCADE
-      ON DELETE CASCADE
-       DEFERRABLE INITIALLY DEFERRED
-    location       varchar,
-    num            varchar(20),      -- renommer sample_id
-    hammer_index   integer NOT NULL, -- HM! Garder pour le moment, pour la jointure avec rock_ana, puis virer.
-    geologist      varchar(20),
-    description    varchar(250),
-    x              numeric(10,2),   
-    y              numeric(10,2),
-    z              numeric(10,2),
-    datasource     integer,
-    FOREIGN KEY (opid) REFERENCES operations
-);
--- {{{
-/* Kept for history only
-COMMENT ON TABLE  public.rock_sampling              IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
-COMMENT ON COLUMN public.rock_sampling.geologist    IS 'geologist name';
-COMMENT ON COLUMN public.rock_sampling.num          IS 'sample name or number';
-COMMENT ON COLUMN public.rock_sampling.x            IS 'X coordinate';
-COMMENT ON COLUMN public.rock_sampling.y            IS 'Y coordinate';
-COMMENT ON COLUMN public.rock_sampling.z            IS 'Z coordinate';
-COMMENT ON COLUMN public.rock_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
-*/
-COMMENT ON TABLE  public.field_sampling              IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
-COMMENT ON COLUMN public.field_sampling.geologist    IS 'geologist name';
-COMMENT ON COLUMN public.field_sampling.num          IS 'sample name or number';
-COMMENT ON COLUMN public.field_sampling.x            IS 'X coordinate';
-COMMENT ON COLUMN public.field_sampling.y            IS 'Y coordinate';
-COMMENT ON COLUMN public.field_sampling.z            IS 'Z coordinate';
-COMMENT ON COLUMN public.field_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
--- }}}
---}}}
--- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
-
-CREATE TABLE public.rock_ana (
-    opid integer REFERENCES operations (opid)
-      REFERENCES operations (opid)
-      ON UPDATE CASCADE
-      ON DELETE CASCADE
-      DEFERRABLE INITIALLY DEFERRED, 
-    --  hammer_index integer,  --TODO rectifier ça... =>
-    sample_id varchar,
-    shipment date,
-    ticket_id varchar(25),
-    reception date,
-    ana_type integer,
-    amc_batch varchar(20),
-    labo_batch varchar(20),
-    value numeric(10,2),
-    comments varchar(20),
-    numauto serial PRIMARY KEY
-);
-COMMENT ON COLUMN public.rock_ana.hammer_index IS 'Sample identification related to the hammer_sampling table';
-COMMENT ON COLUMN public.rock_ana.value IS 'Analysis value';
-COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
-
---}}}
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- x surface_samples_grades:{{{
 
-CREATE TABLE surface_samples_grades (
-    opid integer REFERENCES operations (opid),
-    sample_id varchar,
-    x double precision,
-    y double precision,
-    z double precision,
-    srid integer,
-    description varchar,
-    sample_type varchar,
-    outcrop_id varchar,
-    trend varchar,
-    dip varchar,
-    length_m varchar,
-    width_m varchar,
-    au1_ppm double precision,
-    au2_ppm double precision,
-    ag1_ double precision,
-    ag2_ double precision,
-    cu1_ double precision,
-    cu2_ double precision,
-    as_ double precision,
-    pb_ double precision,
-    zn_ double precision,
-    k2o_ double precision,
-    ba_ double precision,
-    sio2_ double precision,
-    al2x_ double precision,
-    fe2x_ double precision,
-    mno_ double precision,
-    tio2_ double precision,
-    p2o5_ double precision,
-    cao_ double precision,
-    mgo_ double precision,
-    mo_ double precision,
-    sn_ double precision,
-    sb_ double precision,
-    w_ double precision,
-    bi_ double precision,
-    zr_ double precision,
-    li_ double precision,
-    b_ double precision,
-    v_ double precision,
-    cr_ double precision,
-    ni_ double precision,
-    co_ double precision,
-    sr_ double precision,
-    y_ double precision,
-    la_ double precision,
-    ce_ double precision,
-    nb_ double precision,
-    be_ double precision,
-    cd_ double precision,
-    spp2 double precision,
-    numauto serial PRIMARY KEY,
+CREATE TABLE public.surface_samples_grades (
+    opid           integer REFERENCES operations (opid),
+    sample_id      varchar,
+    x              double precision,
+    y              double precision,
+    z              double precision,
+    srid           integer,
+    description    varchar,
+    sample_type    varchar,
+    outcrop_id     varchar,
+    trend          varchar,
+    dip            varchar,
+    length_m       varchar,
+    width_m        varchar,
+    au1_ppm        double precision,
+    au2_ppm        double precision,
+    ag1_           double precision,
+    ag2_           double precision,
+    cu1_           double precision,
+    cu2_           double precision,
+    as_            double precision,
+    pb_            double precision,
+    zn_            double precision,
+    k2o_           double precision,
+    ba_            double precision,
+    sio2_          double precision,
+    al2x_          double precision,
+    fe2x_          double precision,
+    mno_           double precision,
+    tio2_          double precision,
+    p2o5_          double precision,
+    cao_           double precision,
+    mgo_           double precision,
+    mo_            double precision,
+    sn_            double precision,
+    sb_            double precision,
+    w_             double precision,
+    bi_            double precision,
+    zr_            double precision,
+    li_            double precision,
+    b_             double precision,
+    v_             double precision,
+    cr_            double precision,
+    ni_            double precision,
+    co_            double precision,
+    sr_            double precision,
+    y_             double precision,
+    la_            double precision,
+    ce_            double precision,
+    nb_            double precision,
+    be_            double precision,
+    cd_            double precision,
+    spp2           double precision,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamp with time zone DEFAULT now() NOT NULL,
-    username varchar DEFAULT current_user,
-    datasource integer,
-    campaign varchar
+    username       varchar DEFAULT current_user,
+    datasource     integer,
+    campaign       varchar
 );
 COMMENT ON TABLE public.surface_samples_grades              IS 'Ponctual samples taken from surface: stream sediments, alluvial sediments, till, soils, termite mounds, rock outcrops, floats, etc. with grades';
 COMMENT ON COLUMN public.surface_samples_grades.opid        IS 'Operation identifier';
@@ -1651,36 +1573,11 @@ COMMENT ON COLUMN public.surface_samples_grades.creation_ts IS 'Current date and
 COMMENT ON COLUMN public.surface_samples_grades.username    IS 'User (role) which created data record';
 COMMENT ON COLUMN public.surface_samples_grades.datasource  IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN public.surface_samples_grades.campaign    IS 'Campaign: year, type, etc. i.e. till exploration 1967';
+-- TODO remain quite a few fields to comment.  But this structure is certainly not relevant.
 
 --}}}
--- x gps_wpt: TODO is this daube?{{{
-
-CREATE TABLE gps_wpt (
-    opid integer REFERENCES operations (opid), --TODO ATTENTION, CHAMP RAJOUTÉ
-    gid integer,
-    numberofpo integer,
-    nameofpoin varchar(50),
-    altitude varchar(10),
-    comment varchar,
-    symbol varchar(5),
-    display1 varchar(3),
-    geolog varchar(10),
-    descriptio varchar(254),
-    code varchar(4),
-    the_geom public.geometry,
-    x numeric,
-    y numeric,
-    date varchar,
-    "time" varchar,
-    device varchar
-);
-
 --}}}
-
---}}}
---_______________ENCOURS_______________GEOLLLIBRE 5
--- geochemistry:{{{
-
+-- x geochemistry:{{{
 -- x geoch_sampling:{{{
 
 CREATE TABLE public.geoch_sampling (
@@ -1723,7 +1620,7 @@ CREATE TABLE public.geoch_sampling (
     username varchar DEFAULT current_user,
     numauto serial PRIMARY KEY
 );
-COMMENT ON TABLE public.geoch_sampling                      IS 'Geochemistry samples, from soil or stream sediments, location and description';
+COMMENT ON TABLE public.geoch_sampling                      IS 'Geochemistry samples, from soil or stream sediments: location and description data';
 COMMENT ON COLUMN public.geoch_sampling.opid                IS 'Operation identifier';
 COMMENT ON COLUMN public.geoch_sampling.id                  IS 'Identification';
 COMMENT ON COLUMN public.geoch_sampling.lab_id              IS 'Analysis laboratory';
@@ -1769,6 +1666,7 @@ CREATE TABLE public.geoch_ana (
     username varchar DEFAULT current_user,
     datasource integer
 );
+
 COMMENT ON TABLE  public.geoch_ana                     IS 'Assay results from geochemistry samples';
 COMMENT ON COLUMN public.geoch_ana.opid                IS 'Operation identifier';
 COMMENT ON COLUMN public.geoch_ana.sampl_index         IS 'Sample identification related to the geoch_sampling table';
@@ -1797,8 +1695,10 @@ COMMENT ON COLUMN geoch_sampling_grades.datasource IS 'Datasource identifier, re
 COMMENT ON COLUMN geoch_sampling_grades.numauto IS 'Automatic integer primary key';
 
 --}}}
-
 --}}}
+SELECT * FROM geoch_sampling_grades LIMIT 10;
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
+--_______________ENCOURS_______________GEOLLLIBRE 5
 -- geophysics:{{{
 -- x gpy_mag_ground:{{{
 
@@ -1830,7 +1730,7 @@ COMMENT ON COLUMN gpy_mag_ground.datasource IS 'Datasource identifier, refers to
 --}}}
 -- o gpy_radiometry{{{
 -- TODO plans compteurs
-}}}
+-- }}}
 -- o other methods: TODO
 
 --}}}
@@ -2407,13 +2307,13 @@ CREATE TABLE public.dh_resistivity (
       ON DELETE CASCADE 
       DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE public.dh_collars ry IS 'Down-hole probing: resistivity measurements';
-COMMENT ON COLUMN public.dh_resistivity.opid                IS 'Operation identifier';
-COMMENT ON COLUMN public.dh_resistivity.id                       IS 'Full identifier for borehole or trench';
-COMMENT ON COLUMN public.dh_resistivity.depfrom                  IS 'Interval beginning depth';
-COMMENT ON COLUMN public.dh_resistivity.depto                    IS 'Interval ending depth';
-COMMENT ON COLUMN public.dh_resistivity.lld                      IS ''; --TODO
-COMMENT ON COLUMN public.dh_resistivity.lls                      IS ''; --TODO
+COMMENT ON TABLE public.dh_collars                     IS 'Down-hole probing: resistivity measurements';
+COMMENT ON COLUMN public.dh_resistivity.opid           IS 'Operation identifier';
+COMMENT ON COLUMN public.dh_resistivity.id             IS 'Full identifier for borehole or trench';
+COMMENT ON COLUMN public.dh_resistivity.depfrom        IS 'Interval beginning depth';
+COMMENT ON COLUMN public.dh_resistivity.depto          IS 'Interval ending depth';
+COMMENT ON COLUMN public.dh_resistivity.lld            IS ''; --TODO
+COMMENT ON COLUMN public.dh_resistivity.lls            IS ''; --TODO
 COMMENT ON COLUMN operation_active.creation_ts         IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN operation_active.username            IS 'User (role) which created data record';
 COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
@@ -3319,6 +3219,8 @@ COMMENT ON COLUMN lex_standard.datasource IS 'Datasource identifier, refers to l
 
 --}}}
 
+--COMMIT; -- on verra à COMMITer en temps utile...
+
 
 
 
@@ -3574,16 +3476,6 @@ CREATE TABLE program (
 );
 --}}}
 --}}}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -10622,6 +10514,17 @@ CREATE TABLE grid (
     srid integer,
     numauto serial PRIMARY KEY,
 );
+
+
+CREATE VIEW grid_points AS 
+  SELECT *, GeomFromewkt( 'SRID='|| srid ||
+                      ';POINT(' || 
+                              x || ' ' || 
+                              y || 
+                           ')'
+                     )
+  FROM grid;
+
 --}}}
 
 --PAUMÉ:
@@ -10705,7 +10608,103 @@ ALTER TABLE occurrences OWNER TO data_admin;
 ALTER TABLE grade_ctrl OWNER TO data_admin;
 ALTER TABLE lex_codes OWNER TO data_admin;
 ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tiens, et pourquoi donc to postgres??
+
+--DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
+
+-- x field_sampling (used to be rock_sampling):{{{
+
+-- TODO table très vide: contenu à verser, plutôt, dans surface_sampling (SI CE N'EST DÉJÀ FAIT!)
+CREATE TABLE field_sampling (  -- Nota bene: field_sampling used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names and notions...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
+    opid           integer
+      REFERENCES public.operations(opid)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE
+       DEFERRABLE INITIALLY DEFERRED
+    location       varchar,
+    num            varchar(20),      -- renommer sample_id
+    hammer_index   integer NOT NULL, -- HM! Garder pour le moment, pour la jointure avec rock_ana, puis virer.
+    geologist      varchar(20),
+    description    varchar(250),
+    x              numeric(10,2),   
+    y              numeric(10,2),
+    z              numeric(10,2),
+    datasource     integer,
+    FOREIGN KEY (opid) REFERENCES operations
+);
+-- {{{
+/* Kept for history only
+COMMENT ON TABLE  public.rock_sampling              IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
+COMMENT ON COLUMN public.rock_sampling.geologist    IS 'geologist name';
+COMMENT ON COLUMN public.rock_sampling.num          IS 'sample name or number';
+COMMENT ON COLUMN public.rock_sampling.x            IS 'X coordinate';
+COMMENT ON COLUMN public.rock_sampling.y            IS 'Y coordinate';
+COMMENT ON COLUMN public.rock_sampling.z            IS 'Z coordinate';
+COMMENT ON COLUMN public.rock_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
+*/
+COMMENT ON TABLE  public.field_sampling              IS 'Rock samples taken in the field, on surface: outcrops, floats, etc.'; --TODO rectifier ça
+COMMENT ON COLUMN public.field_sampling.geologist    IS 'Geologist name';
+COMMENT ON COLUMN public.field_sampling.sample_id    IS 'Sample identifier: refers to assay results and quality check tables';
+COMMENT ON COLUMN public.field_sampling.x            IS 'X coordinate'; -- TODO add an srid
+COMMENT ON COLUMN public.field_sampling.y            IS 'Y coordinate';
+COMMENT ON COLUMN public.field_sampling.z            IS 'Z coordinate';
+COMMENT ON COLUMN public.field_sampling.hammer_index IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
+-- }}}
+--}}}
+-- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
+-- TODO table assez vide, tout comme field_sampling: contenu à verser, plutôt, dans lab_ana_results (SI CE N'EST DÉJÀ FAIT!)
+-- _______________ENCOURS_______________GEOLLLIBRE 4
+CREATE TABLE public.field_sampling_ana (  -- Nota bene: field_sampling_ana used to be called rock_ana; actually, it may encompass much more than just rocks.  See remarks above concerning field_sampling table.
+    opid           integer REFERENCES operations (opid)
+      REFERENCES operations (opid)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE
+      DEFERRABLE INITIALLY DEFERRED, 
+    --  hammer_index integer,  --TODO rectifier ça... =>
+    sample_id      varchar,
+    shipment       date,
+    ticket_id      varchar(25),
+    reception      date,
+    ana_type       integer,
+    amc_batch      varchar(20),
+    labo_batch     varchar(20),
+    value          numeric(10,2),
+    comments       varchar(20),
+    numauto        serial PRIMARY KEY
+);
+COMMENT ON COLUMN public.rock_ana.hammer_index IS 'Sample identification related to the hammer_sampling table';
+COMMENT ON COLUMN public.rock_ana.value IS 'Analysis value';
+COMMENT ON COLUMN public.rock_ana.numauto IS 'auto increment integer';
+
+--}}}
+-- x gps_wpt: TODO is this daube?{{{ TODO comparer avec field_observations, et faire un bon ménage là-dedans. En profiter pour aller rechercher la bd que j'avais au SGR/REU, et reprendre mes waypoints de l'époque, qui doivent manquer à l'appel. Ainsi que les tracés, té, tank à fer. Tracés qu'il faudrait stocker en BD, aussi, bien sûr. En se calquant sur la structure d'oruxmaps par exemple; ou alors en stockant des gros jsonb ou des gros xml: à voir.
+
+CREATE TABLE gps_wpt (
+    opid integer REFERENCES operations (opid), --TODO ATTENTION, CHAMP RAJOUTÉ
+    gid integer,
+    numberofpo integer,
+    nameofpoin varchar(50),
+    altitude varchar(10),
+    comment varchar,
+    symbol varchar(5),
+    display1 varchar(3),
+    geolog varchar(10),
+    descriptio varchar(254),
+    code varchar(4),
+    the_geom public.geometry,
+    x numeric,
+    y numeric,
+    date varchar,
+    "time" varchar,
+    device varchar
+);
+
+--}}}
+
+-- }}}
+
 */ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
 
 --TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
+
+
 
