@@ -2055,6 +2055,7 @@ comment {
 	halt
 }
 ;}}}
+]
 ;/*}}}*/
 
 ; === functions and objects definitions ==========

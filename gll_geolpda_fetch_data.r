@@ -70,19 +70,22 @@ flag_ERROR: false
 ;}}}
 
 ; Execution
+print "========================================================================="
+print " Get database and associated files from GeolPDA device to local computer"
+print "========================================================================="
 ;get_bdexplo_max__id ; no, it does not work if a new geolpda database is used: this is the case when a sqlite geolpda database becomes too big, making GeolPDA too slow for field work.
 ; So, instead, get the max_timestamp_epoch_ms:
 max_timestamp_epoch_ms: get_postgeol_max_timestamp_epoch_ms
 
 if flag_ERROR [ print "Error, quitting." quit ]
 
-; Connect geolpda android device, copy to local directory:{{{ } } }
-; Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
+print "Connect geolpda android device, copy to local directory:" ;{{{ } } }
+; NO => Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
 COMMENT: [
 ; default directories are stored in .gll_preferences
 
 ; Get the user to properly mount the android device:
-alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+print "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
 ; Get the location where it is mounted:
 alert {locate where android device is mounted, pick up "geolpda" subdirectory}
 unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {locate geolpda where android device is located, choose "geolpda" subdirectory} dir_mount_geolpda_android ]
@@ -93,30 +96,75 @@ unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local di
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ] ;}}}
-; Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): {{{
+; Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): 
  
 ; default directories are stored in .gll_preferences
 
-; Get the user to properly mount the android device:
-print ["Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."]
-nothing: input
-;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+; If there is already an MTP mount, skip the mount step:
+cmd: "mount | grep jmtp"
+print rejoin["Running: " cmd]
+tt:  copy ""
+err: copy ""
+call/wait/output/error cmd tt err
+print tt
+either (tt = "") [
+	; Get the user to properly mount the android device:
+	print ["Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."]
+	input
+	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+	dir: copy to-string dir_mount_geolpda_android
+	replace dir "/Phone/geolpda/" ""
+	cmd: rejoin ["jmtpfs " dir]
+	print rejoin["Running: " cmd]
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	if (err != "") [print rejoin ["Error: " newline err]]
 
-dir: copy to-string dir_mount_geolpda_android
-replace dir "/Phone/geolpda/" ""
-call rejoin ["jmtpfs " dir]
+	; wait a couple seconds
+	wait 2
+
+	; check that the device is correctly mounted:
+	cmd: "mount | grep jmtp"
+	print rejoin["Running: " cmd]
+	print "=> the mount line should appear:"
+	tt:  copy ""
+	err: copy ""
+	call/wait/output/error cmd tt err
+	print tt
+	if (err != "") [print rejoin ["Error: " newline err]]
+] [
+	print ["Android device already mounted." newline]
+]
+
 
 ; Get the location where it is mounted:
-print {locate where android device is mounted, pick up "geolpda" subdirectory}
 
-unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {pick up "geolpda" subdirectory} dir_mount_geolpda_android ]
+unless DEBUG [
+	;dir_mount_geolpda_android: request-dir/title/dir {pick up "geolpda" subdirectory} dir_mount_geolpda_android
+	; => without rebol/view, everything on the console:
+	print {Choose "geolpda" subdirectory:}
+	while [not (exists? to-file dir_mount_geolpda_android)] [
+		print rejoin ["Default directory " dir_mount_geolpda_android " cannot be read.]
+		print {Locate where android device is mounted, pick up "geolpda" subdirectory}
+		print dir_mount_geolpda_android
+		x: input
+		either (x = "") [x: dir_mount_geolpda_android] [dir_mount_geolpda_android: x]
+	]
+]
+
+print "Android geolpda directory contents:"
+print read dir_mount_geolpda_android
+
+
 
 ; Get the location of the local image of geolpda data:
 print {now locate the local directory where geolpda data is (or will be) replicated}
 unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
-;}}}
+;
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 if ( confirm "get geolpda database from android device?" ) [
