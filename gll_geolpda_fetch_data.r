@@ -82,19 +82,20 @@ if flag_ERROR [ print "Error, quitting." quit ]
 print "Connect geolpda android device, copy to local directory:" ;{{{ } } }
 ; NO => Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
 COMMENT: [
-; default directories are stored in .gll_preferences
-
-; Get the user to properly mount the android device:
-print "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
-; Get the location where it is mounted:
-alert {locate where android device is mounted, pick up "geolpda" subdirectory}
-unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {locate geolpda where android device is located, choose "geolpda" subdirectory} dir_mount_geolpda_android ]
-
-; Get the location of the local image of geolpda data:
-alert {now locate the local directory where geolpda data is (or will be) replicated}
-unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
-
-print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
+;; DOUBLE commented out, for readability:
+;; default directories are stored in .gll_preferences
+;
+;; Get the user to properly mount the android device:
+;print "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+;; Get the location where it is mounted:
+;alert {locate where android device is mounted, pick up "geolpda" subdirectory}
+;unless DEBUG [ dir_mount_geolpda_android: request-dir/title/dir {locate geolpda where android device is located, choose "geolpda" subdirectory} dir_mount_geolpda_android ]
+;
+;; Get the location of the local image of geolpda data:
+;alert {now locate the local directory where geolpda data is (or will be) replicated}
+;unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
+;
+;print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ] ;}}}
 ; Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): 
  
@@ -121,10 +122,8 @@ either (tt = "") [
 	call/wait/output/error cmd tt err
 	print tt
 	if (err != "") [print rejoin ["Error: " newline err]]
-
-	; wait a couple seconds
+	; wait a couple seconds:
 	wait 2
-
 	; check that the device is correctly mounted:
 	cmd: "mount | grep jmtp"
 	print rejoin["Running: " cmd]
@@ -138,30 +137,30 @@ either (tt = "") [
 	print ["Android device already mounted." newline]
 ]
 
-
-; Get the location where it is mounted:
-
-unless DEBUG [
+; Get the geolpda location on the mounted filesystem:
 	;dir_mount_geolpda_android: request-dir/title/dir {pick up "geolpda" subdirectory} dir_mount_geolpda_android
 	; => without rebol/view, everything on the console:
 	print {Choose "geolpda" subdirectory:}
 	while [not (exists? to-file dir_mount_geolpda_android)] [
-		print rejoin ["Default directory " dir_mount_geolpda_android " cannot be read.]
+		print rejoin ["Default directory: " dir_mount_geolpda_android " cannot be read."]
 		print {Locate where android device is mounted, pick up "geolpda" subdirectory}
 		print dir_mount_geolpda_android
 		x: input
 		either (x = "") [x: dir_mount_geolpda_android] [dir_mount_geolpda_android: x]
 	]
-]
 
 print "Android geolpda directory contents:"
 print read dir_mount_geolpda_android
 
-
-
 ; Get the location of the local image of geolpda data:
-print {now locate the local directory where geolpda data is (or will be) replicated}
-unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
+;dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local
+; => without rebol/view:
+	while [not (exists? to-file dir_geolpda_local)] [
+		print rejoin ["Default directory: " dir_geolpda_local " cannot be read."]
+		print {Locate the local directory where geolpda data is (or will be) replicated:}
+		print dir_geolpda_local
+
+	]
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ;
