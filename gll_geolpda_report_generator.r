@@ -609,8 +609,9 @@ foreach j jours [
 					foreach pho photos_list [
 						;prin rejoin [pho " "]
 						;prin "-"
-						tt: to-integer ((to-decimal first parse pho ".") / 1000)
-						timestamp_photo: to-date epoch-to-date tt
+						; removed: useless, and it crashes if a jpg filename is not a number (case when pictures taken from different device, for instance):
+						;tt: to-integer ((to-decimal first parse pho ".") / 1000)
+						;timestamp_photo: to-date epoch-to-date tt
 						;print timestamp_photo
 						write/append outputfile rejoin [
 							{<img src="} clean-path dir_geolpda_local {photos/} 
