@@ -2289,7 +2289,7 @@ epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (p
 ;}}}
 
 ; Functions concerning GeolPDA data management: {{{ } } }
-synchronize_geolpda: does [; {{{ } } }
+synchronize_geolpda_files: does [; {{{ } } }
 	; TODO: make this platform-independent:
 	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
 	print "Synchronization process..."
@@ -2300,7 +2300,7 @@ synchronize_geolpda: does [; {{{ } } }
 	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
 	;###################### RE-ENABLED, bravement...     ################################################
 	; For security (some files were just deleted...), first do a --dry-run , then confirm:
-	print {"Dry run:}
+	print {Dry run:}
 	;cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	cmd: rejoin [{rsync --dry-run -azcv --exclude="photos_transferred/" } dir_mount_geolpda_android { } dir_geolpda_local ]  ; way more prudent options
 	tt:  copy ""
@@ -2394,6 +2394,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 		; Move photos there:
 		; Rebol apparently does not provide a way to move files to directories,
 		; so the shell will do:
+		print "TODO DEBUG: MV FILES DOES NOT WORK AS EXPECTED" input ;################################################################## TODO reprendre ici
 		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
 		print "On android device, move photo files to an archive directory:"
 		;__________________________________________________________________________________________________________________________________________________________
