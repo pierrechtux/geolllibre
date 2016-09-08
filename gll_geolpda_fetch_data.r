@@ -78,7 +78,6 @@ print "=========================================================================
 max_timestamp_epoch_ms: get_postgeol_max_timestamp_epoch_ms
 
 if flag_ERROR [ print "Error, quitting." quit ]
-
 print "Connect geolpda android device, copy to local directory:" ;{{{ } } }
 ; NO => Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
 COMMENT: [
@@ -110,8 +109,7 @@ call/wait/output/error cmd tt err
 print tt
 either (tt = "") [
 	; Get the user to properly mount the android device:
-	print ["Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."]
-	input
+	ask "Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
 	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
 	dir: copy to-string dir_mount_geolpda_android
 	replace dir "/Phone/geolpda/" ""
@@ -133,6 +131,10 @@ either (tt = "") [
 	call/wait/output/error cmd tt err
 	print tt
 	if (err != "") [print rejoin ["Error: " newline err]]
+	; double-check (...) by listing mounted directory:
+	print "Listing mounted directory:"
+	if error? try [print read to-file dir] [print rejoin [ "=> error, " dir " contents cannot be read."]]
+	print newline
 ] [
 	print ["Android device already mounted." newline]
 ]
@@ -166,12 +168,26 @@ print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_ge
 ;
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
-if ( confirm "get geolpda database from android device?" ) [
+answer: copy ""
+while [((answer != "y") and (answer != "n") and (answer != ""))] [
+	ask "Get geolpda database from android device? (Y/n)"
+]
+if ((answer = "y") or (answer = "")) [
 	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak." timestamp_]] [print "Error while backuping previous geolpda."]
 	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
 	print "Database copied from android device."
 ]
-if ( confirm "Synchronize geolpda files (pictures, audio files)?" ) [ synchronize_geolpda ]
+
+print "STOP" input ;#################################################
+answer: copy ""
+while [((answer != "y") and (answer != "n") and (answer != ""))] [
+	answer: ask "Synchronize geolpda files (pictures, audio files)? (Y/n)"
+]
+if ((answer = "y") or (answer = "")) [ synchronize_geolpda_files ]
+
+
+print "STOP" input ;#################################################
+
 ;}}}
 
 ; Open sqlite geolpda, get data:{{{ } } }
@@ -229,9 +245,10 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes.
-prin rejoin ["OPeration IDentifier; default: " opid newline "?"]
-tt: input
+print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidentiality THEN substring(full_name, 0, 5) || '-----' ELSE full_name END FROM public.operations ORDER BY opid;"
+tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
 unless (tt = "") [ opid: to-integer tt ]
+; TODO check that the chosen opid actually exists in operations table
 
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
