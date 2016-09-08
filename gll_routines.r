@@ -2318,7 +2318,6 @@ synchronize_geolpda_files: does [; {{{ } } }
 		print tt
 		print "Press any key to continue..."
 		input
-	] [ print "No synchronization done."]
 	; Reduce geolpda pictures sizes in the local copy:{{{
 	size_max: 700
 	print rejoin ["Reduction of pictures to " size_max " pixels:"]
@@ -2355,6 +2354,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	; TODO add geotags, if any gpx?
 
 	;}}}
+	] [ print "No synchronization done."]
 ];}}}
 synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	; TODO: make this platform-independent:
