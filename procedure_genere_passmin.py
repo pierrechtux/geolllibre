@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # -*-coding=utf-8
-"""Détermination de passes minéralisées de données de sondages
+"""Détermination de passes minéralisées de données de sondages,
 calculs de passes minéralisées de sondages (ou tout autre ouvrage 
-en abscisse  curviligne)
+en abscisse curviligne).
 Je fais ça en pseudo-code, converti en python
+
+Determination of mineralised intervals along drill holes, 
+computation of mineralised stretched values along drill
+holes (or any work with a curvilinear abscissa).
+Originally written in pseudo-code, then converted to python.
 """
 
 # Imports: #
