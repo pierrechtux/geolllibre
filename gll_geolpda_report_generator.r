@@ -322,6 +322,11 @@ date_start: 22-Aug-2013
 date_end: 28-Aug-2013
 ]         ; DEBUG ###################### }}}
 
+; Shall we create .tec files for use with TecTri?
+ans: lowercase ask "Shall we create .tec files for use with TecTri? [Y/n]"
+either any [(ans = "") (ans = "y")] [ flag_create_tec_files: 1 ]
+                                    [ flag_create_tec_files: 0 ]
+
 ; Création d'un fichier .html en sortie {{{ } } }
 
 ;==============================================================================
@@ -598,6 +603,9 @@ foreach j jours [
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 							]
 						write/lines/append outputfile "</tt></dd></dl>"
+						if flag_create_tec_files [ ; creation of a TecTri file for the current observation point
+							generate_tectri_file/criteria/unique_filename (rejoin ["WHERE obs_id = '" id "'"]) (rejoin [id ".tec"])
+						]
 						]
 				if ((length? photos) > 0) [
 					; Il y a des photos:

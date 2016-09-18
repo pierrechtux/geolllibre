@@ -3151,9 +3151,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;# J'ai pris une mesure de ma planchette dans ma position de
 	;# travail chez moi, avec le téléphone pitchant vers la
 	;# gauche.
-	;# Ãa revient à une mesure de faille Nm30/60/E/55/S/N.
+	;# Ça revient à une mesure de faille Nm30/60/E/55/S/N.
 	;# en tous cas, sans intérêt pour nous.
-	;# Ã l'écran du GeolPDA, ça se présentait à peu près
+	;# À l'écran du GeolPDA, ça se présentait à peu près
 	;# ainsi:
 	;#
 	;#       |  -0.7 |   0   |   0.7 |   0   |
@@ -3191,17 +3191,17 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	plane_normal_vector: 		copy []			; unit vector normal to GeolPDA measuring device, screen side; vector going downwards if measurement overturned
 	axis_vector: 				make block! []	; unit vector long axis of GeolPDA measuring device, oriented upwards = oriented line
 	plane_downdip_azimuth: 		make decimal! 0	; down-dip azimuth of plane, in degrees ; pour l'azimut de downdip: Azimut de OD = , en fait, azimut de ON
-	plane_direction: 			make decimal! 0	; direction of the plane, from 0 to 180°:
-	plane_dip: 					make decimal! 0	; Pendage du plan
+	plane_direction: 			make decimal! 0	; direction of the plane, from 0 to 180°
+	plane_dip: 					make decimal! 0	; dip of the plane, from 0 to 90°
 	plane_quadrant_dip: 		copy ""			; quadrant (N, E, S, W) towards where plane dips
 	line_azimuth: 				make decimal! 0	; line azimuth
 	line_plunge: 				make decimal! 0	; line plunge
 	line_pitch: 				make decimal! 0	; pitch angle of line
 	line_pitch_quadrant: 		copy ""			; quadrant (N, E, S, W) towards where line pitches
-	line_movement: 				copy ""			; movement (N, I or R, D, S) for faults and equivalents
+	line_movement: 				copy ""			; movement (N, I or R, D, S) for faults and equivalents (NB: Inverse & Reverse mean the same)
 	line_movement_vertical: 	copy ""			; vertical component of movement (N, I or R)
 	line_movement_horizontal: 	copy ""			; horizontal component of movement (D, S)
-	overturned: 				make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen looking down
+	overturned: 				make logic! 0	; true if plane overturned: convention = GeolPDA measuring device with screen facing down
 	comments: 					copy ""			; comments, if any
 	; NOTE: *all* these variables are determined, since the matrix rotation (measurement data from GeolPDA) fully determines plane and line. If the measurement /only concerns a line, or /only a line, the relevant values are /only to be considered.
 	a: b: c: d: e: f: g: h: i: make decimal! 0	; (only for coder's convenience... variables in the matrix; TODO: one day, get rid of these)
