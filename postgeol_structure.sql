@@ -45,7 +45,7 @@
 --		##                                                                       ##
 --		###########################################################################
 --		  Copyright (C) 2016 Pierre Chevalier <pierrechevaliergeol@free.fr>
---		 
+--
 --		    GeolLLibre is free software: you can redistribute it and/or modify
 --		    it under the terms of the GNU General Public License as published by
 --		    the Free Software Foundation, either version 3 of the License, or
@@ -58,13 +58,13 @@
 --		
 --		    You should have received a copy of the GNU General Public License
 --		    along with this program.  If not, see <http://www.gnu.org/licenses/>
---		    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+--		    or write to the Free Software Foundation, Inc., 51 Franklin Street,
 --		    Fifth Floor, Boston, MA 02110-1301, USA.
 --		    See LICENSE file.
 --		}
 --}}}
 
---NON --{{{ 
+--NON --{{{
 
 --*****************************************************************
 -- ********************** ça vient de OPM
@@ -102,10 +102,10 @@ SET client_min_messages = warning;
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \dt *.*
                                           Liste des relations
-       Schéma       |                            Nom                             | Type  | Propriétaire 
+       Schéma       |                            Nom                             | Type  | Propriétaire
 --------------------+------------------------------------------------------------+-------+--------------
  public             | doc_bdexplo_table_categories      <= refactoré             | table | pierre
  public             | doc_bdexplo_tables_descriptions   <= refactoré             | table | pierre
@@ -314,10 +314,10 @@ poubelle, ignorer:
 
 -- }}}
 vues:{{{
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \dv *.*
                                            Liste des relations
-       Schéma       |                             Nom                              | Type | Propriétaire 
+       Schéma       |                             Nom                              | Type | Propriétaire
 --------------------+--------------------------------------------------------------+------+--------------
  checks             | collars_lengths_vs_dh_litho_depths                           | vue  | pierre
  checks             | collars_lengths_vs_dh_sampling_depths                        | vue  | pierre
@@ -462,10 +462,10 @@ vues:{{{
 -- }}}
 fonctions:{{{
 
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \df *.*
                                                                                                                                                                                                                                                                                                                                                                                     Liste des fonctions
-       Schéma       |                     Nom                      |        Type de données du résultat         |                                                                                                                                                                                                                                                                                                                 Type de données des paramètres                                                                                                                                                                                                                                                                                                                  |  Type   
+       Schéma       |                     Nom                      |        Type de données du résultat         |                                                                                                                                                                                                                                                                                                                 Type de données des paramètres                                                                                                                                                                                                                                                                                                                  |  Type
 --------------------+----------------------------------------------+--------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------
  information_schema | ...
  public             | ...
@@ -694,165 +694,165 @@ t2
 
 -- }}}
 vues:{{{
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \dv *.*
                                            Liste des relations
-                            Nom                             
+                            Nom
 ------------------------------------------------------------
-collars_lengths_vs_dh_litho_depths                          
-collars_lengths_vs_dh_sampling_depths                       
-collars_vs_temp_topo_id_topo_sans_collars                   
-collars_vs_topo_xyz_en_face_et_differences_importantes      
-dh_collars_to_topo_points_lines                             
-doublons_collars_id                                         
-doublons_collars_xyz                                        
-doublons_collars_xyz_ouvrages_concernes                     
-doublons_dh_litho_id_depto                                  
-doublons_dh_sampling_id_depto                               
-fichettes_infos_incoherentes_drilled_lengths                
-fichettes_infos_incoherentes_heures                         
-fichettes_infos_redondantes_incoherentes                    
-fichettes_infos_redondantes_incoherentes_quels_ouvrages     
-fichettes_longueurs_incoherentes                            
-fichettes_ouvrages_non_completed                            
-fichettes_vs_collars_completed_incoherents                  
-fichettes_vs_collars_longueurs_incoherentes                 
-fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars    
-tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho   
+collars_lengths_vs_dh_litho_depths
+collars_lengths_vs_dh_sampling_depths
+collars_vs_temp_topo_id_topo_sans_collars
+collars_vs_topo_xyz_en_face_et_differences_importantes
+dh_collars_to_topo_points_lines
+doublons_collars_id
+doublons_collars_xyz
+doublons_collars_xyz_ouvrages_concernes
+doublons_dh_litho_id_depto
+doublons_dh_sampling_id_depto
+fichettes_infos_incoherentes_drilled_lengths
+fichettes_infos_incoherentes_heures
+fichettes_infos_redondantes_incoherentes
+fichettes_infos_redondantes_incoherentes_quels_ouvrages
+fichettes_longueurs_incoherentes
+fichettes_ouvrages_non_completed
+fichettes_vs_collars_completed_incoherents
+fichettes_vs_collars_longueurs_incoherentes
+fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars
+tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho
 tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling
-tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho   
+tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho
 tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling
 
-gdm_dh_devia                                                
-gdm_sections_array                                          
-gdm_selection                                               
+gdm_dh_devia
+gdm_sections_array
+gdm_selection
 
-ancient_workings                                            
-baselines                                                   
-collars_selection                                           
-coords_points                                               
-dh_collars                                                  
-dh_collars_                                                 
-dh_collars_diff_project_actual_line                         
-dh_collars_for_gpx                                          
-dh_collars_points                                           
-dh_collars_points_last_ana_results                          
-dh_collars_points_marrec                                    
-dh_core_boxes                                               
-dh_density                                                  
-dh_devia                                                    
-dh_followup                                                 
-dh_litho                                                    
-dh_mineralised_intervals                                    
-dh_mineralised_intervals0_traces_3d                         
-dh_quicklog                                                 
-dh_sampling                                                 
-dh_sampling_avg_grades_3dpoints                             
-dh_sampling_bottle_roll                                     
-dh_sampling_grades                                          
-dh_sampling_grades_graph_au_6                               
-dh_sampling_grades_open_ended_au_tail                       
-dh_sampling_grades_open_ended_au_top                        
-dh_sampling_mineralised_intervals_graph_au6                 
-dh_struct_measures                                          
-dh_tech                                                     
-dh_thinsections                                             
-dh_traces_3d                                                
-field_observations                                          
-field_observations_points                                   
-field_observations_struct_measures                          
-field_photos                                                
-formations_group_lithos                                     
-gdm_baselines                                               
-gdm_dh_devia                                                
-gdm_dh_litho                                                
-gdm_dh_mine_0                                               
-gdm_dh_mine_1                                               
-gdm_dh_planned                                              
-gdm_dh_sampling_grades                                      
-gdm_dh_sampling_grades_open_ended_au_tail                   
-gdm_dh_sampling_grades_open_ended_au_top                    
-gdm_sections_array                                          
-gdm_selection                                               
-geoch_ana                                                   
-geoch_sampling                                              
-geoch_sampling_grades                                       
-geoch_sampling_grades_points                                
-gpy_mag_ground                                              
-grade_ctrl                                                  
-index_geo_documentation                                     
-lab_ana_batches_expedition                                  
-lab_ana_batches_reception                                   
-lab_ana_columns_definition                                  
-lab_ana_qaqc_results                                        
-lab_ana_results                                             
-lex_codes                                                   
-lex_datasource                                              
-lex_standard                                                
-licences                                                    
-licences_quadrangles                                        
-mag_declination                                             
-occurrences                                                 
-occurrences_                                                
-occurrences_bal_200km                                       
-operations_quadrangles                                      
-petro_mineralo_study_dh_collars                             
-petro_mineralo_study_field_observations_points              
-qc_sampling                                                 
-qc_standards                                                
-shift_reports                                               
-surface_samples_grades                                      
-surface_samples_grades_points                               
-surpac_survey                                               
-tanguysurp_project                                          
-tanguysurp_survey                                           
-tmp_xy_points                                               
-topo_points                                                 
-topo_points_points                                          
-tt_obs_abusives                                             
+ancient_workings
+baselines
+collars_selection
+coords_points
+dh_collars
+dh_collars_
+dh_collars_diff_project_actual_line
+dh_collars_for_gpx
+dh_collars_points
+dh_collars_points_last_ana_results
+dh_collars_points_marrec
+dh_core_boxes
+dh_density
+dh_devia
+dh_followup
+dh_litho
+dh_mineralised_intervals
+dh_mineralised_intervals0_traces_3d
+dh_quicklog
+dh_sampling
+dh_sampling_avg_grades_3dpoints
+dh_sampling_bottle_roll
+dh_sampling_grades
+dh_sampling_grades_graph_au_6
+dh_sampling_grades_open_ended_au_tail
+dh_sampling_grades_open_ended_au_top
+dh_sampling_mineralised_intervals_graph_au6
+dh_struct_measures
+dh_tech
+dh_thinsections
+dh_traces_3d
+field_observations
+field_observations_points
+field_observations_struct_measures
+field_photos
+formations_group_lithos
+gdm_baselines
+gdm_dh_devia
+gdm_dh_litho
+gdm_dh_mine_0
+gdm_dh_mine_1
+gdm_dh_planned
+gdm_dh_sampling_grades
+gdm_dh_sampling_grades_open_ended_au_tail
+gdm_dh_sampling_grades_open_ended_au_top
+gdm_sections_array
+gdm_selection
+geoch_ana
+geoch_sampling
+geoch_sampling_grades
+geoch_sampling_grades_points
+gpy_mag_ground
+grade_ctrl
+index_geo_documentation
+lab_ana_batches_expedition
+lab_ana_batches_reception
+lab_ana_columns_definition
+lab_ana_qaqc_results
+lab_ana_results
+lex_codes
+lex_datasource
+lex_standard
+licences
+licences_quadrangles
+mag_declination
+occurrences
+occurrences_
+occurrences_bal_200km
+operations_quadrangles
+petro_mineralo_study_dh_collars
+petro_mineralo_study_field_observations_points
+qc_sampling
+qc_standards
+shift_reports
+surface_samples_grades
+surface_samples_grades_points
+surpac_survey
+tanguysurp_project
+tanguysurp_survey
+tmp_xy_points
+topo_points
+topo_points_points
+tt_obs_abusives
 
-dh_collars_points_latlon                                    
-field_observations_points                                   
-field_observations_struct_measures_points                   
-licences_polygons                                           
-licences_quadrangles                                        
-survey_lines_plines                                         
+dh_collars_points_latlon
+field_observations_points
+field_observations_struct_measures_points
+licences_polygons
+licences_quadrangles
+survey_lines_plines
 
-avancements_sondages_stats_annuelles                        
-avancements_sondages_stats_annuelles_par_objectif           
-avancements_sondages_stats_mensuelles                       
-avancements_sondages_stats_mensuelles_par_objectif          
-avancements_sondages_stats_quotidiennes                     
-longueur_exploree_par_location                              
-longueur_exploree_par_location_et_type                      
-longueur_exploree_par_type_km                               
-recap_file_results_drill_holes                              
-verif_attachements_journaliers_sondeur                      
+avancements_sondages_stats_annuelles
+avancements_sondages_stats_annuelles_par_objectif
+avancements_sondages_stats_mensuelles
+avancements_sondages_stats_mensuelles_par_objectif
+avancements_sondages_stats_quotidiennes
+longueur_exploree_par_location
+longueur_exploree_par_location_et_type
+longueur_exploree_par_type_km
+recap_file_results_drill_holes
+verif_attachements_journaliers_sondeur
 
-cme_sampling_grades_last                                    
+cme_sampling_grades_last
 tmp_auramines_feb_march_sample_list_xlsx_01_main_list_points
-tmp_sample_description_and_coords_november_2015_paul_points 
-tmp_tt_pierre_nettoye_uploader_wpt_points                   
-tmp_tt_pts_gps_mdb_copie_points                             
-tmp_tt_pts_gps_mdb_points_latlong_points                    
-tmp_tt_pts_gps_mdb_sdqrfgadzrg_points                       
-tmp_tt_pts_gps_mdb_vireendb_points                          
+tmp_sample_description_and_coords_november_2015_paul_points
+tmp_tt_pierre_nettoye_uploader_wpt_points
+tmp_tt_pts_gps_mdb_copie_points
+tmp_tt_pts_gps_mdb_points_latlong_points
+tmp_tt_pts_gps_mdb_sdqrfgadzrg_points
+tmp_tt_pts_gps_mdb_vireendb_points
 
 
 -- }}}
 fonctions:{{{
 
---localhost pierre@bdexplo=> 
+--localhost pierre@bdexplo=>
 \df *.*
                                                                                                                                                                                                                                                                                                                                                                                     Liste des fonctions
-                    Nom                      
+                    Nom
 ---------------------------------------------
 ...
 ...
 ...
-generate_cross_sections_array                
+generate_cross_sections_array
 ...
-lab_ana_results_sample_id_default_value_num  
+lab_ana_results_sample_id_default_value_num
 ...
 ...
 
@@ -907,12 +907,12 @@ Pareil, / des instructions de CREATion de TABLEs:
 /CREATE TABLE.*lab_ana_columns_definition
 /CREATE TABLE.*ana_det_limit
 /CREATE TABLE.*lab_ana_results
-_______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*lab_analysis_icp
 /CREATE TABLE.*lab_ana_qaqc_results
 /CREATE TABLE.*qc_sampling
 /CREATE TABLE.*qc_standards
 /CREATE TABLE.*ancient_workings
+_______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*occurrences
 /CREATE TABLE.*licences
 /CREATE TABLE.*grade_ctrl
@@ -1051,7 +1051,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 --}}}
 
 -- (du vide) {{{
- 
+
 
 
 
@@ -1110,7 +1110,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 -- export POSTGEOL=postgeol
 
 
---TODO make a table 'defaults' in the user's schema (or no?) 
+--TODO make a table 'defaults' in the user's schema (or no?)
 --     containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
 
 
@@ -1126,7 +1126,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 DROP DATABASE :postgeol; --TODO À INVALIDER, BIEN SÛR!
 CREATE DATABASE :postgeol ENCODING='UTF8';
 
--- Record the current username, and login to the newly made 
+-- Record the current username, and login to the newly made
 -- database as superuser postgres:
 \set username :USER
 \c :postgeol postgres
@@ -1221,10 +1221,10 @@ CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdex
 --TODO add comments
 
 -- dump de la table:
--- --localhost pierre@bdexplo=> 
+-- --localhost pierre@bdexplo=>
 -- TABLE doc_postgeol_table_categories
 -- ;
---   category  |                                 description_fr                                 | numauto 
+--   category  |                                 description_fr                                 | numauto
 -- ------------+--------------------------------------------------------------------------------+---------
 --  OUVRAGES   | Sondages et tranchées; toutes les tables sont préfixées en dh_ pour Drill Hole |       1
 --  ANALYSES   | Résultats analytiques, suivi des échantillons                                  |       2
@@ -1245,14 +1245,14 @@ CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdex
 -- TODO même question: utile à garder?
 
 CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
-    tablename      text PRIMARY KEY, 
+    tablename      text PRIMARY KEY,
     category       text
-        REFERENCES doc_postgeol_table_categories(category) 
-        ON UPDATE CASCADE 
-        ON DELETE CASCADE 
-        DEFERRABLE INITIALLY DEFERRED, 
+        REFERENCES doc_postgeol_table_categories(category)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     comment_en     text,
-    comment_fr     text, 
+    comment_fr     text,
     numauto        bigserial,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
@@ -1306,8 +1306,8 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 CREATE TABLE operation_active (
     opid                integer
         REFERENCES operations (opid)
-        ON UPDATE CASCADE 
-        ON DELETE CASCADE 
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
@@ -1318,17 +1318,17 @@ COMMENT ON COLUMN operation_active.opid                         IS 'Operation id
 COMMENT ON COLUMN operation_active.numauto                      IS 'Automatic integer';
 COMMENT ON COLUMN operation_active.creation_ts                  IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN operation_active.username                     IS 'User (role) which created data record';
-     
+
 --}}}
 -- x field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
 -- x field_observations:{{{
 
 CREATE TABLE public.field_observations (
     opid                integer NOT NULL
-      REFERENCES operations (opid)
-      ON UPDATE CASCADE
-      ON DELETE CASCADE
-      DEFERRABLE INITIALLY DEFERRED,
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     obs_id              text NOT NULL,
     year                integer NOT NULL,
     date                date NOT NULL,
@@ -1408,10 +1408,11 @@ CREATE TABLE public.field_observations_struct_measures (
     numauto             bigserial PRIMARY KEY NOT NULL,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
-    FOREIGN KEY (opid, obs_id) REFERENCES public.field_observations(opid, obs_id)
-      ON UPDATE CASCADE 
-      ON DELETE CASCADE 
-      DEFERRABLE INITIALLY DEFERRED
+    FOREIGN KEY (opid, obs_id)
+        REFERENCES public.field_observations(opid, obs_id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE public.field_observations_struct_measures                          IS 'Structural measurements, related to an observation; coherent with GeolPDA';
 COMMENT ON COLUMN public.field_observations_struct_measures.opid                    IS 'Operation identifier';
@@ -1444,10 +1445,10 @@ COMMENT ON COLUMN public.field_observations_struct_measures.username            
 
 CREATE TABLE public.field_photos (
     opid                integer
-      REFERENCES operations (opid)
-      ON UPDATE CASCADE
-      ON DELETE CASCADE
-      DEFERRABLE INITIALLY DEFERRED,
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     pho_id              text NOT NULL,
     obs_id              text,
     filename            text,   --xTODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
@@ -1485,10 +1486,10 @@ COMMENT ON COLUMN public.field_photos.username                  IS 'User (role) 
 
 CREATE TABLE public.formations_group_lithos (  --TODO name formations_group_lithos is discutable; formations_lithostrati would be better?
     opid                integer
-    REFERENCES public.operations(opid)
-      ON DELETE CASCADE
-      ON UPDATE CASCADE
-      DEFERRABLE INITIALLY DEFERRED,
+        REFERENCES public.operations(opid)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     formation_name      text,
     code_litho          text,
     datasource          integer,
@@ -1507,11 +1508,15 @@ COMMENT ON COLUMN public.formations_group_lithos.username       IS 'User (role) 
 -- x surface_samples_grades:{{{
 
 CREATE TABLE public.surface_samples_grades (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     sample_id           text,
-    x                   double precision,
-    y                   double precision,
-    z                   double precision,
+    x                   numeric,
+    y                   numeric,
+    z                   numeric,
     srid                integer,
     description         text,
     sample_type         text,
@@ -1581,7 +1586,11 @@ COMMENT ON COLUMN public.surface_samples_grades.username        IS 'User (role) 
 -- x geoch_sampling:{{{
 
 CREATE TABLE public.geoch_sampling (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id                  text,
     lab_id              text,
     labo_ref            text,
@@ -1653,7 +1662,11 @@ COMMENT ON COLUMN public.geoch_sampling.username                IS 'User (role) 
 -- x geoch_ana:{{{
 
 CREATE TABLE public.geoch_ana (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     sampl_index         integer,
     ana_type            text,
     unit                text,
@@ -1701,16 +1714,20 @@ COMMENT ON COLUMN geoch_sampling_grades.au_ppb                  IS 'Au grade ppb
 -- x gpy_mag_ground:{{{
 
 -- SET search_path = public, pg_catalog;
--- Name: gpy_mag_ground; Type: TABLE; Schema: public; Owner: data_admin; Tablespace: 
+-- Name: gpy_mag_ground; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 
 CREATE TABLE gpy_mag_ground (
-    opid                     integer REFERENCES operations (opid),
+    opid                     integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     srid                     integer,
-    x                        numeric(10,2),
-    y                        numeric(10,2),
-    z                        numeric(10,2),
-    x_local                  numeric(10,2),
-    y_local                  numeric(10,2),
+    x                        numeric,
+    y                        numeric,
+    z                        numeric,
+    x_local                  numeric,
+    y_local                  numeric,
     mag_nanotesla            double precision,
     val_corr_mag_nanotesla   double precision,
     datasource               integer,
@@ -1736,7 +1753,11 @@ COMMENT ON COLUMN gpy_mag_ground.username                       IS 'User (role) 
 -- x dh_collars {{{
 
 CREATE TABLE public.dh_collars (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id                  text NOT NULL,
     location            text,
     campaign            text,
@@ -1830,7 +1851,7 @@ COMMENT ON COLUMN dh_collars.username                           IS 'User (role) 
 -- x dh_shift_reports{{{ --ATTENTION! TODO CHANGER TOUTES RÉFÉRENCES À shift_reports EN dh_shift_reports!
 
 CREATE TABLE dh_shift_reports (
-    opid                          integer REFERENCES operations (opid),
+    opid                          integer
     date                          date,
     shift                         text,
     no_fichette                   integer NOT NULL,
@@ -1862,7 +1883,12 @@ CREATE TABLE dh_shift_reports (
     datasource                    integer,
     numauto                       bigserial PRIMARY KEY,
     creation_ts                   timestamptz DEFAULT now() NOT NULL,
-    username                      text DEFAULT current_user
+    username                      text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 
 COMMENT ON TABLE dh_shift_reports                               IS 'Daily reports from rigsites: one report per shift/machine/tool';
@@ -1904,7 +1930,7 @@ COMMENT ON COLUMN dh_shift_reports.username                     IS 'User (role) 
 -- x dh_followup {{{
 
 CREATE TABLE dh_followup (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     devia               text,
     quick_log           text,
@@ -1918,8 +1944,12 @@ CREATE TABLE dh_followup (
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
-
 COMMENT ON TABLE dh_followup                                    IS 'Simple table for daily drill holes followup';
 COMMENT ON COLUMN dh_followup.opid                              IS 'Operation identifier';
 COMMENT ON COLUMN dh_followup.id                                IS 'Identifier, refers to dh_collars';
@@ -1940,7 +1970,7 @@ COMMENT ON COLUMN dh_followup.username                          IS 'User (role) 
 -- x dh_devia {{{
 
 CREATE TABLE dh_devia (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depto               numeric(10,2),
     device              text,
@@ -1960,7 +1990,12 @@ CREATE TABLE dh_devia (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_devia                             IS 'Drill holes or trenches deviations measurements';
 COMMENT ON COLUMN dh_devia.opid                       IS 'Operation identifier';
@@ -1991,7 +2026,7 @@ COMMENT ON COLUMN dh_devia.username                   IS 'User (role) which crea
 -- x dh_quicklog {{{
 
 CREATE TABLE dh_quicklog (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
@@ -2003,7 +2038,12 @@ CREATE TABLE dh_quicklog (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE public.dh_quicklog                   IS 'Quick geological log, typically done on hole finish, for an A4 log plot';
 COMMENT ON COLUMN public.dh_quicklog.opid             IS 'Operation identifier';
@@ -2025,7 +2065,7 @@ COMMENT ON COLUMN public.dh_quicklog.username         IS 'User (role) which crea
 -- lithological descriptions
 
 CREATE TABLE dh_litho (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
@@ -2046,7 +2086,12 @@ CREATE TABLE dh_litho (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_litho                             IS 'Drill holes or trenches geological descriptions';
 COMMENT ON COLUMN dh_litho.opid                       IS 'Operation identifier';
@@ -2087,7 +2132,7 @@ COMMENT ON COLUMN dh_litho.username                   IS 'User (role) which crea
 -- x dh_core_boxes {{{
 
 CREATE TABLE dh_core_boxes (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
@@ -2095,7 +2140,12 @@ CREATE TABLE dh_core_boxes (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_core_boxes                        IS 'Core drill holes boxes';
 COMMENT ON COLUMN dh_core_boxes.opid                  IS 'Operation identifier';
@@ -2112,7 +2162,7 @@ COMMENT ON COLUMN dh_core_boxes.username              IS 'User (role) which crea
 -- x dh_tech {{{
 
 CREATE TABLE dh_tech (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
@@ -2128,7 +2178,12 @@ CREATE TABLE dh_tech (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_tech                              IS 'Technical drilling data, and geotechnical parameters';
 COMMENT ON COLUMN dh_tech.opid                        IS 'Operation identifier';
@@ -2148,11 +2203,11 @@ COMMENT ON COLUMN dh_tech.numauto                     IS 'Automatic integer prim
 COMMENT ON COLUMN dh_tech.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_tech.username                    IS 'User (role) which created data record';
 
---}}}                
+--}}}
 -- x dh_struct_measures {{{
 
 CREATE TABLE dh_struct_measures (
-    opid                integer REFERENCES operations (opid),
+    opid                integer,
     id                  text,
     depto               numeric(10,2),
     measure_type        text,
@@ -2173,7 +2228,12 @@ CREATE TABLE dh_struct_measures (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_struct_measures                   IS 'Structural measurements done on core, or in trenches';
 COMMENT ON COLUMN dh_struct_measures.opid             IS 'Operation identifier';
@@ -2199,23 +2259,28 @@ COMMENT ON COLUMN dh_struct_measures.numauto          IS 'Automatic integer prim
 COMMENT ON COLUMN dh_struct_measures.creation_ts      IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN dh_struct_measures.username         IS 'User (role) which created data record';
 
---}}}        
+--}}}
 -- x dh_photos:{{{
 
 CREATE TABLE dh_photos (
-    opid integer REFERENCES operations (opid),
+    opid integer,
     pho_id text,
     file text,
     author text,
-    datasource integer
+    datasource integer,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
---TODO il manque BEAUCOUP de choses: profondeurs...
+--TODO il manque BEAUCOUP de choses: profondeurs... Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
 
 --}}}
 -- x dh_samples_submission:{{{
 
 CREATE TABLE dh_samples_submission (
-    opid integer REFERENCES operations (opid),
+    opid integer,
     id text,
     sampfrom smallint,
     sampto smallint,
@@ -2223,14 +2288,19 @@ CREATE TABLE dh_samples_submission (
     mspu_sub date,
     sgs_subm date,
     final_interm text,
-    results text
+    results text,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 
 --}}}
 -- x dh_sampling_grades: {{{
 
 CREATE TABLE dh_sampling_grades (
-    opid integer REFERENCES operations (opid),
+    opid integer,
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
@@ -2253,7 +2323,12 @@ CREATE TABLE dh_sampling_grades (
     datasource integer,
     numauto bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_sampling_grades                   IS 'Samples along drill holes and trenches, with grades';
 COMMENT ON COLUMN dh_sampling_grades.opid             IS 'Operation identifier';
@@ -2294,10 +2369,11 @@ CREATE TABLE public.dh_resistivity (
     numauto         bigserial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
-    FOREIGN KEY (opid, id) REFERENCES public.dh_collars(opid, id)
-      ON UPDATE CASCADE 
-      ON DELETE CASCADE 
-      DEFERRABLE INITIALLY DEFERRED
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE public.dh_resistivity                IS 'Down-hole probing: resistivity measurements';
 COMMENT ON COLUMN public.dh_resistivity.opid          IS 'Operation identifier';
@@ -2325,10 +2401,11 @@ CREATE TABLE public.dh_radiometry (
     numauto         bigserial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
-    FOREIGN KEY (opid, id) REFERENCES public.dh_collars(opid, id)
-      ON UPDATE CASCADE 
-      ON DELETE CASCADE 
-      DEFERRABLE INITIALLY DEFERRED
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE public.dh_radiometry                  IS 'Down-hole probing: radiometry measurements';
 COMMENT ON COLUMN public.dh_radiometry.opid            IS 'Operation identifier';
@@ -2346,7 +2423,7 @@ COMMENT ON COLUMN operation_active.username            IS 'User (role) which cre
 -- x dh_mineralised_intervals {{{
 
 CREATE TABLE dh_mineralised_intervals (
-    opid integer REFERENCES operations (opid),
+    opid integer,
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
@@ -2360,7 +2437,12 @@ CREATE TABLE dh_mineralised_intervals (
     datasource integer,
     numauto bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_mineralised_intervals              IS 'Drill holes mineralised intercepts: stretch values over mineralised intervals, along drill holes or trenches';
 COMMENT ON COLUMN dh_mineralised_intervals.opid        IS 'Operation identifier';
@@ -2382,7 +2464,7 @@ COMMENT ON COLUMN dh_mineralised_intervals.username    IS 'User (role) which cre
 -- x dh_density {{{
 
 CREATE TABLE dh_density (
-    opid integer REFERENCES operations (opid),
+    opid integer,
     id text,
     depfrom numeric(10,2),
     depto numeric(10,2),
@@ -2393,7 +2475,12 @@ CREATE TABLE dh_density (
     datasource integer,
     numauto bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_density                           IS 'Density measurements along drill holes or trenches';
 COMMENT ON COLUMN dh_density.opid                     IS 'Operation identifier';
@@ -2413,7 +2500,7 @@ COMMENT ON COLUMN dh_density.username                 IS 'User (role) which crea
 -- x dh_thinsections {{{
 
 CREATE TABLE dh_thinsections (
-    opid                               integer REFERENCES operations (opid),
+    opid                               integer,
     id                                 text,
     depto                              numeric(10,2),
     core_quarter                       text,
@@ -2427,7 +2514,12 @@ CREATE TABLE dh_thinsections (
     datasource                         integer,
     numauto                            bigserial PRIMARY KEY,
     creation_ts                        timestamptz DEFAULT now() NOT NULL,
-    username                           text DEFAULT current_user
+    username                           text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_thinsections                                IS 'Thin sections for petrological studies';
 COMMENT ON COLUMN dh_thinsections.opid                          IS 'Operation identifier';
@@ -2450,7 +2542,7 @@ COMMENT ON COLUMN dh_thinsections.username                      IS 'User (role) 
 -- x dh_sampling_bottle_roll {{{ --TODO rename table to something like mineralurgical tests, something less Au-oriented
 
 CREATE TABLE dh_sampling_bottle_roll (
-    opid           integer REFERENCES operations (opid),
+    opid           integer,
     id             text,
     depfrom        numeric(10,2),
     depto          numeric(10,2),
@@ -2466,7 +2558,12 @@ CREATE TABLE dh_sampling_bottle_roll (
     datasource     integer,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user
+    username       text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE dh_sampling_bottle_roll                        IS 'Mineralurgical samples, bottle-roll tests results';
 COMMENT ON COLUMN dh_sampling_bottle_roll.opid                  IS 'Operation identifier';
@@ -2489,7 +2586,6 @@ COMMENT ON COLUMN dh_sampling_bottle_roll.username              IS 'User (role) 
 
 --}}}
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE vv 4
 -- x laboratory analyses: {{{
 -- x lab_ana_batches_expedition:{{{
 
@@ -2516,7 +2612,12 @@ CREATE TABLE lab_ana_batches_expedition (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lab_ana_batches_expedition                     IS 'Batches of samples sent for analysis';
 COMMENT ON COLUMN lab_ana_batches_expedition.opid               IS 'Operation identifier';
@@ -2563,7 +2664,12 @@ CREATE TABLE lab_ana_batches_reception (
     datasource               integer,
     numauto                  bigserial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
-    username                 text DEFAULT current_user
+    username                 text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lab_ana_batches_reception                           IS 'Batches of samples results received from laboratory';
 COMMENT ON COLUMN lab_ana_batches_reception.opid                     IS 'Operation identifier';
@@ -2595,7 +2701,12 @@ CREATE TABLE lab_ana_columns_definition (
     colid          text,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user
+    username       text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lab_ana_columns_definition                     IS 'Definition of columns; obsolete';
 COMMENT ON COLUMN lab_ana_columns_definition.opid               IS 'Operation identifier';
@@ -2610,14 +2721,19 @@ COMMENT ON COLUMN lab_ana_columns_definition.username           IS 'User (role) 
 -- x ana_det_limit{{{
 
 CREATE TABLE ana_det_limit (
-    opid integer REFERENCES operations (opid),
-    batch_id text,
-    elem_code text,
-    elem_name text,
-    unit text,
-    detlim_inf integer,
-    detlim_sup integer
+    opid           integer REFERENCES operations (opid),
+    batch_id       text,
+    elem_code      text,
+    elem_name      text,
+    unit           text,
+    detlim_inf     integer,
+    detlim_sup     integer,
 -- TODO add fields numauto, creation_ts, username
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE ana_det_limit                        IS 'Analyses detections limits';
 --TODO complete field comments
@@ -2649,7 +2765,12 @@ CREATE TABLE lab_ana_results (
     datasource     integer,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user
+    username       text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lab_ana_results                      IS 'Laboratory results table, after laboratory instructions, related to LIMS system';
 COMMENT ON COLUMN lab_ana_results.opid                IS 'Operation identifier';
@@ -2672,7 +2793,6 @@ COMMENT ON COLUMN lab_ana_results.datasource          IS 'Datasource identifier,
 COMMENT ON COLUMN lab_ana_results.numauto             IS 'Automatic integer primary key';
 COMMENT ON COLUMN lab_ana_results.creation_ts         IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lab_ana_results.username            IS 'User (role) which created data record';
-
 -- function lab_ana_results_sample_id_default_value_num() {{{
 
     -- Après avoir tourné et retourné le problème: - LD
@@ -2686,15 +2806,15 @@ COMMENT ON COLUMN lab_ana_results.username            IS 'User (role) which crea
 
 --#lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
 
-CREATE OR REPLACE FUNCTION public.lab_ana_results_sample_id_default_value_num()
- RETURNS trigger AS
-$BODY$
+CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
+LANGUAGE 'plpgsql'
+AS $$
 BEGIN
 --UPDATE public.lab_ana_results SET sample_id = lab_sampleid WHERE (sample_id IS NULL OR sample_id = '') AND (lab_sampleid IS NOT NULL OR lab_sampleid <> '');
 UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
 UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
 
-UPDATE public.lab_ana_results SET value_num = 
+UPDATE public.lab_ana_results SET value_num =
 REPLACE(
 REPLACE(
 REPLACE(
@@ -2703,21 +2823,19 @@ REPLACE(
 REPLACE(
 REPLACE(
 REPLACE(
-REPLACE(value,     'IS',           '-999'), 
-                  'NSS',           '-999'), 
-                  'LNR',          '-9999'), 
-                   'NA',            '-99'), 
+REPLACE(value,     'IS',           '-999'),
+                  'NSS',           '-999'),
+                  'LNR',          '-9999'),
+                   'NA',            '-99'),
                     '<',              '-'),
                     '>',               ''),
                  'Not Received',  '-9999'),
                  'Bag Empty',     '-9999'),
-                  'N/L',           '-9999')::numeric WHERE value <> 'NULL' AND value IS NOT NULL AND value_num IS NULL;
+                 'N/L',           '-9999')::numeric WHERE value <> 'NULL' AND value IS NOT NULL AND value_num IS NULL;
 RETURN NULL;
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE;
-
-
+$$
+;
 
 --#}}}
 
@@ -2730,7 +2848,7 @@ LANGUAGE 'plpgsql' VOLATILE;
 --UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
 --UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
 --
---UPDATE public.lab_ana_results SET value_num = 
+--UPDATE public.lab_ana_results SET value_num =
 --REPLACE(
 --REPLACE(
 --REPLACE(
@@ -2738,10 +2856,10 @@ LANGUAGE 'plpgsql' VOLATILE;
 --REPLACE(
 --REPLACE(
 --REPLACE(
---REPLACE(value,     'IS',           '-999'), 
---                  'NSS',           '-999'), 
---                  'LNR',          '-9999'), 
---                   'NA',            '-99'), 
+--REPLACE(value,     'IS',           '-999'),
+--                  'NSS',           '-999'),
+--                  'LNR',          '-9999'),
+--                   'NA',            '-99'),
 --                    '<',              '-'),
 --                    '>',               ''),
 --                 'Not Received',  '-9999'),
@@ -2750,7 +2868,6 @@ LANGUAGE 'plpgsql' VOLATILE;
 --END;
 --$$;
 --}}}
-
 --}}}
 
 -- ANCIENNE VERSION: {{{
@@ -2801,13 +2918,11 @@ LANGUAGE 'plpgsql' VOLATILE;
 --CREATE TRIGGER lab_ana_results_insert AFTER INSERT ON lab_ana_results FOR EACH STATEMENT EXECUTE PROCEDURE lab_ana_results_sample_id_default();
 --
 --}}}
-
 -- }}}
---_______________ENCOURS_______________GEOLLLIBRE 5
 -- x lab_analysis_icp:{{{ TODO: table name inconsistent with rest of lab results tables: RENAME
 
 --
--- Name: lab_analysis_icp; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace: 
+-- Name: lab_analysis_icp; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
 CREATE TABLE lab_analysis_icp (
     opid           integer REFERENCES operations (opid),
@@ -2816,24 +2931,34 @@ CREATE TABLE lab_analysis_icp (
     elem_code      text,
     unit           text,
     value          numeric(20,2),
-    batch_id       text
+    batch_id       text,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
+
 --}}}
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- x lab_ana_qaqc_results:{{{
 
 CREATE TABLE lab_ana_qaqc_results (
-    opid integer REFERENCES operations (opid),
-    jobno text,
-    generic_txt_col1 text,
-    generic_txt_col2 text,
-    generic_txt_col3 text,
-    generic_txt_col4 text,
-    generic_txt_col5 text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    opid                integer REFERENCES operations (opid),
+    jobno               text,
+    generic_txt_col1    text,
+    generic_txt_col2    text,
+    generic_txt_col3    text,
+    generic_txt_col4    text,
+    generic_txt_col5    text,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lab_ana_qaqc_results                           IS 'Quality control assay results, internal to analytical laboratory';
 COMMENT ON COLUMN lab_ana_qaqc_results.opid                     IS 'Operation identifier';
@@ -2849,27 +2974,29 @@ COMMENT ON COLUMN lab_ana_qaqc_results.creation_ts              IS 'Current date
 COMMENT ON COLUMN lab_ana_qaqc_results.username                 IS 'User (role) which created data record';
 
 --}}}
-
-
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^^ 7
 -- assays quality control, quality check:{{{
 
 -- x qc_sampling:{{{
--- Name: qc_sampling; Type: TABLE; Schema: public; Owner: data_admin; Tablespace: 
+-- Name: qc_sampling; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
 CREATE TABLE qc_sampling (
-    opid integer,
-    sample_id text,
-    qc_type text,
-    comments text,
-    batch_id integer,
-    refers_to text,
-    weight_kg numeric(6,2),
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    opid                     integer REFERENCES operations (opid),
+    sample_id                text,
+    qc_type                  text,
+    comments                 text,
+    batch_id                 integer,
+    refers_to                text,
+    weight_kg                numeric(6,2),
+    datasource               integer,
+    numauto                  bigserial PRIMARY KEY,
+    creation_ts              timestamptz DEFAULT now() NOT NULL,
+    username                 text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE qc_sampling                          IS 'Quality control samples: duplicates, blanks, standards';
 COMMENT ON COLUMN qc_sampling.opid                    IS 'Operation identifier';
@@ -2877,34 +3004,40 @@ COMMENT ON COLUMN qc_sampling.datasource              IS 'Datasource identifier,
 COMMENT ON COLUMN qc_sampling.numauto                 IS 'Automatic integer primary key';
 COMMENT ON COLUMN qc_sampling.creation_ts             IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN qc_sampling.username                IS 'User (role) which created data record';
+
 --}}}
 -- x qc_standards{{{
 
 --
--- Name: qc_standards; Type: TABLE; Schema: public; Owner: data_admin; Tablespace: 
+-- Name: qc_standards; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
 CREATE TABLE qc_standards (
-    opid integer,
-    qc_id text NOT NULL,
-    labo text,
-    matrix text,
-    presentation text,
-    au_ppm numeric(10,3),
-    cu_ppm numeric(10,3),
-    zn_ppm numeric(10,3),
-    pb_ppm numeric(10,3),
-    ag_ppm numeric(10,3),
-    ni_ppm numeric(10,3),
-    au_ppm_95pc_conf_interval numeric,
-    cu_ppm_95pc_conf_interval numeric,
-    zn_ppm_95pc_conf_interval numeric,
-    pb_ppm_95pc_conf_interval numeric,
-    ag_ppm_95pc_conf_interval numeric,
-    ni_ppm_95pc_conf_interval numeric,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    opid                       integer REFERENCES operations (opid),
+    qc_id                      text NOT NULL,
+    labo                       text,
+    matrix                     text,
+    presentation               text,
+    au_ppm                     numeric(10,3),
+    cu_ppm                     numeric(10,3),
+    zn_ppm                     numeric(10,3),
+    pb_ppm                     numeric(10,3),
+    ag_ppm                     numeric(10,3),
+    ni_ppm                     numeric(10,3),
+    au_ppm_95pc_conf_interval  numeric,
+    cu_ppm_95pc_conf_interval  numeric,
+    zn_ppm_95pc_conf_interval  numeric,
+    pb_ppm_95pc_conf_interval  numeric,
+    ag_ppm_95pc_conf_interval  numeric,
+    ni_ppm_95pc_conf_interval  numeric,
+    datasource                 integer,
+    numauto                    bigserial PRIMARY KEY,
+    creation_ts                timestamptz DEFAULT now() NOT NULL,
+    username                   text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE qc_standards                         IS 'Quality Control standard samples, most of them are CRM (Certified Reference Materials)';
 COMMENT ON COLUMN qc_standards.opid                   IS 'Operation identifier';
@@ -2926,18 +3059,24 @@ COMMENT ON COLUMN qc_standards.username               IS 'User (role) which crea
 --}}}
 
 --}}}
+--_______________ENCOURS_______________GEOLLLIBRE vv 4
 -- x occurrences, ancient workings, mines:{{{
 
 -- x ancient_workings:{{{
 
 CREATE TABLE ancient_workings (
-    opid integer REFERENCES operations (opid),
-    gid integer NOT NULL,
-    description text,
-    the_geom geometry,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    CONSTRAINT enforce_geotype_the_geom CHECK (((geometrytype(the_geom) = 'POINT'::text) OR (the_geom IS NULL)))
+    opid                integer REFERENCES operations (opid),
+    gid                 integer NOT NULL,
+    description         text,
+    the_geom            geometry,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL)),
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE ancient_workings                     IS 'Ancient workings, either historic or recent';
 COMMENT ON COLUMN ancient_workings.gid                IS 'Identifier';
@@ -2948,10 +3087,11 @@ COMMENT ON COLUMN ancient_workings.datasource         IS 'Datasource identifier,
 COMMENT ON COLUMN ancient_workings.numauto            IS 'Automatic integer';
 
 --}}}
+--_______________ENCOURS_______________GEOLLLIBRE 5
 -- x occurrences:{{{
 
 CREATE TABLE occurrences (
-    opid                integer REFERENCES operations (opid) ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
+    opid                integer REFERENCES operations (opid),
     --numauto           bigserial PRIMARY KEY,
     name                text,
     description         text,
@@ -2968,7 +3108,12 @@ CREATE TABLE occurrences (
     username            text DEFAULT current_user,
     --CONSTRAINT chk_status CHECK (status = ANY (ARRAY[('OCCUR'::varchar)::text, ('OREB'::varchar)::text, ('MINE'::varchar)::text, ('MINED'::varchar)::text, ('MCO'::varchar)::text, ('DISTRICT'::varchar)::text])),
     CONSTRAINT chk_status CHECK (status IN ('OCCUR', 'OREB', 'MINE', 'MINED', 'MCO', 'DISTRICT')),  -- Another solution would be to make entries in lex_codes lookup table.  Probably better, more flexible, i18nable; TODO later.
-    CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL)  -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
+    CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL),  -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE occurrences                          IS 'Occurrences table: targets, showings, deposits, mines.  Compiled from various tables, and updated.';
 COMMENT ON COLUMN occurrences.opid                    IS 'Operation identifier';
@@ -2985,7 +3130,9 @@ COMMENT ON COLUMN occurrences.creation_ts             IS 'Current date and time 
 COMMENT ON COLUMN occurrences.username                IS 'User (role) which created data record';
 
 --}}}
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 --}}}
+--_______________ENCOURS_______________GEOLLLIBRE ^^ 6
 -- x licences, tenements: {{{
 
 -- x licences:{{{ TODO "licence" or "license"?...
@@ -3033,7 +3180,12 @@ CREATE TABLE licences (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE licences                             IS 'Licences, tenements';
 --COMMENT ON COLUMN licences.opid                     IS 'Operation identifier';
@@ -3059,7 +3211,7 @@ COMMENT ON COLUMN licences.username                   IS 'User (role) which crea
 
 --TODO Is this view still valid?  If not, erase.
 --DROP VIEW IF EXISTS licences_quadrangles;
---CREATE VIEW licences_quadrangles AS 
+--CREATE VIEW licences_quadrangles AS
 --SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
 --FROM licences ORDER BY licence_name;
 
@@ -3069,22 +3221,27 @@ COMMENT ON COLUMN licences.username                   IS 'User (role) which crea
 -- x grade_ctrl:{{{
 
 CREATE TABLE grade_ctrl (
-    opid integer REFERENCES operations (opid),
-    id text,
-    num text,
-    x numeric(10,2),
-    y numeric(10,2),
-    z numeric(10,2),
-    prof numeric(10,2),
-    aucy numeric(10,2),
-    aucy2 numeric(10,2),
-    autot numeric(10,2),
-    litho text,
-    old_id text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    id             text,
+    num            text,
+    x              numeric(10,2),
+    y              numeric(10,2),
+    z              numeric(10,2),
+    prof           numeric(10,2),
+    aucy           numeric(10,2),
+    aucy2          numeric(10,2),
+    autot          numeric(10,2),
+    litho          text,
+    old_id         text,
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE grade_ctrl                           IS 'Grade-control samples during mining exploitation';
 COMMENT ON COLUMN grade_ctrl.opid                     IS 'Operation identifier';
@@ -3110,16 +3267,21 @@ COMMENT ON COLUMN grade_ctrl.username                 IS 'User (role) which crea
 -- lookup tables, aka lexicons, aka code translation tables:{{{
 
 CREATE TABLE lex_codes (
-    opid integer REFERENCES operations (opid),
-    tablename text,
-    field text,
-    code text,
-    description text,
-    comments text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    tablename      text,
+    field          text,
+    code           text,
+    description    text,
+    comments       text,
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user,
+--     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.dh_collars (opid, id)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE lex_codes                            IS 'General look-up table with codes for various tables and coded fields';
 COMMENT ON COLUMN lex_codes.opid                      IS 'Operation identifier';
@@ -3130,13 +3292,13 @@ COMMENT ON COLUMN lex_codes.username                  IS 'User (role) which crea
 
 
 CREATE TABLE lex_datasource (
-    opid integer REFERENCES operations (opid),
-    filename text,
-    comments text,
-    datasource_id integer NOT NULL,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    filename       text,
+    comments       text,
+    datasource_id  integer NOT NULL,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user,
+    username       text DEFAULT current_user,
 );
 COMMENT ON TABLE lex_datasource                       IS 'Lexicon of data sources, keeping track of imported file, for reference';
 COMMENT ON COLUMN lex_datasource.opid                 IS 'Operation identifier';
@@ -3148,19 +3310,19 @@ COMMENT ON COLUMN lex_datasource.creation_ts          IS 'Current date and time 
 COMMENT ON COLUMN lex_datasource.username             IS 'User (role) which created data record';
 
 CREATE TABLE lex_standard (
-    opid integer REFERENCES operations (opid),
-    std_id text NOT NULL,
-    unit text NOT NULL,
-    element text NOT NULL,
-    value numeric NOT NULL,
-    std_dev numeric,
-    interval_conf numeric,
-    std_origin text,
-    type_analyse text NOT NULL,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    std_id         text NOT NULL,
+    unit           text NOT NULL,
+    element        text NOT NULL,
+    value          numeric NOT NULL,
+    std_dev        numeric,
+    interval_conf  numeric,
+    std_origin     text,
+    type_analyse   text NOT NULL,
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE lex_standard                         IS 'table contenant les valeurs des standards or et multi elements';
 COMMENT ON COLUMN lex_standard.opid                   IS 'Operation identifier';
@@ -3186,13 +3348,13 @@ COMMENT ON COLUMN lex_standard.username               IS 'User (role) which crea
 -- x mag_declination:{{{ TODO to be replaced by C program translated from Fortran (or by Fortran original program, which computes mag deviation?  Or, more prudently, store data *actually used* on operations, and if undefined, fetch the results of the function => TODO to be implemented.
 
 CREATE TABLE mag_declination (
-    opid integer REFERENCES operations (opid),
-    mag_decl numeric,
-    date date,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    mag_decl       numeric,
+    date           date,
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE mag_declination                      IS 'Magnetic declination';
 COMMENT ON COLUMN mag_declination.opid                IS 'Operation identifier';
@@ -3206,21 +3368,21 @@ COMMENT ON COLUMN mag_declination.username            IS 'User (role) which crea
 -- x topo_points:{{{
 
 CREATE TABLE topo_points (
-    opid integer REFERENCES operations (opid),
-    location text,
-    id text,
-    num numeric(10,0),
-    x numeric(10,3),
-    y numeric(10,3),
-    z numeric(10,3),
-    survey_date date,
-    topo_survey_type text,
-    coordsys text,
-    surveyor text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    opid                integer REFERENCES operations (opid),
+    location            text,
+    id                  text,
+    num                 numeric(10,0),
+    x                   numeric(10,3),
+    y                   numeric(10,3),
+    z                   numeric(10,3),
+    survey_date         date,
+    topo_survey_type    text,
+    coordsys            text,
+    surveyor            text,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user
 );
 COMMENT ON TABLE topo_points                          IS 'topographical data, points';
 COMMENT ON COLUMN topo_points.opid                    IS 'Operation identifier';
@@ -3239,15 +3401,15 @@ COMMENT ON COLUMN topo_points.username                IS 'User (role) which crea
 
 -- x survey_lines:{{{
 CREATE TABLE survey_lines (
-    opid numeric REFERENCES operations (opid),
-    id text,
-    x_start numeric,
-    y_start numeric,
-    x_end numeric,
-    y_end numeric,
-    length numeric,
-    srid numeric,
-    numauto bigserial PRIMARY KEY
+    opid           numeric REFERENCES operations (opid),
+    id             text,
+    x_start        numeric,
+    y_start        numeric,
+    x_end          numeric,
+    y_end          numeric,
+    length         numeric,
+    srid           numeric,
+    numauto        bigserial PRIMARY KEY
 );
 COMMENT ON TABLE survey_lines                         IS 'Survey lines, for geophysics or other types of linear surveys; defined with start and end points.';
 
@@ -3268,19 +3430,19 @@ COMMENT ON COLUMN units.unit_factor                   IS 'Multiplication factor'
 -- x baselines: {{{
 
 CREATE TABLE baselines (
-    opid integer REFERENCES operations (opid),
-    id integer,
-    location text,
-    x1 numeric(10,3),
-    y1 numeric(10,3),
-    z1 numeric(10,3),
-    x2 numeric(10,3),
-    y2 numeric(10,3),
-    z2 numeric(10,3),
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    id             integer,
+    location       text,
+    x1             numeric(10,3),
+    y1             numeric(10,3),
+    z1             numeric(10,3),
+    x2             numeric(10,3),
+    y2             numeric(10,3),
+    z2             numeric(10,3),
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE baselines                            IS 'Baselines, for each prospect, defined as a theoritical line between two points';
 COMMENT ON COLUMN baselines.opid                      IS 'Operation identifier';
@@ -3300,19 +3462,19 @@ COMMENT ON COLUMN baselines.username                  IS 'User (role) which crea
 -- x sections_definition:{{{
 
 CREATE TABLE sections_definition (
-    opid integer REFERENCES operations (opid),
-    id integer NOT NULL,
-    location text,
-    srid integer,
-    ll_corner_x numeric(10,2),
-    ll_corner_y numeric(10,2),
-    ll_corner_z numeric(10,2),
-    azim_ng numeric(10,2),
-    "interval" numeric(10,0),
-    num_start integer DEFAULT 1,
-    count numeric(3,0),
-    length numeric(5,0),
-    title text
+    opid           integer REFERENCES operations (opid),
+    id             integer NOT NULL,
+    location       text,
+    srid           integer,
+    ll_corner_x    numeric(10,2),
+    ll_corner_y    numeric(10,2),
+    ll_corner_z    numeric(10,2),
+    azim_ng        numeric(10,2),
+    "interval"     numeric(10,0), --TODO change field name
+    num_start      integer DEFAULT 1,
+    count          numeric(3,0),
+    length         numeric(5,0),
+    title          text
 );
 COMMENT ON COLUMN sections_definition.opid            IS 'Operation identifier';
 COMMENT ON COLUMN sections_definition.location        IS 'Drilling area';
@@ -3336,19 +3498,19 @@ COMMENT ON COLUMN sections_definition.title           IS 'section title, to be d
 -- x sections_array:{{{
 
 CREATE TABLE sections_array (
-    opid integer REFERENCES operations (opid),
-    location text,
-    id text,
-    title text,
-    srid integer,
-    x1 numeric(10,2),
-    y1 numeric(10,2),
-    z1 numeric(10,2),
-    length numeric,
-    x2 numeric(10,2),
-    y2 numeric(10,2),
-    z2 numeric(10,2),
-    num integer NOT NULL
+    opid           integer REFERENCES operations (opid),
+    location       text,
+    id             text,
+    title          text,
+    srid           integer,
+    x1             numeric(10,2),
+    y1             numeric(10,2),
+    z1             numeric(10,2),
+    length         numeric,
+    x2             numeric(10,2),
+    y2             numeric(10,2),
+    z2             numeric(10,2),
+    num            integer NOT NULL
 );
 COMMENT ON TABLE sections_array                       IS 'Arrays of cross-sections: table automatically fed by generate_cross_sections_array function';
 
@@ -3368,18 +3530,18 @@ COMMENT ON TABLE conversions_oxydes_elements          IS 'Molecular weights of s
 -- x index_geo_documentation:{{{
 
 CREATE TABLE index_geo_documentation (
-    opid integer REFERENCES operations (opid),
-    id integer NOT NULL,
-    title text,
-    lat_min numeric(20,8),
-    lat_max numeric(20,8),
-    lon_min numeric(20,8),
-    lon_max numeric(20,8),
-    filename text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
+    opid           integer REFERENCES operations (opid),
+    id             integer NOT NULL,
+    title          text,
+    lat_min        numeric(20,8),
+    lat_max        numeric(20,8),
+    lon_min        numeric(20,8),
+    lon_max        numeric(20,8),
+    filename       text,
+    datasource     integer,
+    numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE index_geo_documentation              IS 'Index for any documentation, with lat-lon rectangles, so that any documentation may be accessed geographically';
 COMMENT ON COLUMN index_geo_documentation.opid        IS 'Operation identifier';
@@ -3410,15 +3572,15 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 -- => table vide => exclue de la migration de bdexplo vers postgeol
 --}}}
 -- x program:{{{ TODO useful?? junk???
--- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace: 
+-- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
 CREATE TABLE program (
-    opid integer REFERENCES operations (opid),
-    gid integer NOT NULL,
-    myid integer,
-    geometry public.geometry,
-    id text,
-    completed boolean,
+    opid           integer REFERENCES operations (opid),
+    gid            integer NOT NULL,
+    myid           integer,
+    geometry       public.geometry,
+    id             text,
+    completed      boolean,
     CONSTRAINT enforce_geotype_geometry CHECK (((public.geometrytype(geometry) = 'POINT'::text) OR (geometry IS NULL)))
 );
 --}}}
@@ -9969,7 +10131,7 @@ CREATE TABLE program (
 
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^ 8
+--_______________ENCOURS_______________GEOLLLIBRE ^ 7
 
 --10000 LE RESTE...{{{
 -- o functions:{{{
@@ -9980,13 +10142,13 @@ CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
     AS $$
 #{{{
 #{{{
-# This function is called from a TRIGGER of 
-# sections_definition table, without any argument; 
+# This function is called from a TRIGGER of
+# sections_definition table, without any argument;
 # it returns a trigger.
 # TRIGGER definition:
-#    CREATE TRIGGER sections_definition_change 
-#    AFTER INSERT OR UPDATE ON sections_definition 
-#    FOR EACH ROW 
+#    CREATE TRIGGER sections_definition_change
+#    AFTER INSERT OR UPDATE ON sections_definition
+#    FOR EACH ROW
 #    EXECUTE PROCEDURE generate_cross_sections_array();
 #
 # TODO @#faire le pendant, qui détruise les enregistrements de sections_array quand on supprime un enregistrement de sections_definition
@@ -10010,7 +10172,7 @@ sql_insert += "DELETE FROM sections_array WHERE sections_array.opid IN (SELECT o
 #sql_insert +="DELETE FROM sections_array WHERE substr(sections_array.title, 1, " + str(NEW["title"].len) + ") = " + sepchar + NEW["title"] + sepchar + ";"
 # => marche pas:
 #  ERREUR:  PL/python : NameError: global name 'NEW' is not defined
-#  CONTEXTE : fonction PL/ generate_cross_sections_array Python 
+#  CONTEXTE : fonction PL/ generate_cross_sections_array Python
 # =>@# TODO reprendre
 #}}}
 
@@ -10030,7 +10192,7 @@ for line in res:
     count             = line["count"]
     length            = line["length"]
     title             = line["title"]
-    #num   = 1                                 # no need, there is an autoincrement in the table 
+    #num   = 1                                 # no need, there is an autoincrement in the table
     section_nr = num_start                     # cross-section number
     sql_insert += "INSERT INTO sections_array (opid, location, id, title, srid, length, x1, y1, z1, x2, y2, z2) VALUES \n"
     for j in range(count):
@@ -10088,8 +10250,8 @@ LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
 -- o general views:
 -- o operations_quadrangles:{{{
 DROP VIEW IF EXISTS operations_quadrangles;
-CREATE VIEW operations_quadrangles AS 
-SELECT *, 
+CREATE VIEW operations_quadrangles AS
+SELECT *,
        GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','
                                          ||lon_max||' '||lat_max||','
                                          ||lon_max||' '||lat_min||','
@@ -10102,223 +10264,223 @@ COMMENT ON VIEW operations_quadrangles                IS 'Rectangles geographica
 
 --}}}
 -- o stats_reports views:{{{
-CREATE OR REPLACE VIEW 
+CREATE OR REPLACE VIEW
 --stats_reports.stats_quotidiennes_avancements_sondages
-stats_reports.avancements_sondages_stats_quotidiennes AS 
-SELECT rig, date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT 
+stats_reports.avancements_sondages_stats_quotidiennes AS
+SELECT rig, date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT
 --drill_hole_id
  id) AS nb_drill_holes, min(
 --drill_hole_id
  id) AS first_dh, max(
 --drill_hole_id
- id) AS last_dh from 
+ id) AS last_dh from
 --drilling_daily_reports
  dh_shift_reports group by rig, date order by rig, date;
 
 
-CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles AS 
-SELECT year, month, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift FROM 
+CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles AS
+SELECT year, month, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift FROM
 --drilling_daily_reports
  dh_shift_reports) AS tmp GROUP BY year,month ORDER BY year, month;
 
 --idem, avec location:
-CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles_par_objectif AS 
+CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles_par_objectif AS
 SELECT year, month, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, split_part (
 --drill_hole_id
-id, '_', 1) as target FROM 
+id, '_', 1) as target FROM
 --drilling_daily_reports
  dh_shift_reports) AS tmp GROUP BY year,month, target ORDER BY year, month;
 
 
 --stats annuelles
-CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles AS 
-SELECT year, sum(drilled_length_during_shift) as drilled_length_during_year FROM (SELECT extract(year from date) as year, drilled_length_during_shift FROM 
+CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles AS
+SELECT year, sum(drilled_length_during_shift) as drilled_length_during_year FROM (SELECT extract(year from date) as year, drilled_length_during_shift FROM
 --drilling_daily_reports
  dh_shift_reports) AS tmp GROUP BY year ORDER BY year;
 
 --idem, avec location:
-CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles_par_objectif AS 
+CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles_par_objectif AS
 SELECT year, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, substring(
 --drill_hole_id
- id,1,4) as target FROM 
+ id,1,4) as target FROM
 --drilling_daily_reports
  dh_shift_reports) AS tmp GROUP BY year, target ORDER BY year;
 
 
 CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_location AS --@#À AMÉLIORER!!!!
-SELECT completed, location, dh_type, sum(length) AS sum_length 
-FROM dh_collars 
-GROUP BY 
+SELECT completed, location, dh_type, sum(length) AS sum_length
+FROM dh_collars
+GROUP BY
 completed, location, dh_type
-ORDER BY 
+ORDER BY
 completed, location, dh_type
 ;
 
 
 --longueur explorée par location et type
-CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_location_et_type AS 
+CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_location_et_type AS
 SELECT location,dh_type,sum(length) FROM dh_collars WHERE completed GROUP BY location,dh_type ORDER BY location,dh_type DESC;
 
 
 --longueur explorée par type (en kilomètres):
-CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_type_km AS 
+CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_type_km AS
 SELECT dh_type,sum(length)/1000 as km_explored_length FROM dh_collars GROUP BY dh_type ORDER BY dh_type DESC;
 
 
 --}}}
 -- o check views:{{{
 
---CREATE OR REPLACE VIEW checks.collars_location_vs_sector AS 
+--CREATE OR REPLACE VIEW checks.collars_location_vs_sector AS
 --SELECT location, sector FROM dh_collars GROUP BY location,sector ORDER BY sector;
 
 --Comparons un coup les profondeurs des tables de passes et des têtes:
 --table échantillons:
 
-CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_sampling_depths AS 
+CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_sampling_depths AS
 SELECT dh_collars.id, length, max_depto_sampl, length - max_depto_sampl AS diff_SHOULD_BE_ZERO FROM dh_collars INNER JOIN (SELECT id, max(depto) AS max_depto_sampl FROM dh_sampling GROUP BY id) AS max_depto ON dh_collars.id=max_depto.id WHERE length - max_depto_sampl<>0 ORDER BY id;
 
-CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_litho_depths AS 
+CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_litho_depths AS
 SELECT dh_collars.id, length, max_depto_litho, length - max_depto_litho AS diff_SHOULD_BE_ZERO FROM dh_collars INNER JOIN (SELECT id,max(depto) AS max_depto_litho FROM dh_litho GROUP BY id) AS max_depto ON dh_collars.id=max_depto.id WHERE length - max_depto_litho<>0 ORDER BY id;
 
-CREATE OR REPLACE VIEW checks.doublons_collars_id AS 
+CREATE OR REPLACE VIEW checks.doublons_collars_id AS
 SELECT id AS collars_id_non_uniq, COUNT(id) FROM dh_collars GROUP BY id HAVING COUNT(id)>1;
 
-CREATE OR REPLACE VIEW checks.doublons_dh_sampling_id_depto AS 
+CREATE OR REPLACE VIEW checks.doublons_dh_sampling_id_depto AS
 SELECT id, depto, COUNT(*) FROM dh_sampling GROUP BY id, depto HAVING COUNT(*) > 1;
 
-CREATE OR REPLACE VIEW checks.doublons_dh_litho_id_depto AS 
+CREATE OR REPLACE VIEW checks.doublons_dh_litho_id_depto AS
 SELECT id, depto, COUNT(*) FROM dh_litho GROUP BY id, depto HAVING COUNT(*) > 1;
 
 
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling AS 
+CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling AS
 SELECT dh_collars.id AS collars_id_without_samples, dh_sampling.id AS samples_id_nulls FROM dh_collars LEFT OUTER JOIN dh_sampling ON dh_collars.id=dh_sampling.id WHERE dh_sampling.id IS NULL ORDER BY dh_collars.id;
 
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling AS 
+CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling AS
 SELECT distinct dh_sampling_id FROM (SELECT dh_collars.id, dh_sampling.id AS dh_sampling_id FROM dh_collars RIGHT OUTER JOIN dh_sampling ON dh_collars.id=dh_sampling.id WHERE dh_collars.id IS NULL ORDER BY dh_sampling.id) tmp;
 
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho AS 
-SELECT dh_collars.id AS collars_id_without_litho, dh_litho.id AS litho_id_nulls FROM dh_collars LEFT OUTER JOIN dh_litho ON dh_collars.id=dh_litho.id WHERE dh_litho.id IS NULL ORDER BY dh_collars.id; 
+CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho AS
+SELECT dh_collars.id AS collars_id_without_litho, dh_litho.id AS litho_id_nulls FROM dh_collars LEFT OUTER JOIN dh_litho ON dh_collars.id=dh_litho.id WHERE dh_litho.id IS NULL ORDER BY dh_collars.id;
 
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho AS 
+CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho AS
 SELECT dh_collars.id, dh_litho.id AS litho_id FROM dh_collars RIGHT OUTER JOIN dh_litho ON dh_collars.id=dh_litho.id WHERE dh_collars.id IS NULL ORDER BY dh_litho.id;
 
 
-CREATE OR REPLACE VIEW checks.collars_vs_temp_topo_id_topo_sans_collars AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.collars_vs_temp_topo_id_topo_sans_collars AS
+SELECT
 --tmp_dh_topo_coordinates
- topo_points.id AS id_topo, dh_collars.id AS id_collars FROM 
+ topo_points.id AS id_topo, dh_collars.id AS id_collars FROM
 --tmp_dh_topo_coordinates
- topo_points LEFT OUTER JOIN dh_collars ON 
+ topo_points LEFT OUTER JOIN dh_collars ON
 --tmp_dh_topo_coordinates
  topo_points.id = dh_collars.id WHERE dh_collars.id IS NULL;
 
-CREATE OR REPLACE VIEW checks.collars_vs_topo_xyz_en_face_et_differences_importantes AS 
-SELECT id_topo, id_collars, topo_x, collars_x, diffx, topo_y, collars_y, diffy, topo_z, collars_z, diffz FROM (SELECT 
+CREATE OR REPLACE VIEW checks.collars_vs_topo_xyz_en_face_et_differences_importantes AS
+SELECT id_topo, id_collars, topo_x, collars_x, diffx, topo_y, collars_y, diffy, topo_z, collars_z, diffz FROM (SELECT
 --tmp_dh_topo_coordinates
-topo_points.id AS id_topo, dh_collars.id AS id_collars, 
+topo_points.id AS id_topo, dh_collars.id AS id_collars,
 --tmp_dh_topo_coordinates
- topo_points.x AS topo_x, dh_collars.x AS collars_x, 
---tmp_dh_topo_coordinates 
-topo_points.y as topo_y, dh_collars.y AS collars_y, 
+ topo_points.x AS topo_x, dh_collars.x AS collars_x,
 --tmp_dh_topo_coordinates
-topo_points.z AS topo_z, dh_collars.z AS collars_z, 
+topo_points.y as topo_y, dh_collars.y AS collars_y,
 --tmp_dh_topo_coordinates
-topo_points.x-dh_collars.x AS diffx, 
+topo_points.z AS topo_z, dh_collars.z AS collars_z,
 --tmp_dh_topo_coordinates
-topo_points.y-dh_collars.y AS diffy, 
---tmp_dh_topo_coordinates 
-topo_points.z-dh_collars.z AS diffz FROM 
+topo_points.x-dh_collars.x AS diffx,
+--tmp_dh_topo_coordinates
+topo_points.y-dh_collars.y AS diffy,
+--tmp_dh_topo_coordinates
+topo_points.z-dh_collars.z AS diffz FROM
 --tmp_dh_topo_coordinates
 --topo_points
-topo_points JOIN dh_collars ON 
+topo_points JOIN dh_collars ON
 --tmp_dh_topo_coordinates
 topo_points.id = dh_collars.id) tmp WHERE ABS(diffx) >= 0.05 OR ABS(diffy) >= 0.05 OR ABS(diffz) >= 0.05;
 
 
-CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes AS 
-SELECT nb_sondages_et_attributs, nb_sondages, nb_sondages_et_attributs-nb_sondages AS diff_SHOULD_BE_ZERO  FROM (SELECT count(*) AS nb_sondages_et_attributs FROM (SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes AS
+SELECT nb_sondages_et_attributs, nb_sondages, nb_sondages_et_attributs-nb_sondages AS diff_SHOULD_BE_ZERO  FROM (SELECT count(*) AS nb_sondages_et_attributs FROM (SELECT
 --drill_hole_id
-id, planned_length, azim_nm, dip FROM 
+id, planned_length, azim_nm, dip FROM
 --drilling_daily_reports
-dh_shift_reports GROUP BY 
+dh_shift_reports GROUP BY
 --drill_hole_id
-id, planned_length, azim_nm, dip) tmp) tmp1, (SELECT count(DISTINCT 
+id, planned_length, azim_nm, dip) tmp) tmp1, (SELECT count(DISTINCT
 --drill_hole_id
-id) AS nb_sondages FROM 
+id) AS nb_sondages FROM
 --drilling_daily_reports
 dh_shift_reports) tmp2 WHERE nb_sondages_et_attributs-nb_sondages <> 0;
 
-CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes_quels_ouvrages AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes_quels_ouvrages AS
+SELECT
 --drill_hole_id
-id, min(planned_length) AS min_planned_length, max(planned_length) AS max_planned_length, min(azim_nm) AS min_azim_nm, max(azim_nm) AS max_azim_nm, min(dip) AS min_dip, max(dip) AS max_dip FROM 
+id, min(planned_length) AS min_planned_length, max(planned_length) AS max_planned_length, min(azim_nm) AS min_azim_nm, max(azim_nm) AS max_azim_nm, min(dip) AS min_dip, max(dip) AS max_dip FROM
 --drilling_daily_reports
-dh_shift_reports GROUP BY 
+dh_shift_reports GROUP BY
 --drill_hole_id
 id HAVING (count(DISTINCT planned_length)>1 OR count(DISTINCT azim_nm)>1 OR count(DISTINCT dip)>1);
 
-CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_heures AS 
-SELECT date, 
+CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_heures AS
+SELECT date,
 --drill_hole_id
-id, time_start, time_end FROM 
+id, time_start, time_end FROM
 --drilling_daily_reports
 dh_shift_reports WHERE time_start>time_end;
 
 
-CREATE OR REPLACE VIEW checks.fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars AS
+SELECT
 --drill_hole_id
-dh_shift_reports.id AS dh_shift_reports_id, dh_collars.id AS dh_collars_id FROM 
+dh_shift_reports.id AS dh_shift_reports_id, dh_collars.id AS dh_collars_id FROM
 --drilling_daily_reports
 dh_shift_reports LEFT JOIN dh_collars ON (
 --drilling_daily_reports
 --drill_hole_id
-dh_shift_reports.id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY 
+dh_shift_reports.id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY
 --drill_hole_id
 dh_shift_reports.id, dh_collars.id;
 
-CREATE OR REPLACE VIEW checks.fichettes_longueurs_incoherentes AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_longueurs_incoherentes AS
+SELECT
 --drill_hole_id
-id, max_drilled_length, sum_drilled_length_during_shift FROM (SELECT 
+id, max_drilled_length, sum_drilled_length_during_shift FROM (SELECT
 --drill_hole_id
-id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM 
+id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM
 --drilling_daily_reports
-dh_shift_reports GROUP BY 
+dh_shift_reports GROUP BY
 --drill_hole_id
-id ORDER BY 
+id ORDER BY
 --drill_hole_id
 id) tmp WHERE max_drilled_length <> sum_drilled_length_during_shift ;
 
-CREATE OR REPLACE VIEW checks.fichettes_vs_collars_longueurs_incoherentes AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_vs_collars_longueurs_incoherentes AS
+SELECT
 --drill_hole_id
-tmp.id, max_drilled_length, length 
-FROM 
-(SELECT 
+tmp.id, max_drilled_length, length
+FROM
+(SELECT
 --drill_hole_id
-id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM 
+id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM
 --drilling_daily_reports
-dh_shift_reports GROUP BY 
+dh_shift_reports GROUP BY
 --drill_hole_id
-dh_shift_reports.id ORDER BY 
+dh_shift_reports.id ORDER BY
 --drill_hole_id
-dh_shift_reports.id) tmp 
-JOIN 
-dh_collars 
-ON 
---(tmp.drill_hole_id = dh_collars.id) 
-(tmp.id = dh_collars.id) 
-WHERE 
+dh_shift_reports.id) tmp
+JOIN
+dh_collars
+ON
+--(tmp.drill_hole_id = dh_collars.id)
+(tmp.id = dh_collars.id)
+WHERE
 max_drilled_length <> length ;
 
 
-CREATE OR REPLACE VIEW checks.fichettes_ouvrages_non_completed AS 
-SELECT 
+CREATE OR REPLACE VIEW checks.fichettes_ouvrages_non_completed AS
+SELECT
 --drill_hole_id
-id, max(completed::integer) FROM 
+id, max(completed::integer) FROM
 --drilling_daily_reports
-dh_shift_reports GROUP BY 
+dh_shift_reports GROUP BY
 --drill_hole_id
 id HAVING max(completed::integer) <> 1;
 
@@ -10346,7 +10508,7 @@ ALTER TABLE dh_sampling OWNER TO pierre;
 
 
 -- }}}
---_______________ENCOURS_______________GEOLLLIBRE 9
+--_______________ENCOURS_______________GEOLLLIBRE 8
 
 --les traces des sondages, pareil, pour un srid:{{{
 CREATE OR REPLACE VIEW dh_traces_3d AS
@@ -10356,7 +10518,7 @@ SELECT *,
                     ';LINESTRING (' ||
                                    x    || ' ' ||
                                    y    || ' ' ||
-                                   z    || 
+                                   z    ||
                                           ', ' ||
                                    x1   || ' ' ||
                                    y1   || ' ' ||
@@ -10375,7 +10537,7 @@ ORDER BY tmp.id;
 --}}}
 
 --trash:{{{
---CREATE OR REPLACE VIEW dh_traces_3d_20137 AS 
+--CREATE OR REPLACE VIEW dh_traces_3d_20137 AS
 --SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1
 --FROM dh_collars
 --WHERE srid = 20137) tmp
@@ -10408,12 +10570,12 @@ COMMENT ON COLUMN locations.lon_min                   IS 'West longitude, decima
 COMMENT ON COLUMN locations.lat_max                   IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN locations.lon_max                   IS 'East latitude, decimal degrees, WGS84';
 
---CREATE VIEW locations_rectangles AS SELECT *, GeomFromewkt('SRID=@#latlonwgs84;LINESTRING @#ou_plutôt_rectangle (' 
---|| lon_min || ' ' || lat_max || ', ' 
+--CREATE VIEW locations_rectangles AS SELECT *, GeomFromewkt('SRID=@#latlonwgs84;LINESTRING @#ou_plutôt_rectangle ('
+--|| lon_min || ' ' || lat_max || ', '
 --|| lon_max || ' ' || lat_max || ', '
 --|| lon_max || ' ' || lat_min || ', '
 --|| lon_min || ' ' || lat_min || ', '
---|| lon_min || ' ' || lat_max || )) 
+--|| lon_min || ' ' || lat_max || ))
 --FROM locations ORDER BY location;
 
 --}}}
@@ -10444,7 +10606,7 @@ FROM tmp_xy;
 --}}}
 -- grid:{{{
 --
--- Name: grid; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace: 
+-- Name: grid; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
 CREATE TABLE grid (
     opid integer
@@ -10457,11 +10619,11 @@ CREATE TABLE grid (
 );
 
 
-CREATE VIEW grid_points AS 
+CREATE VIEW grid_points AS
   SELECT *, GeomFromewkt( 'SRID='|| srid ||
-                      ';POINT(' || 
-                              x || ' ' || 
-                              y || 
+                      ';POINT(' ||
+                              x || ' ' ||
+                              y ||
                            ')'
                      )
   FROM grid;
@@ -10482,7 +10644,7 @@ CREATE VIEW grid_points AS
 --UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
 --UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
 --
---UPDATE public.lab_ana_results SET value_num = 
+--UPDATE public.lab_ana_results SET value_num =
 --REPLACE(
 --REPLACE(
 --REPLACE(
@@ -10490,10 +10652,10 @@ CREATE VIEW grid_points AS
 --REPLACE(
 --REPLACE(
 --REPLACE(
---REPLACE(value,     'IS',           '-999'), 
---                  'NSS',           '-999'), 
---                  'LNR',          '-9999'), 
---                   'NA',            '-99'), 
+--REPLACE(value,     'IS',           '-999'),
+--                  'NSS',           '-999'),
+--                  'LNR',          '-9999'),
+--                   'NA',            '-99'),
 --                    '<',              '-'),
 --                    '>',               ''),
 --                 'Not Received',  '-9999'),
@@ -10551,7 +10713,7 @@ ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tien
 --}}}
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
 -- Il convient de les traiter comme il convient, dans bdexplo, où elles restent. En versant leurs données dans la *bonne* structure, celle de postgeol.
--- _______________ENCOURS_______________GEOLLLIBRE 10
+-- _______________ENCOURS_______________GEOLLLIBRE 9
 -- ?? lab_ana_batches_reception_18_corr:{{{ TODO isn't this daube??
 
 CREATE TABLE lab_ana_batches_reception_18_corr (
@@ -10589,7 +10751,7 @@ CREATE TABLE field_sampling (  -- Nota bene: field_sampling used to be called ro
     hammer_index   integer NOT NULL, -- HM! Garder pour le moment, pour la jointure avec rock_ana, puis virer.
     geologist      text,
     description    text,
-    x              numeric(10,2),   
+    x              numeric(10,2),
     y              numeric(10,2),
     z              numeric(10,2),
     datasource     integer,
@@ -10616,13 +10778,13 @@ COMMENT ON COLUMN public.field_sampling.hammer_index  IS 'integer related to the
 --}}}
 -- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
 -- TODO table assez vide, tout comme field_sampling: contenu à verser, plutôt, dans lab_ana_results (SI CE N'EST DÉJÀ FAIT!)
--- _______________ENCOURS_______________GEOLLLIBRE 11
+-- _______________ENCOURS_______________GEOLLLIBRE 10
 CREATE TABLE public.field_sampling_ana (  -- Nota bene: field_sampling_ana used to be called rock_ana; actually, it may encompass much more than just rocks.  See remarks above concerning field_sampling table.
     opid                integer REFERENCES operations (opid)
       REFERENCES operations (opid)
       ON UPDATE CASCADE
       ON DELETE CASCADE
-      DEFERRABLE INITIALLY DEFERRED, 
+      DEFERRABLE INITIALLY DEFERRED,
     --  hammer_index integer,  --TODO rectifier ça... =>
     sample_id           text,
     shipment            date,
