@@ -101,36 +101,18 @@ COMMENT: [
 ; default directories are stored in .gll_preferences
 
 ; If there is already an MTP mount, skip the mount step:
-cmd: "mount | grep jmtp"
-print rejoin["Running: " cmd]
-tt:  copy ""
-err: copy ""
-call/wait/output/error cmd tt err
-print tt
+tt: call_wait_output_error "mount | grep jmtp"
 either (tt = "") [
 	; Get the user to properly mount the android device:
 	ask "Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
 	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
 	dir: copy to-string dir_mount_geolpda_android
 	replace dir "/Phone/geolpda/" ""
-	cmd: rejoin ["jmtpfs " dir]
-	print rejoin["Running: " cmd]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-	if (err != "") [print rejoin ["Error: " newline err]]
+	call_wait_output_error rejoin ["jmtpfs " dir]
 	; wait a couple seconds:
 	wait 2
 	; check that the device is correctly mounted:
-	cmd: "mount | grep jmtp"
-	print rejoin["Running: " cmd]
-	print "=> the mount line should appear:"
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-	if (err != "") [print rejoin ["Error: " newline err]]
+	call_wait_output_error "mount | grep jmtp"
 	; double-check (...) by listing mounted directory:
 	print "Listing mounted directory:"
 	if error? try [print read to-file dir] [print rejoin [ "=> error, " dir " contents cannot be read."]]
@@ -161,7 +143,6 @@ print read dir_mount_geolpda_android
 		print rejoin ["Default directory: " dir_geolpda_local " cannot be read."]
 		print {Locate the local directory where geolpda data is (or will be) replicated:}
 		print dir_geolpda_local
-
 	]
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
@@ -170,7 +151,7 @@ print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_ge
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 answer: copy ""
 while [((answer != "y") and (answer != "n") and (answer != ""))] [
-	ask "Get geolpda database from android device? (Y/n)"
+	answer: ask "Get geolpda database from android device? (Y/n)"
 ]
 if ((answer = "y") or (answer = "")) [
 	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak." timestamp_]] [print "Error while backuping previous geolpda."]
@@ -178,7 +159,6 @@ if ((answer = "y") or (answer = "")) [
 	print "Database copied from android device."
 ]
 
-print "STOP" input ;#################################################
 answer: copy ""
 while [((answer != "y") and (answer != "n") and (answer != ""))] [
 	answer: ask "Synchronize geolpda files (pictures, audio files)? (Y/n)"
@@ -186,7 +166,7 @@ while [((answer != "y") and (answer != "n") and (answer != ""))] [
 if ((answer = "y") or (answer = "")) [ synchronize_geolpda_files ]
 
 
-print "STOP" input ;#################################################
+;print "STOP" input ;#################################################
 
 ;}}}
 

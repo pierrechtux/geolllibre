@@ -2088,10 +2088,7 @@ run_sql_string_update: does [ ;{{{ } } }
 do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
-	cmd: rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
+	tt: call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost]
 	return tt
 	] ;}}}
 compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }
@@ -2172,7 +2169,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	connection_db
 	fabrique_cmd
 	err: copy ""
-	call/wait/error cmd err
+	call/wait/error cmd err ;TODO replace by call_wait_output_error; sort out first how we pass the output, for the use of err in the next line.
 	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 	
 	dbhost: dbhost2
@@ -2183,7 +2180,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	connection_db
 	fabrique_cmd
 	err: copy ""
-	call/wait/error cmd err
+	call/wait/error cmd err ; TODO replace by call_wait_output_error; see above
 	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
 
 	; les dumps sont générés, on les compare:
@@ -2192,7 +2189,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	print cmd
 	tt: copy ""
 	err: copy ""
-	call/wait/output/error cmd tt err
+	call/wait/output/error cmd tt err ; TODO replace by call_wait_output_error; see above
 	if err [print "Error while running diff"]
 	print "diff output:"
 	print tt
@@ -2244,7 +2241,6 @@ right: func ["as useless but still sometimes useful, as substring" string [strin
 ;== "jour"
 ;>> left "bonjour" 3
 ;== "bon"
-
 pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{{{ } } }
   val [string! number!] n [integer!]
   /with c [char!] "Optional Fill Character"
@@ -2264,6 +2260,21 @@ print-list: func [ l [block!]] [
 	]
 ]
 ;}}}
+
+call_wait_output_error: func [ ;{{{ } } }
+		;TODO make a wrapper call_wait_output_error including this code, and replace all call/... by this wrapper in the geolllibre codebase => done
+	"Run a shell call and get stdio output, and err output"
+	cmd [string!] "command to be run by the shell"
+	] [
+		print rejoin["Running: " cmd]
+		tt:  copy ""
+		err: copy ""
+		call/wait/output/error cmd tt err
+		print tt
+		if (err != "") [print rejoin ["Error: " newline err]]
+		return tt
+] ;}}}]
+
 
 ; Les dates du geolpda sont au format epoch en millisecondes;
 ; voici une fonction pour convertir les epoch en date: [{{{
@@ -2290,34 +2301,63 @@ epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (p
 
 ; Functions concerning GeolPDA data management: {{{ } } }
 synchronize_geolpda_files: does [; {{{ } } }
-	; TODO: make this platform-independent:
-	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
 	print "Synchronization process..."
-	; Get photos listing:
-	;ls_photos: read to-file rejoin [dir_geolpda_local "photos/" ]
-	ls_photos: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
-	;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
-	;###################### DISABLED, WAY TOO DANGEROUS! ################################################
-	;###################### RE-ENABLED, bravement...     ################################################
-	; For security (some files were just deleted...), first do a --dry-run , then confirm:
-	print {Dry run:}
-	;cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
-	cmd: rejoin [{rsync --dry-run -azcv --exclude="photos_transferred/" } dir_mount_geolpda_android { } dir_geolpda_local ]  ; way more prudent options
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-	prin "Perform these actions: y/n?"
-	either ((lowercase input ) = "y") [
-		; really do the synchronization:
-		cmd: replace cmd "rsync --dry-run" "rsync "
-		print rejoin["Running: " cmd]
-		tt:  copy ""
-		err: copy ""
-		call/wait/output/error cmd tt err
-		print tt
-		print "Press any key to continue..."
-		input
+			;DONE move the next piece of code in synchronize_geolpda_files (!...) => done. TODO => test
+	; Apparently due to the new MTP protocol used to connect to Android devices,
+	; directories with abundant (actual use case: 133) files lead to errors in
+	; the MTP mounted filesystem.  Therefore, we make another directory to store
+	; archived photos which have already been synchronised, this directory being
+	; ignored:
+	dir_photos_transferred: rejoin [dir_mount_geolpda_android "photos_transferred"]
+	unless exists? dir_photos_transferred [
+		; directory does not already exists: create it:
+		make-dir dir_photos_transferred ]
+	; Make a timestamped subdirectory, in order to avoid, as much as possible,
+	; the "photos_transferred" directory saturation (which may well lock MTP).
+	append dir_photos_transferred rejoin ["/" timestamp_]
+	make-dir dir_photos_transferred
+	; first solution, using rsync: abandoned, as rsync does not seem to cope well with MTP protocol used on recent (as of 2016_09_21__23_23_08) android devices: ; {{{ } } }
+	;; TODO: make this platform-independent:
+	;; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
+	;;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
+	;;###################### DISABLED, WAY TOO DANGEROUS! ################################################
+	;;###################### RE-ENABLED, bravement...     ################################################
+	;; For security (some files were just deleted...), first do a --dry-run , then confirm:
+	;print {Dry run:}
+	;;cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
+	;call_wait_output_error rejoin [{rsync --dry-run -azcv --exclude="photos_transferred/" } dir_mount_geolpda_android { } dir_geolpda_local ]  ; way more prudent options
+	;prin "Perform these actions: y/n?"
+	;either ((lowercase input ) = "y") (crochet qui ne passe curieusement pas dans un commentaire...) 
+	; really do the synchronization:
+	;	call_wait_output_error replace cmd "rsync --dry-run" "rsync "
+	;	print "Press any key to continue..."
+	;	input
+	;}}}
+	; Second solution, implemented in raw code:
+	; Get photos listings:
+	ls_photos_local: read to-file rejoin [dir_geolpda_local "photos/" ]
+	ls_photos_device: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
+	photos_to_transfer: exclude ls_photos_device ls_photos_local ; for the (abnormal, yet possible) case if photos are still in the android device in the geolpda/photos directory while they have already been transferred in the local directory.
+	prin "Photos to be transferred:"
+	print photos_to_transfer
+	prin "Perform the transfer: Y/n?"
+	tt: input
+	either  ((lowercase tt ) = "y") OR (tt = "") [
+print "sdvoijhzfe"
+		foreach f photos_to_transfer [
+print f
+			copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
+		]
+
+		; Move photos in the dir_photos_transferred directory:
+		; Rebol apparently does not provide a way to move files to directories,
+		; so the shell will do:
+		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
+		print "On android device, move photo files to an archive directory:"
+		call_wait_output_error cmd
+		;__________________________________________________________________________________________________________________________________________________________
+		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
+
 	; Reduce geolpda pictures sizes in the local copy:{{{
 	size_max: 700
 	print rejoin ["Reduction of pictures to " size_max " pixels:"]
@@ -2325,34 +2365,16 @@ synchronize_geolpda_files: does [; {{{ } } }
 	dir_ori: rejoin [dir_geolpda_local "photos/original"]
 	unless exists? dir_red [ make-dir dir_red ]
 	unless exists? dir_ori [ make-dir dir_ori ]
-	foreach f ls_photos [
+	foreach f photos_to_transfer [
 		if find f "jpg" [
-			cmd: rejoin ["convert -geometry 700 " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
-			print rejoin["Running: " cmd]
-			tt:  copy ""
-			err: copy ""
-			call/wait/output/error cmd tt err
-			print tt
-			if (err != "") [print rejoin ["Error: " newline err]]
-			cmd: rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
-			tt:  copy ""
-			err: copy ""
-			call/wait/output/error cmd tt err
-			print tt
-			if (err != "") [print rejoin ["Error: " newline err]]			
+			call_wait_output_error rejoin ["convert -geometry 700 " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
+			call_wait_output_error rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
 		]
 	]
-	cmd: rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
-	if (err != "") [print rejoin ["Error: " newline err]]
-	
+	call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]	
 	; TODO apply rotation, if any, to file
 	; TODO set timestamp to exif timestamp
 	; TODO add geotags, if any gpx?
-
 	;}}}
 	] [ print "No synchronization done."]
 ];}}}
@@ -2362,51 +2384,12 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	print "Synchronization process..."
 	; For security first do a --dry-run , then confirm:
 	print {"Dry run:}
-	cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
-	tt:  copy ""
-	err: copy ""
-	call/wait/output/error cmd tt err
-	print tt
+	call_wait_output_error rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
 	prin "Perform these actions [Yn]?"
 	if ((lowercase input ) = "y") [
 		; really do the synchronization:
 		cmd: replace cmd "rsync --dry-run" "rsync "
-		print rejoin["Running: " cmd]
-		tt:  copy ""
-		err: copy ""
-		call/wait/output/error cmd tt err
-		print tt
-		if (err != "") [print rejoin ["Error: " newline err]]
-		; Apparently due to the new MTP protocol used to connect to Android devices,
-		; directories with abundant (actual use case: 133) files lead to errors in
-		; the MTP mounted filesystem.  Therefore, we make another directory to store
-		; archived photos which have already been synchronised, this directory being
-		; ignored:
-		dir_photos_transferred: rejoin [dir_mount_geolpda_android "photos_transferred"]
-		unless exists? dir_photos_transferred [
-			; directory does not already exists: create it:
-			make-dir dir_photos_transferred
-		]
-		; Make a timestamped subdirectory, in order to avoid, as much as possible,
-		; the "photos_transferred" directory saturation (which may well lock MTP).
-		append dir_photos_transferred rejoin ["/" timestamp_]
-		make-dir dir_photos_transferred
-		; Move photos there:
-		; Rebol apparently does not provide a way to move files to directories,
-		; so the shell will do:
-		print "TODO DEBUG: MV FILES DOES NOT WORK AS EXPECTED" input ;################################################################## TODO reprendre ici
-		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
-		print "On android device, move photo files to an archive directory:"
-		;__________________________________________________________________________________________________________________________________________________________
-		;TODO make a wrapper call_wait_output_error including this code, and replace all call/... by this wrapper in the geolllibre codebase
-		print rejoin["Running: " cmd]
-		tt:  copy ""
-		err: copy ""
-		call/wait/output/error cmd tt err
-		print tt
-		if (err != "") [print rejoin ["Error: " newline err]]
-		;__________________________________________________________________________________________________________________________________________________________
-		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid directory saturation).
+		call_wait_output_error cmd
 	]
 	print "Press any key to continue..."
 	input
@@ -3886,9 +3869,7 @@ generate_tectri_file: function [ ;{{{ } } }
 	if ((length? filenames) > 1) [prin "s"]
 	print "conversion to ISO-8859-1 for TecTri use:"
 	foreach filename filenames [
-		cmd:  rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
-		print cmd
-		call/wait cmd
+		call_wait_output_error rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
 		;print filename
 	]
 	newline: newline_
@@ -4014,9 +3995,7 @@ generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
 	if ((length? filenames) > 1) [prin "s"]
 	print "conversion to ISO-8859-1 for TecTri use:"
 	foreach filename filenames [
-		cmd:  rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
-		print cmd
-		call/wait cmd
+		call_wait_output_error rejoin ["iconv --from-code=UTF-8 --to-code=ISO-8859-1 " filename " > " filename "_ && mv -f " filename "_ " filename]
 		;print filename
 	]
 	newline: newline_
