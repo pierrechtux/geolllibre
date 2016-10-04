@@ -297,7 +297,7 @@ make root-protocol [
     ]
 
 	read-stream: func [port [port!] /wait f-state [word!] /records rows /part count
-		/local final complete msg pl pos stopped row stop error test-error test-exit a-data
+		/local final complete msg pl pos utopped row stop error test-error test-exit a-data
 	][
 		pl: port/locals
 		bind protocol-rules 'final
@@ -2270,7 +2270,7 @@ call_wait_output_error: func [ ;{{{ } } }
 		tt:  copy ""
 		err: copy ""
 		call/wait/output/error cmd tt err
-		print tt
+		prin tt
 		if (err != "") [print rejoin ["Error: " newline err]]
 		return tt
 ] ;}}}]
@@ -2335,7 +2335,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	;}}}
 	; Second solution, implemented in raw code:
 	; Get photos listings:
-	ls_photos_local: read to-file rejoin [dir_geolpda_local "photos/" ]
+	ls_photos_local: read to-file rejoin  [dir_geolpda_local         "photos/" ]
 	ls_photos_device: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
 	photos_to_transfer: exclude ls_photos_device ls_photos_local ; for the (abnormal, yet possible) case if photos are still in the android device in the geolpda/photos directory while they have already been transferred in the local directory.
 	prin "Photos to be transferred:"
@@ -2343,9 +2343,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	prin "Perform the transfer: Y/n?"
 	tt: input
 	either  ((lowercase tt ) = "y") OR (tt = "") [
-print "sdvoijhzfe"
 		foreach f photos_to_transfer [
-print f
 			copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
 		]
 
@@ -2379,20 +2377,45 @@ print f
 	] [ print "No synchronization done."]
 ];}}}
 synchronize_oruxmaps_tracklogs: does [; {{{ } } }
-	; TODO: make this platform-independent:
-	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
+;	; first attempt, using rsync:{{{
+;	; TODO: make this platform-independent:
+;	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
+;	print "Synchronization process..."
+;	; For security first do a --dry-run , then confirm:
+;	print {"Dry run:}
+;	call_wait_output_error rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
+;	prin "Perform these actions [Yn]?"
+;	if ((lowercase input ) = "y") [
+;		; really do the synchronization:
+;		cmd: replace cmd "rsync --dry-run" "rsync "
+;		call_wait_output_error cmd
+;	]
+;	print "Press any key to continue..."
+;	input
+;	}}}
+	; second try, using rebol commands (instead if rsync which stalled on MTP connexions):
 	print "Synchronization process..."
-	; For security first do a --dry-run , then confirm:
-	print {"Dry run:}
-	call_wait_output_error rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } (dirize dir_mount_oruxmaps_android/tracklogs) { } (dirize dir_oruxmaps_local/tracklogs) ]
-	prin "Perform these actions [Yn]?"
-	if ((lowercase input ) = "y") [
-		; really do the synchronization:
-		cmd: replace cmd "rsync --dry-run" "rsync "
-		call_wait_output_error cmd
-	]
-	print "Press any key to continue..."
+	ls_gpx_telephone: copy []
+	foreach f read (dirize dir_mount_oruxmaps_android/tracklogs) [ if find f "gpx" [ append ls_gpx_telephone f] ]
+	ls_gpx_local: read (dirize dir_oruxmaps_local/tracklogs)
+	gpx_files_to_be_copied: exclude ls_gpx_telephone ls_gpx_local
+	common_gpx_files:     intersect ls_gpx_telephone ls_gpx_local
+	foreach f common_gpx_files [
+		?? f
+		input
+		size_telephone: size? to-file rejoin [dir_mount_oruxmaps_android/tracklogs "/" f]
+		size_local:     size? to-file rejoin [dir_oruxmaps_local/tracklogs "/" f]
+		unless (size_local = size_telephone) [
+			?? size_local
+			?? size_telephone
+			append gpx_files_to_be_copied f
+		] ]
+	print-list gpx_files_to_be_copied
+	print "anykey"
 	input
+	; TODO previous line does not work as expected
+	foreach f gpx_files_to_be_copied [copy-file (to-file rejoin [dir_mount_oruxmaps_android/tracklogs "/" f]) (to-file rejoin [dir_oruxmaps_local/tracklogs "/" f])]
+
 ];}}}
 get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
 ;TODO function name not very appropriate: to be changed to something better

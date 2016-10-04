@@ -96,23 +96,47 @@ COMMENT: [
 ;
 ;print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ] ;}}}
-; Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): 
+; NO => Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): {{{ } } }
+; 
+;; default directories are stored in .gll_preferences
+;
+;; If there is already an MTP mount, skip the mount step:
+;tt: call_wait_output_error "mount | grep jmtp"
+;either (tt = "") [
+;	; Get the user to properly mount the android device:
+;	ask "Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
+;	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
+;	dir: copy to-string dir_mount_geolpda_android
+;	replace dir "/Phone/geolpda/" ""
+;	call_wait_output_error rejoin ["jmtpfs " dir]
+;	; wait a couple seconds:
+;	wait 2
+;	; check that the device is correctly mounted:
+;	call_wait_output_error "mount | grep jmtp"
+;	; double-check (...) by listing mounted directory:
+;	print "Listing mounted directory:"
+;	if error? try [print read to-file dir] [print rejoin [ "=> error, " dir " contents cannot be read."]]
+;	print newline
+;] [
+;	print ["Android device already mounted." newline]
+;]
+;;}}}
+; And yet another way, using adb, which proves to be much faster and more reliable than MTP to mount an android machine:{{{ } } }
  
 ; default directories are stored in .gll_preferences
-
-; If there is already an MTP mount, skip the mount step:
-tt: call_wait_output_error "mount | grep jmtp"
+; If there is already an ADB mount, skip the mount step:
+tt: call_wait_output_error "mount | grep adbfs"
 either (tt = "") [
 	; Get the user to properly mount the android device:
-	ask "Connect Android device for MTP access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
+	ask "Connect Android device for ADB access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
 	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
 	dir: copy to-string dir_mount_geolpda_android
 	replace dir "/Phone/geolpda/" ""
-	call_wait_output_error rejoin ["jmtpfs " dir]
+	call_wait_output_error rejoin ["adbfs " dir]
 	; wait a couple seconds:
 	wait 2
 	; check that the device is correctly mounted:
-	call_wait_output_error "mount | grep jmtp"
+	call_wait_output_error "mount | grep adbfs"
 	; double-check (...) by listing mounted directory:
 	print "Listing mounted directory:"
 	if error? try [print read to-file dir] [print rejoin [ "=> error, " dir " contents cannot be read."]]
@@ -120,6 +144,8 @@ either (tt = "") [
 ] [
 	print ["Android device already mounted." newline]
 ]
+
+;}}}
 
 ; Get the geolpda location on the mounted filesystem:
 	;dir_mount_geolpda_android: request-dir/title/dir {pick up "geolpda" subdirectory} dir_mount_geolpda_android
@@ -229,6 +255,7 @@ print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidential
 tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
 unless (tt = "") [ opid: to-integer tt ]
 ; TODO check that the chosen opid actually exists in operations table
+; TODO also check that the user does not answer to a previous question by yor n, typing while the program is (too silently) syncing...
 
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
