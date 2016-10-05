@@ -249,13 +249,34 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 ;/*} }}*/
 
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
-
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes.
 print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidentiality THEN substring(full_name, 0, 5) || '-----' ELSE full_name END FROM public.operations ORDER BY opid;"
-tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
-unless (tt = "") [ opid: to-integer tt ]
-; TODO check that the chosen opid actually exists in operations table
+opids: run_query "SELECT opid FROM public.operations;"
+until [
+	tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
+	; check that the temporary variable holds an integer, or nothing:
+	either (tt = "") [
+		true 			; if tt = "", nothing to do, since opid is already defined
+		] [
+		; tt is not ""
+		either (error? try [tt: to-integer tt]) [
+			print rejoin [ "Error: " tt " cannot be converted to an integer => try again:"]
+			tt: copy ""
+			false
+		] [
+		; tt has been converted to an integer
+		either (find opids reduce [to-block tt]) [
+				; check that the chosen opid actually exists in operations table
+				opid: tt
+			] [
+				print rejoin [ "Error: " tt " cannot be found in the opid list from operations table in " dbname " database hosted by " dbhost " => try again:"]
+				tt: copy ""
+				false
+]	]	]	]
+;?? opid
 ; TODO also check that the user does not answer to a previous question by yor n, typing while the program is (too silently) syncing...
+]
+]
 
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
