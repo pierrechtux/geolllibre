@@ -67,6 +67,9 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 }
 ]
 
+
+; TODO generate a couple of data files, .csv, or optionnaly a database dump, of the reported data.
+
 ; Get routines, preferences, and connect to database:
 do load to-file system/options/home/bin/gll_routines.r
 
@@ -622,6 +625,7 @@ foreach j jours [
 						;timestamp_photo: to-date epoch-to-date tt
 						;print timestamp_photo
 						write/append outputfile rejoin [
+							; TODO faire en sorte que les photos en portrait ne s'affichent pas plus petites que celles en paysage
 							{<img src="} clean-path dir_geolpda_local {photos/} 
 							pho 
 							{" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} 
