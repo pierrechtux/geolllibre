@@ -251,6 +251,7 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes. {{{ } } }
 print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidentiality THEN substring(full_name, 0, 5) || '-----' ELSE full_name END FROM public.operations ORDER BY opid;"
+
 opids: run_query "SELECT opid FROM public.operations;"
 until [
 	tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
@@ -263,20 +264,22 @@ until [
 			print rejoin [ "Error: " tt " cannot be converted to an integer => try again:"]
 			tt: copy ""
 			false
-		] [
-		; tt has been converted to an integer
-		either (find opids reduce [to-block tt]) [
-				; check that the chosen opid actually exists in operations table
-				opid: tt
 			] [
+			; tt has been converted to an integer
+			; check that the chosen opid actually exists in operations table:
+			either (find opids reduce [to-block tt]) [
+				opid: tt
+				] [
 				print rejoin [ "Error: " tt " cannot be found in the opid list from operations table in " dbname " database hosted by " dbhost " => try again:"]
 				tt: copy ""
 				false
-]	]	]	]
-;?? opid
+				]
+			]
+		]
+	]
+?? opid
 ; TODO also check that the user does not answer to a previous question by yor n, typing while the program is (too silently) syncing...
-]
-]
+
 ;}}}
 ; Put data:{{{ } } }
 ; build a SQL INSERT statement:
@@ -373,6 +376,7 @@ print {diff ~/field_observations_struct_measures_avant.csv ~/field_observations_
 ] ;}}}
 
 ; Synchronize oruxmaps tracklogs, optionally: ;/*{{{*/ } } }
+; TODO get rid VIEW functions calls
 if confirm {Synchronize oruxmaps tracklogs?} [
 	print "Synchronizing oruxmaps tracklogs"
 	alert {locate where android device is mounted, pickup "oruxmaps" subdirectory}
