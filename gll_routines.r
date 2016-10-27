@@ -1897,7 +1897,7 @@ make root-protocol [
 		if none? port/target [net-error reform ["No database name for" port/scheme "is specified"]]
 
 		port/locals: make object! [columns: none rows: 0 values: none sqlite-rc: 0 index: 0]
-		port/url: spec 
+		port/url: spec
 
 		sqlite: any [
 			select [3 "sqlite3.exe" 4 "/usr/bin/sqlite3"] (fourth system/version)
@@ -2277,8 +2277,8 @@ call_wait_output_error: func [ ;{{{ } } }
 
 
 ; Les dates du geolpda sont au format epoch en millisecondes;
-; voici une fonction pour convertir les epoch en date: [{{{
-epoch-to-date: func [
+; voici deux fonctions pour convertir les epoch en date et réciproquement: [{{{
+epoch-to-date: func [ ; from http://www.rebol.net/cookbook/recipes/0051.html
 	"Return REBOL date from unix time format"
 	epoch [integer!] "Date in unix time format"
 	] [
@@ -2291,6 +2291,18 @@ epoch-to-date: func [
 															   ;beau jour,
 															   ;remettre ça;
 															   ;ça boguait.
+]
+date-to-epoch: func [
+	"Return date in unix time format from a date in REBOL format"
+	rebol-date [date!] "Date in REBOL time format"
+	][
+	if rebol-date/time = none [
+    rebol-date: to-date rejoin [rebol-date "/00:00:00"]
+	]
+	rebol-date: rebol-date - now/zone
+	return to-integer (rebol-date - 1-Jan-1970 * 86400) +
+	(rebol-date/time/hour * 3600) +
+	(rebol-date/time/minute * 60) + rebol-date/time/second
 ] ;}}}]
 ; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
 epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [
@@ -2298,6 +2310,23 @@ epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (p
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
 ]
 ;}}}
+; et voici la réciproque, pour convertir des dates au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg en epoch en ms: {{{ } } }
+AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (default pictures names on android) to epoch ms format (pictures from geolpda)" timestamp ] [
+;	timestamp: "20160915_145150"
+	y: m: d: hr: min: sec: copy ""
+	parse timestamp [ copy y 4 digit copy m 2 digit copy d 2 digit "_" copy hr 2 digit copy min 2 digit copy sec 2 digit end]
+	; ?? y ?? m ?? d ?? hr ?? min ?? sec
+	tmp: make date! rejoin [d "-" m "-" y "/" hr ":" min ":" sec]
+	;return ((date-to-epoch tmp) * 1000)
+	; TODO ** Math Error: Math or number overflow
+	; => mince.
+	tt: make decimal! 0
+	tt: (date-to-epoch tmp)
+	tt: tt * 1000
+	return tt
+]
+;}}}
+
 
 ; Functions concerning GeolPDA data management: {{{ } } }
 synchronize_geolpda_files: does [; {{{ } } }
@@ -2327,7 +2356,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	;;cmd: rejoin [{rsync --dry-run --inplace -auv --del --exclude="tmp/" } dir_mount_geolpda_android { } dir_geolpda_local ]
 	;call_wait_output_error rejoin [{rsync --dry-run -azcv --exclude="photos_transferred/" } dir_mount_geolpda_android { } dir_geolpda_local ]  ; way more prudent options
 	;prin "Perform these actions: y/n?"
-	;either ((lowercase input ) = "y") (crochet qui ne passe curieusement pas dans un commentaire...) 
+	;either ((lowercase input ) = "y") (crochet qui ne passe curieusement pas dans un commentaire...)
 	; really do the synchronization:
 	;	call_wait_output_error replace cmd "rsync --dry-run" "rsync "
 	;	print "Press any key to continue..."
@@ -2343,10 +2372,11 @@ synchronize_geolpda_files: does [; {{{ } } }
 	prin "Perform the transfer: Y/n?"
 	tt: input
 	either  ((lowercase tt ) = "y") OR (tt = "") [
+		print "copying files:"
 		foreach f photos_to_transfer [
+			prin to-string f
 			copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
 		]
-
 		; Move photos in the dir_photos_transferred directory:
 		; Rebol apparently does not provide a way to move files to directories,
 		; so the shell will do:
@@ -2402,7 +2432,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	common_gpx_files:     intersect ls_gpx_telephone ls_gpx_local
 	foreach f common_gpx_files [
 		?? f
-		input
+;		input
 		size_telephone: size? to-file rejoin [dir_mount_oruxmaps_android/tracklogs "/" f]
 		size_local:     size? to-file rejoin [dir_oruxmaps_local/tracklogs "/" f]
 		unless (size_local = size_telephone) [
@@ -2411,8 +2441,8 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 			append gpx_files_to_be_copied f
 		] ]
 	print-list gpx_files_to_be_copied
-	print "anykey"
-	input
+;	print "anykey"
+;	input
 	; TODO previous line does not work as expected
 	foreach f gpx_files_to_be_copied [copy-file (to-file rejoin [dir_mount_oruxmaps_android/tracklogs "/" f]) (to-file rejoin [dir_oruxmaps_local/tracklogs "/" f])]
 
@@ -2602,7 +2632,7 @@ jours: unique jours
 ; que l'on trie:
 sort jours
 ;}}}]
-prin "Jours: "
+print "Dates with observations data in database: "
 if (none? date_start) [
 	foreach j jours [print j]   ; <= la liste des jours, triée
 ]
