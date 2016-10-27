@@ -357,7 +357,10 @@ write/lines outputfile to-string [
     overflow:auto; max-height:200px;
     border: 1px solid; margin: 1px; padding: 10px; width:90%;}
    img {
-    border: 1px solid}
+    border: 1px solid
+    max-width:  400px;
+    max-height: 400px;
+   }
    body { counter-reset: chapter; }
    h1:before { 
           content: counter(chapter) ". ";
@@ -628,10 +631,11 @@ foreach j jours [
 							; TODO faire en sorte que les photos en portrait ne s'affichent pas plus petites que celles en paysage
 							{<img src="} clean-path dir_geolpda_local {photos/} 
 							pho 
-							{" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} 
+							{" vspace="5" hspace="10" alt="} 
 							pho 
 							{"/>} 
 						]
+						; there was: {" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} => no good
 						; {<img src="file://} system/options/path "photos/" pho {" style="width="25%" height="25%";" vspace="5" hspace="10" alt="} pho {" />}
 						; plutôt, voir thumbnail-maker.r
 						;  {<img alt="} pho {" src="file:///home/pierre/geolpda/copie_android_media_disk/photos/reduit_700/} pho {" " />}
