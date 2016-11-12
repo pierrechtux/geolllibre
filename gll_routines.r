@@ -2319,11 +2319,7 @@ AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (d
 	tmp: make date! rejoin [d "-" m "-" y "/" hr ":" min ":" sec]
 	;return ((date-to-epoch tmp) * 1000)
 	; TODO ** Math Error: Math or number overflow
-	; => mince.
-	tt: make decimal! 0
-	tt: (date-to-epoch tmp)
-	tt: tt * 1000
-	return tt
+	return (date-to-epoch tmp) * 1000.0
 ]
 ;}}}
 
