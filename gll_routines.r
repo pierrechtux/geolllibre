@@ -2246,21 +2246,20 @@ pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-; continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
+;continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
 continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
 throw 'continue]
 ;}}}
 timestamp_: does [; an underscored timestamp{{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
-; a very simple function, to quickly print a list:{{{
+;a very simple function, to quickly print a list:{{{
 print-list: func [ l [block!]] [
 	foreach i l [
 		print i
 	]
 ]
 ;}}}
-
 call_wait_output_error: func [ ;{{{ } } }
 		;TODO make a wrapper call_wait_output_error including this code, and replace all call/... by this wrapper in the geolllibre codebase => done
 	"Run a shell call and get stdio output, and err output"
@@ -2274,6 +2273,36 @@ call_wait_output_error: func [ ;{{{ } } }
 		if (err != "") [print rejoin ["Error: " newline err]]
 		return tt
 ] ;}}}]
+contig_sequences: function [{Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{ } } }
+	input_serie [series!]
+	]
+	[
+	in_sequence val output
+	]
+	[
+	sort input_serie
+	output: copy ""
+	in_sequence: false
+	start_sequence: does [ append output rejoin ["[" val      ] in_sequence: true  ]
+	end_sequence:   does [ append output rejoin [" " val "] " ] in_sequence: false ]
+	for i 1 (length? input_serie) 1 [
+		val: input_serie/(:i)
+		either val + 1 = input_serie/(:i + 1) [
+			; next item is contiguous
+			unless in_sequence [ start_sequence ]
+		] [
+			; next item is not contiguous
+			either in_sequence [
+				end_sequence
+			][
+				append output rejoin ["[" input_serie/(:i) "] "]
+				in_sequence: false
+			]
+		]
+	]
+	return to-block output
+];}}}
+
 
 
 ; Les dates du geolpda sont au format epoch en millisecondes;
@@ -2691,8 +2720,9 @@ foreach i sql_result [
 ;length? jours
 ;}}}]
 if (none? date_start) [
-	prin "Jours: "
-	foreach j jours [print j]   ; <= la liste des jours, triée
+	print "Jours avec des observations enregistrées dans la base: "
+	;foreach j jours [print j]   ; <= la liste des jours, triée
+	foreach j contig_sequences jours [print j]
 ]
 ] ;}}}
 update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ } } } ; old name: computes_structural_measurements_from_geolpda_matrix
