@@ -35,7 +35,7 @@ REBOL [
 		0.9.0 9-Mar-2014/22:24:10+1:00  "Include structural measurements in HTML report."
 		0.9.1 23-Apr-2014/19:19:46+1:00 "Moved functions to gll_routines.r"
 		0.9.2 6-Jun-2014/13:01:33+2:00  "Improve date handling from command line arguments: default end date is now; anglicise a few variables names; a bit of code cleaning"
-		0.9.3 23-Mar-2015/14:45+1:00	"Add information about saamples in report"
+		0.9.3 23-Mar-2015/14:45+1:00	"Add information about samples in report"
 	]
 	License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
@@ -90,7 +90,7 @@ unless (none? system/options/args) [
 			(> 2) 	[ 	print "Too many arguments supplied on command-line; continue execution"	]
 		]
 	] [
-		print "Error, one or two arguments must be used: starting date and optionnaly ending date (defaults to now), both in Rebol-Red compatible format, i.e. 23-Apr-2014 or 23/04/2014; continue execution"
+		print "Error: one or two arguments may be used: starting date and optionnaly ending date (defaults to now), both in Rebol-Red compatible format, i.e. 23-Apr-2014 or 23/04/2014; continue execution"
 	]
 ]
 
@@ -237,8 +237,22 @@ jours: [		;;DEBUG!!!
 ]
 nbjours: length? jours
 sequences_jours_contigus: copy []
+jourcourant: jours/1
+dans_une_sequence: false
+for i 1 nbjours 1 [
+	if ((jours/i) + 1) = jours/(i + 1) [	; jour suivant contigu
+		else dans_une_sequence [continue] [dans_une_sequence: true]
+	]
+]
+
+
+
+
+
 append sequences_jours_contigus jours/1
-jours: next jours
+;jours: next jours             ; no, if we do like this, first jours always refer to the *real* first items of jours
+                               ; so instead, just delete the first item:
+remove jours
 while [ (nbjours - (index? jours)) > 2 ] [
 	print first jours
 	either (((first jours) - (jours/(-1))) = 1) [	; jour contigu au précédent?
