@@ -180,22 +180,20 @@ while [((answer != "y") and (answer != "n") and (answer != ""))] [
 	answer: ask "Get geolpda database from android device? (Y/n)"
 ]
 if ((answer = "y") or (answer = "")) [
-	if error? try [copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak." timestamp_]] [print "Error while backuping previous geolpda."]
+	if error? try [
+		copy-file to-file rejoin [dir_geolpda_local "geolpda"] to-file rejoin [dir_geolpda_local "geolpda.bak." timestamp_]
+	] [
+		print "Error while backuping previous geolpda."
+	]
 	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
 	print "Database copied from android device."
 ]
-
-answer: copy ""
+answer: "rien"
 while [((answer != "y") and (answer != "n") and (answer != ""))] [
 	answer: ask "Synchronize geolpda files (pictures, audio files)? (Y/n)"
 ]
 if ((answer = "y") or (answer = "")) [ synchronize_geolpda_files ]
-
-
-;print "STOP" input ;#################################################
-
 ;}}}
-
 ; Open sqlite geolpda, get data:{{{ } } }
 print "Open GeolPDA database..."
 change-dir dir_geolpda_local
@@ -241,12 +239,9 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 ;}}}
 ;}}}
 
-;####################################################################{ {{
 ; ###### data from geolpda is now in tables:
 ;   geolpda_observations
 ;   geolpda_orientations
-;####################################################################
-;/*} }}*/
 
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes. {{{ } } }
@@ -273,10 +268,7 @@ until [
 				print rejoin [ "Error: " tt " cannot be found in the opid list from operations table in " dbname " database hosted by " dbhost " => try again:"]
 				tt: copy ""
 				false
-				]
-			]
-		]
-	]
+	] ] ] ]
 ?? opid
 ; TODO also check that the user does not answer to a previous question by yor n, typing while the program is (too silently) syncing...
 
@@ -349,6 +341,20 @@ insert db "COMMIT;"
 print "commited => end."
 ;}}}
 
+; Compute structural orientations from geolpda orientation measurements and populate appropriate fields in field_observations_struct_measures_avant.csv:{{{
+print "TO BE TESTED! ARRÊTÉ!"
+input
+; Restrict the computation to the data that has just been imported.
+;update_field_observations_struct_measures_from_rotation_matrix /criteria rejoin ["datasource = " datasource]
+; TODO attention! datasource ne semble pas être renseigné tout le temps! Il faudra remettre la ligne précédente, une fois ceci résolu.
+update_field_observations_struct_measures_from_rotation_matrix /criteria rejoin ["creation_ts::date = " to-iso-date now/date]
+
+
+;_______________________________________________________________________________________________________________________________
+
+
+;}}}
+
 if DEBUG [ ; {{{ } } }
 vérif:  ============================ sauve 2 tables obs et mesures en csv APRÈS: {{{ } } }
 run_query "SELECT * FROM public.field_observations"
@@ -376,7 +382,7 @@ print {diff ~/field_observations_struct_measures_avant.csv ~/field_observations_
 ] ;}}}
 
 ; Synchronize oruxmaps tracklogs, optionally: ;/*{{{*/ } } }
-; TODO get rid VIEW functions calls
+; TODO get rid of VIEW functions calls
 if confirm {Synchronize oruxmaps tracklogs?} [
 	print "Synchronizing oruxmaps tracklogs"
 	alert {locate where android device is mounted, pickup "oruxmaps" subdirectory}
@@ -388,12 +394,23 @@ if confirm {Synchronize oruxmaps tracklogs?} [
 ]
 
 ;/*}}}*/
-; Finished.
 
+; Generate a report using gll_geolpda_report_generator.r ?
+if confirm {Generate report using gll_geolpda_report_generator.r using data just imported?} [
+	times: copy []
+	foreach o geolpda_observations [
+		append times o/3
+	]
+	sort times
+	date_start: epoch_ms_geolpda_to_date (first times)
+	date_end:   epoch_ms_geolpda_to_date (last  times)
+	flag_create_tec_files: true
+	do load to-file system/options/home/geolllibre/gll_geolpda_report_generator.r 
+]
+
+; Finished.
 
 ; à la fin, faire: 
 ;call rejoin ["jmtpfs " dir]
 ;fusermount -u /mnt/galaxy1
-
-
 

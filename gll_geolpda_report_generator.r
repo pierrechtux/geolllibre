@@ -1,8 +1,8 @@
 #!/usr/bin/rebol -qs
 REBOL [
 	Title:   "GeolPDA report generator"
-	Date:    23-Mar-2015/14:45+1:00
-	Version: 0.9.3
+	Date:    16-Dec-2016/21:45:50+3:00
+	Version: 1.0.0
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
 		Génération d'un rapport sous forme d'un fichier .html 
@@ -12,7 +12,7 @@ REBOL [
 		"94","PCh2012_0372","1351959798292","544.3","43.4495","0.733307","1351959861748.jpg","1351959897130.3gpp","Le Bouche à oreille, café, logiciels libres, tango studio"
 		"93","PCh2012_0371","1351700656858","91.1","5.37645","-3.96311","","","chez PNG"
 		Le fichier sqlite doit se situer là (répertoire courant):
-		geolpda
+			geolpda
 		Et les photos doivent être là (en aval du répertoire courant):
 			photos/
 	}
@@ -36,8 +36,9 @@ REBOL [
 		0.9.1 23-Apr-2014/19:19:46+1:00 "Moved functions to gll_routines.r"
 		0.9.2 6-Jun-2014/13:01:33+2:00  "Improve date handling from command line arguments: default end date is now; anglicise a few variables names; a bit of code cleaning"
 		0.9.3 23-Mar-2015/14:45+1:00	"Add information about samples in report"
+		1.0.0 16-Dec-2016/21:45:50+3:00 "Version 1 should have been granted way before, since gll_geolpda_report_generator.r is used routinely in production"
 	]
-	License: {
+License: {
 This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
 ###########################################################################
 ##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##
@@ -64,46 +65,11 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
     or write to the Free Software Foundation, Inc., 51 Franklin Street, 
     Fifth Floor, Boston, MA 02110-1301, USA.
     See LICENSE file.
-}
-]
-
-
-; TODO generate a couple of data files, .csv, or optionnaly a database dump, of the reported data.
-
-; Get routines, preferences, and connect to database:
-do load to-file system/options/home/bin/gll_routines.r
-
-
-; Get dates for report to be generated, from command line arguments:
-date_start: date_end: none
-
-print_error: does [ ]
-
-unless (none? system/options/args) [
-	if error? try [
-		switch length? system/options/args [
-			2 		[	date_start: to-date pick system/options/args 1
-						date_end:   to-date pick system/options/args 2		 					]
-			1 		[	date_start: to-date pick system/options/args 1
-						date_end:   now/date                           							]
-			0 		[	print "No dates supplied on command-line; continue execution"			]
-			(> 2) 	[ 	print "Too many arguments supplied on command-line; continue execution"	]
-		]
-	] [
-		print "Error: one or two arguments may be used: starting date and optionnaly ending date (defaults to now), both in Rebol-Red compatible format, i.e. 23-Apr-2014 or 23/04/2014; continue execution"
-	]
-]
-
-; non: {{{ } } }
-;; ouvrir le fichier .csv des observations du geolpda:
-;change-dir system/options/path
-;lines: read/lines %geolpda_picks.csv
-;}}}
-; =============================================================================
-; =============================================================================
+}]
 
 ;******************************************************************************
 ; TODO:
+;     o generate a couple of data files, .csv, or optionnaly a database dump, of the reported data.
 ;     o à la fin, choisir d'uploader sur un ftp, et d'émailler l'alerte à quidedroit
 ;     o inclure la réduction des photos dans le script
 ;     o faire en sorte qu'un clic, dans le .html, sur les images, ouvre l'image 
@@ -111,6 +77,7 @@ unless (none? system/options/args) [
 ;	
 ; 		=> 23-Oct-2013/9:55:53+2:00: see gll_geolpda_fetch_data.r
 ;		=> 6-Feb-2014/23:58:48-3:00: essayons
+;	
 ;     o le outputfile est curieusement créé dans le répertoire du script, 
 ;       soit ~/bin, sur ma machine autan:
 ;       il faudrait qu'il le crée dans le répertoire d'où on lance le script.
@@ -137,15 +104,75 @@ unless (none? system/options/args) [
 ;    o choisir d'attaquer soit la base sqlite geolpda, soit la base bdexplo, 
 ;      qui a été nourrie au préalable.
 ;
+;    o faire tourner directement sur le téléphone => migrer en Red
+;
+;    o générer quelque chose de mieux que du html => LaTeX, cf. Jerry
+;
 ;    o ouvrir le fichier avec un chemin à choisir
 ;
 ;******************************************************************************
 ; DONE:
+;
 ;     x à terme, attaquer direct la base sqlite geolpda => auquai
+;
 ;******************************************************************************
+
+;date_start: now - 10
+;date_end:   now
+;flag_create_tec_files: true
+
+; Get routines, preferences, and connect to database, if not already done:
+if [none? dir_geolpda_local] [
+	do load to-file system/options/home/bin/gll_routines.r ]
+; dates and flags may be defined elsewhere, if this script is called from another script:
+if error? try [any [(none? date_start) (none? date_end)]] [
+	date_start: date_end:  none ]
+if error? try [(none? flag_create_tec_files)] [
+	flag_create_tec_files: none ]
+
+; Process command line arguments:
+unless (none? system/options/args) [
+	arguments: copy system/options/args
+	; on traite les options en -quelquechose et on les ôte, pour ne garder que les dates:
+	; process options -something and discard them, in order to only keep dates arguments:
+	arguments: head arguments
+	while [not (tail? arguments)] [
+		a: to-string first arguments
+		if ((left a 1) = "-") [
+				if a = "-t" [flag_create_tec_files:  true]
+				if a = "-d" [flag_create_data_files: true] ; TODO implémenter cela
+				remove arguments a ]
+		arguments: next arguments  ]
+	arguments: head arguments
+	; Get dates for report to be generated, from command line arguments, now discarded from all -options:
+	if error? try [
+		switch length? arguments [
+			2 		[	date_start: to-date pick arguments 1
+						date_end:   to-date pick arguments 2	]
+			1 		[	date_start: to-date pick arguments 1
+						date_end:   now/date					]
+			0 		[	print "No dates supplied on command-line; continue execution"			]
+			(> 2) 	[ 	print "Too many arguments supplied on command-line; continue execution"	] ]
+	] [
+		print "Error: one flag (-t to generate TecTri files) and/or one or two arguments may be used: starting date and optionnaly ending date (defaults to now), both in Rebol-Red compatible format, i.e. 23-Apr-2014 or 23/04/2014; ignore arguments and continue execution"
+] ]
 
 ; *** on fait tourner la fonction qu'on souhaite, au choix: get_geolpda_data_from_csv, get_geolpda_data_from_sqlite ou get_geolpda_data_from_postgresql:
 get_geolpda_data_from_postgresql  ;TODO restrain this query to the range of dates defined by date_start and date_end; this will considerably speed things up.
+
+	; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
+	run_query "SELECT DISTINCT date FROM public.field_observations ORDER BY date"	; nettement plus aisé en sql qu'à partir des données du .csv!
+	jours: copy []
+	foreach i sql_result [
+		unless any [(none? i) ((to-string i) = "none")] [
+			append jours to-date to-string i
+	] ]
+	;length? jours
+	;}}}]
+	if (none? date_start) [
+		print "Jours avec des observations enregistrées dans la base: "
+		;foreach j jours [print j]   ; <= la liste des jours, triée
+		foreach j contig_sequences jours [print j] ]
 
 ; On affiche combien on a de lignes (d'observations)								<= non, déjà fait plus haut
 ;print rejoin ["Nombre d'observations: "          length? geolpda_observations]
@@ -155,7 +182,6 @@ get_geolpda_data_from_postgresql  ;TODO restrain this query to the range of date
 ; pour donner le choix des séquences à traiter à l'utilisateur.
 ; => 2016_11_30__23_39_12 implémenté dans gll_routines.r, fonction contig_sequences
 ;contig_sequences TODO mettre en application, maintenant
-
 
 if (none? date_start) [	; if date_start is not defined, date_end is also undefined
 	; {{{ ask start and end dates: } } }
@@ -170,21 +196,16 @@ if (none? date_start) [	; if date_start is not defined, date_end is also undefin
 	date_end: input
 	either date_end = "" [date_end: last jours] [date_end: to-date date_end]
 	?? date_end
-	; }}}
-]
+] ; }}}
 
-comment [ ; DEBUG ###################### {{{ } } }
-date_start: 22-Aug-2013
-date_end: 28-Aug-2013
-]         ; DEBUG ###################### }}}
-
+;html_report_generator: function [ "Generate an HTML report file" date_start [date!] date_end [date!]] [ ;{{{
 ; Shall we create .tec files for use with TecTri?
-ans: lowercase ask "Shall we create .tec files for use with TecTri? [Y/n]"
-either any [(ans = "") (ans = "y")] [ flag_create_tec_files: 1 ]
-                                    [ flag_create_tec_files: 0 ]
-
+if (none? flag_create_tec_files) [
+	ans: lowercase ask "Shall we create .tec files for use with TecTri? [Y/n]"
+	either any [(ans = "") (ans = "y")] [ flag_create_tec_files: 1 ]
+    	                                [ flag_create_tec_files: 0 ]
+]
 ; Création d'un fichier .html en sortie {{{ } } }
-
 ;==============================================================================
 ; Créons un fichier .html en sortie, en y ouvrant un port:/*{{{*/ } } }
 ; Le fichier est nommé en fonction du dernier jour;
@@ -198,7 +219,6 @@ date_end/year "_"
 next form 100 + date_end/month "_" 
 next form 100 + date_end/day ".html"]
 ;/*}}}*/
-
 ; On y écrit un en-tête général: [{{{
 write/lines outputfile to-string [
 {<!DOCTYPE HTML PUBLIC ^"-//W3C//DTD HTML 4.01 Transitional//EN^">
@@ -210,8 +230,8 @@ write/lines outputfile to-string [
     overflow:auto; max-height:200px;
     border: 1px solid; margin: 1px; padding: 10px; width:90%;}
    img {
-    border: 1px solid
-    max-width:  400px;
+    border: 1px solid;
+    max-width: 400px;
     max-height: 400px;
    }
    body { counter-reset: chapter; }
@@ -258,7 +278,6 @@ write/lines/append outputfile to-string now/date
 write/lines/append outputfile rejoin ["<p><small>Report generated on "
  to-string now " by gll_geolpda_report_generator.r</small></p>"]
 ;}}}]
-
 ;  puis on écrit le corps:/*{{{*/
 ; Itérons maintenant sur les jours; j est le jour courant:
 ;?? date_start
@@ -445,12 +464,23 @@ foreach j jours [
 ;}}}
 						write/lines/append outputfile "<tt>"
 						; **attention! following line queries the postgresql database; code to be adapted to sqlite, if needed:
-						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
+						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						measures: sql_result
 						foreach m measures [
 							; o name is already an Observation: s stands for Structure:
 							;prin "-"
-							s: orientation/new first (to-block m/7)
+							; TODO it would be better to get measurement data from fields, rather than recompute from rotation_matrix
+							either not (none? m/7) [
+								s: orientation/new first (to-block m/7)	; Bugs if there is no rotation matrix.
+							] [	; no rotation_matrix; make an orientation object based on fields data:
+								s: orientation
+								s/plane_direction:     m/8
+								s/plane_dip:           m/9
+								s/plane_quadrant_dip:  m/10
+								s/line_pitch:          m/11
+								s/line_pitch_quadrant: m/12
+								s/line_movement:       m/13
+							]
 							; which type of geometry is measured:
 							parse m/6 [
 								  "PLMS" (ttt: rejoin ["plane+line, movement sure " s/print_plane_line_movement])
@@ -458,14 +488,14 @@ foreach j jours [
 								| "PL"   (ttt: rejoin ["plane+line "                s/print_plane_line         ])
 								| "P"    (ttt: rejoin ["plane "                     s/print_plane              ])
 								| "L"    (ttt: rejoin ["line "                      s/print_line               ])
-								]
-							write/lines/append outputfile  rejoin [ttt "<br>"]
 							]
+							write/lines/append outputfile  rejoin [ttt "<br>"]
+						]
 						write/lines/append outputfile "</tt></dd></dl>"
 						if flag_create_tec_files [ ; creation of a TecTri file for the current observation point
 							generate_tectri_file/criteria/unique_filename (rejoin ["WHERE obs_id = '" id "'"]) (rejoin [id ".tec"])
 						]
-						]
+					]
 				if ((length? photos) > 0) [
 					; Il y a des photos:
 					;write/append outputfile photos
@@ -501,7 +531,6 @@ foreach j jours [
 	]
 ]
 ;/*}}}*/
-
 ; Une fois tout écrit, on ferme les balises ouvertes:/*{{{*/
 write/append outputfile to-string [
 {
@@ -511,6 +540,8 @@ write/append outputfile to-string [
 
 ;/*}}}*/
 ;}}}
+;];}}}
 
 print rejoin ["Report generated: " to-string outputfile]
+browse outputfile
 

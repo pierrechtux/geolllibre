@@ -2246,8 +2246,8 @@ pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-;continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
-continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
+continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle {{{ } } }
+;continue: as in python; to use in a loop, do: "loop [catch[...]]"
 throw 'continue]
 ;}}}
 timestamp_: does [; an underscored timestamp{{{
@@ -2303,10 +2303,8 @@ contig_sequences: function [{Function taking input = list of values, integers or
 	return to-block output
 ];}}}
 
-
-
 ; Les dates du geolpda sont au format epoch en millisecondes;
-; voici deux fonctions pour convertir les epoch en date et réciproquement: [{{{
+; voici deux fonctions pour convertir les epoch en date et réciproquement: {{{
 epoch-to-date: func [ ; from http://www.rebol.net/cookbook/recipes/0051.html
 	"Return REBOL date from unix time format"
 	epoch [integer!] "Date in unix time format"
@@ -2332,7 +2330,7 @@ date-to-epoch: func [
 	return to-integer (rebol-date - 1-Jan-1970 * 86400) +
 	(rebol-date/time/hour * 3600) +
 	(rebol-date/time/minute * 60) + rebol-date/time/second
-] ;}}}]
+] ;}}}
 ; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
 epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
@@ -2349,6 +2347,12 @@ AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (d
 	;return ((date-to-epoch tmp) * 1000)
 	; TODO ** Math Error: Math or number overflow
 	return (date-to-epoch tmp) * 1000.0
+]
+;}}}
+; et une fonction pour convertir directement le format epoch ms de geolpda en date au format rebol: {{{ } } }
+epoch_ms_geolpda_to_date: func ["Converts directly epoch ms format (pictures from geolpda) to dd/mm/yyyy (default date on rebol)" epoch_ms] [
+	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
+	return to-date rejoin [ pad tmp/day 2 "/" pad tmp/month 2 "/" tmp/year ]
 ]
 ;}}}
 
@@ -2389,17 +2393,17 @@ synchronize_geolpda_files: does [; {{{ } } }
 	;}}}
 	; Second solution, implemented in raw code:
 	; Get photos listings:
-	ls_photos_local: read to-file rejoin  [dir_geolpda_local         "photos/" ]
+	ls_photos_local:  read to-file rejoin [dir_geolpda_local         "photos/" ]
 	ls_photos_device: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
 	photos_to_transfer: exclude ls_photos_device ls_photos_local ; for the (abnormal, yet possible) case if photos are still in the android device in the geolpda/photos directory while they have already been transferred in the local directory.
-	prin "Photos to be transferred:"
+	prin "Photos to be transferred: "
 	print photos_to_transfer
 	prin "Perform the transfer: Y/n?"
 	tt: input
 	either  ((lowercase tt ) = "y") OR (tt = "") [
 		print "copying files:"
 		foreach f photos_to_transfer [
-			prin to-string f
+			prin rejoin [to-string f " "]
 			copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
 		]
 		; Move photos in the dir_photos_transferred directory:
@@ -2408,28 +2412,82 @@ synchronize_geolpda_files: does [; {{{ } } }
 		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
 		print "On android device, move photo files to an archive directory:"
 		call_wait_output_error cmd
-		;__________________________________________________________________________________________________________________________________________________________
 		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
-
-	; Reduce geolpda pictures sizes in the local copy:{{{
-	size_max: 700
-	print rejoin ["Reduction of pictures to " size_max " pixels:"]
-	dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
-	dir_ori: rejoin [dir_geolpda_local "photos/original"]
-	unless exists? dir_red [ make-dir dir_red ]
-	unless exists? dir_ori [ make-dir dir_ori ]
-	foreach f photos_to_transfer [
-		if find f "jpg" [
-			call_wait_output_error rejoin ["convert -geometry 700 " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
-			call_wait_output_error rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
-		]
-	]
-	call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]	
-	; TODO apply rotation, if any, to file
-	; TODO set timestamp to exif timestamp
-	; TODO add geotags, if any gpx?
-	;}}}
+		; Reduce geolpda pictures sizes in the local copy:
+		size_max: 700
+		print rejoin ["Reduction of pictures to " size_max " pixels:"]
+		dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
+		dir_ori: rejoin [dir_geolpda_local "photos/original"]
+		unless exists? dir_red [ make-dir dir_red ]
+		unless exists? dir_ori [ make-dir dir_ori ]
+		foreach f photos_to_transfer [
+			if find f "jpg" [
+				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
+				call_wait_output_error rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
+			] ]
+		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
+		; TODO apply rotation, if any, to file
+		; TODO set timestamp to exif timestamp
+		; TODO add geotags, if any gpx?
 	] [ print "No synchronization done."]
+
+	print "DCIM pictures synchronization and reduction process: "
+	; Get photos listings:
+	ls_photos_local:  read to-file rejoin [dir_dcim_local now/year "/reduit_700/"]
+	ls_photos_device: read to-file         dir_mount_dcim_android
+	sort ls_photos_local
+	sort ls_photos_device
+
+	; first photo to transfer: oldest one among the geolpda photos which have already been transferred:
+	sort photos_to_transfer
+	date_start: first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (first photos_to_transfer)) ".jpg" "" "_"
+	date_start: to-date rejoin [substring date_start 1 4 "-" substring date_start 5 2 "-" substring date_start 7 2]
+	; last one: youngest one among the same list:
+	date_end:   first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
+	date_end: to-date rejoin [substring date_end 1 4 "-" substring date_end 5 2 "-" substring date_end 7 2]
+
+	ls_photos_device_to_be_transferred: copy []
+	foreach p ls_photos_device [
+		if (find p ".jpg") [
+			t: first parse (to-string p) "_"
+			if all	[
+					(( to-decimal t) >= (to-decimal (replace/all (to-iso-date date_start) "-" "")))
+					(( to-decimal t) <= (to-decimal (replace/all (to-iso-date date_end  ) "-" "")))
+				] [
+					append ls_photos_device_to_be_transferred p
+	]	]	]
+	prin "Photos from DCIM directory (not taken using GeolPDA) to be transferred:"
+	print ls_photos_device_to_be_transferred
+	prin "Perform the transfer: Y/n?"
+	tt: input
+	either ((lowercase tt ) = "y") OR (tt = "") [
+		print "copying files:"
+		foreach f ls_photos_device_to_be_transferred [
+			copy-file (to-file rejoin [dir_mount_dcim_android f]) (rejoin [dir_dcim_local now/year])
+		]
+		; Reduce pictures sizes in the local copy:
+		print rejoin ["Reduction of pictures to " size_max " pixels:"]
+		dir_red: rejoin [dir_dcim_local now/year "/reduit_700" ] 	; TODO make directory name more generic and less French
+		dir_ori: rejoin [dir_dcim_local now/year "/original"   ]
+		unless exists? dir_red [ make-dir dir_red ]
+		unless exists? dir_ori [ make-dir dir_ori ]
+		foreach f ls_photos_device_to_be_transferred [
+			if find f "jpg" [
+				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_dcim_local now/year "/" f " " dir_red "/" f ]
+				call_wait_output_error rejoin ["mv " dir_dcim_local now/year "/" f " " dir_ori] ;# TODO ACHTUNG! ÇA NE MARCHERA PAS SI ON DOMPE LES DONNÉES DE L'ANNÉE PRÉCÉDENTE! CORRIGER!
+			] ]
+		; TODO apply rotation, if any, to file
+		; TODO set timestamp to exif timestamp
+		; TODO add geotags, if any gpx?
+		; make symlinks in geolpda photos directory:
+		;cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
+		;call_wait_output_error cmd
+		foreach f ls_photos_device_to_be_transferred [
+			cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/" f " " dir_geolpda_local "/photos/"]
+			call_wait_output_error cmd
+		]
+	] [ print "No synchronization done."]
+;_______________________________________________________________________________________________________________________________
 ];}}}
 synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 ;	; first attempt, using rsync:{{{
@@ -2472,6 +2530,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	foreach f gpx_files_to_be_copied [copy-file (to-file rejoin [dir_mount_oruxmaps_android/tracklogs "/" f]) (to-file rejoin [dir_oruxmaps_local/tracklogs "/" f])]
 
 ];}}}
+
 get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
 ;TODO function name not very appropriate: to be changed to something better
 if error? try [
@@ -2517,7 +2576,6 @@ chk_directories_mount_and_local: does [;{{{ } } }
 		exists? dir_geolpda_local
 	]
 ];}}}
-
 
 get_geolpda_data_from_csv: does [ ; Inutile si on n'utilise pas le .csv: {{{ } } }
 ; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
@@ -2663,67 +2721,51 @@ if (none? date_start) [
 ]
 ] ;}}}
 get_geolpda_data_from_postgresql: does [;{{{ } } }
-; if we are not yet connected to the database:
-connection_db
-print rejoin ["Open GeolPDA data in field_observations table on " dbname " database hosted by " dbhost "..."]
-; observations: {{{ } } }
-;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
-; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
-;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
-;>> print geolpda_observations_fields
-; opid year        obs_id         date waypoint_name               x              y        z  description                                                                                                                                                                                                                                                                    code_litho code_unit srid geologist icon_descr comments sample_id datasource numauto photos                                                                                                        audio timestamp_epoch_ms db_update_timestamp          username  device                        time
-;>> print mold geolpda_observations/3500
-;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
+	; if we are not yet connected to the database:
+	connection_db
+	print rejoin ["Open GeolPDA data in field_observations table on " dbname " database hosted by " dbhost "..."]
+	; observations: {{{ } } }
+	;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
+	; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
+	;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
+	;>> print geolpda_observations_fields
+	; opid year        obs_id         date waypoint_name               x              y        z  description                                                                                                                                                                                                                                                                    code_litho code_unit srid geologist icon_descr comments sample_id datasource numauto photos                                                                                                        audio timestamp_epoch_ms db_update_timestamp          username  device                        time
+	;>> print mold geolpda_observations/3500
+	;[18   2013 "PCh2013_0577" 13-Apr-2013          "297" "-8.1067910187" "6.8693919299" "309.20" {Ech argiles blanches à microboulettes (br.à microc), plans pénétratifs, pX striés et lustrés. Très près surface (probt 3à4m, en tenant compte du décapage), juste sous OxFe avec texture planaire, // structures, ~Nm90/35/S. Plans microstriés dans argiles: objectif strr I}      none      none 4326     "PCh"      none      none      none       none   22257 {1365843316640.jpg;1365843355359.jpg;1365843376191.jpg;1365843399022.jpg;1365843702791.jpg;1365843811907.jpg} ""    1365843013433.0    "2014-02-04 01:21:08.713399" "pierre" "GeolPDA on Samsung Galaxy S2" none]
 
-run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description, sample_id FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY évitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
-	; DEBUG TODO remove ça
-	; write %qq1 sql_result_csv
-geolpda_observations:        copy sql_result
-geolpda_observations_fields: copy sql_result_fields
-print rejoin [tab length? geolpda_observations " records in observations table"]
-;}}}
-; orientations:{{{ } } }
-run_query "SELECT * FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
-;>> ?? sql_result_fields
-;sql_result_fields: ["opid" "obs_id" "measure_type" "structure_type" "north_ref" "direction" "dip" "dip_quadrant" "pitch" "pitch_quadrant" "movement" "valid" "comments" "numauto" "db_update_timestamp" "username" "datasource" "rotation_matrix" "geolpda_id" "geolpda_poi_id" "sortgroup"]
-; non, pas bon, il faut reconstruire les champs tels qu'issus du GeolPDA:
-;poiname _id poi_id orientationtype rot1 rot2 rot3 rot4 rot5 rot6 rot7 rot8 rot9 v1 v2 v3
-;>> print geolpda_orientations/1
-;PCh2012_0276 1 0 L -0.825988829135895 0.563685536384583 -0.0010570005979389 -0.562389075756073 -0.823959052562714 0.0693530738353729 0.0382223948836327 0.0578793101012707 0.997591555118561 0.0 0.0 0.0
+	run_query "SELECT waypoint_name, obs_id, timestamp_epoch_ms, z, y, x, photos, audio, description, sample_id FROM public.field_observations ORDER BY date, timestamp_epoch_ms, obs_id"	; ORDER BY évitera de trier par la suite => ORDER will work even if timestamp_epoch_ms is not defined (which should never be the case for GeolPDA data, but...), and will sort by obs_id within the same date
+		; DEBUG TODO remove ça
+		; write %qq1 sql_result_csv
+	geolpda_observations:        copy sql_result
+	geolpda_observations_fields: copy sql_result_fields
+	print rejoin [tab length? geolpda_observations " records in observations table"]
+	;}}}
+	; orientations:{{{ } } }
+	run_query "SELECT * FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
+	;>> ?? sql_result_fields
+	;sql_result_fields: ["opid" "obs_id" "measure_type" "structure_type" "north_ref" "direction" "dip" "dip_quadrant" "pitch" "pitch_quadrant" "movement" "valid" "comments" "numauto" "db_update_timestamp" "username" "datasource" "rotation_matrix" "geolpda_id" "geolpda_poi_id" "sortgroup"]
+	; non, pas bon, il faut reconstruire les champs tels qu'issus du GeolPDA:
+	;poiname _id poi_id orientationtype rot1 rot2 rot3 rot4 rot5 rot6 rot7 rot8 rot9 v1 v2 v3
+	;>> print geolpda_orientations/1
+	;PCh2012_0276 1 0 L -0.825988829135895 0.563685536384583 -0.0010570005979389 -0.562389075756073 -0.823959052562714 0.0693530738353729 0.0382223948836327 0.0578793101012707 0.997591555118561 0.0 0.0 0.0
 
-;SELECT
-;obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix
-;/*
-;opid,
-;structure_type, north_ref,
-;direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments, numauto, db_update_timestamp, username, datasource,
-;sortgroup
-;*/
-;FROM public.field_observations_struct_measures WHERE obs_id ILIKE 'PCh2012_____' ORDER BY obs_id, geolpda_poi_id, geolpda_id;
+	;SELECT
+	;obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix
+	;/*
+	;opid,
+	;structure_type, north_ref,
+	;direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments, numauto, db_update_timestamp, username, datasource,
+	;sortgroup
+	;*/
+	;FROM public.field_observations_struct_measures WHERE obs_id ILIKE 'PCh2012_____' ORDER BY obs_id, geolpda_poi_id, geolpda_id;
 
-run_query "SELECT obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
+	run_query "SELECT obs_id, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
 
-geolpda_orientations: 			copy sql_result
-geolpda_orientations_fields: 	copy sql_result_fields
-print rejoin [tab length? geolpda_orientations " records in orientations measurements table"]
+	geolpda_orientations: 			copy sql_result
+	geolpda_orientations_fields: 	copy sql_result_fields
+	print rejoin [tab length? geolpda_orientations " records in orientations measurements table"]
 
-;}}}
-
-; Il s'agit maintenant de déterminer les jours où il y a eu des observations: [{{{
-run_query "SELECT DISTINCT date FROM public.field_observations ORDER BY date"	; nettement plus aisé en sql qu'à partir des données du .csv!
-jours: copy []
-foreach i sql_result [
-	unless any [(none? i) ((to-string i) = "none")] [
-		append jours to-date to-string i
-	]
-]
-;length? jours
-;}}}]
-if (none? date_start) [
-	print "Jours avec des observations enregistrées dans la base: "
-	;foreach j jours [print j]   ; <= la liste des jours, triée
-	foreach j contig_sequences jours [print j]
-]
+	;}}}
 ] ;}}}
 update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ } } } ; old name: computes_structural_measurements_from_geolpda_matrix
 	"Updates field_observations_struct_measures table in bdexplo database, fields (north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement) are computed from rotation_matrix field, which comes from GeolPDA measurements"
@@ -2904,7 +2946,6 @@ dd2dms_lon_lat_from_qgis: function [{Converts a pair of longitude,latitude coord
 	do cmd								; latdms is now defined
 	return rejoin [ lon ", " lat ]
 ] ;}}}
-
 
 ; from LouGit:
 copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
