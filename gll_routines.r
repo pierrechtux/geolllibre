@@ -2246,14 +2246,14 @@ pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle {{{ } } }
-;continue: as in python; to use in a loop, do: "loop [catch[...]]"
+; continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
+continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
 throw 'continue]
 ;}}}
 timestamp_: does [; an underscored timestamp{{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
-;a very simple function, to quickly print a list:{{{
+; a very simple function, to quickly print a list:{{{
 print-list: func [ l [block!]] [
 	foreach i l [
 		print i
@@ -2413,7 +2413,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 		print "On android device, move photo files to an archive directory:"
 		call_wait_output_error cmd
 		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
-		; Reduce geolpda pictures sizes in the local copy:
+		; Reduce geolpda pictures sizes in the local copy:{{{
 		size_max: 700
 		print rejoin ["Reduction of pictures to " size_max " pixels:"]
 		dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
@@ -2425,7 +2425,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
 				call_wait_output_error rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
 			] ]
-		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
+		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]
 		; TODO apply rotation, if any, to file
 		; TODO set timestamp to exif timestamp
 		; TODO add geotags, if any gpx?
@@ -2647,7 +2647,7 @@ run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par 
 ; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
-	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "WARNING! field names differ from geolpda reference implementation"
 	print "Error, halting"
 	halt
 ]
