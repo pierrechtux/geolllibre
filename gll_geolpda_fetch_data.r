@@ -188,12 +188,17 @@ if ((answer = "y") or (answer = "")) [
 	copy-file to-file rejoin [dir_mount_geolpda_android "geolpda"] to-file rejoin [dir_geolpda_local "geolpda"]
 	print "Database copied from android device."
 ]
-answer: "rien"
+answer: copy ""
 while [((answer != "y") and (answer != "n") and (answer != ""))] [
 	answer: ask "Synchronize geolpda files (pictures, audio files)? (Y/n)"
 ]
 if ((answer = "y") or (answer = "")) [ synchronize_geolpda_files ]
+
+
+;print "STOP" input ;#################################################
+
 ;}}}
+
 ; Open sqlite geolpda, get data:{{{ } } }
 print "Open GeolPDA database..."
 change-dir dir_geolpda_local
@@ -239,9 +244,12 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 ;}}}
 ;}}}
 
+;####################################################################{ {{
 ; ###### data from geolpda is now in tables:
 ;   geolpda_observations
 ;   geolpda_orientations
+;####################################################################
+;/*} }}*/
 
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes. {{{ } } }
@@ -394,6 +402,7 @@ if confirm {Synchronize oruxmaps tracklogs?} [
 ]
 
 ;/*}}}*/
+; Finished.
 
 ; Generate a report using gll_geolpda_report_generator.r ?
 if confirm {Generate report using gll_geolpda_report_generator.r using data just imported?} [
