@@ -230,8 +230,8 @@ write/lines outputfile to-string [
     overflow:auto; max-height:200px;
     border: 1px solid; margin: 1px; padding: 10px; width:90%;}
    img {
-    border: 1px solid;
-    max-width: 400px;
+    border: 1px solid
+    max-width:  400px;
     max-height: 400px;
    }
    body { counter-reset: chapter; }
@@ -252,6 +252,7 @@ write/lines outputfile to-string [
   </style>
   <title>
   }]
+; TODO WARNING! 22 lines above:  solid; or solid (no ;)
 
 write/lines/append outputfile rejoin ["Rapport d'observations de terrain collectées par GeolPDA du " (to-string date_start) " au " (to-string date_end)]
 write/lines/append outputfile [{
@@ -464,6 +465,7 @@ foreach j jours [
 ;}}}
 						write/lines/append outputfile "<tt>"
 						; **attention! following line queries the postgresql database; code to be adapted to sqlite, if needed:
+;						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						measures: sql_result
 						foreach m measures [
