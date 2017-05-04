@@ -8,24 +8,29 @@
 
 --TODO liste:{{{
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
--- e mettre des types comme conseillé dans (?), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
--- e mettre les numauto en:     numauto             bigserial UNIQUE NOT NULL,
--- e mettre tous les numauto en bigserial PRIMARY KEY
--- o check all owners to data_admin
 -- o d'autres rôles du genre db_admin, etc.
--- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire,
---   ou plutôt des trucs comme: ("CREATE TABLE test (id bigserial PRIMARY KEY, num integer, data text);")
--- x mettre tous les: REFERENCES operations (opid)
+-- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
+-- o check all owners to data_admin
+-- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire, ou plutôt des trucs comme: ("CREATE TABLE test (id bigserial PRIMARY KEY, num integer, data text);")
 -- o mettre des NOT NULL un peu partout
 
 -- o Il faudrait lancer ce script comme un administrateur,
 --     avec des arguments:
 --       - le rôle "utilisateur lambda" à utiliser;
---       - le ou les rôles "utilsateur admin"
+--       - le ou les rôles "utilisateur admin"
 --       - le nom de la base à créer, si différent de postgeol
 -- Quelque chose dans le genre:
 --    psql -v normal_user="pierre" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
 --    :normal_user
+
+-- fait:{{{
+
+-- x mettre les numauto en:     numauto             bigserial UNIQUE NOT NULL,
+-- x mettre tous les numauto en bigserial PRIMARY KEY
+
+-- x mettre tous les: REFERENCES operations (opid)
+
+--}}}
 -- }}}
 
 -- DEBUG: ATTENTION AUX /* */  =>  /\/\*\|\*\/
@@ -44,7 +49,7 @@
 --		##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 --		##                                                                       ##
 --		###########################################################################
---		  Copyright (C) 2016 Pierre Chevalier <pierrechevaliergeol@free.fr>
+--		  Copyright (C) 2017 Pierre Chevalier <pierrechevaliergeol@free.fr>
 --
 --		    GeolLLibre is free software: you can redistribute it and/or modify
 --		    it under the terms of the GNU General Public License as published by
@@ -65,7 +70,6 @@
 --}}}
 
 --NON --{{{
-
 --*****************************************************************
 -- ********************** ça vient de OPM
 -- This program is open source, licensed under the PostgreSQL License.   <= prendre cette license? @#demander Julien
@@ -81,21 +85,15 @@
 
 
 
-
-
-
-
-
-
 --}}}
 --  0090 Ceci était en tête du dump:{{{
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-
 
 --}}}
 -- 0100 LISTE OBJETS DE BDEXPLO:{{{
@@ -510,7 +508,7 @@ geoch_sampling_grades
 gpy_mag_ground
 
 dh_collars
-shift_reports     <= RENOMMÉE en dh_, ATTENTION!
+shift_reports     <= RENOMMÉE en dh_, ATTENTION! TODO vérifier tout
 dh_followup
 dh_devia
 dh_quicklog
@@ -912,7 +910,6 @@ Pareil, / des instructions de CREATion de TABLEs:
 /CREATE TABLE.*qc_sampling
 /CREATE TABLE.*qc_standards
 /CREATE TABLE.*ancient_workings
-_______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*occurrences
 /CREATE TABLE.*licences
 /CREATE TABLE.*grade_ctrl
@@ -931,6 +928,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*layer_styles
 /CREATE TABLE.*program
 /CREATE TABLE.*dh_nb_samples
+_______________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*grid
 /CREATE TABLE.*tmp_xy
 /CREATE TABLE.*tmp_xyz_marec
@@ -1095,8 +1093,8 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 
 
 
-
 -- }}}
+
 --}}}
 --  1100 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 
@@ -1111,7 +1109,7 @@ _______________ENCOURS_______________GEOLLLIBRE 2
 
 
 --TODO make a table 'defaults' in the user's schema (or no?)
---     containing all pre-defined prefereences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
+--     containing all pre-defined preferences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
 
 
 --CREATE DATABASE $POSTGEOL ENCODING='UTF8';
@@ -1197,7 +1195,6 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 --}}}
 */
 BEGIN TRANSACTION;
--- _______________ENCOURS_______________GEOLLLIBRE v 3
 -- 1200 TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
@@ -1213,7 +1210,7 @@ CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdex
     description_en text,
     description_es text,
     description_fr text,
-    numauto        bigserial,
+    numauto        bigserial NOT NULL,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -1247,13 +1244,13 @@ CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdex
 CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
     tablename      text PRIMARY KEY,
     category       text
-        REFERENCES doc_postgeol_table_categories(category)
+        REFERENCES public.doc_postgeol_table_categories(category)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     comment_en     text,
     comment_fr     text,
-    numauto        bigserial,
+    numauto        bigserial NOT NULL,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -1305,7 +1302,7 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 -- => as written here, the table will end up in the current user's schema.
 CREATE TABLE operation_active (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1325,7 +1322,7 @@ COMMENT ON COLUMN operation_active.username                     IS 'User (role) 
 
 CREATE TABLE public.field_observations (
     opid                integer NOT NULL
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1350,7 +1347,7 @@ CREATE TABLE public.field_observations (
     "time"              text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux
     timestamp_epoch_ms  bigint NOT NULL,
     datasource          integer NOT NULL,
-    numauto             bigserial  NOT NULL PRIMARY KEY,
+    numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text NOT NULL DEFAULT current_user,
     UNIQUE (opid, obs_id)
@@ -1386,8 +1383,8 @@ COMMENT ON COLUMN field_observations.username                   IS 'User (role) 
 -- x field_observations_struct_measures_points:{{{
 
 CREATE TABLE public.field_observations_struct_measures (
-    opid                integer NOT NULL, -- REFERENCES operations (opid),
-    obs_id              text NOT NULL, -- REFERENCES field_observations (obs_id),
+    opid                integer NOT NULL,
+    obs_id              text NOT NULL,
     measure_type        text NOT NULL,
     device              text NOT NULL,
     structure_type      text NOT NULL,
@@ -1405,7 +1402,7 @@ CREATE TABLE public.field_observations_struct_measures (
     geolpda_poi_id      integer NOT NULL,
     sortgroup           text NOT NULL,
     datasource          integer NOT NULL,
-    numauto             bigserial PRIMARY KEY NOT NULL,
+    numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, obs_id)
@@ -1445,7 +1442,7 @@ COMMENT ON COLUMN public.field_observations_struct_measures.username            
 
 CREATE TABLE public.field_photos (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1509,7 +1506,7 @@ COMMENT ON COLUMN public.formations_group_lithos.username       IS 'User (role) 
 
 CREATE TABLE public.surface_samples_grades (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1587,7 +1584,7 @@ COMMENT ON COLUMN public.surface_samples_grades.username        IS 'User (role) 
 
 CREATE TABLE public.geoch_sampling (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1663,7 +1660,7 @@ COMMENT ON COLUMN public.geoch_sampling.username                IS 'User (role) 
 
 CREATE TABLE public.geoch_ana (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1718,7 +1715,7 @@ COMMENT ON COLUMN geoch_sampling_grades.au_ppb                  IS 'Au grade ppb
 
 CREATE TABLE gpy_mag_ground (
     opid                     integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1754,7 +1751,7 @@ COMMENT ON COLUMN gpy_mag_ground.username                       IS 'User (role) 
 
 CREATE TABLE public.dh_collars (
     opid                integer
-        REFERENCES operations (opid)
+        REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
@@ -1851,7 +1848,7 @@ COMMENT ON COLUMN dh_collars.username                           IS 'User (role) 
 -- x dh_shift_reports{{{ --ATTENTION! TODO CHANGER TOUTES RÉFÉRENCES À shift_reports EN dh_shift_reports!
 
 CREATE TABLE dh_shift_reports (
-    opid                          integer
+    opid                          integer,
     date                          date,
     shift                         text,
     no_fichette                   integer NOT NULL,
@@ -1943,7 +1940,7 @@ CREATE TABLE dh_followup (
     in_gdm              text,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user
+    username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -2264,6 +2261,7 @@ COMMENT ON COLUMN dh_struct_measures.username         IS 'User (role) which crea
 
 CREATE TABLE dh_photos (
     opid integer,
+    id text,
     pho_id text,
     file text,
     author text,
@@ -2461,6 +2459,7 @@ COMMENT ON COLUMN dh_mineralised_intervals.creation_ts IS 'Current date and time
 COMMENT ON COLUMN dh_mineralised_intervals.username    IS 'User (role) which created data record';
 
 --}}}
+--densités
 -- x dh_density {{{
 
 CREATE TABLE dh_density (
@@ -2586,12 +2585,17 @@ COMMENT ON COLUMN dh_sampling_bottle_roll.username              IS 'User (role) 
 
 --}}}
 --}}}
--- x laboratory analyses: {{{
+--lots analytiques
+-- x analytical data: laboratory analyses: {{{
 -- x lab_ana_batches_expedition:{{{
 
 SET search_path = public, pg_catalog;
 CREATE TABLE lab_ana_batches_expedition (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     batch_id            integer,
     labname             text,
     expedition_id       text,
@@ -2612,9 +2616,9 @@ CREATE TABLE lab_ana_batches_expedition (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
+    username            text DEFAULT current_user
+--     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
@@ -2648,7 +2652,11 @@ COMMENT ON COLUMN lab_ana_batches_expedition.username           IS 'User (role) 
 
 SET search_path = public, pg_catalog;
 CREATE TABLE lab_ana_batches_reception (
-    opid                     integer REFERENCES operations (opid),
+    opid                     integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     jobno                    text,
     generic_txt              text,
     labname                  text,
@@ -2664,9 +2672,9 @@ CREATE TABLE lab_ana_batches_reception (
     datasource               integer,
     numauto                  bigserial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
-    username                 text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
+    username                 text DEFAULT current_user
+--     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
@@ -2694,16 +2702,20 @@ COMMENT ON COLUMN lab_ana_batches_reception.username                 IS 'User (r
 -- x lab_ana_columns_definition{{{
 
 CREATE TABLE lab_ana_columns_definition (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     analyte        text,
     unit           text,
     scheme         text,
     colid          text,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
+    username       text DEFAULT current_user
+--     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
@@ -2721,16 +2733,20 @@ COMMENT ON COLUMN lab_ana_columns_definition.username           IS 'User (role) 
 -- x ana_det_limit{{{
 
 CREATE TABLE ana_det_limit (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     batch_id       text,
     elem_code      text,
     elem_name      text,
     unit           text,
     detlim_inf     integer,
-    detlim_sup     integer,
+    detlim_sup     integer
 -- TODO add fields numauto, creation_ts, username
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
+--     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
@@ -2746,7 +2762,11 @@ COMMENT ON TABLE ana_det_limit                        IS 'Analyses detections li
 --DROP TABLE IF EXISTS lab_ana_results ;
 
 CREATE TABLE lab_ana_results (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     labname        text,
     jobno          text,
     orderno        text,
@@ -2765,7 +2785,7 @@ CREATE TABLE lab_ana_results (
     datasource     integer,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
+    username       text DEFAULT current_user
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -2925,13 +2945,17 @@ $$
 -- Name: lab_analysis_icp; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
 CREATE TABLE lab_analysis_icp (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     num            integer,
     sample_id      text,
     elem_code      text,
     unit           text,
     value          numeric(20,2),
-    batch_id       text,
+    batch_id       text
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -2943,7 +2967,11 @@ CREATE TABLE lab_analysis_icp (
 -- x lab_ana_qaqc_results:{{{
 
 CREATE TABLE lab_ana_qaqc_results (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     jobno               text,
     generic_txt_col1    text,
     generic_txt_col2    text,
@@ -2953,7 +2981,7 @@ CREATE TABLE lab_ana_qaqc_results (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user,
+    username            text DEFAULT current_user
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -2975,13 +3003,18 @@ COMMENT ON COLUMN lab_ana_qaqc_results.username                 IS 'User (role) 
 
 --}}}
 --}}}
--- assays quality control, quality check:{{{
+--échantillons de contrôle analytique
+-- x assays quality control, quality check:{{{
 
 -- x qc_sampling:{{{
 -- Name: qc_sampling; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
 CREATE TABLE qc_sampling (
-    opid                     integer REFERENCES operations (opid),
+    opid                     integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     sample_id                text,
     qc_type                  text,
     comments                 text,
@@ -2991,7 +3024,7 @@ CREATE TABLE qc_sampling (
     datasource               integer,
     numauto                  bigserial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
-    username                 text DEFAULT current_user,
+    username                 text DEFAULT current_user
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -3012,17 +3045,21 @@ COMMENT ON COLUMN qc_sampling.username                IS 'User (role) which crea
 -- Name: qc_standards; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
 CREATE TABLE qc_standards (
-    opid                       integer REFERENCES operations (opid),
+    opid                       integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     qc_id                      text NOT NULL,
     labo                       text,
     matrix                     text,
     presentation               text,
-    au_ppm                     numeric(10,3),
-    cu_ppm                     numeric(10,3),
-    zn_ppm                     numeric(10,3),
-    pb_ppm                     numeric(10,3),
-    ag_ppm                     numeric(10,3),
-    ni_ppm                     numeric(10,3),
+    au_ppm                     numeric,
+    cu_ppm                     numeric,
+    zn_ppm                     numeric,
+    pb_ppm                     numeric,
+    ag_ppm                     numeric,
+    ni_ppm                     numeric,
     au_ppm_95pc_conf_interval  numeric,
     cu_ppm_95pc_conf_interval  numeric,
     zn_ppm_95pc_conf_interval  numeric,
@@ -3032,7 +3069,7 @@ CREATE TABLE qc_standards (
     datasource                 integer,
     numauto                    bigserial PRIMARY KEY,
     creation_ts                timestamptz DEFAULT now() NOT NULL,
-    username                   text DEFAULT current_user,
+    username                   text DEFAULT current_user
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -3059,19 +3096,21 @@ COMMENT ON COLUMN qc_standards.username               IS 'User (role) which crea
 --}}}
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE vv 4
 -- x occurrences, ancient workings, mines:{{{
-
 -- x ancient_workings:{{{
 
 CREATE TABLE ancient_workings (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     gid                 integer NOT NULL,
     description         text,
     the_geom            geometry,
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
-    CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL)),
+    CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL))
 --     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
@@ -3087,12 +3126,14 @@ COMMENT ON COLUMN ancient_workings.datasource         IS 'Datasource identifier,
 COMMENT ON COLUMN ancient_workings.numauto            IS 'Automatic integer';
 
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE 5
 -- x occurrences:{{{
 
 CREATE TABLE occurrences (
-    opid                integer REFERENCES operations (opid),
-    --numauto           bigserial PRIMARY KEY,
+    opid                integer
+        REFERENCES operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     name                text,
     description         text,
     code                text,
@@ -3104,16 +3145,11 @@ CREATE TABLE occurrences (
     geom                geometry,
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     --CONSTRAINT chk_status CHECK (status = ANY (ARRAY[('OCCUR'::varchar)::text, ('OREB'::varchar)::text, ('MINE'::varchar)::text, ('MINED'::varchar)::text, ('MCO'::varchar)::text, ('DISTRICT'::varchar)::text])),
     CONSTRAINT chk_status CHECK (status IN ('OCCUR', 'OREB', 'MINE', 'MINED', 'MCO', 'DISTRICT')),  -- Another solution would be to make entries in lex_codes lookup table.  Probably better, more flexible, i18nable; TODO later.
-    CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL),  -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
---         ON UPDATE CASCADE
---         ON DELETE CASCADE
---         DEFERRABLE INITIALLY DEFERRED
+    CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL)            -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
 );
 COMMENT ON TABLE occurrences                          IS 'Occurrences table: targets, showings, deposits, mines.  Compiled from various tables, and updated.';
 COMMENT ON COLUMN occurrences.opid                    IS 'Operation identifier';
@@ -3130,15 +3166,14 @@ COMMENT ON COLUMN occurrences.creation_ts             IS 'Current date and time 
 COMMENT ON COLUMN occurrences.username                IS 'User (role) which created data record';
 
 --}}}
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
+
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^^ 6
 -- x licences, tenements: {{{
 
 -- x licences:{{{ TODO "licence" or "license"?...
 -- TODO @#redo with polygons instead of quadrangles; make a field containing EWKT
 
---An old version of the table definition, certainly: TODO to be cleaned, ultimately.
+--An old version of the table definition, certainly: TODO to be cleaned, ultimately.{{{
 --DROP TABLE IF EXISTS licences CASCADE;
 --CREATE TABLE licences (
 --    opid integer,
@@ -3163,10 +3198,14 @@ COMMENT ON COLUMN occurrences.username                IS 'User (role) which crea
 --COMMENT ON COLUMN licences.lon_min                  IS 'West longitude, decimal degrees, WGS84';
 --COMMENT ON COLUMN licences.lat_max                  IS 'North latitude, decimal degrees, WGS84';
 --COMMENT ON COLUMN licences.lon_max                  IS 'East latitude, decimal degrees, WGS84';
-
+--}}}
 
 CREATE TABLE licences (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     licence_name        text,
     operator            text,
     year                integer,
@@ -3180,15 +3219,9 @@ CREATE TABLE licences (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username            text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
---         ON UPDATE CASCADE
---         ON DELETE CASCADE
---         DEFERRABLE INITIALLY DEFERRED
+    username            text DEFAULT current_user
 );
 COMMENT ON TABLE licences                             IS 'Licences, tenements';
---COMMENT ON COLUMN licences.opid                     IS 'Operation identifier';
 COMMENT ON COLUMN licences.opid                       IS 'Operation identifier, see table operations';
 COMMENT ON COLUMN licences.licence_name               IS 'Licence official name, as reported on legal documents';
 COMMENT ON COLUMN licences.operator                   IS 'Operator, owner of licence';
@@ -3209,19 +3242,18 @@ COMMENT ON COLUMN licences.username                   IS 'User (role) which crea
 
 --}}}
 
---TODO Is this view still valid?  If not, erase.
---DROP VIEW IF EXISTS licences_quadrangles;
---CREATE VIEW licences_quadrangles AS
---SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
---FROM licences ORDER BY licence_name;
 
 --}}}
--- mining, grade control:{{{
+-- x mining, grade control:{{{
 
 -- x grade_ctrl:{{{
 
 CREATE TABLE grade_ctrl (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id             text,
     num            text,
     x              numeric(10,2),
@@ -3236,12 +3268,7 @@ CREATE TABLE grade_ctrl (
     datasource     integer,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
---         ON UPDATE CASCADE
---         ON DELETE CASCADE
---         DEFERRABLE INITIALLY DEFERRED
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE grade_ctrl                           IS 'Grade-control samples during mining exploitation';
 COMMENT ON COLUMN grade_ctrl.opid                     IS 'Operation identifier';
@@ -3263,11 +3290,16 @@ COMMENT ON COLUMN grade_ctrl.username                 IS 'User (role) which crea
 --}}}
 
 --}}}
+-- x lookup tables, aka lexicons, aka code translation tables:{{{
 
--- lookup tables, aka lexicons, aka code translation tables:{{{
+-- x codes: {{{
 
 CREATE TABLE lex_codes (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     tablename      text,
     field          text,
     code           text,
@@ -3276,12 +3308,7 @@ CREATE TABLE lex_codes (
     datasource     integer,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
---         REFERENCES public.dh_collars (opid, id)
---         ON UPDATE CASCADE
---         ON DELETE CASCADE
---         DEFERRABLE INITIALLY DEFERRED
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE lex_codes                            IS 'General look-up table with codes for various tables and coded fields';
 COMMENT ON COLUMN lex_codes.opid                      IS 'Operation identifier';
@@ -3290,15 +3317,21 @@ COMMENT ON COLUMN lex_codes.numauto                   IS 'Automatic integer prim
 COMMENT ON COLUMN lex_codes.creation_ts               IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lex_codes.username                  IS 'User (role) which created data record';
 
+--}}}
+-- x data sources:{{{
 
 CREATE TABLE lex_datasource (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     filename       text,
     comments       text,
     datasource_id  integer NOT NULL,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
+    username       text DEFAULT current_user
 );
 COMMENT ON TABLE lex_datasource                       IS 'Lexicon of data sources, keeping track of imported file, for reference';
 COMMENT ON COLUMN lex_datasource.opid                 IS 'Operation identifier';
@@ -3309,8 +3342,15 @@ COMMENT ON COLUMN lex_datasource.numauto              IS 'Automatic integer prim
 COMMENT ON COLUMN lex_datasource.creation_ts          IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN lex_datasource.username             IS 'User (role) which created data record';
 
+--}}}
+-- x standards:{{{
+
 CREATE TABLE lex_standard (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     std_id         text NOT NULL,
     unit           text NOT NULL,
     element        text NOT NULL,
@@ -3332,23 +3372,24 @@ COMMENT ON COLUMN lex_standard.creation_ts            IS 'Current date and time 
 COMMENT ON COLUMN lex_standard.username               IS 'User (role) which created data record';
 
 --}}}
-
---COMMIT; -- on verra à COMMITer en temps utile...
-
+--}}}
 
 
---résultats analytiques
---analytical data
---échantillons de contrôle analytique
---densités
---lots analytiques
+
+
+
+
 
 -- e miscellaneous:{{{
 
 -- x mag_declination:{{{ TODO to be replaced by C program translated from Fortran (or by Fortran original program, which computes mag deviation?  Or, more prudently, store data *actually used* on operations, and if undefined, fetch the results of the function => TODO to be implemented.
 
 CREATE TABLE mag_declination (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     mag_decl       numeric,
     date           date,
     datasource     integer,
@@ -3364,11 +3405,14 @@ COMMENT ON COLUMN mag_declination.creation_ts         IS 'Current date and time 
 COMMENT ON COLUMN mag_declination.username            IS 'User (role) which created data record';
 
 --}}}
-
 -- x topo_points:{{{
 
 CREATE TABLE topo_points (
-    opid                integer REFERENCES operations (opid),
+    opid                integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     location            text,
     id                  text,
     num                 numeric(10,0),
@@ -3398,10 +3442,14 @@ COMMENT ON COLUMN topo_points.creation_ts             IS 'Current date and time 
 COMMENT ON COLUMN topo_points.username                IS 'User (role) which created data record';
 
 --}}}
-
 -- x survey_lines:{{{
+
 CREATE TABLE survey_lines (
-    opid           numeric REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id             text,
     x_start        numeric,
     y_start        numeric,
@@ -3414,7 +3462,6 @@ CREATE TABLE survey_lines (
 COMMENT ON TABLE survey_lines                         IS 'Survey lines, for geophysics or other types of linear surveys; defined with start and end points.';
 
 --}}}
-
 -- x units:{{{
 
 CREATE TABLE units (
@@ -3426,11 +3473,14 @@ COMMENT ON COLUMN units.unit_name                     IS 'Unit abbreviated name,
 COMMENT ON COLUMN units.unit_factor                   IS 'Multiplication factor';
 
 --}}}
-
 -- x baselines: {{{
 
 CREATE TABLE baselines (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id             integer,
     location       text,
     x1             numeric(10,3),
@@ -3462,7 +3512,11 @@ COMMENT ON COLUMN baselines.username                  IS 'User (role) which crea
 -- x sections_definition:{{{
 
 CREATE TABLE sections_definition (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id             integer NOT NULL,
     location       text,
     srid           integer,
@@ -3498,7 +3552,11 @@ COMMENT ON COLUMN sections_definition.title           IS 'section title, to be d
 -- x sections_array:{{{
 
 CREATE TABLE sections_array (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     location       text,
     id             text,
     title          text,
@@ -3515,7 +3573,6 @@ CREATE TABLE sections_array (
 COMMENT ON TABLE sections_array                       IS 'Arrays of cross-sections: table automatically fed by generate_cross_sections_array function';
 
 --}}}
-
 -- x conversions_oxydes_elements:{{{
 
 CREATE TABLE conversions_oxydes_elements (
@@ -3526,11 +3583,14 @@ CREATE TABLE conversions_oxydes_elements (
 COMMENT ON TABLE conversions_oxydes_elements          IS 'Molecular weights of some oxides and factors to convert them to elements by weight.';
 
 --}}}
-
 -- x index_geo_documentation:{{{
 
 CREATE TABLE index_geo_documentation (
-    opid           integer REFERENCES operations (opid),
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
     id             integer NOT NULL,
     title          text,
     lat_min        numeric(20,8),
@@ -3551,39 +3611,6 @@ COMMENT ON COLUMN index_geo_documentation.creation_ts IS 'Current date and time 
 COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which created data record';
 
 --}}}
-
--- x layer_styles:{{{
---CREATE TABLE layer_styles (
---    id integer NOT NULL,
---    f_table_catalog text,
---    f_table_schema text,
---    f_table_name text,
---    f_geometry_column text,
---    stylename text,
---    styleqml xml,
---    stylesld xml,
---    useasdefault boolean,
---    description text,
---    owner text,
---    ui xml,
---    update_time timestamp without time zone DEFAULT now()
---);
-
--- => table vide => exclue de la migration de bdexplo vers postgeol
---}}}
--- x program:{{{ TODO useful?? junk???
--- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
---
-CREATE TABLE program (
-    opid           integer REFERENCES operations (opid),
-    gid            integer NOT NULL,
-    myid           integer,
-    geometry       public.geometry,
-    id             text,
-    completed      boolean,
-    CONSTRAINT enforce_geotype_geometry CHECK (((public.geometrytype(geometry) = 'POINT'::text) OR (geometry IS NULL)))
-);
---}}}
 --}}}
 
 
@@ -10059,81 +10086,19 @@ CREATE TABLE program (
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --}}}
---_______________ENCOURS_______________GEOLLLIBRE ^ 7
 
---10000 LE RESTE...{{{
+-- _______________ENCOURS_______________GEOLLLIBRE v 3 -- _______________ENCOURS_______________GEOLLLIBRE vv 4 -- _______________ENCOURS_______________GEOLLLIBRE 5 -- _______________ENCOURS_______________GEOLLLIBRE ^^ 6
+
+COMMIT; -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile.
+
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
+
+
+
+--10100 LE RESTE...{{{
+-- _______________ENCOURS_______________GEOLLLIBRE ^ 7
+
 -- o functions:{{{
 -- x generate_cross_sections_array:{{{
 
@@ -10247,6 +10212,15 @@ LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
 
 
 -- o views:
+
+-- une vue retrouvée dans les tables:{{{
+--TODO Is this view still valid?  If not, erase.
+--DROP VIEW IF EXISTS licences_quadrangles;
+--CREATE VIEW licences_quadrangles AS
+--SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
+--FROM licences ORDER BY licence_name;
+--}}}
+
 -- o general views:
 -- o operations_quadrangles:{{{
 DROP VIEW IF EXISTS operations_quadrangles;
@@ -10754,8 +10728,8 @@ CREATE TABLE field_sampling (  -- Nota bene: field_sampling used to be called ro
     x              numeric(10,2),
     y              numeric(10,2),
     z              numeric(10,2),
-    datasource     integer,
-    FOREIGN KEY (opid) REFERENCES operations
+    datasource     integer
+--     FOREIGN KEY (opid) REFERENCES operations
 );
 -- {{{
 /* Kept for history only
@@ -10846,10 +10820,49 @@ COMMENT ON COLUMN dh_collars_lengths.len_nq           IS 'Core NQ length (m)';
 COMMENT ON COLUMN dh_collars_lengths.len_bq           IS 'Core BQ length (m)';
 
 --}}}
+-- x program:{{{ TODO useful?? junk???
+-- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
+
+CREATE TABLE program (
+    opid           integer
+        REFERENCES public.operations (opid)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED,
+    gid            integer NOT NULL,
+    myid           integer,
+    geometry       public.geometry,
+    id             text,
+    completed      boolean,
+    CONSTRAINT enforce_geotype_geometry CHECK (((public.geometrytype(geometry) = 'POINT'::text) OR (geometry IS NULL)))
+);
+
+-- Des sondages à faire vers Dakoua; regrouper toutes ces données de programmes (il y a aussi des tables mapinfectes et des shapefiles) dans dh_collars (sans grand enthousiasme).
+--}}}
+-- x layer_styles:{{{
+-- => table vide => exclue de la migration de bdexplo vers postgeol
+
+--CREATE TABLE layer_styles (
+--    id integer NOT NULL,
+--    f_table_catalog text,
+--    f_table_schema text,
+--    f_table_name text,
+--    f_geometry_column text,
+--    stylename text,
+--    styleqml xml,
+--    stylesld xml,
+--    useasdefault boolean,
+--    description text,
+--    owner text,
+--    ui xml,
+--    update_time timestamp without time zone DEFAULT now()
+--);
+
+--}}}
 
 -- }}}
 --}}}
 */ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
 
 --TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
-
+--TODO
