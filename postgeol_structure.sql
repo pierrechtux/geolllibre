@@ -1194,6 +1194,7 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 --}}}
 */
+/* *** 2017_04_02__23_35_37 c'est fait, on commente:
 BEGIN TRANSACTION;
 -- 1200 TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
@@ -10088,19 +10089,21 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 
 --}}}
 
--- _______________ENCOURS_______________GEOLLLIBRE v 3 -- _______________ENCOURS_______________GEOLLLIBRE vv 4 -- _______________ENCOURS_______________GEOLLLIBRE 5 -- _______________ENCOURS_______________GEOLLLIBRE ^^ 6
 
 COMMIT; -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile.
-
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
-
+*/ -- *** fin de ce qui est fait et commenté 2017_04_02__23_35_37
 
 
+
+
+-- _______________ENCOURS_______________GEOLLLIBRE v 3
 --10100 LE RESTE...{{{
--- _______________ENCOURS_______________GEOLLLIBRE ^ 7
 
--- o functions:{{{
+-- e functions:{{{
+-- _______________ENCOURS_______________GEOLLLIBRE vv 4 -- _______________ENCOURS_______________GEOLLLIBRE 5 -- _______________ENCOURS_______________GEOLLLIBRE ^^ 6
 -- x generate_cross_sections_array:{{{
+-- TODO doit être fait en tant que postgres; voir à améliorer ça.
+--\c postgeol postgres
 
 CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
     LANGUAGE plpythonu
@@ -10210,6 +10213,7 @@ LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
 
 --}}}
 
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 
 -- o views:
 
@@ -10608,6 +10612,7 @@ CREATE VIEW grid_points AS
 --ALTER TABLE public.index_geo_documentation ADD COLUMN opid integer;
 
 --}}}
+-- _______________ENCOURS_______________GEOLLLIBRE ^ 7
 --POUBELLE {{{
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
