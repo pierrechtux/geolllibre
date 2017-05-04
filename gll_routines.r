@@ -2422,10 +2422,10 @@ synchronize_geolpda_files: does [; {{{ } } }
 		unless exists? dir_ori [ make-dir dir_ori ]
 		foreach f photos_to_transfer [
 			if find f "jpg" [
-				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "/photos/" f " " dir_red "/" f ]
-				call_wait_output_error rejoin ["mv " dir_geolpda_local "/photos/" f " " dir_ori]
+				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "photos/" f " " dir_red "/" f ]
+				call_wait_output_error rejoin ["mv " dir_geolpda_local "photos/" f " " dir_ori]
 			] ]
-		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "/photos/ && rmdir " dir_red]
+		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
 		; TODO apply rotation, if any, to file
 		; TODO set timestamp to exif timestamp
 		; TODO add geotags, if any gpx?
@@ -2433,7 +2433,9 @@ synchronize_geolpda_files: does [; {{{ } } }
 
 	print "DCIM pictures synchronization and reduction process: "
 	; Get photos listings:
-	ls_photos_local:  read to-file rejoin [dir_dcim_local now/year "/reduit_700/"]
+	tt: rejoin [dir_dcim_local now/year "/reduit_700/"]
+	unless exists? to-file tt [make-dir tt]
+	ls_photos_local:  read to-file tt
 	ls_photos_device: read to-file         dir_mount_dcim_android
 	sort ls_photos_local
 	sort ls_photos_device
@@ -2483,7 +2485,8 @@ synchronize_geolpda_files: does [; {{{ } } }
 		;cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
 		;call_wait_output_error cmd
 		foreach f ls_photos_device_to_be_transferred [
-			cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/" f " " dir_geolpda_local "/photos/"]
+			; TODO generally, wherever reduit_700 is read (like below), test if reduit_700 subdirectory exists before trying to read it; if it doesn't, create it.
+			cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/" f " " dir_geolpda_local "photos/"]
 			call_wait_output_error cmd
 		]
 	] [ print "No synchronization done."]
