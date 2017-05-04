@@ -462,36 +462,38 @@ ORDER BY id, depto;
 -- 7. pour GDM: les vues sont basées sur la vue gdm_selection: {{{
 -- définissons-la:{{{
 CREATE OR REPLACE VIEW gdm.gdm_selection AS 
-SELECT dh_collars.opid, id FROM public.dh_collars JOIN operation_active ON (dh_collars.opid = operation_active.opid) WHERE
-(NOT (x < 1000 OR y < 10000) 
-/*AND location IN (
-'GBEITOUO' 
-,'WALTER'    
-,'GBEITOUO1' 
-,'GBEITOUO2' 
-,'BAKATOUO'  
-,'DAAPLEU'   
-,'DAAPLEUSW' 
-,'DAHA'      
-,'DIABYDOUGOU'
-,'FLOLEU'    
-,'FLOTOUO_ZIA'
-,'ITY_FLAT'  
-,'ITY_VILLAGE'
-,'MEANDRE'   
-,'MLAMBO'    
-,'MORGAN'    
-,'MORGAN-EXT'
-,'MT_ITY'    
-,'PLAQ'      
-,'TIAPLEU'   
-,'TONTOUO'   
-,'YACETOUO'  
-,'ZIA'       
-,'ZYA EXT'   
-,''
-)*/
-);
+SELECT dh_collars.opid, id FROM public.dh_collars JOIN operation_active ON (dh_collars.opid = operation_active.opid) 
+--WHERE
+--(NOT (x < 1000 OR y < 10000) 
+-- -- AND location IN (
+-- -- 'GBEITOUO' 
+-- -- ,'WALTER'    
+-- -- ,'GBEITOUO1' 
+-- -- ,'GBEITOUO2' 
+-- -- ,'BAKATOUO'  
+-- -- ,'DAAPLEU'   
+-- -- ,'DAAPLEUSW' 
+-- -- ,'DAHA'      
+-- -- ,'DIABYDOUGOU'
+-- -- ,'FLOLEU'    
+-- -- ,'FLOTOUO_ZIA'
+-- -- ,'ITY_FLAT'  
+-- -- ,'ITY_VILLAGE'
+-- -- ,'MEANDRE'   
+-- -- ,'MLAMBO'    
+-- -- ,'MORGAN'    
+-- -- ,'MORGAN-EXT'
+-- -- ,'MT_ITY'    
+-- -- ,'PLAQ'      
+-- -- ,'TIAPLEU'   
+-- -- ,'TONTOUO'   
+-- -- ,'YACETOUO'  
+-- -- ,'ZIA'       
+-- -- ,'ZYA EXT'   
+-- -- ,''
+-- -- )
+-- )
+;
 
 --}}}
 --deviations:{{{
@@ -593,6 +595,26 @@ CREATE VIEW gdm.gdm_dh_sampling_grades AS
  ON 
   (dh_collars.id = dh_sampling_grades_nodup.id) 
  ORDER BY dh_sampling_grades_nodup.id, dh_sampling_grades_nodup.depto;
+
+--}}}
+
+--radiométrie: {{{
+
+CREATE VIEW gdm_dh_radiometry AS 
+ SELECT dh_collars.id, dh_collars.x, dh_collars.y, dh_collars.z, dh_collars.length, 
+        dh_radiometry.depfrom, dh_radiometry.depto, dh_radiometry.probe, dh_radiometry.radiometry AS radiom
+ FROM 
+  gdm.gdm_selection 
+ JOIN 
+  dh_collars 
+ ON 
+  (gdm_selection.opid = dh_collars.opid AND gdm_selection.id = dh_collars.id) 
+ JOIN 
+  dh_radiometry
+ ON 
+  (dh_collars.id = dh_radiometry.id) 
+ ORDER BY dh_radiometry.id, dh_radiometry.depto;
+
 
 --}}}
 
