@@ -2431,12 +2431,29 @@ synchronize_geolpda_files: does [; {{{ } } }
 		; TODO add geotags, if any gpx?
 	] [ print "No synchronization done."]
 
-	print "DCIM pictures synchronization and reduction process: "
+	print "DCIM pictures synchronization and reduction process:"
 	; Get photos listings:
 	tt: rejoin [dir_dcim_local now/year "/reduit_700/"]
 	unless exists? to-file tt [make-dir tt]
 	ls_photos_local:  read to-file tt
 	ls_photos_device: read to-file         dir_mount_dcim_android
+
+	; Treat the case when image files from device are not named according to usual convention (i.e. "20170414_120621.jpg")
+	; used commonly in Android device, but using a prefixed "IMG_" convention (i.e. "IMG_20170414_120621.jpg").
+	; Radical treatment: rename files in their original directory.  Not very subtle, I must admit.
+	if (find to-string ls_photos_device "IMG" ) [
+		print "Files not following usual convention aaaammjj_hhmmss.jpg, prefixed with IMG_: to be renamed:"
+		old_wd: copy pwd
+		cd :dir_mount_dcim_android
+		foreach p ls_photos_device [
+			if (find (to-string p) "IMG") [
+				rename to-file p to-file (replace (to-string p) "IMG_" "")
+			]
+			cd :old_wd
+		]
+		ls_photos_device: read to-file         dir_mount_dcim_android
+	]
+
 	sort ls_photos_local
 	sort ls_photos_device
 
