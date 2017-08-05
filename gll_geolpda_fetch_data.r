@@ -349,8 +349,8 @@ print "commited => end."
 ;}}}
 
 ; Compute structural orientations from geolpda orientation measurements and populate appropriate fields in field_observations_struct_measures_avant.csv:{{{
-print "TO BE TESTED! ARRÊTÉ!"
-input
+;print "TO BE TESTED! ARRÊTÉ!"
+;input
 ; Restrict the computation to the data that has just been imported.
 ;update_field_observations_struct_measures_from_rotation_matrix /criteria rejoin ["datasource = " datasource]
 ; TODO attention! datasource ne semble pas être renseigné tout le temps! Il faudra remettre la ligne précédente, une fois ceci résolu.
