@@ -5,7 +5,7 @@ REBOL [
 	Version: 1.0.0
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
-		Génération d'un rapport sous forme d'un fichier .html 
+		Génération d'un rapport sous forme d'un fichier .html
 		à partir d'une base sqlite "geolpda" du geolpda
 		en allant chercher la table des observations avec les données:
 		_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note
@@ -211,12 +211,12 @@ if (none? flag_create_tec_files) [
 ; Le fichier est nommé en fonction du dernier jour;
 ; next form 100 est un truc pour avoir des leading zeroes.
 outputfile: to-file rejoin ["geolpda_report_pch_from_"
-date_start/year "_" 
-next form 100 + date_start/month "_" 
+date_start/year "_"
+next form 100 + date_start/month "_"
 next form 100 + date_start/day
 "_to_"
-date_end/year "_" 
-next form 100 + date_end/month "_" 
+date_end/year "_"
+next form 100 + date_end/month "_"
 next form 100 + date_end/day ".html"]
 ;/*}}}*/
 ; On y écrit un en-tête général: [{{{
@@ -370,100 +370,20 @@ foreach j jours [
 						prin rejoin [", " nb_orientations " measures"]
 						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Structural measurement:</dt><dd>"   ] [ 
 														write/lines/append outputfile "<dl><dt>Structural measurements:</dt><dd>" ]
-; sortie de psql en html, pour inspiration: {{{ } } }
-;comment [
-;--autan bdexplo=> 
-;SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = 'PCh2014_0032' ORDER BY geolpda_poi_id, geolpda_id
-;bdexplo-> ;
-;<table border="1">
-;  <tr>
-;    <th align="center">obs_id</th>
-;    <th align="center">structure_type</th>
-;    <th align="center">north_ref</th>
-;    <th align="center">geolpda_id</th>
-;    <th align="center">geolpda_poi_id</th>
-;    <th align="center">measure_type</th>
-;    <th align="center">rotation_matrix</th>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">986</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.208505809307098 -0.955085515975952 -0.210563227534294 0.772596538066864 -0.0288380980491638 -0.634241938591003 0.599683105945587 -0.294923603534698 0.743908762931824]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">987</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.142868533730507 -0.975464701652527 -0.167502701282501 0.745325565338135 0.00531753897666931 -0.666679620742798 0.6512131690979 -0.220091596245766 0.726279079914093]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">988</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[0.638516843318939 0.719309210777283 0.273661434650421 -0.0977211445569992 0.428484439849854 -0.898249328136444 -0.763378620147705 0.54680472612381 0.343886196613312]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">989</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.367640286684036 -0.915401101112366 -0.163955762982368 0.442310959100723 -0.0170331746339798 -0.896700024604797 0.81804746389389 -0.402182459831238 0.411154001951218]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">990</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.354953557252884 -0.932444930076599 -0.0674879178404808 0.192166268825531 -0.00212360545992851 -0.981360197067261 0.914920806884766 -0.361306130886078 0.179938212037086]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">991</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.295865565538406 -0.954500198364258 0.0373210720717907 -0.0168503802269697 -0.0338490605354309 -0.999284863471985 0.955080986022949 -0.296282887458801 -0.00606891978532076]</td>
-;  </tr>
-;  <tr valign="top">
-;    <td align="left">PCh2014_0032</td>
-;    <td align="left">&nbsp; </td>
-;    <td align="left">Nm</td>
-;    <td align="right">992</td>
-;    <td align="right">532</td>
-;    <td align="left">PL</td>
-;    <td align="left">[-0.279599159955978 -0.95274031162262 -0.118786059319973 0.374924391508102 0.00555317848920822 -0.927038669586182 0.883886873722076 -0.303735047578812 0.355652928352356]</td>
-;  </tr>
-;</table>
-;<p>(7 lignes)<br />
-;</p>
-;
-;						header_table: rejoin [{<table border="1">} newline {  <tr>} newline {    <th align="center">obs_id</th>} newline {    <th align="center">structure_type</th>}
-;    <th align="center">north_ref</th>
-;    <th align="center">geolpda_id</th>
-;    <th align="center">geolpda_poi_id</th>
-;    <th align="center">measure_type</th>
-;    <th align="center">rotation_matrix</th>
-;  </tr>
-;
-;; Hm, en fait, un tableau, c'est pas l'idéal pour présenter tout ça...
-;]
-;}}}
 						write/lines/append outputfile "<tt>"
+						; If a stereonet has already been produced by a third-party app and is named
+						; with the id.jpg, in the current directory, then include it in the html output.
+						stereo_image_filename: to-file lowercase rejoin [id ".jpg"]
+						if exists? stereo_image_filename [
+;							print "YOUPI! UN STÉRÉO!"
+							write/append outputfile rejoin [
+								{<img src="} stereo_image_filename
+								{" align="right" vspace="5" hspace="10" alt="}
+								stereo_image_filename
+								{"/>}
+								{<br>}
+							]
+						]
 						; **attention! following line queries the postgresql database; code to be adapted to sqlite, if needed:
 ;						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
@@ -494,7 +414,7 @@ foreach j jours [
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 						]
 						write/lines/append outputfile "</tt></dd></dl>"
-						if flag_create_tec_files [ ; creation of a TecTri file for the current observation point
+						if (flag_create_tec_files = 1) [ ; creation of a TecTri file for the current observation point
 							generate_tectri_file/criteria/unique_filename (rejoin ["WHERE obs_id = '" id "'"]) (rejoin [id ".tec"])
 						]
 					]
