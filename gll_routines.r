@@ -2501,11 +2501,14 @@ synchronize_geolpda_files: does [; {{{ } } }
 		; make symlinks in geolpda photos directory:
 		;cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
 		;call_wait_output_error cmd
+		cmd_big: copy ""
 		foreach f ls_photos_device_to_be_transferred [
 			; TODO generally, wherever reduit_700 is read (like below), test if reduit_700 subdirectory exists before trying to read it; if it doesn't, create it.
 			cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/" f " " dir_geolpda_local "photos/"]
-			call_wait_output_error cmd
+			;call_wait_output_error cmd
+			append cmd_big rejoin [cmd newline]
 		]
+		call_wait_output_error cmd_big
 	] [ print "No synchronization done."]
 ;_______________________________________________________________________________________________________________________________
 ];}}}
