@@ -391,10 +391,8 @@ foreach j jours [
 						foreach m measures [
 							; o name is already an Observation: s stands for Structure:
 							;prin "-"
-							; TODO it would be better to get measurement data from fields, rather than recompute from rotation_matrix
-							either not (none? m/7) [
-								s: orientation/new first (to-block m/7)	; Bugs if there is no rotation matrix.
-							] [	; no rotation_matrix; make an orientation object based on fields data:
+							; Get measurement data from fields, rather than recompute from rotation_matrix, and make an orientation object based on fields data:
+							either not (none? m/8) [
 								s: orientation
 								s/plane_direction:     m/8
 								s/plane_dip:           m/9
@@ -402,14 +400,21 @@ foreach j jours [
 								s/line_pitch:          m/11
 								s/line_pitch_quadrant: m/12
 								s/line_movement:       m/13
+							] [ ; no plane_direction; is there a rotation matrix?
+								either not (none? m/7) [
+									; there is a rotation matrix: compute an orientation from the matrix
+									s: orientation/new first (to-block m/7)	; Bugs if there is no rotation matrix.
+								] [
+									; No matrix, no direction... Do nothing... TODO clarify this, at some point.
+								]
 							]
 							; which type of geometry is measured:
 							parse m/6 [
-								  "PLMS" (ttt: rejoin ["plane+line, movement sure " s/print_plane_line_movement])
-								| "PLM"  (ttt: rejoin ["plane+line, movement "      s/print_plane_line_movement])
-								| "PL"   (ttt: rejoin ["plane+line "                s/print_plane_line         ])
-								| "P"    (ttt: rejoin ["plane "                     s/print_plane              ])
-								| "L"    (ttt: rejoin ["line "                      s/print_line               ])
+								  "PLMS" (ttt: rejoin ["plane + line, movement sure " s/print_plane_line_movement])
+								| "PLM"  (ttt: rejoin ["plane + line, movement "      s/print_plane_line_movement])
+								| "PL"   (ttt: rejoin ["plane + line "                s/print_plane_line         ])
+								| "P"    (ttt: rejoin ["plane "                       s/print_plane              ])
+								| "L"    (ttt: rejoin ["line "                        s/print_line               ])
 							]
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 						]
