@@ -230,7 +230,7 @@ write/lines outputfile to-string [
     overflow:auto; max-height:200px;
     border: 1px solid; margin: 1px; padding: 10px; width:90%;}
    img {
-    border: 1px solid
+    border: 1px solid;
     max-width:  400px;
     max-height: 400px;
    }
