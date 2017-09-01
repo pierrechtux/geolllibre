@@ -156,7 +156,7 @@ either (tt = "") [
 		print {Locate where android device is mounted, pick up "geolpda" subdirectory}
 		print dir_mount_geolpda_android
 		x: input
-		either (x = "") [x: dir_mount_geolpda_android] [dir_mount_geolpda_android: x]
+		either (x = "") [x: dir_mount_geolpda_android] [dir_mount_geolpda_android: to-file x]
 	]
 
 print "Android geolpda directory contents:"
@@ -173,6 +173,17 @@ print read dir_mount_geolpda_android
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
 ;
+
+; Get the DCIM pictures location on the mounted filesystem:
+	print {Choose Digital Camera IMages (DCIM) directory to be imported:}
+	while [not (exists? to-file dir_mount_dcim_android)] [
+		print rejoin ["Default directory: " dir_mount_dcim_android " cannot be read."]
+		print {Locate where android device is mounted, pick up "DCIM" (or equivalent) subdirectory}
+		print dir_mount_dcim_android
+		x: input
+		either (x = "") [x: dir_mount_dcim_android] [dir_mount_dcim_android: to-file x]
+	]
+
 ;}}}
 ; Synchronize android device to local filesystem, if agreed:{{{ } } }
 answer: copy ""
