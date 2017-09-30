@@ -5,7 +5,7 @@ REBOL [
 	Version: 1.0.0
 	File:    %gll_geolpda_report_generator.r
 	Purpose: {
-		Génération d'un rapport sous forme d'un fichier .html 
+		Génération d'un rapport sous forme d'un fichier .html
 		à partir d'une base sqlite "geolpda" du geolpda
 		en allant chercher la table des observations avec les données:
 		_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note
@@ -211,12 +211,12 @@ if (none? flag_create_tec_files) [
 ; Le fichier est nommé en fonction du dernier jour;
 ; next form 100 est un truc pour avoir des leading zeroes.
 outputfile: to-file rejoin ["geolpda_report_pch_from_"
-date_start/year "_" 
-next form 100 + date_start/month "_" 
+date_start/year "_"
+next form 100 + date_start/month "_"
 next form 100 + date_start/day
 "_to_"
-date_end/year "_" 
-next form 100 + date_end/month "_" 
+date_end/year "_"
+next form 100 + date_end/month "_"
 next form 100 + date_end/day ".html"]
 ;/*}}}*/
 ; On y écrit un en-tête général: [{{{
@@ -371,14 +371,14 @@ foreach j jours [
 						either (nb_orientations = 1) [	write/lines/append outputfile "<dl><dt>Structural measurement:</dt><dd>"   ] [ 
 														write/lines/append outputfile "<dl><dt>Structural measurements:</dt><dd>" ]
 						write/lines/append outputfile "<tt>"
-						; If a stereonet has already been produced by a third-party app and is named 
+						; If a stereonet has already been produced by a third-party app and is named
 						; with the id.jpg, in the current directory, then include it in the html output.
 						stereo_image_filename: to-file lowercase rejoin [id ".jpg"]
 						if exists? stereo_image_filename [
 ;							print "YOUPI! UN STÉRÉO!"
 							write/append outputfile rejoin [
-								{<img src="} stereo_image_filename  
-								{" align="right" vspace="5" hspace="10" alt="} 
+								{<img src="} stereo_image_filename
+								{" align="right" vspace="5" hspace="10" alt="}
 								stereo_image_filename
 								{"/>}
 								{<br>}
