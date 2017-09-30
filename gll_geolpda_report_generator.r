@@ -119,7 +119,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 ;date_start: now - 10
 ;date_end:   now
-;flag_create_tec_files: true
+flag_create_tec_files: true		; default
 
 ; Get routines, preferences, and connect to database, if not already done:
 if [none? dir_geolpda_local] [
@@ -378,7 +378,7 @@ foreach j jours [
 ;							print "YOUPI! UN STÉRÉO!"
 							write/append outputfile rejoin [
 								{<img src="} stereo_image_filename
-								{" align="right" vspace="5" hspace="10" alt="}
+								{" align="right" vspace="5" hspace="10" style="border: none" alt="}
 								stereo_image_filename
 								{"/>}
 								{<br>}
@@ -408,6 +408,9 @@ foreach j jours [
 									; No matrix, no direction... Do nothing... TODO clarify this, at some point.
 								]
 							]
+							; Oops: line azimut and dip are not listed in public.field_observations_struct_measures table;
+							; therefore, if a line measurement is to be listed, we must work the orientation from the matrix:
+							if (m/6 = "L") [s: orientation/new first (to-block m/7)]
 							; which type of geometry is measured:
 							parse m/6 [
 								  "PLMS" (ttt: rejoin ["plane + line, movement sure " s/print_plane_line_movement])
