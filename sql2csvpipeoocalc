@@ -3,6 +3,6 @@
 # Ce script va prendre la sortie de sql2csv et va l'ouvrir direct dans oocalc
 
 echo "$1"
-sql2csv "$1" > tmp_sql2csvpipeoocalc.csv && oocalc tmp_sql2csvpipeoocalc.csv
+sql2csv "$1" > /tmp/tmp_sql2csvpipeoocalc.csv && oocalc /tmp/tmp_sql2csvpipeoocalc.csv
 #rm -I tmp_sql2csvpipeoocalc.csv
 
