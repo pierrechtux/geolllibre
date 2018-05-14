@@ -16,11 +16,11 @@
 
 -- o Il faudrait lancer ce script comme un administrateur,
 --     avec des arguments:
---       - le rôle "utilisateur lambda" à utiliser;
+--       - le ou les rôles "utilisateur lambda" à utiliser;
 --       - le ou les rôles "utilisateur admin"
 --       - le nom de la base à créer, si différent de postgeol
 -- Quelque chose dans le genre:
---    psql -v normal_user="pierre" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
+--    psql -v normal_user="pierre, gaston" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
 --    :normal_user
 
 -- fait:{{{
@@ -28,7 +28,6 @@
 -- x mettre les numauto en:     numauto             bigserial UNIQUE NOT NULL,
 -- x mettre tous les numauto en bigserial PRIMARY KEY
 -- x mettre tous les: REFERENCES operations (opid)
-
 
 --}}}
 -- }}}
@@ -49,7 +48,7 @@
 --		##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 --		##                                                                       ##
 --		###########################################################################
---		  Copyright (C) 2017 Pierre Chevalier <pierrechevaliergeol@free.fr>
+--		  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
 --
 --		    GeolLLibre is free software: you can redistribute it and/or modify
 --		    it under the terms of the GNU General Public License as published by
@@ -68,8 +67,8 @@
 --		    See LICENSE file.
 --		}
 --}}}
-
 --NON --{{{
+
 --*****************************************************************
 -- ********************** ça vient de OPM
 -- This program is open source, licensed under the PostgreSQL License.   <= prendre cette license? @#demander Julien
@@ -87,7 +86,8 @@
 
 
 --}}}
---  0090 Ceci était en tête du dump:{{{
+
+--    90 Ceci était en tête du dump:{{{
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -97,7 +97,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --}}}
--- 0100 LISTE OBJETS DE BDEXPLO:{{{
+--   100 LISTE OBJETS DE BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -1093,51 +1093,14 @@ Pareil, / des instructions de CREATion de TABLEs:
 
 
 
--- }}}
 
+-- }}}
+*/
 --}}}
 --  1100 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 
 --echo "CREATE DATABASE postgeol WITH TEMPLATE=template_postgis ENCODING='UTF8'OWNER=pierre;" | psql
--- => no, refer to postgeol_database_creation.sh
-
---"IFNDEF" SI $POSTGEOL PAS DÉFINI, ON LE DÉFINIT: @#TODO
--- POSTGEOL := 'postgeol';
--- postgeol := 'postgeol';
--- pour l'instant, $POSTGEOL est défini dans mon .bashrc:
--- export POSTGEOL=postgeol
-
-
---TODO make a table 'defaults' in the user's schema (or no?)
---     containing all pre-defined preferences, default field values, (special views definitions?).  Or, alternatively, use .gll_preferences file located in $HOME.
-
-
---CREATE DATABASE $POSTGEOL ENCODING='UTF8';
---CREATE DATABASE ${POSTGEOL} ENCODING='UTF8';
---SELECT '${POSTGEOL}';
--- COMMENT APPELER UNE VARIABLE D'ENVIRONNEMENT DEPUIS PSQL??
--- voilà (ça ne fonctionne que sur un unix...):
-\set postgeol `echo "$POSTGEOL"`
---\echo :postgeol
--- (c'est un peu tordu...)
-
-DROP DATABASE :postgeol; --TODO À INVALIDER, BIEN SÛR!
-CREATE DATABASE :postgeol ENCODING='UTF8';
-
--- Record the current username, and login to the newly made
--- database as superuser postgres:
-\set username :USER
-\c :postgeol postgres
--- Incorporate some extensions:
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-CREATE OR REPLACE PROCEDURAL LANGUAGE plpythonu;
-ALTER PROCEDURAL LANGUAGE plpythonu OWNER TO postgres;
--- postgeol is a spatial database, at least partially: inherit from the famous PostGIS extension:
-CREATE EXTENSION postgis;
-CREATE EXTENSION postgis_topology;
--- Re-connect as the initial (normal) user again:
-\c :postgeol :username
+-- => refer to postgeol_database_creation.sh
 
 -- Create schemas:{{{
 CREATE SCHEMA checks;
@@ -1192,17 +1155,55 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --}}}
-*/
-/* *** 2017_04_02__23_35_37 c'est fait, on commente:
+-- / * *** 2017_04_02__23_35_37 c'est fait, on commente:
 BEGIN TRANSACTION;
 -- 1200 TABLES{{{
---SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
---SET search_path = SCHEMA_DATA, pg_catalog;
+SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
+SET search_path = SCHEMA_DATA, pg_catalog;
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
--- x doc_postgeol_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+-- x doc_postgeo l_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
 ----------------------------------------------
 
 -- TODO utile de garder ça??
@@ -1270,7 +1271,7 @@ CREATE TABLE public.operations (
     operation       text NOT NULL,
     full_name       text NOT NULL,
     operator        text NOT NULL,
-    year            integer NOT NULL,
+    year            integer,                        -- NULL, -- => NULL autorisé, tout bien pesé
     confidentiality boolean NOT NULL DEFAULT TRUE,
     lat_min         numeric(10,5) NOT NULL,
     lon_min         numeric(10,5) NOT NULL,
@@ -10780,7 +10781,7 @@ COMMENT ON COLUMN public.rock_ana.value               IS 'Analysis value';
 COMMENT ON COLUMN public.rock_ana.numauto             IS 'auto increment integer';
 
 --}}}
--- x gps_wpt: TODO is this daube?{{{ TODO comparer avec field_observations (on dirait que les données y sont; mais vérifier en plottant sur SIG), et faire un bon ménage là-dedans. En profiter pour aller rechercher la bd que j'avais au SGR/REU, et reprendre mes waypoints de l'époque, qui doivent manquer à l'appel (il y en avait d'autres, des persos qui n'étaient pas dans cette BD?). Ainsi que les tracés, té, tank à fer. Tracés qu'il faudrait stocker en BD, aussi, bien sûr. En se calquant sur la structure d'oruxmaps par exemple; ou alors en stockant des gros jsonb ou des gros xml: à voir.
+-- x gps_wpt: TODO is this daube?{{{ TODO comparer avec field_observations (on dirait que les données y sont; mais vérifier en plottant sur SIG), et faire un bon ménage là-dedans. En profiter pour aller rechercher la bd que j'avais au SGR/REU, et reprendre mes waypoints de l'époque, qui doivent manquer à l'appel (il y en avait d'autres, des persos qui n'étaient pas dans cette BD?). Ainsi que les tracés (tracklogs), té, tank à fer. Tracés qu'il faudrait stocker en BD, aussi, bien sûr. En se calquant sur la structure d'oruxmaps par exemple; ou alors en stockant des gros jsonb ou des gros xml: à voir.
 
 CREATE TABLE gps_wpt (
     opid integer REFERENCES operations (opid), --TODO ATTENTION, CHAMP RAJOUTÉ
@@ -10870,3 +10871,7 @@ CREATE TABLE program (
 
 --TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
 --TODO
+
+-- à la fin, pour transférer les données de bdexplo vers postgeol:
+-- postgeol_transfer_data_from_bdexplo.sh
+
