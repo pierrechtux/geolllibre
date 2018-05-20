@@ -27,8 +27,8 @@
 
 -- x mettre les numauto en:     numauto             bigserial UNIQUE NOT NULL,
 -- x mettre tous les numauto en bigserial PRIMARY KEY
-
 -- x mettre tous les: REFERENCES operations (opid)
+
 
 --}}}
 -- }}}
@@ -77,6 +77,7 @@
 -- Copyright (C) 2012-2015: Open PostgreSQL Monitoring Development Group
 -- complain if script is sourced in psql, rather than via CREATE EXTENSION
 --*****************************************************************
+
 
 
 
@@ -486,8 +487,8 @@ tables:{{{
                     Liste des relations
                            Nom
 ------------------------------------
-doc_postgeol_table_categories    => (dans bdexplo, c'était: doc_bdexplo_table_categories)
-doc_postgeol_tables_descriptions => (dans bdexplo, c'était: doc_bdexplo_tables_descriptions)
+doc_postgeol_table_categories    => (relation renommée; dans bdexplo, c'était: doc_bdexplo_table_categories)
+doc_postgeol_tables_descriptions => (relation renommée; dans bdexplo, c'était: doc_bdexplo_tables_descriptions)
 
 operations
 operation_active
@@ -927,8 +928,7 @@ Pareil, / des instructions de CREATion de TABLEs:
 /CREATE TABLE.*index_geo_documentation
 /CREATE TABLE.*layer_styles
 /CREATE TABLE.*program
-/CREATE TABLE.*dh_nb_samples
-_______________ENCOURS_______________GEOLLLIBRE 2
+/CREATE TABLE.*dh_nb_samples________________ENCOURS_______________GEOLLLIBRE 2
 /CREATE TABLE.*grid
 /CREATE TABLE.*tmp_xy
 /CREATE TABLE.*tmp_xyz_marec
@@ -1448,7 +1448,7 @@ CREATE TABLE public.field_photos (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     pho_id              text NOT NULL,
-    obs_id              text,
+    obs_id              text,   -- est-ce bien pertinent de faire cela? Ne serait-ce pas plus opportun de faire une table "photos", qui se fasse pointer par field_observations ou par dh_litho ou par dh_sampling ou par... À voir.
     filename            text,   --xTODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
     description         text,
     azim_nm             numeric,   --WARNING, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
@@ -1820,7 +1820,7 @@ COMMENT ON COLUMN dh_collars.date_completed                     IS 'Work finish 
 COMMENT ON COLUMN dh_collars.completed                          IS 'True: completed; False: planned';
 COMMENT ON COLUMN dh_collars.contractor                         IS 'Drilling contractor';
 COMMENT ON COLUMN dh_collars.geologist                          IS 'Geologist name';
-COMMENT ON COLUMN dh_collars.nb_samples                         IS 'Number of samples; mainly for quality check purpose, redundancy with count from dh_sampling table';
+COMMENT ON COLUMN dh_collars.nb_samples                         IS 'Number of samples; mainly for quality check purpose, redundancy with count from dh_sampling child table';
 COMMENT ON COLUMN dh_collars.topo_survey_type                   IS 'Topographic collar survey type: GPS, GPSD, geometry, theodolite, relative, computed from local coordinate system, etc.';
 COMMENT ON COLUMN dh_collars.comments                           IS 'Comments, e.g. quick history of the hole, why it stopped, remarkable facts, etc.';
 COMMENT ON COLUMN dh_collars.x_local                            IS 'Local x coordinate';
@@ -10090,17 +10090,16 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 --}}}
 
 
-COMMIT; -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile.
+-- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile, voilà:
+COMMIT;
 */ -- *** fin de ce qui est fait et commenté 2017_04_02__23_35_37
-
-
 
 
 -- _______________ENCOURS_______________GEOLLLIBRE v 3
 --10100 LE RESTE...{{{
 
 -- e functions:{{{
--- _______________ENCOURS_______________GEOLLLIBRE vv 4 -- _______________ENCOURS_______________GEOLLLIBRE 5 -- _______________ENCOURS_______________GEOLLLIBRE ^^ 6
+-- _______________ENCOURS_______________GEOLLLIBRE vv 4 
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 --\c postgeol postgres
@@ -10486,7 +10485,7 @@ ALTER TABLE dh_sampling OWNER TO pierre;
 
 
 -- }}}
---_______________ENCOURS_______________GEOLLLIBRE 8
+--_______________ENCOURS_______________GEOLLLIBRE 5
 
 --les traces des sondages, pareil, pour un srid:{{{
 CREATE OR REPLACE VIEW dh_traces_3d AS
@@ -10612,7 +10611,7 @@ CREATE VIEW grid_points AS
 --ALTER TABLE public.index_geo_documentation ADD COLUMN opid integer;
 
 --}}}
--- _______________ENCOURS_______________GEOLLLIBRE ^ 7
+-- _______________ENCOURS_______________GEOLLLIBRE ^ 6
 --POUBELLE {{{
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
@@ -10692,7 +10691,7 @@ ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tien
 --}}}
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
 -- Il convient de les traiter comme il convient, dans bdexplo, où elles restent. En versant leurs données dans la *bonne* structure, celle de postgeol.
--- _______________ENCOURS_______________GEOLLLIBRE 9
+-- _______________ENCOURS_______________GEOLLLIBRE 7
 -- ?? lab_ana_batches_reception_18_corr:{{{ TODO isn't this daube??
 
 CREATE TABLE lab_ana_batches_reception_18_corr (
@@ -10757,7 +10756,7 @@ COMMENT ON COLUMN public.field_sampling.hammer_index  IS 'integer related to the
 --}}}
 -- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
 -- TODO table assez vide, tout comme field_sampling: contenu à verser, plutôt, dans lab_ana_results (SI CE N'EST DÉJÀ FAIT!)
--- _______________ENCOURS_______________GEOLLLIBRE 10
+-- _______________ENCOURS_______________GEOLLLIBRE 8
 CREATE TABLE public.field_sampling_ana (  -- Nota bene: field_sampling_ana used to be called rock_ana; actually, it may encompass much more than just rocks.  See remarks above concerning field_sampling table.
     opid                integer REFERENCES operations (opid)
       REFERENCES operations (opid)

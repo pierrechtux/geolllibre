@@ -384,6 +384,7 @@ foreach j jours [
 								{<br>}
 							]
 						]
+								;{" align="right" vspace="5" hspace="10" alt="} ; this was left by a merge conflict, just a little bit above; left here justincase.
 						; **attention! following line queries the postgresql database; code to be adapted to sqlite, if needed:
 ;						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
