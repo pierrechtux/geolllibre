@@ -1198,8 +1198,20 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 -- / * *** 2017_04_02__23_35_37 c'est fait, on commente:
 BEGIN TRANSACTION;
 -- 1200 TABLES{{{
-SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
-SET search_path = SCHEMA_DATA, pg_catalog;
+-- CANCELLED: {{{
+-- TODO: NEXT LINE BUGS; since that variable SCHEMA_DATA is just referred to once, it is being dropped for now:
+-- SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
+	-- => oops, it doesn't seem to be working fine: {{{
+	-- --[local] pierre@bdexplo=> 
+	-- SET SCHEMA_DATA='public';
+	-- ERROR:  unrecognized configuration parameter "schema_data"
+	-- --[local] pierre@bdexplo=> 
+	-- SET toto='tt';
+	-- ERROR:  unrecognized configuration parameter "toto"
+	-- --[local] pierre@bdexplo=> 
+	-- }}}
+-- SET search_path = SCHEMA_DATA, pg_catalog;
+--}}}
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
