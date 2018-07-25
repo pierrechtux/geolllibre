@@ -1794,10 +1794,10 @@ CREATE TABLE public.dh_collars (
     x                   numeric,
     y                   numeric,
     z                   numeric,
-    azim_ng             numeric,
-    azim_nm             numeric,
+    azim_ng             numeric,	--TODO change for a structure with mag declination stored elsewhere
+    azim_nm             numeric, 
     dip_hz              numeric,
-    length              numeric,
+    length              numeric,    --TODO SQL keyword??
     dh_type             text,
     date_start          date,
     date_completed      date,
@@ -1807,10 +1807,10 @@ CREATE TABLE public.dh_collars (
     nb_samples          integer,
     topo_survey_type    text,
     comments            text,
-    x_local             numeric,
-    y_local             numeric,
-    z_local             numeric,
-    accusum             numeric,
+    x_local             numeric,  -- TODO get rid
+    y_local             numeric,  -- TODO get rid
+    z_local             numeric,  -- TODO get rid
+    accusum             numeric,  -- TODO move to another table, one day
     id_pject            text,
     x_pject             numeric,
     y_pject             numeric,
@@ -2097,8 +2097,8 @@ CREATE TABLE public.dh_litho (
     depfrom             numeric(10,2),
     depto               numeric(10,2),
     description         text,
-    description1        text,
-    description2        text,
+    description1        text,	-- TODO get rid
+    description2        text,	-- TODO get rid
     code1               text,
     code2               text,
     code3               text,
@@ -2119,6 +2119,7 @@ CREATE TABLE public.dh_litho (
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
+-- TODO mettre unique (opid, id, depto)
 );
 COMMENT ON TABLE dh_litho                             IS 'Drill holes or trenches geological descriptions';
 COMMENT ON COLUMN dh_litho.opid                       IS 'Operation identifier';
@@ -2193,15 +2194,15 @@ CREATE TABLE public.dh_tech (
     id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
+    drillers_depto      numeric(10,2),
     drilled_len         numeric(10,2),
-    reco_len            numeric(10,2),
+    reco_len            numeric(10,2),	--TODO rename to sthg moins abbrvbtd
+    core_loss_cm        integer,
     rqd_len             numeric(10,2),
     diam                text,
-    comments            text,
-    drillers_depto      numeric(10,2),
-    core_loss_cm        integer,
     joints_description  text,
     nb_joints           integer,
+    comments            text,
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
@@ -3356,9 +3357,9 @@ CREATE TABLE public.lex_datasource (
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
+    datasource_id  integer NOT NULL,
     filename       text,
     comments       text,
-    datasource_id  integer NOT NULL,
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
