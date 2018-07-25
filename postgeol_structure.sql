@@ -1,24 +1,27 @@
--- _______________ENCOURS_______________GEOLLLIBRE 1
--- LIGNES:     0 en-tête, licence, rien et TODOs
---            90 des trucs en en-tête du dump
---           100 liste objets de bdexplo, ordonnée
---          1100 création base, schémas
--- ==>      1200 création tables  <==
---         10000 le reste...
+-- LIGNES:     0* en-tête, licence, rien et TODOs
+--            90* des trucs en en-tête du dump
+--           100* liste objets de bdexplo, ordonnée
+--          1100* création base, schémas
+-- ==>      1200* création tables  <==
+--         10100* le reste...
 
---TODO liste:{{{
+-- Variables générales:
+
+
+
+-- _______________ENCOURS_______________GEOLLLIBRE 1
+-- TODO LIste:{{{
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
--- o d'autres rôles du genre db_admin, etc.
+-- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
 -- o check all owners to data_admin
 -- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire, ou plutôt des trucs comme: ("CREATE TABLE test (id bigserial PRIMARY KEY, num integer, data text);")
 -- o mettre des NOT NULL un peu partout
-
 -- o Il faudrait lancer ce script comme un administrateur,
 --     avec des arguments:
 --       - le ou les rôles "utilisateur lambda" à utiliser;
 --       - le ou les rôles "utilisateur admin"
---       - le nom de la base à créer, si différent de postgeol
+--       - le nom de la base à créer, si différent de $POSTGEOL
 -- Quelque chose dans le genre:
 --    psql -v normal_user="pierre, gaston" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
 --    :normal_user
@@ -33,7 +36,6 @@
 -- }}}
 
 -- DEBUG: ATTENTION AUX /* */  =>  /\/\*\|\*\/
--- :set foldmarker=/*,*/
 
 --{{{ En-tête, copyright
 --	Title:   "Structure of POSTGEOL database: PostgreSQL database for GEOLogical data"
@@ -66,28 +68,29 @@
 --		    Fifth Floor, Boston, MA 02110-1301, USA.
 --		    See LICENSE file.
 --		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 --}}}
---NON --{{{
-
---*****************************************************************
--- ********************** ça vient de OPM
--- This program is open source, licensed under the PostgreSQL License.   <= prendre cette license? @#demander Julien
--- For license terms, see the LICENSE file.
--- Copyright (C) 2012-2015: Open PostgreSQL Monitoring Development Group
--- complain if script is sourced in psql, rather than via CREATE EXTENSION
---*****************************************************************
-
-
-
-
-
-
-
-
-
---}}}
-
---    90 Ceci était en tête du dump:{{{
+--     90* Ceci était en tête du dump:{{{
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -97,7 +100,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --}}}
---   100 LISTE OBJETS DE BDEXPLO:{{{
+--   100* LISTE OBJETS DE BDEXPLO:{{{
 
 /* la liste des objets de bdexplo, en ayant fait le ménage:
 tables:{{{
@@ -1097,12 +1100,15 @@ Pareil, / des instructions de CREATion de TABLEs:
 -- }}}
 */
 --}}}
---  1100 DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
+--   1100* DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 
 --echo "CREATE DATABASE postgeol WITH TEMPLATE=template_postgis ENCODING='UTF8'OWNER=pierre;" | psql
 -- => refer to postgeol_database_creation.sh
 
 -- Create schemas:{{{
+CREATE SCHEMA data;
+COMMENT ON SCHEMA data                                IS 'Schema where data tables actually are';
+
 CREATE SCHEMA checks;
 COMMENT ON SCHEMA checks                              IS 'Views selecting unconsistent, incoherent, unprobable data';
 
@@ -1195,9 +1201,9 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 
 --}}}
--- / * *** 2017_04_02__23_35_37 c'est fait, on commente:
+-- / * *** 2017_04_02__23_35_37 c'est fait, on commente jusqu'ici et on recommence ensuite:
 BEGIN TRANSACTION;
--- 1200 TABLES{{{
+-- 1200* TABLES{{{
 -- CANCELLED: {{{
 -- TODO: NEXT LINE BUGS; since that variable SCHEMA_DATA is just referred to once, it is being dropped for now:
 -- SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
@@ -1215,21 +1221,21 @@ BEGIN TRANSACTION;
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
--- x doc_postgeo l_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+-- x doc_postgeol_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
 ----------------------------------------------
 
 -- TODO utile de garder ça??
-CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdexplo_table_categories
-    category       text NOT NULL PRIMARY KEY,
-    description_en text,
-    description_es text,
-    description_fr text,
-    numauto        bigserial NOT NULL,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user
-);
+-- CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdexplo_table_categories
+--     category       text NOT NULL PRIMARY KEY,
+--     description_en text,
+--     description_es text,
+--     description_fr text,
+--     numauto        bigserial NOT NULL,
+--     creation_ts    timestamptz DEFAULT now() NOT NULL,
+--     username       text DEFAULT current_user
+-- );
 --COMMENT ON TABLE public.doc_postgeol_table_categories IS ...
---TODO add comments
+-- TODO add comments
 
 -- dump de la table:
 -- --localhost pierre@bdexplo=>
@@ -1255,20 +1261,20 @@ CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdex
 -- x doc_postgeol_tables_descriptions --{{{
 -- TODO même question: utile à garder?
 
-CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
-    tablename      text PRIMARY KEY,
-    category       text
-        REFERENCES public.doc_postgeol_table_categories(category)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-        DEFERRABLE INITIALLY DEFERRED,
-    comment_en     text,
-    comment_fr     text,
-    numauto        bigserial NOT NULL,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user
-);
-COMMENT ON TABLE public.doc_postgeol_tables_descriptions        IS 'Description of tables';
+-- CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
+--     tablename      text PRIMARY KEY,
+--     category       text
+--         REFERENCES public.doc_postgeol_table_categories(category)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED,
+--     comment_en     text,
+--     comment_fr     text,
+--     numauto        bigserial NOT NULL,
+--     creation_ts    timestamptz DEFAULT now() NOT NULL,
+--     username       text DEFAULT current_user
+-- );
+-- COMMENT ON TABLE public.doc_postgeol_tables_descriptions        IS 'Description of tables';
 -- Hm, should be the same as COMMENT on tables... TODO: make sure it is consistent, check what uses this table, update if necessary, and clean up (get rid of)!
 
 -- la commande de création initiale:
@@ -1285,6 +1291,11 @@ CREATE TABLE public.operations (
     operator        text NOT NULL,
     year            integer,                        -- NULL, -- => NULL autorisé, tout bien pesé
     confidentiality boolean NOT NULL DEFAULT TRUE,
+    street_addr     text,
+	srid            text,
+	x				text,
+	y				text,
+	accuracy		numeric,
     lat_min         numeric(10,5) NOT NULL,
     lon_min         numeric(10,5) NOT NULL,
     lat_max         numeric(10,5) NOT NULL,
@@ -1301,6 +1312,11 @@ COMMENT ON COLUMN public.operations.full_name                   IS 'Complete ope
 COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
 COMMENT ON COLUMN public.operations.confidentiality             IS 'Confidentiality flag, true or false; default is true';
+COMMENT ON COLUMN public.operations.street_addr                 IS 'Street address, for further computation and georeferenciation';
+-- srid
+-- x
+-- y ; TODO reprendre d'autres tables
+-- accuracy IS 'Location by x, y coordinates quality: -1 worst, 3 best';
 COMMENT ON COLUMN public.operations.lat_min                     IS 'South latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_min                     IS 'West longitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lat_max                     IS 'North latitude, decimal degrees, WGS84';
@@ -1314,7 +1330,7 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 
 --SET search_path = current_user $USER, pg_catalog; => in fact, this table should rather be in the user's schema => TODO later
 -- => as written here, the table will end up in the current user's schema.
-CREATE TABLE operation_active (
+CREATE TABLE :USER.operation_active (		-- TODO at some point, put back some logic in the SCHEMAs organisation.
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -1451,7 +1467,7 @@ COMMENT ON COLUMN public.field_observations_struct_measures.creation_ts         
 COMMENT ON COLUMN public.field_observations_struct_measures.username                IS 'User (role) which created data record';
 
 --}}}
--- x field_photos:{{{
+-- x field_photos:{{{ -- TODO rather make a general-purpose "photos" table, containing all photogaphs, referred by numerous tables through various keys, with integrity references to be implemented carefully.
 -- table vide, pour le moment.
 
 CREATE TABLE public.field_photos (
@@ -1461,8 +1477,8 @@ CREATE TABLE public.field_photos (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     pho_id              text NOT NULL,
-    obs_id              text,   -- est-ce bien pertinent de faire cela? Ne serait-ce pas plus opportun de faire une table "photos", qui se fasse pointer par field_observations ou par dh_litho ou par dh_sampling ou par... À voir.
-    filename            text,   --xTODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
+    obs_id              text,   -- est-ce bien pertinent de faire cela? Ne serait-ce pas plus opportun de faire une table "photos", qui se fasse pointer par field_observations ou par dh_litho ou par dh_sampling ou par... À voir. <= oui, voilà... cf. supra
+    filename            text,   --x TODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
     description         text,
     azim_nm             numeric,   --WARNING, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
     dip_hz              numeric,   --WARNING, field renamed from dip to something a bit more meaningful.
@@ -1495,7 +1511,7 @@ COMMENT ON COLUMN public.field_photos.username                  IS 'User (role) 
 --}}}
 -- x formations_group_lithos:{{{
 
-CREATE TABLE public.formations_group_lithos (  --TODO name formations_group_lithos is discutable; formations_lithostrati would be better?
+CREATE TABLE public.formations_group_lithos (  -- TODO name formations_group_lithos is discutable; formations_lithostrati would be better?
     opid                integer
         REFERENCES public.operations(opid)
         ON DELETE CASCADE
@@ -1645,8 +1661,8 @@ COMMENT ON COLUMN public.geoch_sampling.opid                    IS 'Operation id
 COMMENT ON COLUMN public.geoch_sampling.id                      IS 'Identification';
 COMMENT ON COLUMN public.geoch_sampling.lab_id                  IS 'Analysis laboratory';
 COMMENT ON COLUMN public.geoch_sampling.labo_ref                IS 'Analysis laboratory report reference';
-COMMENT ON COLUMN public.geoch_sampling.amc_ref                 IS 'AMC analysis report reference'; --TODO get AMC mentions out
-COMMENT ON COLUMN public.geoch_sampling.recep_date              IS 'Report reception date by AMC';  --TODO get AMC mentions out
+COMMENT ON COLUMN public.geoch_sampling.amc_ref                 IS 'AMC analysis report reference'; -- TODO get AMC mentions out
+COMMENT ON COLUMN public.geoch_sampling.recep_date              IS 'Report reception date by AMC';  -- TODO get AMC mentions out
 COMMENT ON COLUMN public.geoch_sampling.type                    IS 'Analysis type';
 COMMENT ON COLUMN public.geoch_sampling.sampl_index             IS 'Auto increment integer';
 COMMENT ON COLUMN public.geoch_sampling.x                       IS 'X coordinate, projected in UTM (m)';
@@ -1708,7 +1724,7 @@ COMMENT ON COLUMN public.geoch_ana.username                     IS 'User (role) 
 -- x geoch_sampling_grades:{{{
 -- Vérifier si cette table est utile, et si oui en quoi, comment.
 
-CREATE TABLE geoch_sampling_grades (
+CREATE TABLE public.geoch_sampling_grades (
     numauto             bigserial PRIMARY KEY,
     au_ppb              numeric
 )
@@ -1727,7 +1743,7 @@ COMMENT ON COLUMN geoch_sampling_grades.au_ppb                  IS 'Au grade ppb
 -- SET search_path = public, pg_catalog;
 -- Name: gpy_mag_ground; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 
-CREATE TABLE gpy_mag_ground (
+CREATE TABLE public.gpy_mag_ground (
     opid                     integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -1769,7 +1785,7 @@ CREATE TABLE public.dh_collars (
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
-    id                  text NOT NULL,
+    id                  text NOT NULL, -- TODO rename as dhid or dh_id and opid to be renamed op_id (once upon a time)...
     location            text,
     campaign            text,
     purpose             text DEFAULT 'EXPLO',  -- defaulting to EXPLOration, but this is just for the time being.  A preferences, or defaults, table, should be implemented; or an external file, for such default values.
@@ -1861,7 +1877,7 @@ COMMENT ON COLUMN dh_collars.username                           IS 'User (role) 
 --}}}
 -- x dh_shift_reports{{{ --ATTENTION! TODO CHANGER TOUTES RÉFÉRENCES À shift_reports EN dh_shift_reports!
 
-CREATE TABLE dh_shift_reports (
+CREATE TABLE public.dh_shift_reports (
     opid                          integer,
     date                          date,
     shift                         text,
@@ -1940,7 +1956,7 @@ COMMENT ON COLUMN dh_shift_reports.username                     IS 'User (role) 
 --}}}
 -- x dh_followup {{{
 
-CREATE TABLE dh_followup (
+CREATE TABLE public.dh_followup (
     opid                integer,
     id                  text,
     devia               text,
@@ -1980,7 +1996,7 @@ COMMENT ON COLUMN dh_followup.username                          IS 'User (role) 
 --}}}
 -- x dh_devia {{{
 
-CREATE TABLE dh_devia (
+CREATE TABLE public.dh_devia (
     opid                integer,
     id                  text,
     depto               numeric(10,2),
@@ -1993,9 +2009,9 @@ CREATE TABLE dh_devia (
     z_offset            numeric(10,2),
     temperature         numeric(10,2),
     magnetic            numeric(10,2),
-    date                date,
+    date                date,                   -- TODO change date and time fields for a timestamp value
     roll                numeric(10,2),
-    "time"              integer,                --TODO change field name
+    "time"              integer,                -- TODO change field name
     comments            text,
     valid               boolean DEFAULT true,
     datasource          integer,
@@ -2035,8 +2051,8 @@ COMMENT ON COLUMN dh_devia.username                   IS 'User (role) which crea
 
 --}}}
 -- x dh_quicklog {{{
-
-CREATE TABLE dh_quicklog (
+-- _______________ENCOURS_______________GEOLLLIBRE*
+CREATE TABLE public.dh_quicklog (
     opid                integer,
     id                  text,
     depfrom             numeric(10,2),
@@ -2075,7 +2091,7 @@ COMMENT ON COLUMN public.dh_quicklog.username         IS 'User (role) which crea
 -- x dh_litho {{{
 -- lithological descriptions
 
-CREATE TABLE dh_litho (
+CREATE TABLE public.dh_litho (
     opid                integer,
     id                  text,
     depfrom             numeric(10,2),
@@ -2142,7 +2158,7 @@ COMMENT ON COLUMN dh_litho.username                   IS 'User (role) which crea
 --}}}
 -- x dh_core_boxes {{{
 
-CREATE TABLE dh_core_boxes (
+CREATE TABLE public.dh_core_boxes (
     opid                integer,
     id                  text,
     depfrom             numeric(10,2),
@@ -2172,7 +2188,7 @@ COMMENT ON COLUMN dh_core_boxes.username              IS 'User (role) which crea
 --}}}
 -- x dh_tech {{{
 
-CREATE TABLE dh_tech (
+CREATE TABLE public.dh_tech (
     opid                integer,
     id                  text,
     depfrom             numeric(10,2),
@@ -2217,7 +2233,7 @@ COMMENT ON COLUMN dh_tech.username                    IS 'User (role) which crea
 --}}}
 -- x dh_struct_measures {{{
 
-CREATE TABLE dh_struct_measures (
+CREATE TABLE public.dh_struct_measures (
     opid                integer,
     id                  text,
     depto               numeric(10,2),
@@ -2273,7 +2289,7 @@ COMMENT ON COLUMN dh_struct_measures.username         IS 'User (role) which crea
 --}}}
 -- x dh_photos:{{{
 
-CREATE TABLE dh_photos (
+CREATE TABLE public.dh_photos (
     opid integer,
     id text,
     pho_id text,
@@ -2286,12 +2302,12 @@ CREATE TABLE dh_photos (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
---TODO il manque BEAUCOUP de choses: profondeurs... Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
+-- TODO il manque BEAUCOUP de choses: profondeurs... Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
 
 --}}}
 -- x dh_samples_submission:{{{
 
-CREATE TABLE dh_samples_submission (
+CREATE TABLE public.dh_samples_submission (
     opid integer,
     id text,
     sampfrom smallint,
@@ -2311,7 +2327,7 @@ CREATE TABLE dh_samples_submission (
 --}}}
 -- x dh_sampling_grades: {{{
 
-CREATE TABLE dh_sampling_grades (
+CREATE TABLE public.dh_sampling_grades (
     opid integer,
     id text,
     depfrom numeric(10,2),
@@ -2392,8 +2408,8 @@ COMMENT ON COLUMN public.dh_resistivity.opid          IS 'Operation identifier';
 COMMENT ON COLUMN public.dh_resistivity.id            IS 'Full identifier for borehole or trench';
 COMMENT ON COLUMN public.dh_resistivity.depfrom       IS 'Interval beginning depth';
 COMMENT ON COLUMN public.dh_resistivity.depto         IS 'Interval ending depth';
-COMMENT ON COLUMN public.dh_resistivity.rlld           IS ''; --TODO
-COMMENT ON COLUMN public.dh_resistivity.rlls           IS ''; --TODO
+COMMENT ON COLUMN public.dh_resistivity.rlld           IS ''; -- TODO
+COMMENT ON COLUMN public.dh_resistivity.rlls           IS ''; -- TODO
 COMMENT ON COLUMN public.dh_resistivity.numauto       IS 'Automatic integer';
 COMMENT ON COLUMN public.dh_resistivity.creation_ts   IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.dh_resistivity.username      IS 'User (role) which created data record';
@@ -2424,7 +2440,7 @@ COMMENT ON COLUMN public.dh_radiometry.opid            IS 'Operation identifier'
 COMMENT ON COLUMN public.dh_radiometry.id              IS 'Full identifier for borehole or trench';
 COMMENT ON COLUMN public.dh_radiometry.depfrom         IS 'Interval beginning depth';
 COMMENT ON COLUMN public.dh_radiometry.depto           IS 'Interval ending depth';
-COMMENT ON COLUMN public.dh_radiometry.a               IS 'Mysterious field containing only A value'; --TODO to be clarified
+COMMENT ON COLUMN public.dh_radiometry.a               IS 'Mysterious field containing only A value'; -- TODO to be clarified
 COMMENT ON COLUMN public.dh_radiometry.probe           IS 'Probe type: ST22, ST33, DHT-';
 COMMENT ON COLUMN public.dh_radiometry.radiometry      IS 'Radiometry measurement, equivalent AVP units (hits per second)';
 COMMENT ON COLUMN operation_active.numauto             IS 'Automatic integer';
@@ -2434,7 +2450,7 @@ COMMENT ON COLUMN operation_active.username            IS 'User (role) which cre
 --}}}
 -- x dh_mineralised_intervals {{{
 
-CREATE TABLE dh_mineralised_intervals (
+CREATE TABLE public.dh_mineralised_intervals (
     opid integer,
     id text,
     depfrom numeric(10,2),
@@ -2476,7 +2492,7 @@ COMMENT ON COLUMN dh_mineralised_intervals.username    IS 'User (role) which cre
 --densités
 -- x dh_density {{{
 
-CREATE TABLE dh_density (
+CREATE TABLE public.dh_density (
     opid integer,
     id text,
     depfrom numeric(10,2),
@@ -2512,7 +2528,7 @@ COMMENT ON COLUMN dh_density.username                 IS 'User (role) which crea
 --}}}
 -- x dh_thinsections {{{
 
-CREATE TABLE dh_thinsections (
+CREATE TABLE public.dh_thinsections (
     opid                               integer,
     id                                 text,
     depto                              numeric(10,2),
@@ -2552,9 +2568,9 @@ COMMENT ON COLUMN dh_thinsections.creation_ts                   IS 'Current date
 COMMENT ON COLUMN dh_thinsections.username                      IS 'User (role) which created data record';
 
 --}}}
--- x dh_sampling_bottle_roll {{{ --TODO rename table to something like mineralurgical tests, something less Au-oriented
+-- x dh_sampling_bottle_roll {{{ -- TODO rename table to something like mineralurgical tests, something less Au-oriented
 
-CREATE TABLE dh_sampling_bottle_roll (
+CREATE TABLE public.dh_sampling_bottle_roll (
     opid           integer,
     id             text,
     depfrom        numeric(10,2),
@@ -2604,7 +2620,7 @@ COMMENT ON COLUMN dh_sampling_bottle_roll.username              IS 'User (role) 
 -- x lab_ana_batches_expedition:{{{
 
 SET search_path = public, pg_catalog;
-CREATE TABLE lab_ana_batches_expedition (
+CREATE TABLE public.lab_ana_batches_expedition (
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2631,7 +2647,7 @@ CREATE TABLE lab_ana_batches_expedition (
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
---     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -2665,7 +2681,7 @@ COMMENT ON COLUMN lab_ana_batches_expedition.username           IS 'User (role) 
 -- x lab_ana_batches_reception:{{{
 
 SET search_path = public, pg_catalog;
-CREATE TABLE lab_ana_batches_reception (
+CREATE TABLE public.lab_ana_batches_reception (
     opid                     integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2687,7 +2703,7 @@ CREATE TABLE lab_ana_batches_reception (
     numauto                  bigserial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
---     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -2715,7 +2731,7 @@ COMMENT ON COLUMN lab_ana_batches_reception.username                 IS 'User (r
 --}}}
 -- x lab_ana_columns_definition{{{
 
-CREATE TABLE lab_ana_columns_definition (
+CREATE TABLE public.lab_ana_columns_definition (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2728,7 +2744,7 @@ CREATE TABLE lab_ana_columns_definition (
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
---     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -2746,7 +2762,7 @@ COMMENT ON COLUMN lab_ana_columns_definition.username           IS 'User (role) 
 --}}}
 -- x ana_det_limit{{{
 
-CREATE TABLE ana_det_limit (
+CREATE TABLE public.ana_det_limit (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2759,14 +2775,14 @@ CREATE TABLE ana_det_limit (
     detlim_inf     integer,
     detlim_sup     integer
 -- TODO add fields numauto, creation_ts, username
---     FOREIGN KEY (opid, xx) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.xxxxxxxxxx (opid, xx)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE ana_det_limit                        IS 'Analyses detections limits';
---TODO complete field comments
+-- TODO complete field comments
 
 --}}}
 -- x lab_ana_results {{{
@@ -2775,7 +2791,7 @@ COMMENT ON TABLE ana_det_limit                        IS 'Analyses detections li
 -- with Andre_Pranata from Intertek andre.pranata@intertek.com
 --DROP TABLE IF EXISTS lab_ana_results ;
 
-CREATE TABLE lab_ana_results (
+CREATE TABLE public.lab_ana_results (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2800,7 +2816,7 @@ CREATE TABLE lab_ana_results (
     numauto        bigserial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -2958,7 +2974,7 @@ $$
 --
 -- Name: lab_analysis_icp; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
-CREATE TABLE lab_analysis_icp (
+CREATE TABLE public.lab_analysis_icp (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2970,7 +2986,7 @@ CREATE TABLE lab_analysis_icp (
     unit           text,
     value          numeric(20,2),
     batch_id       text
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -2980,7 +2996,7 @@ CREATE TABLE lab_analysis_icp (
 --}}}
 -- x lab_ana_qaqc_results:{{{
 
-CREATE TABLE lab_ana_qaqc_results (
+CREATE TABLE public.lab_ana_qaqc_results (
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -2996,7 +3012,7 @@ CREATE TABLE lab_ana_qaqc_results (
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -3023,7 +3039,7 @@ COMMENT ON COLUMN lab_ana_qaqc_results.username                 IS 'User (role) 
 -- x qc_sampling:{{{
 -- Name: qc_sampling; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
-CREATE TABLE qc_sampling (
+CREATE TABLE public.qc_sampling (
     opid                     integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3039,7 +3055,7 @@ CREATE TABLE qc_sampling (
     numauto                  bigserial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -3058,7 +3074,7 @@ COMMENT ON COLUMN qc_sampling.username                IS 'User (role) which crea
 --
 -- Name: qc_standards; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
-CREATE TABLE qc_standards (
+CREATE TABLE public.qc_standards (
     opid                       integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3084,7 +3100,7 @@ CREATE TABLE qc_standards (
     numauto                    bigserial PRIMARY KEY,
     creation_ts                timestamptz DEFAULT now() NOT NULL,
     username                   text DEFAULT current_user
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -3113,7 +3129,7 @@ COMMENT ON COLUMN qc_standards.username               IS 'User (role) which crea
 -- x occurrences, ancient workings, mines:{{{
 -- x ancient_workings:{{{
 
-CREATE TABLE ancient_workings (
+CREATE TABLE public.ancient_workings (
     opid                integer
         REFERENCES operations (opid)
         ON UPDATE CASCADE
@@ -3125,7 +3141,7 @@ CREATE TABLE ancient_workings (
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL))
---     FOREIGN KEY (opid, id) --TODO remettre ça avec les bons champs, les bonnes connexions
+--     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
 --         ON UPDATE CASCADE
 --         ON DELETE CASCADE
@@ -3142,7 +3158,7 @@ COMMENT ON COLUMN ancient_workings.numauto            IS 'Automatic integer';
 --}}}
 -- x occurrences:{{{
 
-CREATE TABLE occurrences (
+CREATE TABLE public.occurrences (
     opid                integer
         REFERENCES operations (opid)
         ON UPDATE CASCADE
@@ -3167,7 +3183,7 @@ CREATE TABLE occurrences (
 );
 COMMENT ON TABLE occurrences                          IS 'Occurrences table: targets, showings, deposits, mines.  Compiled from various tables, and updated.';
 COMMENT ON COLUMN occurrences.opid                    IS 'Operation identifier';
-COMMENT ON COLUMN occurrences.code                    IS 'Occurrence abbreviated code'; --TODO cleaning: sometimes misused, commodities were put, instead of occurrence code.
+COMMENT ON COLUMN occurrences.code                    IS 'Occurrence abbreviated code'; -- TODO cleaning: sometimes misused, commodities were put, instead of occurrence code.
 COMMENT ON COLUMN occurrences.zone                    IS 'Geographic zone code';   -- quite useless; TODO to be discarded, was used only once
 COMMENT ON COLUMN occurrences.name                    IS 'Occurence name';
 COMMENT ON COLUMN occurrences.status                  IS 'Status: OCCUR = occurence ; OREB = orebody ; MINE = active mine ; MINED = exploited, depleted mine';
@@ -3214,7 +3230,7 @@ COMMENT ON COLUMN occurrences.username                IS 'User (role) which crea
 --COMMENT ON COLUMN licences.lon_max                  IS 'East latitude, decimal degrees, WGS84';
 --}}}
 
-CREATE TABLE licences (
+CREATE TABLE public.licences (
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3262,7 +3278,7 @@ COMMENT ON COLUMN licences.username                   IS 'User (role) which crea
 
 -- x grade_ctrl:{{{
 
-CREATE TABLE grade_ctrl (
+CREATE TABLE public.grade_ctrl (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3308,7 +3324,7 @@ COMMENT ON COLUMN grade_ctrl.username                 IS 'User (role) which crea
 
 -- x codes: {{{
 
-CREATE TABLE lex_codes (
+CREATE TABLE public.lex_codes (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3334,7 +3350,7 @@ COMMENT ON COLUMN lex_codes.username                  IS 'User (role) which crea
 --}}}
 -- x data sources:{{{
 
-CREATE TABLE lex_datasource (
+CREATE TABLE public.lex_datasource (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3359,7 +3375,7 @@ COMMENT ON COLUMN lex_datasource.username             IS 'User (role) which crea
 --}}}
 -- x standards:{{{
 
-CREATE TABLE lex_standard (
+CREATE TABLE public.lex_standard (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3398,7 +3414,7 @@ COMMENT ON COLUMN lex_standard.username               IS 'User (role) which crea
 
 -- x mag_declination:{{{ TODO to be replaced by C program translated from Fortran (or by Fortran original program, which computes mag deviation?  Or, more prudently, store data *actually used* on operations, and if undefined, fetch the results of the function => TODO to be implemented.
 
-CREATE TABLE mag_declination (
+CREATE TABLE public.mag_declination (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3421,7 +3437,7 @@ COMMENT ON COLUMN mag_declination.username            IS 'User (role) which crea
 --}}}
 -- x topo_points:{{{
 
-CREATE TABLE topo_points (
+CREATE TABLE public.topo_points (
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3458,7 +3474,7 @@ COMMENT ON COLUMN topo_points.username                IS 'User (role) which crea
 --}}}
 -- x survey_lines:{{{
 
-CREATE TABLE survey_lines (
+CREATE TABLE public.survey_lines (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3478,7 +3494,7 @@ COMMENT ON TABLE survey_lines                         IS 'Survey lines, for geop
 --}}}
 -- x units:{{{
 
-CREATE TABLE units (
+CREATE TABLE public.units (
     unit_name text,
     unit_factor real
 );
@@ -3489,7 +3505,7 @@ COMMENT ON COLUMN units.unit_factor                   IS 'Multiplication factor'
 --}}}
 -- x baselines: {{{
 
-CREATE TABLE baselines (
+CREATE TABLE public.baselines (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3525,7 +3541,7 @@ COMMENT ON COLUMN baselines.username                  IS 'User (role) which crea
 --}}}
 -- x sections_definition:{{{
 
-CREATE TABLE sections_definition (
+CREATE TABLE public.sections_definition (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3538,7 +3554,7 @@ CREATE TABLE sections_definition (
     ll_corner_y    numeric(10,2),
     ll_corner_z    numeric(10,2),
     azim_ng        numeric(10,2),
-    "interval"     numeric(10,0), --TODO change field name
+    "interval"     numeric(10,0), -- TODO change field name
     num_start      integer DEFAULT 1,
     count          numeric(3,0),
     length         numeric(5,0),
@@ -3565,7 +3581,7 @@ COMMENT ON COLUMN sections_definition.title           IS 'section title, to be d
 --}}}
 -- x sections_array:{{{
 
-CREATE TABLE sections_array (
+CREATE TABLE public.sections_array (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -3589,7 +3605,7 @@ COMMENT ON TABLE sections_array                       IS 'Arrays of cross-sectio
 --}}}
 -- x conversions_oxydes_elements:{{{
 
-CREATE TABLE conversions_oxydes_elements (
+CREATE TABLE public.conversions_oxydes_elements (
     oxide text,
     molecular_weight numeric,
     factor numeric
@@ -3599,7 +3615,7 @@ COMMENT ON TABLE conversions_oxydes_elements          IS 'Molecular weights of s
 --}}}
 -- x index_geo_documentation:{{{
 
-CREATE TABLE index_geo_documentation (
+CREATE TABLE public.index_geo_documentation (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -10103,22 +10119,22 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 --}}}
 
 
+
 -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile, voilà:
 COMMIT;
-*/ -- *** fin de ce qui est fait et commenté 2017_04_02__23_35_37
 
 
--- _______________ENCOURS_______________GEOLLLIBRE v 3
---10100 LE RESTE...{{{
+-- _______________ENCOURS_______________GEOLLLIBRE v 2
+--10100* LE RESTE...{{{
 
 -- e functions:{{{
--- _______________ENCOURS_______________GEOLLLIBRE vv 4 
+-- _______________ENCOURS_______________GEOLLLIBRE vv 3 
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
---\c postgeol postgres
+\c postgeol postgres
 
 CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
-    LANGUAGE plpythonu
+    LANGUAGE plpython
     AS $$
 #{{{
 #{{{
@@ -10195,7 +10211,7 @@ res = plpy.execute(sql_insert)
 return 'OK'
 #}}}
 $$;
-
+\c $USER
 --}}}
 -- o string_to_int:{{{ TODO tiens, curieux: elle n'est pas dans bdexplo: ???
 DROP FUNCTION IF EXISTS string_to_int(text);
@@ -10230,7 +10246,7 @@ LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
 -- o views:
 
 -- une vue retrouvée dans les tables:{{{
---TODO Is this view still valid?  If not, erase.
+-- TODO Is this view still valid?  If not, erase.
 --DROP VIEW IF EXISTS licences_quadrangles;
 --CREATE VIEW licences_quadrangles AS
 --SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
@@ -10542,7 +10558,7 @@ CREATE VIEW collars_program AS SELECT * FROM dh_collars WHERE NOT(completed);
 -- field observations
 -- ? locations {{{
 
-CREATE TABLE locations (
+CREATE TABLE public.locations (
     operation text NOT NULL,
     location text NOT NULL,
     full_name text,
@@ -10576,7 +10592,7 @@ COMMENT ON COLUMN locations.lon_max                   IS 'East latitude, decimal
 --various, utilities:
 -- o quick plot of xy {{{
 DROP TABLE IF EXISTS tmp_xy CASCADE;
-CREATE TABLE tmp_xy (
+CREATE TABLE public.tmp_xy (
     shid text NOT NULL,
     id bigserial NOT NULL,
     srid integer,
@@ -10598,7 +10614,7 @@ FROM tmp_xy;
 --
 -- Name: grid; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 --
-CREATE TABLE grid (
+CREATE TABLE public.grid (
     opid integer
     line text,
     station text,
@@ -10624,7 +10640,7 @@ CREATE VIEW grid_points AS
 --ALTER TABLE public.index_geo_documentation ADD COLUMN opid integer;
 
 --}}}
--- _______________ENCOURS_______________GEOLLLIBRE ^ 6
+-- _______________ENCOURS_______________GEOLLLIBRE ^ 4
 --POUBELLE {{{
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
@@ -10681,7 +10697,7 @@ ALTER TABLE lab_ana_batches_expedition OWNER TO data_admin;
 ALTER TABLE lab_ana_batches_reception_18_corr OWNER TO pierre;
 ALTER TABLE lab_ana_columns_definition OWNER TO data_admin;
 ALTER TABLE lab_ana_results OWNER TO data_admin;
-ALTER FUNCTION public.lab_ana_results_sample_id_default_value_num() OWNER TO pierre; --TODO why pierre?
+ALTER FUNCTION public.lab_ana_results_sample_id_default_value_num() OWNER TO pierre; -- TODO why pierre?
 ALTER TABLE lab_analysis_icp OWNER TO pierre;
 ALTER TABLE lab_ana_qaqc_results OWNER TO data_admin;
 ALTER TABLE qc_sampling OWNER TO data_admin;
@@ -10704,10 +10720,10 @@ ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tien
 --}}}
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
 -- Il convient de les traiter comme il convient, dans bdexplo, où elles restent. En versant leurs données dans la *bonne* structure, celle de postgeol.
--- _______________ENCOURS_______________GEOLLLIBRE 7
+-- _______________ENCOURS_______________GEOLLLIBRE 5
 -- ?? lab_ana_batches_reception_18_corr:{{{ TODO isn't this daube??
 
-CREATE TABLE lab_ana_batches_reception_18_corr (
+CREATE TABLE public.lab_ana_batches_reception_18_corr (
     opid integer REFERENCES operations (opid),
     jobno text,
     generic_txt text,
@@ -10731,7 +10747,7 @@ CREATE TABLE lab_ana_batches_reception_18_corr (
 -- x field_sampling (used to be rock_sampling):{{{
 
 -- TODO table très vide: contenu à verser, plutôt, dans surface_sampling (SI CE N'EST DÉJÀ FAIT!)
-CREATE TABLE field_sampling (  -- Nota bene: field_sampling used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names and notions...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
+CREATE TABLE public.field_sampling (  -- Nota bene: field_sampling used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names and notions...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
     opid           integer
       REFERENCES public.operations(opid)
       ON UPDATE CASCADE
@@ -10750,33 +10766,33 @@ CREATE TABLE field_sampling (  -- Nota bene: field_sampling used to be called ro
 );
 -- {{{
 /* Kept for history only
-COMMENT ON TABLE  public.rock_sampling                IS 'outcrop sampling  (taken with geological hammer)'; --TODO rectifier ça
+COMMENT ON TABLE  public.rock_sampling                IS 'outcrop sampling  (taken with geological hammer)'; -- TODO rectifier ça
 COMMENT ON COLUMN public.rock_sampling.geologist      IS 'geologist name';
 COMMENT ON COLUMN public.rock_sampling.num            IS 'sample name or number';
 COMMENT ON COLUMN public.rock_sampling.x              IS 'X coordinate';
 COMMENT ON COLUMN public.rock_sampling.y              IS 'Y coordinate';
 COMMENT ON COLUMN public.rock_sampling.z              IS 'Z coordinate';
-COMMENT ON COLUMN public.rock_sampling.hammer_index   IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
+COMMENT ON COLUMN public.rock_sampling.hammer_index   IS 'integer related to the hammer_ana table';          -- TODO rectifier ça aussi
 */
-COMMENT ON TABLE  public.field_sampling               IS 'Rock samples taken in the field, on surface: outcrops, floats, etc.'; --TODO rectifier ça
+COMMENT ON TABLE  public.field_sampling               IS 'Rock samples taken in the field, on surface: outcrops, floats, etc.'; -- TODO rectifier ça
 COMMENT ON COLUMN public.field_sampling.geologist     IS 'Geologist name';
 COMMENT ON COLUMN public.field_sampling.sample_id     IS 'Sample identifier: refers to assay results and quality check tables';
 COMMENT ON COLUMN public.field_sampling.x             IS 'X coordinate'; -- TODO add an srid
 COMMENT ON COLUMN public.field_sampling.y             IS 'Y coordinate';
 COMMENT ON COLUMN public.field_sampling.z             IS 'Z coordinate';
-COMMENT ON COLUMN public.field_sampling.hammer_index  IS 'integer related to the hammer_ana table';          --TODO rectifier ça aussi
+COMMENT ON COLUMN public.field_sampling.hammer_index  IS 'integer related to the hammer_ana table';          -- TODO rectifier ça aussi
 -- }}}
 --}}}
 -- x rock_ana:{{{ TODO rename table => no, rather DROP it; lab_ana_results contains results.  If necessary, make a field_sampling_grades table.
 -- TODO table assez vide, tout comme field_sampling: contenu à verser, plutôt, dans lab_ana_results (SI CE N'EST DÉJÀ FAIT!)
--- _______________ENCOURS_______________GEOLLLIBRE 8
+-- _______________ENCOURS_______________GEOLLLIBRE 6
 CREATE TABLE public.field_sampling_ana (  -- Nota bene: field_sampling_ana used to be called rock_ana; actually, it may encompass much more than just rocks.  See remarks above concerning field_sampling table.
     opid                integer REFERENCES operations (opid)
       REFERENCES operations (opid)
       ON UPDATE CASCADE
       ON DELETE CASCADE
       DEFERRABLE INITIALLY DEFERRED,
-    --  hammer_index integer,  --TODO rectifier ça... =>
+    --  hammer_index integer,  -- TODO rectifier ça... =>
     sample_id           text,
     shipment            date,
     ticket_id           text,
@@ -10795,8 +10811,8 @@ COMMENT ON COLUMN public.rock_ana.numauto             IS 'auto increment integer
 --}}}
 -- x gps_wpt: TODO is this daube?{{{ TODO comparer avec field_observations (on dirait que les données y sont; mais vérifier en plottant sur SIG), et faire un bon ménage là-dedans. En profiter pour aller rechercher la bd que j'avais au SGR/REU, et reprendre mes waypoints de l'époque, qui doivent manquer à l'appel (il y en avait d'autres, des persos qui n'étaient pas dans cette BD?). Ainsi que les tracés (tracklogs), té, tank à fer. Tracés qu'il faudrait stocker en BD, aussi, bien sûr. En se calquant sur la structure d'oruxmaps par exemple; ou alors en stockant des gros jsonb ou des gros xml: à voir.
 
-CREATE TABLE gps_wpt (
-    opid integer REFERENCES operations (opid), --TODO ATTENTION, CHAMP RAJOUTÉ
+CREATE TABLE public.gps_wpt (
+    opid integer REFERENCES operations (opid), -- TODO ATTENTION, CHAMP RAJOUTÉ
     gid integer,
     numberofpo integer,
     nameofpoin text,
@@ -10817,9 +10833,9 @@ CREATE TABLE gps_wpt (
 
 --}}}
 -- x dh_collars_lengths{{{
--- Old data, historical, kept out of main tables set: --TODO dump this as tagged contents (json-like, or equivalent) into comments field, rather; later on.
+-- Old data, historical, kept out of main tables set: -- TODO dump this as tagged contents (json-like, or equivalent) into comments field, rather; later on.
 
-CREATE TABLE dh_collars_lengths (
+CREATE TABLE public.dh_collars_lengths (
     opid integer REFERENCES operations (opid),
     id text,
     len_destr numeric(10,2),
@@ -10840,7 +10856,7 @@ COMMENT ON COLUMN dh_collars_lengths.len_bq           IS 'Core BQ length (m)';
 -- x program:{{{ TODO useful?? junk???
 -- Name: program; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
 
-CREATE TABLE program (
+CREATE TABLE public.program (
     opid           integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -10881,8 +10897,8 @@ CREATE TABLE program (
 --}}}
 */ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
 
---TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
---TODO
+-- TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
+-- TODO
 
 -- à la fin, pour transférer les données de bdexplo vers postgeol:
 -- postgeol_transfer_data_from_bdexplo.sh
