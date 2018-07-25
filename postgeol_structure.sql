@@ -2232,6 +2232,31 @@ COMMENT ON COLUMN dh_tech.creation_ts                 IS 'Current date and time 
 COMMENT ON COLUMN dh_tech.username                    IS 'User (role) which created data record';
 
 --}}}
+-- x dh_drill_params {{{
+
+CREATE TABLE public. dh_drill_params  (
+    opid                integer,
+    id                  text,
+    depto               numeric(10,2),
+	drill_speed_m_h		numeric(10,2),
+	rotation_speed_rpm	numeric(10,2),
+	down_thrust_bar		numeric(10,2),
+	torque_bar			numeric(10,2),
+	tool_pressure_bar	numeric(10,2),
+	retaining_pressure_bar	numeric(10,2),	-- TODO trouver le terme anglois adéquat
+	injection_pression_bar	numeric(10,2),
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+--}}}
 -- x dh_struct_measures {{{
 
 CREATE TABLE public.dh_struct_measures (
@@ -2293,9 +2318,13 @@ COMMENT ON COLUMN dh_struct_measures.username         IS 'User (role) which crea
 CREATE TABLE public.dh_photos (
     opid integer,
     id text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
     pho_id text,
     file text,
-    author text,
+	file_size_kb integer,  -- TODO voir si on peut pas faire en html => Yoann
+    md5sum text,
+	author text,
     datasource integer,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
@@ -2303,7 +2332,7 @@ CREATE TABLE public.dh_photos (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
--- TODO il manque BEAUCOUP de choses: profondeurs... Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
+-- TODO il manque BEAUCOUP de choses. Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
 
 --}}}
 -- x dh_samples_submission:{{{
@@ -3197,10 +3226,8 @@ COMMENT ON COLUMN occurrences.creation_ts             IS 'Current date and time 
 COMMENT ON COLUMN occurrences.username                IS 'User (role) which created data record';
 
 --}}}
-
 --}}}
 -- x licences, tenements: {{{
-
 -- x licences:{{{ TODO "licence" or "license"?...
 -- TODO @#redo with polygons instead of quadrangles; make a field containing EWKT
 
@@ -3272,8 +3299,6 @@ COMMENT ON COLUMN licences.creation_ts                IS 'Current date and time 
 COMMENT ON COLUMN licences.username                   IS 'User (role) which created data record';
 
 --}}}
-
-
 --}}}
 -- x mining, grade control:{{{
 
