@@ -6,14 +6,15 @@
 --         10100* le reste...
 
 -- Variables générales:
-
+-- TODO
 
 
 -- _______________ENCOURS_______________GEOLLLIBRE 1
--- TODO LIste:{{{
+-- TODO LISTE:{{{
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
 -- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
+-- o chercher un algorithme de géocodage street address => lat-lon
 -- o check all owners to data_admin
 -- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire, ou plutôt des trucs comme: ("CREATE TABLE test (id bigserial PRIMARY KEY, num integer, data text);")
 -- o mettre des NOT NULL un peu partout
@@ -1193,19 +1194,12 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 
 
-
-
-
-
-
-
-
 --}}}
 -- / * *** 2017_04_02__23_35_37 c'est fait, on commente jusqu'ici et on recommence ensuite:
 BEGIN TRANSACTION;
 -- 1200* TABLES{{{
 -- CANCELLED: {{{
--- TODO: NEXT LINE BUGS; since that variable SCHEMA_DATA is just referred to once, it is being dropped for now:
+-- TODO: NEXT LINE BUGS; since that variable SCHEMA_DATA is just referred to once, it is being dropped, for now:
 -- SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 	-- => oops, it doesn't seem to be working fine: {{{
 	-- --[local] pierre@bdexplo=> 
@@ -1293,9 +1287,9 @@ CREATE TABLE public.operations (
     confidentiality boolean NOT NULL DEFAULT TRUE,
     street_addr     text,
 	srid            text,
-	x				text,
-	y				text,
-	accuracy		numeric,
+	x				numeric,
+	y				numeric,
+	accuracy		integer,
     lat_min         numeric(10,5) NOT NULL,
     lon_min         numeric(10,5) NOT NULL,
     lat_max         numeric(10,5) NOT NULL,
@@ -1312,11 +1306,11 @@ COMMENT ON COLUMN public.operations.full_name                   IS 'Complete ope
 COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
 COMMENT ON COLUMN public.operations.confidentiality             IS 'Confidentiality flag, true or false; default is true';
-COMMENT ON COLUMN public.operations.street_addr                 IS 'Street address, for further computation and georeferenciation';
--- srid
--- x
--- y ; TODO reprendre d'autres tables
--- accuracy IS 'Location by x, y coordinates quality: -1 worst, 3 best';
+COMMENT ON COLUMN public.operations.street_addr                 IS 'Street address in plain text, for further computation and georeferenciation';
+COMMENT ON COLUMN public.operations.srid
+COMMENT ON COLUMN public.operations.x
+COMMENT ON COLUMN public.operations.y
+COMMENT ON COLUMN public.operations.accuracy                    IS 'Location by x, y coordinates quality: -1 worst, 3 best (according to algorithm used, for instance, from street_addr field to inform x, y fields; if changed manually, change accuracy to something better (TODO check used lexicon on historical CRM)';
 COMMENT ON COLUMN public.operations.lat_min                     IS 'South latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_min                     IS 'West longitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lat_max                     IS 'North latitude, decimal degrees, WGS84';
@@ -1336,9 +1330,10 @@ CREATE TABLE :USER.operation_active (		-- TODO at some point, put back some logi
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
-    numauto             bigserial PRIMARY KEY,
+    numauto             bigserial PRIMARY KEY,   -- BOF, on pourrait s'en passer
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
+	unique (opid)
 );
 COMMENT ON TABLE operation_active                               IS 'table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
 COMMENT ON COLUMN operation_active.opid                         IS 'Operation identifier';
@@ -1359,6 +1354,7 @@ CREATE TABLE public.field_observations (
     obs_id              text NOT NULL,
     year                integer NOT NULL,
     date                date NOT NULL,
+    hour                text NOT NULL,
     waypoint_name       text NOT NULL,
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,
@@ -1372,10 +1368,9 @@ CREATE TABLE public.field_observations (
     photos              text NOT NULL,
     geologist           text NOT NULL,
     device              text NOT NULL,
-    icon_descr          text NOT NULL,
     comments            text NOT NULL,
-    "time"              text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux
     timestamp_epoch_ms  bigint NOT NULL,
+    icon_descr          text NOT NULL,
     datasource          integer NOT NULL,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
@@ -1623,7 +1618,7 @@ CREATE TABLE public.geoch_sampling (
     labo_ref            text,
     amc_ref             text,
     recep_date          date,
-    type                text, -- TODO change field name: appears highlighted in vim: must be a reserved word
+    sample_type         text,
     sampl_index         text NOT NULL,
     x                   numeric(15,4),
     y                   numeric(15,4),
@@ -1634,7 +1629,7 @@ CREATE TABLE public.geoch_sampling (
     reg_type            text,
     geomorphology       text,
     rock_type           text,
-    comment             text, -- TODO change field name: appears highlighted in vim: is a reserved word
+    comments            text,
     utm_zone            text,
     geologist           text,
     float_sampl         text,
@@ -1656,14 +1651,14 @@ CREATE TABLE public.geoch_sampling (
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
-COMMENT ON TABLE public.geoch_sampling                          IS 'Geochemistry samples, from soil or stream sediments: location and description data';
+COMMENT ON TABLE  public.geoch_sampling                         IS 'Geochemistry samples, from soil or stream sediments: location and description data';
 COMMENT ON COLUMN public.geoch_sampling.opid                    IS 'Operation identifier';
 COMMENT ON COLUMN public.geoch_sampling.id                      IS 'Identification';
 COMMENT ON COLUMN public.geoch_sampling.lab_id                  IS 'Analysis laboratory';
 COMMENT ON COLUMN public.geoch_sampling.labo_ref                IS 'Analysis laboratory report reference';
 COMMENT ON COLUMN public.geoch_sampling.amc_ref                 IS 'AMC analysis report reference'; -- TODO get AMC mentions out
 COMMENT ON COLUMN public.geoch_sampling.recep_date              IS 'Report reception date by AMC';  -- TODO get AMC mentions out
-COMMENT ON COLUMN public.geoch_sampling.type                    IS 'Analysis type';
+COMMENT ON COLUMN public.geoch_sampling.sample_type             IS 'Analysis type'; -- TODO Hm. Voir.
 COMMENT ON COLUMN public.geoch_sampling.sampl_index             IS 'Auto increment integer';
 COMMENT ON COLUMN public.geoch_sampling.x                       IS 'X coordinate, projected in UTM (m)';
 COMMENT ON COLUMN public.geoch_sampling.y                       IS 'Y coordinate, projected in UTM (m)';
@@ -1674,7 +1669,7 @@ COMMENT ON COLUMN public.geoch_sampling.depth_cm                IS 'Sample depth
 COMMENT ON COLUMN public.geoch_sampling.reg_type                IS 'Type of region';
 COMMENT ON COLUMN public.geoch_sampling.geomorphology           IS 'Some region description';
 COMMENT ON COLUMN public.geoch_sampling.rock_type               IS 'Lithology';
-COMMENT ON COLUMN public.geoch_sampling.comment                 IS 'Some comments';
+COMMENT ON COLUMN public.geoch_sampling.comments                IS 'Some comments';
 COMMENT ON COLUMN public.geoch_sampling.utm_zone                IS 'UTM area';
 COMMENT ON COLUMN public.geoch_sampling.geologist               IS 'geologist';
 COMMENT ON COLUMN public.geoch_sampling.float_sampl             IS 'sample designation (?)';
@@ -2097,8 +2092,8 @@ CREATE TABLE public.dh_litho (
     depfrom             numeric(10,2),
     depto               numeric(10,2),
     description         text,
-    description1        text,	-- TODO get rid
-    description2        text,	-- TODO get rid
+    description1        text,	-- TODO get rid after concatenation; or not...
+    description2        text,	-- TODO get rid after concatenation; or not...
     code1               text,
     code2               text,
     code3               text,
@@ -2119,7 +2114,7 @@ CREATE TABLE public.dh_litho (
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
--- TODO mettre unique (opid, id, depto)
+     UNIQUE (opid, id, depto)
 );
 COMMENT ON TABLE dh_litho                             IS 'Drill holes or trenches geological descriptions';
 COMMENT ON COLUMN dh_litho.opid                       IS 'Operation identifier';
@@ -10649,7 +10644,6 @@ CREATE TABLE public.grid (
     srid integer,
     numauto bigserial PRIMARY KEY,
 );
-
 
 CREATE VIEW grid_points AS
   SELECT *, GeomFromewkt( 'SRID='|| srid ||
