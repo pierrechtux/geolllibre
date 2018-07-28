@@ -24,7 +24,7 @@
 --       - le ou les rôles "utilisateur admin"
 --       - le nom de la base à créer, si différent de $POSTGEOL
 -- Quelque chose dans le genre:
---    psql -v normal_user="pierre, gaston" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
+--    psql -v normal_user="chantal, gaston" -v data_admin="pierre, marie" -v db_admin = "pierre" -v postgeol_newdb_name="test_postgeol" -f postgeol_structure.sql
 --    :normal_user
 
 -- fait:{{{
