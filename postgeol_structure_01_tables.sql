@@ -182,10 +182,10 @@ BEGIN TRANSACTION;
 
 CREATE TABLE public.operations (
     opid            bigserial PRIMARY KEY NOT NULL,
-    operation       text NOT NULL,
-    full_name       text NOT NULL,
-    operator        text NOT NULL,
     year            integer,                        -- NOT NULL, -- => NULL autorisé, tout bien pesé
+    name_short      text NOT NULL,  -- TODO attention, field previously named differently: operation
+    name_full       text NOT NULL,  -- TODO attention, field previously named differently: full_name
+    operator        text NOT NULL,
     confidentiality boolean NOT NULL DEFAULT TRUE,
     street_address  text,
     srid            text,
@@ -204,8 +204,8 @@ CREATE TABLE public.operations (
 );
 COMMENT ON TABLE public.operations                              IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
 COMMENT ON COLUMN public.operations.opid                        IS 'Operation identifier, automatic sequence; referred by all tables, since all data contained belongs to an operation'; -- TODO ideally, to avoid any collisions, a centralised operations reference should be put in place, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.
-COMMENT ON COLUMN public.operations.operation                   IS 'Operation code';
-COMMENT ON COLUMN public.operations.full_name                   IS 'Complete operation name';
+COMMENT ON COLUMN public.operations.name_short                  IS 'Operation short name, aka code';
+COMMENT ON COLUMN public.operations.name_full                   IS 'Complete operation name';
 COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
 COMMENT ON COLUMN public.operations.confidentiality             IS 'Confidentiality flag, true or false; default is true';
