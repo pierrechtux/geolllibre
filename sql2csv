@@ -1,5 +1,5 @@
 #!/bin/sh
-# Pierre Chevalier
+# (c) Pierre Chevalier
 # Ce script fait un fichier csv à partir de la bd postgresql GLL_BD_NAME dans l'hôte GLL_BD_HOST, avec la requête en entrée
 # This script creates a csv file from the postgresql database GLL_BD_NAME served by GLL_BD_HOST host, with the query specified as a double-quoted string input
 #$1: requete

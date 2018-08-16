@@ -11,10 +11,17 @@
 
 
 -- TODO LISTE:{{{
+-- o faire un schéma pour les données; voir comment paramétrer ça: variable d'environnement? Option dans gll_preferences? Nom arbitraire ("data") gravé dans le marbre?
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
 -- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
--- o chercher un algorithme de géocodage street address => lat-lon  ==> BAN
+-- o chercher un algorithme de géocodage street address => lat-lon  ==> BAN => implémenter sous forme:
+--     o de traitement par lots:
+--         o export en .csv des données pour lesquelles on veut un géocodage
+--         o appel de l'API
+--         o recueil des données traitées
+--         o jointure et requête de mise à jour de la table originelle (ou information dans une autre table)
+--     o de traitement par enregistrement (sur trigger de modification ou d'ajout, par exemple): appel à l'API directement depuis un script, et mise à jour au vol de l'enregistrement (ou information dans une autre table)
 -- o check all owners to data_admin
 -- o ajouter des CONSTRAINT PRIMARY KEY où nécessaire, ou plutôt des trucs comme: ("CREATE TABLE test (id bigserial PRIMARY KEY, num integer, data text);")
 -- o mettre des NOT NULL un peu partout
@@ -114,6 +121,8 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 --}}}
 BEGIN TRANSACTION;
 -- 1200* TABLES{{{
+--SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
+--SET search_path = SCHEMA_DATA, pg_catalog;
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
@@ -182,7 +191,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE public.operations (
     opid            bigserial PRIMARY KEY NOT NULL,
-    year            integer,                        -- NOT NULL, -- => NULL autorisé, tout bien pesé
+    year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
     name_short      text NOT NULL,  -- TODO attention, field previously named differently: operation
     name_full       text NOT NULL,  -- TODO attention, field previously named differently: full_name
     operator        text NOT NULL,
@@ -209,7 +218,7 @@ COMMENT ON COLUMN public.operations.name_full                   IS 'Complete ope
 COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
 COMMENT ON COLUMN public.operations.confidentiality             IS 'Confidentiality flag, true or false; default is true';
-COMMENT ON COLUMN public.operations.street_address              IS 'There are several approaches to the operation location.  In environments with road infrastructures, etc.: Street address in plain text, for further computation and georeferenciation';
+COMMENT ON COLUMN public.operations.street_address              IS 'There are several approaches to the operation location.  In environments with road infrastructures, etc.: street address in plain text, for further computation and georeferenciation';
 COMMENT ON COLUMN public.operations.srid                        IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
 COMMENT ON COLUMN public.operations.x                           IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN public.operations.y                           IS 'Y coordinate (Northing), in coordinate system srid';
@@ -218,7 +227,7 @@ COMMENT ON COLUMN public.operations.lat_min                     IS 'South latitu
 COMMENT ON COLUMN public.operations.lon_min                     IS 'West longitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lat_max                     IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_max                     IS 'East latitude, decimal degrees, WGS84';
-COMMENT ON COLUMN public.operations.boundary_geom               IS 'Yet another way to locate the operation: a geometry, most often the boundary surrounding the operation zone.  All these location solutions can be used with a sort of priority order, with queries returning such or such location type, accordingly.  In the long term, however, those fields should be somehow trimmed';
+COMMENT ON COLUMN public.operations.boundary_geom               IS 'Yet another way to locate an operation: a geometry, most often a polygon following the boundary surrounding the operation zone.  All these location solutions can be used with a sort of priority order, with spatial queries returning such or such location type, accordingly.  In the long term, however, those fields should be somehow trimmed';
 COMMENT ON COLUMN public.operations.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.operations.username                    IS 'User (role) which created data record';
 --COMMENT ON COLUMN public.operations.numauto                     IS 'Automatic integer';
@@ -259,13 +268,13 @@ CREATE TABLE public.field_observations (
         DEFERRABLE INITIALLY DEFERRED,
     obs_id              text NOT NULL,
     year                integer NOT NULL,
-    time                date NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent
-    hour                text NOT NULL,
+    date                date NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
+    hour                text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
     waypoint_name       text NOT NULL,
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,
     y                   numeric(20,10) NOT NULL,
-    z                   numeric(20,2) NOT NULL,
+    z                   numeric(20, 2) NOT NULL,
     description         text NOT NULL,
     code_litho          text NOT NULL,
     code_unit           text NOT NULL,
@@ -274,9 +283,9 @@ CREATE TABLE public.field_observations (
     photos              text NOT NULL,
     geologist           text NOT NULL,
     device              text NOT NULL,
+    icon_descr          text NOT NULL,  -- Eventually get rid of this quite useless field.
     comments            text NOT NULL,
     timestamp_epoch_ms  bigint NOT NULL,
-    icon_descr          text NOT NULL,
     datasource          integer NOT NULL,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
@@ -287,7 +296,7 @@ COMMENT ON TABLE field_observations                             IS 'Field observ
 COMMENT ON COLUMN field_observations.opid                       IS 'Operation identifier';
 COMMENT ON COLUMN field_observations.obs_id                     IS 'Observation identifier: usually composed of: (acronym of person)_(year)_(incremental integer)';
 COMMENT ON COLUMN field_observations.year                       IS 'Year when observation is done (TODO DROP COLUMN redundant with date field)';
-COMMENT ON COLUMN field_observations."time"                     IS 'Observation date';
+COMMENT ON COLUMN field_observations.date                       IS 'Observation date';
 COMMENT ON COLUMN field_observations.waypoint_name              IS 'If relevant, waypoint name from GPS device';
 COMMENT ON COLUMN field_observations.srid                       IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
 COMMENT ON COLUMN field_observations.x                          IS 'X coordinate (Easting),  in coordinate system srid';
@@ -557,7 +566,7 @@ CREATE TABLE public.geoch_sampling (
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
-COMMENT ON TABLE  public.geoch_sampling IS 'Geochemistry samples, from soil or stream sediments: location and description data';
+COMMENT ON TABLE public.geoch_sampling IS 'Geochemistry samples, from soil or stream sediments: location and description data';
 COMMENT ON COLUMN public.geoch_sampling.opid                    IS 'Operation identifier';
 COMMENT ON COLUMN public.geoch_sampling.id                      IS 'Identification';
 COMMENT ON COLUMN public.geoch_sampling.lab_id                  IS 'Analysis laboratory';
@@ -630,7 +639,7 @@ CREATE TABLE public.geoch_sampling_grades (
     au_ppb              numeric
 )
 INHERITS (geoch_sampling);
-COMMENT ON TABLE geoch_sampling_grades IS 'Geochemistry samples with grades; table inherits from geoch_sampling';
+COMMENT ON TABLE public.geoch_sampling_grades IS 'Geochemistry samples with grades; table inherits from geoch_sampling';
 -- COMMENT ON COLUMN geoch_sampling_grades.opid                   IS 'Operation identifier';
 -- COMMENT ON COLUMN geoch_sampling_grades.datasource             IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN geoch_sampling_grades.numauto                 IS 'Automatic integer primary key';
@@ -663,7 +672,7 @@ CREATE TABLE public.gpy_mag_ground (
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
 );
-COMMENT ON TABLE gpy_mag_ground IS 'Geophysics: ground mag';
+COMMENT ON TABLE public.gpy_mag_ground IS 'Geophysics: ground mag';
 COMMENT ON COLUMN gpy_mag_ground.opid                           IS 'Operation identifier';
 COMMENT ON COLUMN gpy_mag_ground.datasource                     IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN gpy_mag_ground.numauto                        IS 'Automatic integer primary key';
@@ -695,10 +704,10 @@ CREATE TABLE public.dh_collars (
     x                   numeric,
     y                   numeric,
     z                   numeric,
-    azim_ng             numeric,    --TODO change for a structure with mag declination stored elsewhere
-    azim_nm             numeric, 
+    azim_ng             numeric,    -- TODO change for a structure with mag declination stored elsewhere
+    azim_nm             numeric,
     dip_hz              numeric,
-    length              numeric,    --TODO SQL keyword??
+    length              numeric,    -- TODO SQL keyword??
     dh_type             text,
     date_start          date,
     date_completed      date,
@@ -878,7 +887,7 @@ CREATE TABLE public.dh_followup (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_followup IS 'Simple table for daily drill holes followup';
+COMMENT ON TABLE public.dh_followup IS 'Simple table for daily drill holes followup';
 COMMENT ON COLUMN dh_followup.opid                              IS 'Operation identifier';
 COMMENT ON COLUMN dh_followup.id                                IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_followup.devia                             IS 'Deviation survey (x: done; xx: done, data entered; xxx: data verified)';
@@ -1023,7 +1032,7 @@ CREATE TABLE public.dh_litho (
         DEFERRABLE INITIALLY DEFERRED
 );
 
-COMMENT ON TABLE dh_litho IS 'Drill holes or trenches geological descriptions';
+COMMENT ON TABLE public.dh_litho IS 'Drill holes or trenches geological descriptions';
 COMMENT ON COLUMN dh_litho.opid                       IS 'Operation identifier';
 COMMENT ON COLUMN dh_litho.id                         IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_litho.depfrom                    IS 'Interval beginning depth';
@@ -1077,7 +1086,7 @@ CREATE TABLE public.dh_core_boxes (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_core_boxes IS 'Core drill holes boxes';
+COMMENT ON TABLE public.dh_core_boxes IS 'Core drill holes boxes';
 COMMENT ON COLUMN dh_core_boxes.opid                  IS 'Operation identifier';
 COMMENT ON COLUMN dh_core_boxes.id                    IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_core_boxes.depfrom               IS 'Core box contents beginning depth';
@@ -1098,7 +1107,7 @@ CREATE TABLE public.dh_tech (
     depto               numeric(10,2),
     drillers_depto      numeric(10,2),
     drilled_len         numeric(10,2),
-    reco_len            numeric(10,2),  --TODO rename to sthg moins abbrvbtd
+    reco_len            numeric(10,2),  -- TODO rename to sthg moins abbrvbtd
     core_loss_cm        integer,
     rqd_len             numeric(10,2),
     diam                text,
@@ -1115,7 +1124,7 @@ CREATE TABLE public.dh_tech (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_tech IS 'Technical drilling data, and geotechnical parameters';
+COMMENT ON TABLE public.dh_tech IS 'Technical drilling data, and geotechnical parameters';
 COMMENT ON COLUMN dh_tech.opid                        IS 'Operation identifier';
 COMMENT ON COLUMN dh_tech.id                          IS 'Drill hole identification';
 COMMENT ON COLUMN dh_tech.depfrom                     IS 'Interval begining depth';
@@ -1145,7 +1154,7 @@ CREATE TABLE public. dh_drill_params  (
     down_thrust_bar         numeric(10,2),
     torque_bar              numeric(10,2),
     tool_pressure_bar       numeric(10,2),
-    retaining_pressure_bar  numeric(10,2),    -- TODO trouver le terme anglois adéquat
+    retaining_pressure_bar  numeric(10,2),    -- TODO trouver le terme anglois adéquat (pression de retenue de l'outil, en bars)
     injection_pression_bar  numeric(10,2),
     datasource              integer,
     numauto                 bigserial PRIMARY KEY,
@@ -1218,16 +1227,16 @@ COMMENT ON COLUMN dh_struct_measures.username         IS 'User (role) which crea
 -- x dh_photos:{{{
 
 CREATE TABLE public.dh_photos (
-    opid integer,
-    id text,
+    opid                integer,
+    id                  text,
     depfrom             numeric(10,2),
     depto               numeric(10,2),
-    pho_id text,
-    file text,
-    file_size_kb integer,  -- TODO voir si on peut pas faire en html => Yoann
-    md5sum text,
-    author text,
-    datasource integer,
+    pho_id              text,
+    file                text,
+    file_size_kb        integer,  -- TODO voir si on peut pas faire en html => Yoann
+    md5sum              text,
+    author              text,
+    datasource          integer,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1367,7 +1376,7 @@ CREATE TABLE public.dh_radiometry (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE  public.dh_radiometry IS 'Down-hole probing: radiometry measurements';
+COMMENT ON TABLE public.dh_radiometry IS 'Down-hole probing: radiometry measurements';
 COMMENT ON COLUMN public.dh_radiometry.opid            IS 'Operation identifier';
 COMMENT ON COLUMN public.dh_radiometry.id              IS 'Full identifier for borehole or trench';
 COMMENT ON COLUMN public.dh_radiometry.depfrom         IS 'Interval beginning depth';
@@ -1404,7 +1413,7 @@ CREATE TABLE public.dh_mineralised_intervals (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_mineralised_intervals IS 'Drill holes mineralised intercepts: stretch values over mineralised intervals, along drill holes or trenches';
+COMMENT ON TABLE public.dh_mineralised_intervals IS 'Drill holes mineralised intercepts: stretch values over mineralised intervals, along drill holes or trenches';
 COMMENT ON COLUMN dh_mineralised_intervals.opid        IS 'Operation identifier';
 COMMENT ON COLUMN dh_mineralised_intervals.id          IS 'Full identifier for borehole or trench';
 COMMENT ON COLUMN dh_mineralised_intervals.depfrom     IS 'Mineralised interval starting depth';
@@ -1443,7 +1452,7 @@ CREATE TABLE public.dh_density (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_density IS 'Density measurements along drill holes or trenches';
+COMMENT ON TABLE public.dh_density IS 'Density measurements along drill holes or trenches';
 COMMENT ON COLUMN dh_density.opid                     IS 'Operation identifier';
 COMMENT ON COLUMN dh_density.id                       IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_density.depfrom                  IS 'Interval beginning depth: if not empty, density measured along an interval; otherwise, density measured on a point';
@@ -1482,7 +1491,7 @@ CREATE TABLE public.dh_thinsections (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_thinsections IS 'Thin sections for petrological studies';
+COMMENT ON TABLE public.dh_thinsections IS 'Thin sections for petrological studies';
 COMMENT ON COLUMN dh_thinsections.opid                          IS 'Operation identifier';
 COMMENT ON COLUMN dh_thinsections.id                            IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_thinsections.depto                         IS 'Sample taken for thin section: bottom depth';
@@ -1526,7 +1535,7 @@ CREATE TABLE public.dh_sampling_bottle_roll (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE dh_sampling_bottle_roll IS 'Mineralurgical samples, bottle-roll tests results';
+COMMENT ON TABLE public.dh_sampling_bottle_roll IS 'Mineralurgical samples, bottle-roll tests results';
 COMMENT ON COLUMN dh_sampling_bottle_roll.opid                  IS 'Operation identifier';
 COMMENT ON COLUMN dh_sampling_bottle_roll.id                    IS 'Identifier, refers to dh_collars';
 COMMENT ON COLUMN dh_sampling_bottle_roll.depfrom               IS 'Sample beginning depth';
@@ -1585,7 +1594,7 @@ CREATE TABLE public.lab_ana_batches_expedition (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE lab_ana_batches_expedition IS 'Batches of samples sent for analysis';
+COMMENT ON TABLE public.lab_ana_batches_expedition IS 'Batches of samples sent for analysis';
 COMMENT ON COLUMN lab_ana_batches_expedition.opid               IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_batches_expedition.batch_id           IS 'Batch identifier; recommended is 7-digit number, year and sequential number on 3 digits';
 COMMENT ON COLUMN lab_ana_batches_expedition.labname            IS 'Destination assay laboratory name';
@@ -1641,7 +1650,7 @@ CREATE TABLE public.lab_ana_batches_reception (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE lab_ana_batches_reception IS 'Batches of samples results received from laboratory';
+COMMENT ON TABLE public.lab_ana_batches_reception IS 'Batches of samples results received from laboratory';
 COMMENT ON COLUMN lab_ana_batches_reception.opid                     IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_batches_reception.jobno                    IS 'As in files received from laboratory: job number';
 COMMENT ON COLUMN lab_ana_batches_reception.generic_txt              IS 'Generic text, containing information from original results file as is, unformatted';
@@ -1682,7 +1691,7 @@ CREATE TABLE public.lab_ana_columns_definition (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE lab_ana_columns_definition IS 'Definition of columns; obsolete';
+COMMENT ON TABLE public.lab_ana_columns_definition IS 'Definition of columns; obsolete';
 COMMENT ON COLUMN lab_ana_columns_definition.opid               IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_columns_definition.analyte            IS 'Analyte';
 COMMENT ON COLUMN lab_ana_columns_definition.unit               IS 'Unit (PPM, PPB, etc.)';
@@ -1754,7 +1763,7 @@ CREATE TABLE public.lab_ana_results (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE lab_ana_results IS 'Laboratory results table, after laboratory instructions, related to LIMS system';
+COMMENT ON TABLE public.lab_ana_results IS 'Laboratory results table, after laboratory instructions, related to LIMS system';
 COMMENT ON COLUMN lab_ana_results.opid                IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_results.labname             IS 'Analytical laboratory';
 COMMENT ON COLUMN lab_ana_results.jobno               IS 'jcsa.pro_job,           --> Intertek JobNo (VarChar(20))';
@@ -1950,7 +1959,7 @@ CREATE TABLE public.lab_ana_qaqc_results (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE lab_ana_qaqc_results IS 'Quality control assay results, internal to analytical laboratory';
+COMMENT ON TABLE public.lab_ana_qaqc_results IS 'Quality control assay results, internal to analytical laboratory';
 COMMENT ON COLUMN lab_ana_qaqc_results.opid                     IS 'Operation identifier';
 COMMENT ON COLUMN lab_ana_qaqc_results.jobno                    IS 'Job number';
 COMMENT ON COLUMN lab_ana_qaqc_results.generic_txt_col1         IS 'Generic text field, receiving any text from original file, as is';
@@ -1993,7 +2002,7 @@ CREATE TABLE public.qc_sampling (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE qc_sampling IS 'Quality control samples: duplicates, blanks, standards';
+COMMENT ON TABLE public.qc_sampling IS 'Quality control samples: duplicates, blanks, standards';
 COMMENT ON COLUMN qc_sampling.opid                    IS 'Operation identifier';
 COMMENT ON COLUMN qc_sampling.datasource              IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN qc_sampling.numauto                 IS 'Automatic integer primary key';
@@ -2038,7 +2047,7 @@ CREATE TABLE public.qc_standards (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE qc_standards IS 'Quality Control standard samples, most of them are CRM (Certified Reference Materials)';
+COMMENT ON TABLE public.qc_standards IS 'Quality Control standard samples, most of them are CRM (Certified Reference Materials)';
 COMMENT ON COLUMN qc_standards.opid                   IS 'Operation identifier';
 COMMENT ON COLUMN qc_standards.qc_id                  IS 'sample identification';
 COMMENT ON COLUMN qc_standards.labo                   IS 'sample laboratory';
@@ -2079,7 +2088,7 @@ CREATE TABLE public.ancient_workings (
 --         ON DELETE CASCADE
 --         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE ancient_workings IS 'Ancient workings, either historic or recent';
+COMMENT ON TABLE public.ancient_workings IS 'Ancient workings, either historic or recent';
 COMMENT ON COLUMN ancient_workings.gid                IS 'Identifier';
 COMMENT ON COLUMN ancient_workings.description        IS 'Full description';
 COMMENT ON COLUMN ancient_workings.the_geom           IS 'Geometry, usded in GIS';
@@ -2113,7 +2122,7 @@ CREATE TABLE public.occurrences (
     CONSTRAINT chk_status CHECK (status IN ('OCCUR', 'OREB', 'MINE', 'MINED', 'MCO', 'DISTRICT')),  -- Another solution would be to make entries in lex_codes lookup table.  Probably better, more flexible, i18nable; TODO later.
     CONSTRAINT enforce_geotype_geom CHECK (geometrytype(geom) = 'POINT' OR geom IS NULL)            -- Maybe authorize other geometrytypes, like a polygon for a district, another one for an oil field, etc.
 );
-COMMENT ON TABLE occurrences IS 'Occurrences table: targets, showings, deposits, mines.  Compiled from various tables, and updated.';
+COMMENT ON TABLE public.occurrences IS 'Occurrences table: targets, showings, deposits, mines.  Compiled from various tables, and updated.';
 COMMENT ON COLUMN occurrences.opid                    IS 'Operation identifier';
 COMMENT ON COLUMN occurrences.code                    IS 'Occurrence abbreviated code'; -- TODO cleaning: sometimes misused, commodities were put, instead of occurrence code.
 COMMENT ON COLUMN occurrences.zone                    IS 'Geographic zone code';   -- quite useless; TODO to be discarded, was used only once
@@ -2148,7 +2157,7 @@ COMMENT ON COLUMN occurrences.username                IS 'User (role) which crea
 --    comments text,
 --    CONSTRAINT licence_id PRIMARY KEY (id)
 --);
---COMMENT ON TABLE licences IS 'Licences, tenements';
+--COMMENT ON TABLE public.licences IS 'Licences, tenements';
 --COMMENT ON COLUMN licences.opid                     IS 'Operation identifier, see table operations';
 --COMMENT ON COLUMN licences.id                       IS 'Licence identifier, automatic sequence';
 --COMMENT ON COLUMN licences.licence_name             IS 'Name of licence';
@@ -2181,7 +2190,7 @@ CREATE TABLE public.licences (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
-COMMENT ON TABLE licences IS 'Licences, tenements';
+COMMENT ON TABLE public.licences IS 'Licences, tenements';
 COMMENT ON COLUMN licences.opid                       IS 'Operation identifier, see table operations';
 COMMENT ON COLUMN licences.licence_name               IS 'Licence official name, as reported on legal documents';
 COMMENT ON COLUMN licences.operator                   IS 'Operator, owner of licence';
@@ -2228,7 +2237,7 @@ CREATE TABLE public.grade_ctrl (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
-COMMENT ON TABLE grade_ctrl IS 'Grade-control samples during mining exploitation';
+COMMENT ON TABLE public.grade_ctrl IS 'Grade-control samples during mining exploitation';
 COMMENT ON COLUMN grade_ctrl.opid                     IS 'Operation identifier';
 COMMENT ON COLUMN grade_ctrl.id                       IS 'Quarry and block identification in 4 characters';
 COMMENT ON COLUMN grade_ctrl.num                      IS 'sample number';
@@ -2268,7 +2277,7 @@ CREATE TABLE public.lex_codes (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
-COMMENT ON TABLE lex_codes IS 'General look-up table with codes for various tables and coded fields';
+COMMENT ON TABLE public.lex_codes IS 'General look-up table with codes for various tables and coded fields';
 COMMENT ON COLUMN lex_codes.opid                      IS 'Operation identifier';
 COMMENT ON COLUMN lex_codes.datasource                IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN lex_codes.numauto                   IS 'Automatic integer primary key';
@@ -2291,7 +2300,7 @@ CREATE TABLE public.lex_datasource (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
-COMMENT ON TABLE lex_datasource IS 'Lexicon of data sources, keeping track of imported file, for reference';
+COMMENT ON TABLE public.lex_datasource IS 'Lexicon of data sources, keeping track of imported file, for reference';
 COMMENT ON COLUMN lex_datasource.opid                 IS 'Operation identifier';
 COMMENT ON COLUMN lex_datasource.filename             IS 'Data imported: file name with full path, to be kept for permanent reference';
 COMMENT ON COLUMN lex_datasource.comments             IS 'Various comments';
@@ -2322,7 +2331,7 @@ CREATE TABLE public.lex_standard (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
-COMMENT ON TABLE lex_standard IS 'Chemical values of standards samples, gold and multi-element';
+COMMENT ON TABLE public.lex_standard IS 'Chemical values of standards samples, gold and multi-element';
 COMMENT ON COLUMN lex_standard.opid                   IS 'Operation identifier';
 COMMENT ON COLUMN lex_standard.datasource             IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN lex_standard.numauto                IS 'Automatic integer primary key';
@@ -2350,7 +2359,7 @@ CREATE TABLE public.mag_declination (
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
-COMMENT ON TABLE mag_declination                      IS 'Magnetic declination';
+COMMENT ON TABLE public.mag_declination IS 'Magnetic declination';
 COMMENT ON COLUMN mag_declination.opid                IS 'Operation identifier';
 COMMENT ON COLUMN mag_declination.datasource          IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN mag_declination.numauto             IS 'Automatic integer primary key';
@@ -2381,7 +2390,7 @@ CREATE TABLE public.topo_points (
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
-COMMENT ON TABLE topo_points                          IS 'topographical data, points';
+COMMENT ON TABLE public.topo_points IS 'topographical data, points';
 COMMENT ON COLUMN topo_points.opid                    IS 'Operation identifier';
 COMMENT ON COLUMN topo_points.location                IS 'Topographical zone';
 COMMENT ON COLUMN topo_points.num                     IS 'Topographical point number';
@@ -2412,7 +2421,7 @@ CREATE TABLE public.survey_lines (
     srid           numeric,
     numauto        bigserial PRIMARY KEY
 );
-COMMENT ON TABLE survey_lines                         IS 'Survey lines, for geophysics or other types of linear surveys; defined with start and end points.';
+COMMENT ON TABLE public.survey_lines IS 'Survey lines, for geophysics or other types of linear surveys; defined with start and end points.';
 
 --}}}
 -- x units:{{{
@@ -2421,7 +2430,7 @@ CREATE TABLE public.units (
     unit_name text,
     unit_factor real
 );
-COMMENT ON TABLE units                                IS 'Units, with multiplicator factor';
+COMMENT ON TABLE public.units IS 'Units, with multiplicator factor';
 COMMENT ON COLUMN units.unit_name                     IS 'Unit abbreviated name, uppercase';
 COMMENT ON COLUMN units.unit_factor                   IS 'Multiplication factor';
 
