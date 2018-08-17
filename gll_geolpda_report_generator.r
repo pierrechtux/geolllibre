@@ -119,7 +119,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 ;date_start: now - 10
 ;date_end:   now
-;flag_create_tec_files: true
+flag_create_tec_files: true		; default
 
 ; Get routines, preferences, and connect to database, if not already done:
 if [none? dir_geolpda_local] [
@@ -230,7 +230,7 @@ write/lines outputfile to-string [
     overflow:auto; max-height:200px;
     border: 1px solid; margin: 1px; padding: 10px; width:90%;}
    img {
-    border: 1px solid
+    border: 1px solid;
     max-width:  400px;
     max-height: 400px;
    }
@@ -378,12 +378,13 @@ foreach j jours [
 ;							print "YOUPI! UN STÉRÉO!"
 							write/append outputfile rejoin [
 								{<img src="} stereo_image_filename
-								{" align="right" vspace="5" hspace="10" alt="}
+								{" align="right" vspace="5" hspace="10" style="border: none" alt="}
 								stereo_image_filename
 								{"/>}
 								{<br>}
 							]
 						]
+								;{" align="right" vspace="5" hspace="10" alt="} ; this was left by a merge conflict, just a little bit above; left here justincase.
 						; **attention! following line queries the postgresql database; code to be adapted to sqlite, if needed:
 ;						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
 						run_query rejoin ["SELECT obs_id, structure_type, north_ref, geolpda_id, geolpda_poi_id, measure_type, rotation_matrix, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement, valid, comments FROM public.field_observations_struct_measures WHERE obs_id = '" id "' ORDER BY geolpda_poi_id, geolpda_id"]
@@ -391,10 +392,8 @@ foreach j jours [
 						foreach m measures [
 							; o name is already an Observation: s stands for Structure:
 							;prin "-"
-							; TODO it would be better to get measurement data from fields, rather than recompute from rotation_matrix
-							either not (none? m/7) [
-								s: orientation/new first (to-block m/7)	; Bugs if there is no rotation matrix.
-							] [	; no rotation_matrix; make an orientation object based on fields data:
+							; Get measurement data from fields, rather than recompute from rotation_matrix, and make an orientation object based on fields data:
+							either not (none? m/8) [
 								s: orientation
 								s/plane_direction:     m/8
 								s/plane_dip:           m/9
@@ -402,14 +401,24 @@ foreach j jours [
 								s/line_pitch:          m/11
 								s/line_pitch_quadrant: m/12
 								s/line_movement:       m/13
+							] [ ; no plane_direction; is there a rotation matrix?
+								either not (none? m/7) [
+									; there is a rotation matrix: compute an orientation from the matrix
+									s: orientation/new first (to-block m/7)	; Bugs if there is no rotation matrix.
+								] [
+									; No matrix, no direction... Do nothing... TODO clarify this, at some point.
+								]
 							]
+							; Oops: line azimut and dip are not listed in public.field_observations_struct_measures table;
+							; therefore, if a line measurement is to be listed, we must work the orientation from the matrix:
+							if (m/6 = "L") [s: orientation/new first (to-block m/7)]
 							; which type of geometry is measured:
 							parse m/6 [
-								  "PLMS" (ttt: rejoin ["plane+line, movement sure " s/print_plane_line_movement])
-								| "PLM"  (ttt: rejoin ["plane+line, movement "      s/print_plane_line_movement])
-								| "PL"   (ttt: rejoin ["plane+line "                s/print_plane_line         ])
-								| "P"    (ttt: rejoin ["plane "                     s/print_plane              ])
-								| "L"    (ttt: rejoin ["line "                      s/print_line               ])
+								  "PLMS" (ttt: rejoin ["plane + line, movement sure " s/print_plane_line_movement])
+								| "PLM"  (ttt: rejoin ["plane + line, movement "      s/print_plane_line_movement])
+								| "PL"   (ttt: rejoin ["plane + line "                s/print_plane_line         ])
+								| "P"    (ttt: rejoin ["plane "                       s/print_plane              ])
+								| "L"    (ttt: rejoin ["line "                        s/print_line               ])
 							]
 							write/lines/append outputfile  rejoin [ttt "<br>"]
 						]

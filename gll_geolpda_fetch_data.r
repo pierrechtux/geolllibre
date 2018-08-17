@@ -79,8 +79,8 @@ max_timestamp_epoch_ms: get_postgeol_max_timestamp_epoch_ms
 
 if flag_ERROR [ print "Error, quitting." quit ]
 print "Connect geolpda android device, copy to local directory:" ;{{{ } } }
-; NO => Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
 COMMENT: [
+; NO => Old way, using USB mass storage; deprecated on modern Android devices (sigh...) => commented out: {{{
 ;; DOUBLE commented out, for readability:
 ;; default directories are stored in .gll_preferences
 ;
@@ -95,7 +95,7 @@ COMMENT: [
 ;unless DEBUG [ dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local         ]
 ;
 ;print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
-] ;}}}
+;}}}
 ; NO => Other way, using MTP protocol, which seems the only way to access modern (as of 2016_08_27__16_16_47) Android devices (sigh again...): {{{ } } }
 ; 
 ;; default directories are stored in .gll_preferences
@@ -121,6 +121,7 @@ COMMENT: [
 ;	print ["Android device already mounted." newline]
 ;]
 ;;}}}
+] 
 ; And yet another way, using adb, which proves to be much faster and more reliable than MTP to mount an android machine:{{{ } } }
  
 ; default directories are stored in .gll_preferences
@@ -131,7 +132,8 @@ either (tt = "") [
 	ask "Connect Android device for ADB access by a USB cable and make sure android screen is unlocked." newline "Press Enter when ready."
 	;alert "Mount android device: connect android device containing geolpda; then press Enter when device properly connected"
 	dir: copy to-string dir_mount_geolpda_android
-	replace dir "/Phone/geolpda/" ""
+	replace dir "/Phone/geolpda/" ""  ; c'est pas bon pour le adbfs, apparemment
+	replace dir "/sdcard/geolpda/" ""
 	call_wait_output_error rejoin ["adbfs " dir]
 	; wait a couple seconds:
 	wait 2
