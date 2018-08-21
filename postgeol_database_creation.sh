@@ -38,20 +38,22 @@
 #]
 #;}}}
 
-# Make a new empty database, with postgis extension.
-# Also, create a schema with the current user's name.
+echo "Make a new empty database, with postgis extension."
+echo "Also, create a schema with the current user's name."
 
-# The database to be created comes from environment variable $POSTGEOL:        TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
+echo "The database to be created comes from environment variable \$POSTGEOL, which is now '$POSTGEOL'."
 newdb=$POSTGEOL
+# TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
 
-# Drop database $POSTGEOL, if it already exists:                               TODO prompt for a confirmation
+echo "Drop database $POSTGEOL, if it already exists:"
+# TODO prompt for a confirmation
 dropdb $newdb
 
-# Database creation:
+echo "Database creation:"
 createdb $newdb --o $LOGNAME
 
-# Implement extensions and languages:
-psql -U postgres -d $newdb --single-transaction -c "
+echo "Implement extensions and languages:"
+psql -X -U postgres -d $newdb --single-transaction -c "
  CREATE EXTENSION postgis;  
  CREATE EXTENSION postgis_topology;
  GRANT ALL ON geometry_columns to $LOGNAME;
@@ -60,14 +62,12 @@ psql -U postgres -d $newdb --single-transaction -c "
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
  CREATE SCHEMA $LOGNAME; 
  GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
-exit 0 #################################### DEBUG ####
 
- COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-# Create the database structure:
+echo "Create the database structure:"
 echo "Creation of postgeol structure in database named: " $newdb
+exit 0 #################################### DEBUG ####
 psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "SET\|COMMENT"
 
 # create the queries set:
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
- 
+
