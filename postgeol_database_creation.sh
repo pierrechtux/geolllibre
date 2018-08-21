@@ -38,18 +38,36 @@
 #]
 #;}}}
 
-# Make a new empty database, with the postgis extension.
+# Make a new empty database, with postgis extension.
 # Also, create a schema with the current user's name.
-newdb="postgeol"
-dropdb $newdb
-createdb $newdb --o $LOGNAME
-psql -U postgres -d $newdb --single-transaction -c "CREATE EXTENSION postgis;  CREATE EXTENSION postgis_topology;  GRANT ALL ON geometry_columns to $LOGNAME;  GRANT SELECT ON spatial_ref_sys to $LOGNAME;  CREATE LANGUAGE plpythonu;  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;  COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';  CREATE SCHEMA $LOGNAME; GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
 
-newdb="postgeol" #VIRER CETTE LIGNE APRÈS TESTS
-# create the database structure:
+# The database to be created comes from environment variable $POSTGEOL:        TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
+newdb=$POSTGEOL
+
+# Drop database $POSTGEOL, if it already exists:                               TODO prompt for a confirmation
+dropdb $newdb
+
+# Database creation:
+createdb $newdb --o $LOGNAME
+
+# Implement extensions and languages:
+psql -U postgres -d $newdb --single-transaction -c "
+ CREATE EXTENSION postgis;  
+ CREATE EXTENSION postgis_topology;
+ GRANT ALL ON geometry_columns to $LOGNAME;
+ GRANT SELECT ON spatial_ref_sys to $LOGNAME;
+ CREATE LANGUAGE plpythonu;
+ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+ CREATE SCHEMA $LOGNAME; 
+ GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
+exit 0 #################################### DEBUG ####
+
+ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+# Create the database structure:
 echo "Creation of postgeol structure in database named: " $newdb
-psql -d $newdb -f ~/geolllibre/postgeol_structure.sql | grep -v "SET\|COMMENT"
+psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "SET\|COMMENT"
 
 # create the queries set:
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
-
+ 
