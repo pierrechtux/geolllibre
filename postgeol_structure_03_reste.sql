@@ -1,9 +1,7 @@
--- _______________ENCOURS_______________GEOLLLIBRE v 2
---10100* LE RESTE...{{{
-
-
-
 /*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
+-- _______________ENCOURS_______________GEOLLLIBRE v 2
+--10100* LE RESTE...
+
 -- o views:
 
 -- une vue retrouvée dans les tables:{{{
@@ -399,7 +397,7 @@ CREATE VIEW grid_points AS
 --PAUMÉ:
 --ALTER TABLE public.index_geo_documentation ADD COLUMN opid integer;
 
---}}}
+--
 -- _______________ENCOURS_______________GEOLLLIBRE ^ 4
 --POUBELLE {{{
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
@@ -655,11 +653,11 @@ CREATE TABLE public.program (
 
 -- }}}
 --}}}
-*/ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
 
 -- TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
 -- TODO
 
 -- à la fin, pour transférer les données de bdexplo vers postgeol:
 -- postgeol_transfer_data_from_bdexplo.sh
+*/ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
 

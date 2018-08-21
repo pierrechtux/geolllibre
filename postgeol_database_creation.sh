@@ -65,9 +65,15 @@ psql -X -U postgres -d $newdb --single-transaction -c "
 
 echo "Create the database structure:"
 echo "Creation of postgeol structure in database named: " $newdb
-exit 0 #################################### DEBUG ####
 psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "SET\|COMMENT"
 
+echo "Create functions (to be run as superuser):"
+psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
+
+exit 0 #################################### DEBUG ####
+
 # create the queries set:
+
+
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
 

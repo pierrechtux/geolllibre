@@ -269,7 +269,7 @@ CREATE TABLE public.field_observations (
     obs_id              text NOT NULL,
     year                integer NOT NULL,
     date                date NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
-    hour                text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
+    time                text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
     waypoint_name       text NOT NULL,
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,

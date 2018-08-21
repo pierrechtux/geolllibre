@@ -1,11 +1,8 @@
--- _______________ENCOURS_______________GEOLLLIBRE v 2
---10100* LE RESTE...
-
 -- e functions:{{{
 -- _______________ENCOURS_______________GEOLLLIBRE vv 3 
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
-\c postgeol postgres
+-- \c postgeol postgres
 
 CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
     LANGUAGE plpython
@@ -85,7 +82,7 @@ res = plpy.execute(sql_insert)
 return 'OK'
 #}}}
 $$;
-\c $USER
+--\c $USER
 --}}}
 -- o string_to_int:{{{ TODO tiens, curieux: elle n'est pas dans bdexplo: ???
 DROP FUNCTION IF EXISTS string_to_int(text);
@@ -114,6 +111,4 @@ LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
 --}}}
 
 --}}}
-
-
 
