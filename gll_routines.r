@@ -2533,7 +2533,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 	print "Synchronization process..."
 	ls_gpx_telephone: copy []
 	foreach f read (dirize dir_mount_oruxmaps_android/tracklogs) [ if find f "gpx" [ append ls_gpx_telephone f] ]
-	ls_gpx_local: read (dirize dir_oruxmaps_local/tracklogs)
+	ls_gpx_local: read (dirize dir_oruxmaps_local/tracklogs) ; ATTENTION! il y avait la ligne suivante: 	ls_gpx_local: read (dirize dir_oruxmaps_local)
 	gpx_files_to_be_copied: exclude ls_gpx_telephone ls_gpx_local
 	common_gpx_files:     intersect ls_gpx_telephone ls_gpx_local
 	foreach f common_gpx_files [
