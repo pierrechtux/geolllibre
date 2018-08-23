@@ -1,4 +1,5 @@
 -- functions:
+BEGIN TRANSACTION;
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 
@@ -116,4 +117,5 @@ $$
 ;
 
 --#}}}
+COMMIT;
 --
