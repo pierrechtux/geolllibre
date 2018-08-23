@@ -1,11 +1,9 @@
--- _______________ENCOURS_______________GEOLLLIBRE 1
--- LIGNES:     0* en-tête, licence, rien et TODOs
---            80* des trucs en en-tête du dump
---           100* liste objets de bdexplo, ordonnée
---          1100* création base, schémas
--- ==>      1200* création tables  <==
---         10100* le reste...
-
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
 
 -- TODO LISTE:{{{
 -- o faire un schéma pour les données; voir comment paramétrer ça: variable d'environnement? Option dans gll_preferences? Nom arbitraire ("data") gravé dans le marbre? Des schémas par ensemble logique de données (drilling, field, geophy, geotech...)
@@ -39,8 +37,6 @@
 
 --}}}
 -- }}}
-
--- DEBUG: ATTENTION AUX /* */  =>  /\/\*\|\*\/
 
 --{{{ En-tête, copyright
 --	Title:   "Structure of POSTGEOL database: PostgreSQL database for GEOLogical data"
@@ -77,17 +73,6 @@
 
 
 --}}}
---  0080* Ceci était en tête du dump:{{{
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-
---}}}
---   1100* DÉBUT: CRÉATION BASE, SCHÉMAS:{{{
 
 -- Create schemas:{{{
 -- CREATE SCHEMA data;
@@ -114,10 +99,7 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 --}}}
 
-
-
---}}}
--- 1200* TABLES{{{
+-- Create tables:{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
 --SET search_path = '$user', 'public';
