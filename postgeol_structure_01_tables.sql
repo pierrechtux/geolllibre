@@ -117,7 +117,7 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 
 --}}}
-BEGIN TRANSACTION;
+-- BEGIN TRANSACTION;
 -- 1200* TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
@@ -1793,40 +1793,6 @@ COMMENT ON COLUMN lab_ana_results.username            IS 'User (role) which crea
     -- commentaires tout en préservant l'information, et permettant un filtrage
     -- efficace.
 
---#lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
-
-CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
-LANGUAGE 'plpgsql'
-AS $$
-BEGIN
---UPDATE public.lab_ana_results SET sample_id = lab_sampleid WHERE (sample_id IS NULL OR sample_id = '') AND (lab_sampleid IS NOT NULL OR lab_sampleid <> '');
-UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
-UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
-
-UPDATE public.lab_ana_results SET value_num =
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(
-REPLACE(value,     'IS',           '-999'),
-                  'NSS',           '-999'),
-                  'LNR',          '-9999'),
-                   'NA',            '-99'),
-                    '<',              '-'),
-                    '>',               ''),
-                 'Not Received',  '-9999'),
-                 'Bag Empty',     '-9999'),
-                 'N/L',           '-9999')::numeric WHERE value <> 'NULL' AND value IS NOT NULL AND value_num IS NULL;
-RETURN NULL;
-END;
-$$
-;
-
---#}}}
 
 -- ANCIENNE VERSION, À 8 REPLACE:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
@@ -2578,5 +2544,5 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 
 
 -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile, voilà:
-COMMIT;
+-- COMMIT;
 
