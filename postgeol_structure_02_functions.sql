@@ -1,6 +1,5 @@
--- functions:{{{
+-- functions:
 BEGIN TRANSACTION;
--- _______________ENCOURS_______________GEOLLLIBRE vv 3 
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 
@@ -84,6 +83,39 @@ return 'OK'
 $$;
 --\c $USER
 --}}}
---:w
+--#lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
+
+CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN
+--UPDATE public.lab_ana_results SET sample_id = lab_sampleid WHERE (sample_id IS NULL OR sample_id = '') AND (lab_sampleid IS NOT NULL OR lab_sampleid <> '');
+UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
+UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
+
+UPDATE public.lab_ana_results SET value_num =
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(value,     'IS',           '-999'),
+                  'NSS',           '-999'),
+                  'LNR',          '-9999'),
+                   'NA',            '-99'),
+                    '<',              '-'),
+                    '>',               ''),
+                 'Not Received',  '-9999'),
+                 'Bag Empty',     '-9999'),
+                 'N/L',           '-9999')::numeric WHERE value <> 'NULL' AND value IS NOT NULL AND value_num IS NULL;
+RETURN NULL;
+END;
+$$
+;
+
+--#}}}
 COMMIT;
---}}}
+--
