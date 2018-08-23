@@ -1,17 +1,14 @@
 -- _______________ENCOURS_______________GEOLLLIBRE 1
 -- LIGNES:     0* en-tête, licence, rien et TODOs
---            90* des trucs en en-tête du dump
+--            80* des trucs en en-tête du dump
 --           100* liste objets de bdexplo, ordonnée
 --          1100* création base, schémas
 -- ==>      1200* création tables  <==
 --         10100* le reste...
 
--- Variables générales:
--- TODO
-
 
 -- TODO LISTE:{{{
--- o faire un schéma pour les données; voir comment paramétrer ça: variable d'environnement? Option dans gll_preferences? Nom arbitraire ("data") gravé dans le marbre?
+-- o faire un schéma pour les données; voir comment paramétrer ça: variable d'environnement? Option dans gll_preferences? Nom arbitraire ("data") gravé dans le marbre? Des schémas par ensemble logique de données (drilling, field, geophy, geotech...)
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
 -- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
@@ -78,8 +75,9 @@
 --		}
 
 
+
 --}}}
---  0090* Ceci était en tête du dump:{{{
+--  0080* Ceci était en tête du dump:{{{
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -111,7 +109,7 @@ CREATE SCHEMA tmp_imports;
 COMMENT ON SCHEMA tmp_imports                         IS 'Temporary place for imported files.  Tables imported from .csv files by using the csv2sql utility are going in this schema.  Also refer to .gll_preferences file.';
 
 CREATE SCHEMA backups;
-COMMENT ON SCHEMA backups                             IS 'Just in case, a convenient place to put backups when potentially dangerous changes are to be made.';
+COMMENT ON SCHEMA backups                             IS 'Just in case, a convenient place to put table backups when potentially dangerous changes are to be made.';
 
 
 --}}}
@@ -2580,5 +2578,5 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 
 
 -- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile, voilà:
--- COMMIT;
+COMMIT;
 
