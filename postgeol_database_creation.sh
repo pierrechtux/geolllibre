@@ -1,11 +1,9 @@
 #!/bin/bash
-#!/usr/bin/rebol -cs
-#rebol [ ;{{{ } } }
 #	Title:   "Creation of postgeol database: postgresql database for geological data"
 #	Name:    postgeol_database_creation.sh
 #            (used to be: bdexplo_creation.r  => when it was a mining exploration database)
 #	Version: 0.0.1
-#	Date:    14-Apr-2016/14:42:35+2:00
+#	Date:    22-Aug-2018/22:29:08+2:00
 #	Author:  "Pierre Chevalier"
 #	License: {
 #		This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
@@ -36,7 +34,9 @@
 #		    See LICENSE file.
 #		}
 #]
-#;}}}
+
+#-- General variables:
+#-- TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
 
 echo "Make a new empty database, with postgis extension."
 echo "Also, create a schema with the current user's name."
@@ -54,7 +54,7 @@ createdb $newdb --o $LOGNAME
 
 echo "Implement extensions and languages:"
 psql -X -U postgres -d $newdb --single-transaction -c "
- CREATE EXTENSION postgis;  
+ CREATE EXTENSION postgis;
  CREATE EXTENSION postgis_topology;
  GRANT ALL ON geometry_columns to $LOGNAME;
  GRANT SELECT ON spatial_ref_sys to $LOGNAME;
@@ -63,16 +63,16 @@ psql -X -U postgres -d $newdb --single-transaction -c "
  CREATE SCHEMA $LOGNAME; 
  GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
 
-echo "Create the database structure:"
 echo "Creation of postgeol structure in database named: " $newdb
-psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "SET\|COMMENT"
+echo " 1) tables:"
+psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "^SET$\|^COMMENT$"
 
-echo "Create functions (to be run as superuser):"
+echo " 2) functions (to be run as postgres):"
 psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
 
-exit 0 #################################### DEBUG ####
-
+echo " 3) views:"
 # create the queries set:
+exit 0 #################################### DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
 
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base

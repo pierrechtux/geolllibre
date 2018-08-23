@@ -1,9 +1,5 @@
-/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
--- _______________ENCOURS_______________GEOLLLIBRE v 2
---10100* LE RESTE...
-
+BEGIN TRANSACTION;
 -- o views:
-
 -- une vue retrouvée dans les tables:{{{
 -- TODO Is this view still valid?  If not, erase.
 --DROP VIEW IF EXISTS licences_quadrangles;
@@ -28,6 +24,7 @@ FROM operations ORDER BY operation;
 COMMENT ON VIEW operations_quadrangles                IS 'Rectangles geographically traced around all operations';
 
 --}}}
+/*  DEBUG  *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- o stats_reports views:{{{
 CREATE OR REPLACE VIEW
 --stats_reports.stats_quotidiennes_avancements_sondages

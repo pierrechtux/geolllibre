@@ -1,11 +1,11 @@
--- e functions:{{{
+-- functions:{{{
+BEGIN TRANSACTION;
 -- _______________ENCOURS_______________GEOLLLIBRE vv 3 
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
--- \c postgeol postgres
 
 CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
-    LANGUAGE plpython
+    LANGUAGE plpythonu
     AS $$
 #{{{
 #{{{
@@ -84,31 +84,6 @@ return 'OK'
 $$;
 --\c $USER
 --}}}
--- o string_to_int:{{{ TODO tiens, curieux: elle n'est pas dans bdexplo: ???
-DROP FUNCTION IF EXISTS string_to_int(text);
-CREATE OR REPLACE FUNCTION string_to_int(t text) RETURNS bigint AS
-$$
---Fournit un entier à partir d'une chaîne; intérêt pour éviter d'avoir des champs serial, pour les tables à carter avec postgis.
---Returns an integer from a string; avoids the requirement for serial fields, for tables to be mapped using postgis.
-DECLARE
- int_out bigint = 0;
- ch char(1);
- tt text;
- ttt text = '';
- i integer = 0;
-BEGIN
- WHILE i<length(t) LOOP
-  ch:=substring(t from i+1 for 1);
-  tt:=ascii(ch)::text;
-  ttt:=ttt || tt;
-  i:=i+1;
- END LOOP;
- int_out:=ttt::bigint;
- return int_out;
-END;
-$$
-LANGUAGE 'plpgsql' VOLATILE RETURNS NULL ON NULL INPUT SECURITY INVOKER;
+--:w
+COMMIT;
 --}}}
-
---}}}
-
