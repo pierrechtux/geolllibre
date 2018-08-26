@@ -69,9 +69,6 @@ SET client_min_messages = warning;
 --		    Fifth Floor, Boston, MA 02110-1301, USA.
 --		    See LICENSE file.
 --		}
-
-
-
 --}}}
 
 -- Create schemas:{{{
@@ -105,77 +102,21 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
--- x doc_postgeol_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
-----------------------------------------------
-
--- TODO utile de garder ça??
--- CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdexplo_table_categories
---     category       text NOT NULL PRIMARY KEY,
---     description_en text,
---     description_es text,
---     description_fr text,
---     numauto        bigserial NOT NULL,
---     creation_ts    timestamptz DEFAULT now() NOT NULL,
---     username       text DEFAULT current_user
--- );
---COMMENT ON TABLE public.doc_postgeol_table_categories IS ...
--- TODO add comments
-
--- dump de la table:
--- --localhost pierre@bdexplo=>
--- TABLE doc_postgeol_table_categories
--- ;
---   category  |                                 description_fr                                 | numauto
--- ------------+--------------------------------------------------------------------------------+---------
---  OUVRAGES   | Sondages et tranchées; toutes les tables sont préfixées en dh_ pour Drill Hole |       1
---  ANALYSES   | Résultats analytiques, suivi des échantillons                                  |       2
---  QC         | Contrôle analytique, contrôle qualité                                          |       3
---  DATASOURCE | Traçabilité des données                                                        |       4
---  TERRAIN    | Observations de terrain                                                        |       5
---  PRE-EX     | Pré-exploitation                                                               |       6
---  GPY        | Géophysique au sol                                                             |       7
---  SURF       | Prélèvements de surface: prospection, géochimie ruisseau, sol                  |       8
---  GENERAL    | Permis, prospects, indices, données générales                                  |       9
--- (9 lignes)
-
--- la commande de création initiale:
---CREATE TABLE public.doc_bdexplo_table_categories (category VARCHAR PRIMARY KEY, description_fr VARCHAR, numauto SERIAL);
-
---}}}
--- x doc_postgeol_tables_descriptions --{{{
--- TODO même question: utile à garder?
-
--- CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
---     tablename      text PRIMARY KEY,
---     category       text
---         REFERENCES public.doc_postgeol_table_categories(category)
---         ON UPDATE CASCADE
---         ON DELETE CASCADE
---         DEFERRABLE INITIALLY DEFERRED,
---     comment_en     text,
---     comment_fr     text,
---     numauto        bigserial NOT NULL,
---     creation_ts    timestamptz DEFAULT now() NOT NULL,
---     username       text DEFAULT current_user
--- );
--- COMMENT ON TABLE public.doc_postgeol_tables_descriptions        IS 'Description of tables';
--- Hm, should be the same as COMMENT on tables... TODO: make sure it is consistent, check what uses this table, update if necessary, and clean up (get rid of)!
-
--- la commande de création initiale:
---CREATE TABLE public.doc_bdexplo_tables_descriptions (tablename VARCHAR PRIMARY KEY, category VARCHAR, comment_fr VARCHAR, numauto SERIAL);
-
---}}}
 
 -- x operations:{{{
 
 CREATE TABLE public.operations (
     opid            bigserial PRIMARY KEY NOT NULL,
-    year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
     name_short      text NOT NULL,  -- TODO attention, field previously named differently: operation
     name_full       text NOT NULL,  -- TODO attention, field previously named differently: full_name
-    operator        text NOT NULL,
+    year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
     confidentiality boolean NOT NULL DEFAULT TRUE,
-    street_address  text,
+    operator        text NOT NULL,
+    addr1_street    text,
+    addr2_parcell   text,
+    addr3_areacode  text,
+    addr4_zipcode   text,
+	addr5_town      text,
     srid            text,
     x               numeric,
     y               numeric,
@@ -190,19 +131,26 @@ CREATE TABLE public.operations (
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user NOT NULL
 );
+
 COMMENT ON TABLE public.operations                              IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
-COMMENT ON COLUMN public.operations.opid                        IS 'Operation identifier, automatic sequence; referred by all tables, since all data contained belongs to an operation'; -- TODO ideally, to avoid any collisions, a centralised operations reference should be put in place, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.
+COMMENT ON COLUMN public.operations.opid                        IS 'Operation identifier, automatic sequence; referred by all tables, since all data contained belongs to an operation';
+ -- TODO ideally, to avoid any collisions, a centralised operations reference should be put in place, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.  In some cases, an "operation creation" is not something rare, though.
 COMMENT ON COLUMN public.operations.name_short                  IS 'Operation short name, aka code';
 COMMENT ON COLUMN public.operations.name_full                   IS 'Complete operation name';
-COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
 COMMENT ON COLUMN public.operations.confidentiality             IS 'Confidentiality flag, true or false; default is true';
-COMMENT ON COLUMN public.operations.street_address              IS 'There are several approaches to the operation location.  In environments with road infrastructures, etc.: street address in plain text, for further computation and georeferenciation';
+COMMENT ON COLUMN public.operations.operator                    IS 'Operator: mining operator, exploration company, client name';
+
+COMMENT ON COLUMN public.operations.addr1_street                IS 'There are several approaches to the operation location.  In environments with road infrastructures, etc.: location is expressed as street address in plain text, for further computation and georeferenciation';
+COMMENT ON COLUMN public.operations.addr2_parcell               IS 'Parcels numbers, if relevant';
+COMMENT ON COLUMN public.operations.addr3_areacode              IS 'Area code, for instance "32"';
+COMMENT ON COLUMN public.operations.addr4_zipcode               IS 'Zip code, without the area code, for instance "100"';
+COMMENT ON COLUMN public.operations.addr5_town                  IS 'Town name, for instance "Grazimis"';
 COMMENT ON COLUMN public.operations.srid                        IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
 COMMENT ON COLUMN public.operations.x                           IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN public.operations.y                           IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN public.operations.accuracy                    IS 'Location by x, y coordinates quality: -1 worst, 3 best (according to algorithm used, for instance, from street_address field to inform x, y fields; if changed manually, change accuracy to something better (TODO check used lexicon on historical CRM).  Note that this would be an approximation of a punctual operation only';
-COMMENT ON COLUMN public.operations.lat_min                     IS 'South latitude, decimal degrees, WGS84';
+COMMENT ON COLUMN public.operations.lat_min                     IS 'Another approach to location, by latitudes and longitudes min-max. South latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_min                     IS 'West longitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lat_max                     IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_max                     IS 'East latitude, decimal degrees, WGS84';
@@ -212,8 +160,8 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 --COMMENT ON COLUMN public.operations.numauto                     IS 'Automatic integer';
 
 --}}}
--- x operation_active:{{{
 -- _______________ENCOURS_______________GEOLLLIBRE
+-- x operation_active:{{{
 
 
 --SET search_path = current_user $USER, pg_catalog; => in fact, this table should rather be in the user's schema => TODO later
@@ -2289,7 +2237,7 @@ COMMENT ON COLUMN lex_standard.username               IS 'User (role) which crea
 
 -- e miscellaneous:{{{
 
--- x mag_declination:{{{ TODO to be replaced by C program translated from Fortran (or by Fortran original program, which computes mag deviation?  Or, more prudently, store data *actually used* on operations, and if undefined, fetch the results of the function => TODO to be implemented.
+-- x mag_declination:{{{ TODO to be replaced by C program translated from Fortran (igrf-2010.c) (or by Fortran original program (igrf-2010.f), which computes mag deviation?  Or, more prudently, store data *actually used* on operations, and if undefined, fetch the results of the function => TODO to be implemented.
 
 CREATE TABLE public.mag_declination (
     opid           integer
@@ -2518,6 +2466,149 @@ COMMENT ON COLUMN index_geo_documentation.creation_ts IS 'Current date and time 
 COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which created data record';
 
 --}}}
+--}}}
+-- x useless: {{{
+-- x doc_postgeol_table_categories: --{{{ TODO reprendre: catégories thématiques dans lesquelles sont rangées les tables de bdexplo => postgeol
+----------------------------------------------
+
+-- TODO utile de garder ça??
+-- CREATE TABLE public.doc_postgeol_table_categories ( -- used to be named doc_bdexplo_table_categories
+--     category       text NOT NULL PRIMARY KEY,
+--     description_en text,
+--     description_es text,
+--     description_fr text,
+--     numauto        bigserial NOT NULL,
+--     creation_ts    timestamptz DEFAULT now() NOT NULL,
+--     username       text DEFAULT current_user
+-- );
+--COMMENT ON TABLE public.doc_postgeol_table_categories IS ...
+-- TODO add comments
+
+-- dump de la table:
+-- --localhost pierre@bdexplo=>
+-- TABLE doc_postgeol_table_categories
+-- ;
+--   category  |                                 description_fr                                 | numauto
+-- ------------+--------------------------------------------------------------------------------+---------
+--  OUVRAGES   | Sondages et tranchées; toutes les tables sont préfixées en dh_ pour Drill Hole |       1
+--  ANALYSES   | Résultats analytiques, suivi des échantillons                                  |       2
+--  QC         | Contrôle analytique, contrôle qualité                                          |       3
+--  DATASOURCE | Traçabilité des données                                                        |       4
+--  TERRAIN    | Observations de terrain                                                        |       5
+--  PRE-EX     | Pré-exploitation                                                               |       6
+--  GPY        | Géophysique au sol                                                             |       7
+--  SURF       | Prélèvements de surface: prospection, géochimie ruisseau, sol                  |       8
+--  GENERAL    | Permis, prospects, indices, données générales                                  |       9
+-- (9 lignes)
+
+-- la commande de création initiale:
+--CREATE TABLE public.doc_bdexplo_table_categories (category VARCHAR PRIMARY KEY, description_fr VARCHAR, numauto SERIAL);
+
+--}}}
+-- x doc_postgeol_tables_descriptions --{{{
+-- TODO même question: utile à garder?
+
+-- CREATE TABLE public.doc_postgeol_tables_descriptions (  -- used to be named doc_bdexplo_tables_descriptions
+--     tablename      text PRIMARY KEY,
+--     category       text
+--         REFERENCES public.doc_postgeol_table_categories(category)
+--         ON UPDATE CASCADE
+--         ON DELETE CASCADE
+--         DEFERRABLE INITIALLY DEFERRED,
+--     comment_en     text,
+--     comment_fr     text,
+--     numauto        bigserial NOT NULL,
+--     creation_ts    timestamptz DEFAULT now() NOT NULL,
+--     username       text DEFAULT current_user
+-- );
+-- COMMENT ON TABLE public.doc_postgeol_tables_descriptions        IS 'Description of tables';
+-- Hm, should be the same as COMMENT on tables... TODO: make sure it is consistent, check what uses this table, update if necessary, and clean up (get rid of)!
+
+-- la commande de création initiale:
+--CREATE TABLE public.doc_bdexplo_tables_descriptions (tablename VARCHAR PRIMARY KEY, category VARCHAR, comment_fr VARCHAR, numauto SERIAL);
+
+--}}}
+-- ? locations {{{
+/*
+CREATE TABLE public.locations (
+    operation text NOT NULL,
+    location text NOT NULL,
+    full_name text,
+    lat_min numeric(10,5) NOT NULL,
+    lon_min numeric(10,5) NOT NULL,
+    lat_max numeric(10,5),
+    lon_max numeric(10,5)
+);
+COMMENT ON TABLE locations                            IS 'Zones, prospects code, rectangle';
+COMMENT ON COLUMN locations.operation                 IS 'Operation id';
+COMMENT ON COLUMN locations.location                  IS 'Location code name, see collars.location';
+COMMENT ON COLUMN locations.full_name                 IS 'Location full name';
+COMMENT ON COLUMN locations.lat_min                   IS 'South latitude, decimal degrees, WGS84';
+COMMENT ON COLUMN locations.lon_min                   IS 'West longitude, decimal degrees, WGS84';
+COMMENT ON COLUMN locations.lat_max                   IS 'North latitude, decimal degrees, WGS84';
+COMMENT ON COLUMN locations.lon_max                   IS 'East latitude, decimal degrees, WGS84';
+
+--CREATE VIEW locations_rectangles AS SELECT *, GeomFromewkt('SRID=@#latlonwgs84;LINESTRING @#ou_plutôt_rectangle ('
+--|| lon_min || ' ' || lat_max || ', '
+--|| lon_max || ' ' || lat_max || ', '
+--|| lon_max || ' ' || lat_min || ', '
+--|| lon_min || ' ' || lat_min || ', '
+--|| lon_min || ' ' || lat_max || ))
+--FROM locations ORDER BY location;
+*/
+
+--}}}
+
+--}}}
+-- o various, utilities: {{{
+/*
+-- o quick plot of xy {{{
+DROP TABLE IF EXISTS tmp_xy CASCADE;
+CREATE TABLE public.tmp_xy (
+    shid text NOT NULL,
+    id bigserial NOT NULL,
+    srid integer,
+    x numeric(10,2),
+    y numeric(10,2),
+    z numeric(10,2),
+    val numeric(10,2),
+    comment text,
+    CONSTRAINT tmp_xy_id PRIMARY KEY (id)
+    );
+
+DROP VIEW IF EXISTS tmp_xy_points;
+CREATE VIEW tmp_xy_points AS
+SELECT *, GeomFromewkt('SRID='|| srid ||';POINT(' || x || ' ' || y || ' ' || z || ')')
+FROM tmp_xy;
+
+--}}}
+-- grid:{{{
+--
+-- Name: grid; Type: TABLE; Schema: pierre; Owner: pierre; Tablespace:
+--
+CREATE TABLE public.grid (
+    opid integer
+    line text,
+    station text,
+    x numeric,
+    y numeric,
+    srid integer,
+    numauto bigserial PRIMARY KEY,
+);
+
+CREATE VIEW grid_points AS
+  SELECT *, GeomFromewkt( 'SRID='|| srid ||
+                      ';POINT(' ||
+                              x || ' ' ||
+                              y ||
+                           ')'
+                     )
+  FROM grid;
+
+--}}}
+*/
+--PAUMÉ:
+--ALTER TABLE public.index_geo_documentation ADD COLUMN opid integer;
 --}}}
 
 --}}}

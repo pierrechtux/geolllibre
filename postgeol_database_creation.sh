@@ -67,13 +67,19 @@ echo "Creation of postgeol structure in database named: " $newdb
 echo " 1) schemas and tables:"
 psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "^SET$\|^COMMENT$" | grep -v "^CREATE TABLE$" | grep -v "CREATE SCHEMA"
 
-echo " 2) functions (to be run as postgres):"
+echo " 2) functions (this part has to be run as postgresql superuser: postgres):"
 psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
 
 echo " 3) views:"
 # create the queries set:
+newdb=$POSTGEOL  #################################### ENLEVE APRES MISE AU POINT SCRIPT
 psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_03_views.sql
+
 exit 0 #################################### DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
+
+
+# à la fin, pour transférer les données de bdexplo vers postgeol:
+# postgeol_transfer_data_from_bdexplo.sh
 
