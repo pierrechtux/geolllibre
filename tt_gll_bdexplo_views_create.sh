@@ -1,331 +1,70 @@
+echo "
 BEGIN TRANSACTION;
--- o views:
--- une vue retrouvée dans les tables:{{{
--- TODO Is this view still valid?  If not, erase.
---DROP VIEW IF EXISTS licences_quadrangles;
---CREATE VIEW licences_quadrangles AS
---SELECT *, GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','||lon_max||' '||lat_max||','||lon_max||' '||lat_min||','||lon_min||' '||lat_min||','||lon_min||' '||lat_max||'))')
---FROM licences ORDER BY licence_name;
---}}}
+CREATE VIEW field_photos AS SELECT field_photos.* FROM field_photos JOIN operation_active ON field_photos.opid = operation_active.opid;
+CREATE VIEW dh_litho AS SELECT dh_litho.* FROM dh_litho JOIN operation_active ON dh_litho.opid = operation_active.opid;
+CREATE VIEW dh_sampling_grades AS SELECT dh_sampling_grades.* FROM dh_sampling_grades JOIN operation_active ON dh_sampling_grades.opid = operation_active.opid;
+CREATE VIEW shift_reports AS SELECT shift_reports.* FROM shift_reports JOIN operation_active ON shift_reports.opid = operation_active.opid;
+CREATE VIEW baselines AS SELECT baselines.* FROM baselines JOIN operation_active ON baselines.opid = operation_active.opid;
+CREATE VIEW lab_ana_results AS SELECT lab_ana_results.* FROM lab_ana_results JOIN operation_active ON lab_ana_results.opid = operation_active.opid;
+CREATE VIEW dh_density AS SELECT dh_density.* FROM dh_density JOIN operation_active ON dh_density.opid = operation_active.opid;
+CREATE VIEW dh_sampling_bottle_roll AS SELECT dh_sampling_bottle_roll.* FROM dh_sampling_bottle_roll JOIN operation_active ON dh_sampling_bottle_roll.opid = operation_active.opid;
+CREATE VIEW dh_quicklog AS SELECT dh_quicklog.* FROM dh_quicklog JOIN operation_active ON dh_quicklog.opid = operation_active.opid;
+CREATE VIEW dh_followup AS SELECT dh_followup.* FROM dh_followup JOIN operation_active ON dh_followup.opid = operation_active.opid;
+CREATE VIEW dh_thinsections AS SELECT dh_thinsections.* FROM dh_thinsections JOIN operation_active ON dh_thinsections.opid = operation_active.opid;
+CREATE VIEW field_observations AS SELECT field_observations.* FROM field_observations JOIN operation_active ON field_observations.opid = operation_active.opid;
+CREATE VIEW dh_tech AS SELECT dh_tech.* FROM dh_tech JOIN operation_active ON dh_tech.opid = operation_active.opid;
+CREATE VIEW formations_group_lithos AS SELECT formations_group_lithos.* FROM formations_group_lithos JOIN operation_active ON formations_group_lithos.opid = operation_active.opid;
+CREATE VIEW lab_ana_batches_expedition AS SELECT lab_ana_batches_expedition.* FROM lab_ana_batches_expedition JOIN operation_active ON lab_ana_batches_expedition.opid = operation_active.opid;
+CREATE VIEW grade_ctrl AS SELECT grade_ctrl.* FROM grade_ctrl JOIN operation_active ON grade_ctrl.opid = operation_active.opid;
+CREATE VIEW geoch_sampling AS SELECT geoch_sampling.* FROM geoch_sampling JOIN operation_active ON geoch_sampling.opid = operation_active.opid;
+CREATE VIEW gpy_mag_ground AS SELECT gpy_mag_ground.* FROM gpy_mag_ground JOIN operation_active ON gpy_mag_ground.opid = operation_active.opid;
+CREATE VIEW index_geo_documentation AS SELECT index_geo_documentation.* FROM index_geo_documentation JOIN operation_active ON index_geo_documentation.opid = operation_active.opid;
+CREATE VIEW lab_ana_batches_reception AS SELECT lab_ana_batches_reception.* FROM lab_ana_batches_reception JOIN operation_active ON lab_ana_batches_reception.opid = operation_active.opid;
+CREATE VIEW lab_ana_columns_definition AS SELECT lab_ana_columns_definition.* FROM lab_ana_columns_definition JOIN operation_active ON lab_ana_columns_definition.opid = operation_active.opid;
+CREATE VIEW geoch_sampling_grades AS SELECT geoch_sampling_grades.* FROM geoch_sampling_grades JOIN operation_active ON geoch_sampling_grades.opid = operation_active.opid;
+CREATE VIEW lex_codes AS SELECT lex_codes.* FROM lex_codes JOIN operation_active ON lex_codes.opid = operation_active.opid;
+CREATE VIEW lex_datasource AS SELECT lex_datasource.* FROM lex_datasource JOIN operation_active ON lex_datasource.opid = operation_active.opid;
+CREATE VIEW licences AS SELECT licences.* FROM licences JOIN operation_active ON licences.opid = operation_active.opid;
+CREATE VIEW lab_ana_qaqc_results AS SELECT lab_ana_qaqc_results.* FROM lab_ana_qaqc_results JOIN operation_active ON lab_ana_qaqc_results.opid = operation_active.opid;
+CREATE VIEW surface_samples_grades AS SELECT surface_samples_grades.* FROM surface_samples_grades JOIN operation_active ON surface_samples_grades.opid = operation_active.opid;
+CREATE VIEW occurrences_recup_depuis_dump AS SELECT occurrences_recup_depuis_dump.* FROM occurrences_recup_depuis_dump JOIN operation_active ON occurrences_recup_depuis_dump.opid = operation_active.opid;
+CREATE VIEW qc_sampling AS SELECT qc_sampling.* FROM qc_sampling JOIN operation_active ON qc_sampling.opid = operation_active.opid;
+CREATE VIEW field_sampling AS SELECT field_sampling.* FROM field_sampling JOIN operation_active ON field_sampling.opid = operation_active.opid;
+CREATE VIEW geometry_columns_old AS SELECT geometry_columns_old.* FROM geometry_columns_old JOIN operation_active ON geometry_columns_old.opid = operation_active.opid;
+CREATE VIEW spatial_ref_sys_old AS SELECT spatial_ref_sys_old.* FROM spatial_ref_sys_old JOIN operation_active ON spatial_ref_sys_old.opid = operation_active.opid;
+CREATE VIEW survey_lines AS SELECT survey_lines.* FROM survey_lines JOIN operation_active ON survey_lines.opid = operation_active.opid;
+CREATE VIEW dh_struct_measures AS SELECT dh_struct_measures.* FROM dh_struct_measures JOIN operation_active ON dh_struct_measures.opid = operation_active.opid;
+CREATE VIEW field_observations_struct_measures AS SELECT field_observations_struct_measures.* FROM field_observations_struct_measures JOIN operation_active ON field_observations_struct_measures.opid = operation_active.opid;
+CREATE VIEW mag_declination AS SELECT mag_declination.* FROM mag_declination JOIN operation_active ON mag_declination.opid = operation_active.opid;
+CREATE VIEW qc_standards AS SELECT qc_standards.* FROM qc_standards JOIN operation_active ON qc_standards.opid = operation_active.opid;
+CREATE VIEW doc_postgeol_table_categories AS SELECT doc_postgeol_table_categories.* FROM doc_postgeol_table_categories JOIN operation_active ON doc_postgeol_table_categories.opid = operation_active.opid;
+CREATE VIEW occurrences AS SELECT occurrences.* FROM occurrences JOIN operation_active ON occurrences.opid = operation_active.opid;
+CREATE VIEW ancient_workings AS SELECT ancient_workings.* FROM ancient_workings JOIN operation_active ON ancient_workings.opid = operation_active.opid;
+CREATE VIEW topo_points AS SELECT topo_points.* FROM topo_points JOIN operation_active ON topo_points.opid = operation_active.opid;
+CREATE VIEW geoch_ana AS SELECT geoch_ana.* FROM geoch_ana JOIN operation_active ON geoch_ana.opid = operation_active.opid;
+CREATE VIEW lex_standard AS SELECT lex_standard.* FROM lex_standard JOIN operation_active ON lex_standard.opid = operation_active.opid;
+CREATE VIEW dh_core_boxes AS SELECT dh_core_boxes.* FROM dh_core_boxes JOIN operation_active ON dh_core_boxes.opid = operation_active.opid;
+CREATE VIEW dh_radiometry AS SELECT dh_radiometry.* FROM dh_radiometry JOIN operation_active ON dh_radiometry.opid = operation_active.opid;
+CREATE VIEW dh_devia AS SELECT dh_devia.* FROM dh_devia JOIN operation_active ON dh_devia.opid = operation_active.opid;
+CREATE VIEW dh_mineralised_intervals AS SELECT dh_mineralised_intervals.* FROM dh_mineralised_intervals JOIN operation_active ON dh_mineralised_intervals.opid = operation_active.opid;
+CREATE VIEW dh_collars AS SELECT dh_collars.* FROM dh_collars JOIN operation_active ON dh_collars.opid = operation_active.opid;
+CREATE VIEW dh_resistivity AS SELECT dh_resistivity.* FROM dh_resistivity JOIN operation_active ON dh_resistivity.opid = operation_active.opid;
+CREATE VIEW dh_devia_runs_xyz AS SELECT dh_devia_runs_xyz.* FROM dh_devia_runs_xyz JOIN operation_active ON dh_devia_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_core_boxes_runs_xyz AS SELECT dh_core_boxes_runs_xyz.* FROM dh_core_boxes_runs_xyz JOIN operation_active ON dh_core_boxes_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_density_runs_xyz AS SELECT dh_density_runs_xyz.* FROM dh_density_runs_xyz JOIN operation_active ON dh_density_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_litho_runs_xyz AS SELECT dh_litho_runs_xyz.* FROM dh_litho_runs_xyz JOIN operation_active ON dh_litho_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_mineralised_intervals_runs_xyz AS SELECT dh_mineralised_intervals_runs_xyz.* FROM dh_mineralised_intervals_runs_xyz JOIN operation_active ON dh_mineralised_intervals_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_quicklog_runs_xyz AS SELECT dh_quicklog_runs_xyz.* FROM dh_quicklog_runs_xyz JOIN operation_active ON dh_quicklog_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_radiometry_runs_xyz AS SELECT dh_radiometry_runs_xyz.* FROM dh_radiometry_runs_xyz JOIN operation_active ON dh_radiometry_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_resistivity_runs_xyz AS SELECT dh_resistivity_runs_xyz.* FROM dh_resistivity_runs_xyz JOIN operation_active ON dh_resistivity_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_sampling_bottle_roll_runs_xyz AS SELECT dh_sampling_bottle_roll_runs_xyz.* FROM dh_sampling_bottle_roll_runs_xyz JOIN operation_active ON dh_sampling_bottle_roll_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_sampling_grades_runs_xyz AS SELECT dh_sampling_grades_runs_xyz.* FROM dh_sampling_grades_runs_xyz JOIN operation_active ON dh_sampling_grades_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_struct_measures_runs_xyz AS SELECT dh_struct_measures_runs_xyz.* FROM dh_struct_measures_runs_xyz JOIN operation_active ON dh_struct_measures_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_tech_runs_xyz AS SELECT dh_tech_runs_xyz.* FROM dh_tech_runs_xyz JOIN operation_active ON dh_tech_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_thinsections_runs_xyz AS SELECT dh_thinsections_runs_xyz.* FROM dh_thinsections_runs_xyz JOIN operation_active ON dh_thinsections_runs_xyz.opid = operation_active.opid;
+CREATE VIEW field_sampling_ana AS SELECT field_sampling_ana.* FROM field_sampling_ana JOIN operation_active ON field_sampling_ana.opid = operation_active.opid;
+CREATE VIEW mine_plant_daily_production AS SELECT mine_plant_daily_production.* FROM mine_plant_daily_production JOIN operation_active ON mine_plant_daily_production.opid = operation_active.opid;
 
--- o general views:
--- @#TODO vue inutile?? (dh_sampling = ??) => non, semble utile, appelée par d'autres vues checks.*:{{{
---
--- Name: dh_sampling; Type: VIEW; Schema: pierre; Owner: pierre
---
-CREATE VIEW dh_sampling AS
- SELECT dh_sampling_grades.id,
-    dh_sampling_grades.depfrom,
-    dh_sampling_grades.depto,
-    dh_sampling_grades.core_loss_cm,
-    dh_sampling_grades.weight_kg,
-    dh_sampling_grades.sample_type,
-    dh_sampling_grades.sample_id,
-    dh_sampling_grades.comments,
-    dh_sampling_grades.opid,
-    dh_sampling_grades.batch_id,
-    dh_sampling_grades.datasource
-   FROM dh_sampling_grades;
-ALTER TABLE dh_sampling OWNER TO pierre; --TODO enlever tous ces "pierre" pour mettre des rôles 
-
-
--- }}}
--- o operations_quadrangles:{{{
--- DROP VIEW IF EXISTS operations_quadrangles;
-CREATE VIEW operations_quadrangles AS
-SELECT *,
-       GeomFromewkt('SRID=4326;POLYGON('||lon_min||' '||lat_max||','
-                                        ||lon_max||' '||lat_max||','
-                                        ||lon_max||' '||lat_min||','
-                                        ||lon_min||' '||lat_min||','
-                                        ||lon_min||' '||lat_max||')' )
-FROM operations ORDER BY opid;
-
-COMMENT ON VIEW operations_quadrangles                IS 'Rectangles geographically traced around all operations';
-
---}}}
--- o stats_reports views:{{{
-
-CREATE OR REPLACE VIEW
---stats_reports.stats_quotidiennes_avancements_sondages
---avancements_sondages_stats_quotidiennes 
-stats_reports.drilling_daily_progress_stats AS
-SELECT rig, date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT id) AS nb_drill_holes, min(id) AS first_dh, max(id) AS last_dh
-FROM dh_shift_reports GROUP BY rig, date ORDER BY rig, date;
-
-CREATE OR REPLACE VIEW 
---stats_reports.avancements_sondages_stats_mensuelles 
-stats_reports.drilling_monthly_progress_stats AS
-SELECT year, month, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift FROM
---drilling_daily_reports
- dh_shift_reports) AS tmp GROUP BY year,month ORDER BY year, month;
-
---idem, avec location:
-CREATE OR REPLACE VIEW 
---stats_reports.avancements_sondages_stats_mensuelles_par_objectif 
-stats_reports.drilling_daily_reports_per_target AS
-SELECT year, month, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, split_part (
---drill_hole_id
-id, '_', 1) as target FROM
---drilling_daily_reports
- dh_shift_reports) AS tmp GROUP BY year,month, target ORDER BY year, month;
-
-
---stats annuelles
-CREATE OR REPLACE VIEW 
---stats_reports.avancements_sondages_stats_annuelles 
-stats_reports.drilling_yearly_progress_stats AS
-SELECT year, sum(drilled_length_during_shift) as drilled_length_during_year FROM (SELECT extract(year from date) as year, drilled_length_during_shift FROM
---drilling_daily_reports
- dh_shift_reports) AS tmp GROUP BY year ORDER BY year;
-
---idem, avec location:
-CREATE OR REPLACE VIEW 
---stats_reports.avancements_sondages_stats_annuelles_par_objectif
-stats_reports.drilling_yearly_progress_stats_per_target AS
-SELECT year, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, substring(
---drill_hole_id
- id,1,4) as target FROM
---drilling_daily_reports
- dh_shift_reports) AS tmp GROUP BY year, target ORDER BY year;
-
-
-CREATE OR REPLACE VIEW 
---stats_reports.longueur_exploree_par_location 
-stats_reports.drilled_length_per_location AS --@#À AMÉLIORER!!!!
-SELECT completed, location, dh_type, sum(length) AS sum_length
-FROM dh_collars
-GROUP BY
-completed, location, dh_type
-ORDER BY
-completed, location, dh_type;
-
-
---longueur explorée par location et type
-CREATE OR REPLACE VIEW 
---stats_reports.longueur_exploree_par_location_et_type
-stats_reports.length_drilled_per_location_and_type AS
-SELECT location,dh_type,sum(length) FROM dh_collars WHERE completed GROUP BY location,dh_type ORDER BY location,dh_type DESC;
-
-
---longueur explorée par type (en kilomètres):
-CREATE OR REPLACE VIEW 
--- stats_reports.longueur_exploree_par_type_km AS
-stats_reports.length_drilled_per_type_km AS
-SELECT dh_type,sum(length)/1000 as km_explored_length FROM dh_collars GROUP BY dh_type ORDER BY dh_type DESC;
-
-
---}}}
--- o check views:{{{
-
---CREATE OR REPLACE VIEW checks.collars_location_vs_sector AS
---SELECT location, sector FROM dh_collars GROUP BY location,sector ORDER BY sector;
-
---Comparons un coup les profondeurs des tables de passes et des têtes:
---table échantillons:
-
-CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_sampling_depths AS
-SELECT dh_collars.id, length, max_depto_sampl, length - max_depto_sampl AS diff_SHOULD_BE_ZERO FROM dh_collars INNER JOIN (SELECT id, max(depto) AS max_depto_sampl FROM dh_sampling GROUP BY id) AS max_depto ON dh_collars.id=max_depto.id WHERE length - max_depto_sampl<>0 ORDER BY id;
-
-CREATE OR REPLACE VIEW checks.collars_lengths_vs_dh_litho_depths AS
-SELECT dh_collars.id, length, max_depto_litho, length - max_depto_litho AS diff_SHOULD_BE_ZERO FROM dh_collars INNER JOIN (SELECT id,max(depto) AS max_depto_litho FROM dh_litho GROUP BY id) AS max_depto ON dh_collars.id=max_depto.id WHERE length - max_depto_litho<>0 ORDER BY id;
-
-CREATE OR REPLACE VIEW checks.doublons_collars_id AS
-SELECT id AS collars_id_non_uniq, COUNT(id) FROM dh_collars GROUP BY id HAVING COUNT(id)>1;
-
-CREATE OR REPLACE VIEW checks.doublons_dh_sampling_id_depto AS
-SELECT id, depto, COUNT(*) FROM dh_sampling GROUP BY id, depto HAVING COUNT(*) > 1;
-
-CREATE OR REPLACE VIEW checks.doublons_dh_litho_id_depto AS
-SELECT id, depto, COUNT(*) FROM dh_litho GROUP BY id, depto HAVING COUNT(*) > 1;
-
-
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_sampling AS
-SELECT dh_collars.id AS collars_id_without_samples, dh_sampling.id AS samples_id_nulls FROM dh_collars LEFT OUTER JOIN dh_sampling ON dh_collars.id=dh_sampling.id WHERE dh_sampling.id IS NULL ORDER BY dh_collars.id;
-
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_sampling AS
-SELECT distinct dh_sampling_id FROM (SELECT dh_collars.id, dh_sampling.id AS dh_sampling_id FROM dh_collars RIGHT OUTER JOIN dh_sampling ON dh_collars.id=dh_sampling.id WHERE dh_collars.id IS NULL ORDER BY dh_sampling.id) tmp;
-
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_tetes_pas_dans_passes_dh_litho AS
-SELECT dh_collars.id AS collars_id_without_litho, dh_litho.id AS litho_id_nulls FROM dh_collars LEFT OUTER JOIN dh_litho ON dh_collars.id=dh_litho.id WHERE dh_litho.id IS NULL ORDER BY dh_collars.id;
-
-CREATE OR REPLACE VIEW checks.tetes_passes_ouvrages_dans_passes_pas_dans_tetes_dh_litho AS
-SELECT dh_collars.id, dh_litho.id AS litho_id FROM dh_collars RIGHT OUTER JOIN dh_litho ON dh_collars.id=dh_litho.id WHERE dh_collars.id IS NULL ORDER BY dh_litho.id;
-
-
-CREATE OR REPLACE VIEW checks.collars_vs_temp_topo_id_topo_sans_collars AS
-SELECT
---tmp_dh_topo_coordinates
- topo_points.id AS id_topo, dh_collars.id AS id_collars FROM
---tmp_dh_topo_coordinates
- topo_points LEFT OUTER JOIN dh_collars ON
---tmp_dh_topo_coordinates
- topo_points.id = dh_collars.id WHERE dh_collars.id IS NULL;
-
-CREATE OR REPLACE VIEW checks.collars_vs_topo_xyz_en_face_et_differences_importantes AS
-SELECT id_topo, id_collars, topo_x, collars_x, diffx, topo_y, collars_y, diffy, topo_z, collars_z, diffz FROM (SELECT
---tmp_dh_topo_coordinates
-topo_points.id AS id_topo, dh_collars.id AS id_collars,
---tmp_dh_topo_coordinates
- topo_points.x AS topo_x, dh_collars.x AS collars_x,
---tmp_dh_topo_coordinates
-topo_points.y as topo_y, dh_collars.y AS collars_y,
---tmp_dh_topo_coordinates
-topo_points.z AS topo_z, dh_collars.z AS collars_z,
---tmp_dh_topo_coordinates
-topo_points.x-dh_collars.x AS diffx,
---tmp_dh_topo_coordinates
-topo_points.y-dh_collars.y AS diffy,
---tmp_dh_topo_coordinates
-topo_points.z-dh_collars.z AS diffz FROM
---tmp_dh_topo_coordinates
---topo_points
-topo_points JOIN dh_collars ON
---tmp_dh_topo_coordinates
-topo_points.id = dh_collars.id) tmp WHERE ABS(diffx) >= 0.05 OR ABS(diffy) >= 0.05 OR ABS(diffz) >= 0.05;
-
-
-CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes AS
-SELECT nb_sondages_et_attributs, nb_sondages, nb_sondages_et_attributs-nb_sondages AS diff_SHOULD_BE_ZERO  FROM (SELECT count(*) AS nb_sondages_et_attributs FROM (SELECT
---drill_hole_id
-id, planned_length/*, azim_nm, dip*/ FROM
---drilling_daily_reports
-dh_shift_reports GROUP BY
---drill_hole_id
-id, planned_length/*, azim_nm, dip*/) tmp) tmp1, (SELECT count(DISTINCT
---drill_hole_id
-id) AS nb_sondages FROM
---drilling_daily_reports
-dh_shift_reports) tmp2 WHERE nb_sondages_et_attributs-nb_sondages <> 0;
-
-CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes_quels_ouvrages AS
-SELECT
---drill_hole_id
-id, min(planned_length) AS min_planned_length, max(planned_length) AS max_planned_length /*, min(azim_nm) AS min_azim_nm, max(azim_nm) AS max_azim_nm, min(dip) AS min_dip, max(dip) AS max_dip*/ FROM
---drilling_daily_reports
-dh_shift_reports GROUP BY
---drill_hole_id
-id HAVING (count(DISTINCT planned_length)>1 /*OR count(DISTINCT azim_nm)>1 OR count(DISTINCT dip)>1*/);
-
-CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_heures AS
-SELECT date,
---drill_hole_id
-id, time_start, time_end FROM
---drilling_daily_reports
-dh_shift_reports WHERE time_start>time_end;
-
-
-CREATE OR REPLACE VIEW checks.fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars AS
-SELECT
---drill_hole_id
-dh_shift_reports.id AS dh_shift_reports_id, dh_collars.id AS dh_collars_id FROM
---drilling_daily_reports
-dh_shift_reports LEFT JOIN dh_collars ON (
---drilling_daily_reports
---drill_hole_id
-dh_shift_reports.id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY
---drill_hole_id
-dh_shift_reports.id, dh_collars.id;
-
-CREATE OR REPLACE VIEW checks.fichettes_longueurs_incoherentes AS
-SELECT
---drill_hole_id
-id, max_drilled_length, sum_drilled_length_during_shift FROM (SELECT
---drill_hole_id
-id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM
---drilling_daily_reports
-dh_shift_reports GROUP BY
---drill_hole_id
-id ORDER BY
---drill_hole_id
-id) tmp WHERE max_drilled_length <> sum_drilled_length_during_shift ;
-
-CREATE OR REPLACE VIEW checks.fichettes_vs_collars_longueurs_incoherentes AS
-SELECT
---drill_hole_id
-tmp.id, max_drilled_length, length
-FROM
-(SELECT
---drill_hole_id
-id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM
---drilling_daily_reports
-dh_shift_reports GROUP BY
---drill_hole_id
-dh_shift_reports.id ORDER BY
---drill_hole_id
-dh_shift_reports.id) tmp
-JOIN
-dh_collars
-ON
---(tmp.drill_hole_id = dh_collars.id)
-(tmp.id = dh_collars.id)
-WHERE
-max_drilled_length <> length ;
-
-
-CREATE OR REPLACE VIEW checks.fichettes_ouvrages_non_completed AS
-SELECT
---drill_hole_id
-id, max(completed::integer) FROM
---drilling_daily_reports
-dh_shift_reports GROUP BY
---drill_hole_id
-id HAVING max(completed::integer) <> 1;
-
-
---}}}
-
-
---les traces des sondages, pareil, pour un srid:{{{
-CREATE OR REPLACE VIEW dh_traces_3d AS
-SELECT *,
-       GeomFromEWKT(
-                    'SRID=' || srid ||
-                    ';LINESTRING (' ||
-                                   x    || ' ' ||
-                                   y    || ' ' ||
-                                   z    ||
-                                          ', ' ||
-                                   x1   || ' ' ||
-                                   y1   || ' ' ||
-                                   z1   ||
-                                ')'
-                   )
- FROM (
-       SELECT *,
-              x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1,
-              y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1,
-              z - length * sin((dip_hz / 180) * pi())                               AS z1
-       FROM dh_collars
-       --WHERE srid = 20136
-     ) tmp
-ORDER BY tmp.id;
---}}}
-
---trash:{{{
---CREATE OR REPLACE VIEW dh_traces_3d_20137 AS
---SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x || ' ' || y || ' ' || z || ', ' || x1 || ' ' || y1 || ' ' || z1 || ')') FROM (SELECT *, x + length * cos((dip_hz / 180) * pi()) * sin((azim_ng / 180) * pi()) AS x1, y + length * cos((dip_hz / 180) * pi()) * cos((azim_ng / 180) * pi()) AS y1, z - length * sin((dip_hz / 180) * pi()) AS z1
---FROM dh_collars
---WHERE srid = 20137) tmp
---ORDER BY tmp.id;
---}}}
-
---les vues refaisant comme les tables séparées pour trous futurs et prévus:
---views acting like separate tables for planned and realised holes:
-CREATE VIEW collars AS SELECT * FROM dh_collars WHERE completed;
-CREATE VIEW collars_program AS SELECT * FROM dh_collars WHERE NOT(completed);
-
--- field observations
---geochemistry
---anomalies
---targets
---mines
-
--- Set of views definition which used to be encapsulated into gll_bdexplo_views_create.r {{{ 
-
--- _______________ENCOURS_______________GEOLLLIBRE
-
--- append sql_string {
 -- 4. vues pour postgis:{{{
 
 -- 2014_02_01__17_55_45
@@ -481,7 +220,6 @@ CREATE VIEW dh_collars_diff_project_actual_line                   AS SELECT *, G
 
 
 --}}}
-/*  DEBUG *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 -- 3. des vues genre alias pratique: {{{
 --CREATE VIEW dh_litho_custom AS SELECT id, depfrom, depto, code1 AS codelitho, code2 AS codestrati, description, code3 AS oxidation, value1 AS deformation, value2 AS alteration, code4 AS water FROM dh_litho;
 
@@ -920,24 +658,24 @@ ORDER BY datasource, id
 ;
 
 CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_quotidiennes AS             /*stats_reports.stats_quotidiennes_avancements_sondages*/
-SELECT rig, date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT /*drill_hole_id*/ id) AS nb_drill_holes, min(/*drill_hole_id*/ id) AS first_dh, max(/*drill_hole_id*/ id) AS last_dh from /*drilling_daily_reports*/ dh_shift_reports group by rig, date order by rig, date;
+SELECT rig, date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT /*drill_hole_id*/ id) AS nb_drill_holes, min(/*drill_hole_id*/ id) AS first_dh, max(/*drill_hole_id*/ id) AS last_dh from /*drilling_daily_reports*/ shift_reports group by rig, date order by rig, date;
 
 
 CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles AS 
-SELECT year, month, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift FROM /*drilling_daily_reports*/ dh_shift_reports) AS tmp GROUP BY year,month ORDER BY year, month;
+SELECT year, month, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift FROM /*drilling_daily_reports*/ shift_reports) AS tmp GROUP BY year,month ORDER BY year, month;
 
 --idem, avec location:
 CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_mensuelles_par_objectif AS 
-SELECT year, month, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, split_part (/*drill_hole_id*/ id, '_', 1) as target FROM /*drilling_daily_reports*/ dh_shift_reports) AS tmp GROUP BY year,month, target ORDER BY year, month;
+SELECT year, month, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, split_part (/*drill_hole_id*/ id, '_', 1) as target FROM /*drilling_daily_reports*/ shift_reports) AS tmp GROUP BY year,month, target ORDER BY year, month;
 
 
 --stats annuelles
 CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles AS 
-SELECT year, sum(drilled_length_during_shift) as drilled_length_during_year FROM (SELECT extract(year from date) as year, drilled_length_during_shift FROM /*drilling_daily_reports*/ dh_shift_reports) AS tmp GROUP BY year ORDER BY year;
+SELECT year, sum(drilled_length_during_shift) as drilled_length_during_year FROM (SELECT extract(year from date) as year, drilled_length_during_shift FROM /*drilling_daily_reports*/ shift_reports) AS tmp GROUP BY year ORDER BY year;
 
 --idem, avec location:
 CREATE OR REPLACE VIEW stats_reports.avancements_sondages_stats_annuelles_par_objectif AS 
-SELECT year, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, substring(/*drill_hole_id*/ id,1,4) as target FROM /*drilling_daily_reports*/ dh_shift_reports) AS tmp GROUP BY year, target ORDER BY year;
+SELECT year, target, sum(drilled_length_during_shift) as drilled_length_during_month FROM (SELECT extract(year from date) as year, extract (month from date) as month, drilled_length_during_shift, substring(/*drill_hole_id*/ id,1,4) as target FROM /*drilling_daily_reports*/ shift_reports) AS tmp GROUP BY year, target ORDER BY year;
 
 
 CREATE OR REPLACE VIEW stats_reports.longueur_exploree_par_location AS --@#À AMÉLIORER!!!!
@@ -967,7 +705,7 @@ SELECT dh_type,sum(length)/1000 as km_explored_length FROM dh_collars GROUP BY d
 CREATE OR REPLACE VIEW checks.fichettes_vs_collars_longueurs_incoherentes AS 
 SELECT /*drill_hole_id*/ tmp.id, max_drilled_length, length 
 FROM 
-(SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ dh_shift_reports.id ORDER BY /*drill_hole_id*/ dh_shift_reports.id) tmp 
+(SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ shift_reports.id ORDER BY /*drill_hole_id*/ shift_reports.id) tmp 
 JOIN 
 dh_collars 
 ON 
@@ -977,7 +715,7 @@ max_drilled_length <> length ;
 
 
 CREATE OR REPLACE VIEW checks.fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars AS 
-SELECT /*drill_hole_id*/ dh_shift_reports.id AS shift_reports_id, dh_collars.id AS dh_collars_id FROM /*drilling_daily_reports*/ dh_shift_reports LEFT JOIN dh_collars ON (/*drilling_daily_reports*/ dh_shift_reports./*drill_hole_id*/ id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY /*drill_hole_id*/ dh_shift_reports.id, dh_collars.id;
+SELECT /*drill_hole_id*/ shift_reports.id AS shift_reports_id, dh_collars.id AS dh_collars_id FROM /*drilling_daily_reports*/ shift_reports LEFT JOIN dh_collars ON (/*drilling_daily_reports*/ shift_reports./*drill_hole_id*/ id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY /*drill_hole_id*/ shift_reports.id, dh_collars.id;
 
 
 
@@ -989,7 +727,7 @@ CREATE OR REPLACE VIEW checks.fichettes_vs_collars_completed_incoherents AS
 SELECT /*drill_hole_id*/ tmp.id, dh_collars.completed, max_completed_fichettes 
 FROM 
 (SELECT /*drill_hole_id*/ id, max(completed::integer) AS max_completed_fichettes 
-FROM /*drilling_daily_reports*/ dh_shift_reports 
+FROM /*drilling_daily_reports*/ shift_reports 
 GROUP BY /*drill_hole_id*/ id) tmp 
 JOIN 
 dh_collars 
@@ -999,25 +737,25 @@ WHERE dh_collars.completed::integer <> max_completed_fichettes;
 
 
 --CREATE OR REPLACE VIEW checks.fichettes_vs_collars_azimuts_incoherents AS 
---SELECT /*drill_hole_id*/ dh_shift_reports.id, /*drilling_daily_reports*/ /*dh_shift_reports.azim_nm, dh_collars.azim_ng */
---FROM /*drilling_daily_reports*/ dh_shift_reports 
+--SELECT /*drill_hole_id*/ shift_reports.id, /*drilling_daily_reports*/ /*shift_reports.azim_nm, dh_collars.azim_ng */
+--FROM /*drilling_daily_reports*/ shift_reports 
 --JOIN 
 --dh_collars 
---ON /*drilling_daily_reports*/ dh_shift_reports./*drill_hole_id*/ id = dh_collars.id 
---WHERE /*drilling_daily_reports*/ dh_shift_reports.azim_nm <> dh_collars.azim_ng;
+--ON /*drilling_daily_reports*/ shift_reports./*drill_hole_id*/ id = dh_collars.id 
+--WHERE /*drilling_daily_reports*/ shift_reports.azim_nm <> dh_collars.azim_ng;
 
 
 --CREATE OR REPLACE VIEW checks.fichettes_vs_collars_dips_incoherents AS 
---SELECT /*drill_hole_id*/ dh_shift_reports.id, /*drilling_daily_reports*/ dh_shift_reports.dip, dh_collars.dip_hz FROM /*drilling_daily_reports*/ dh_shift_reports JOIN dh_collars ON /*drilling_daily_reports*/ dh_shift_reports./*drill_hole_id*/ id = dh_collars.id WHERE /*drilling_daily_reports*/ dh_shift_reports.dip <> dh_collars.dip_hz;
+--SELECT /*drill_hole_id*/ shift_reports.id, /*drilling_daily_reports*/ shift_reports.dip, dh_collars.dip_hz FROM /*drilling_daily_reports*/ shift_reports JOIN dh_collars ON /*drilling_daily_reports*/ shift_reports./*drill_hole_id*/ id = dh_collars.id WHERE /*drilling_daily_reports*/ shift_reports.dip <> dh_collars.dip_hz;
 
 CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_drilled_lengths AS 
-SELECT min(no_fichette) AS first_fichette, max(no_fichette) AS last_fichette, /*drill_hole_id*/ id, SUM(drilled_length_during_shift) AS sum_drilled_length_during_shift, MAX(drilled_length) AS max_drilled_length FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ id HAVING SUM(drilled_length_during_shift) <> MAX(drilled_length) ORDER BY /*drill_hole_id*/ id;
+SELECT min(no_fichette) AS first_fichette, max(no_fichette) AS last_fichette, /*drill_hole_id*/ id, SUM(drilled_length_during_shift) AS sum_drilled_length_during_shift, MAX(drilled_length) AS max_drilled_length FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ id HAVING SUM(drilled_length_during_shift) <> MAX(drilled_length) ORDER BY /*drill_hole_id*/ id;
 
 --CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_nb_samples AS 
---SELECT no_fichette, /*drill_hole_id*/ id, samples_from, samples_to, (samples_to - samples_from +1) AS diff_samples_from_to, nb_samples FROM /*drilling_daily_reports*/ dh_shift_reports WHERE (samples_to - samples_from +1) <> nb_samples;
+--SELECT no_fichette, /*drill_hole_id*/ id, samples_from, samples_to, (samples_to - samples_from +1) AS diff_samples_from_to, nb_samples FROM /*drilling_daily_reports*/ shift_reports WHERE (samples_to - samples_from +1) <> nb_samples;
 
 CREATE OR REPLACE VIEW stats_reports.verif_attachements_journaliers_sondeur AS 
-SELECT date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT /*drill_hole_id*/ id) AS nb_drill_holes, min(/*drill_hole_id*/ id) AS first_dh, max(/*drill_hole_id*/ id) AS last_dh from /*drilling_daily_reports*/ dh_shift_reports group by date order by date;
+SELECT date, sum(drilled_length_during_shift) as drilled_length_per_day, repeat('|'::text, (sum(drilled_length_during_shift)/10)::integer) AS graph_drilled_length_per_day, count(DISTINCT /*drill_hole_id*/ id) AS nb_drill_holes, min(/*drill_hole_id*/ id) AS first_dh, max(/*drill_hole_id*/ id) AS last_dh from /*drilling_daily_reports*/ shift_reports group by date order by date;
 
 --CREATE OR REPLACE VIEW checks.codes_litho_codegdm AS 
 --SELECT codegdm, count_codegdm FROM (SELECT codegdm, count(*) AS count_codegdm FROM dh_litho GROUP BY codegdm) tmp ORDER BY count_codegdm;
@@ -1169,7 +907,7 @@ CREATE VIEW surpac_survey AS
 --}}}
 --dist    = {{{
 --=RACINE((E11*E11)+(F11*F11))
---=sqrt((deltax^2)+(deltay^2))
+--=sqrt((deltax2)+(deltay2))
 --
 --}}}
 --crctn_g = {{{
@@ -1218,7 +956,7 @@ CREATE VIEW surpac_survey AS
 -- +(deltax>=0 AND deltay<0)::integer * 200
 -- +(deltax<=0 AND deltay<0)::integer * 200
 --END) AS gise,
---sqrt((deltax^2)+(deltay^2)) AS dist
+--sqrt((deltax2)+(deltay2)) AS dist
 --FROM
 --(SELECT 
 --id, x_local, y_local, z_local,
@@ -1295,7 +1033,7 @@ CREATE VIEW surpac_survey AS
 -- +(deltax>=0 AND deltay<0)::integer * 200
 -- +(deltax<=0 AND deltay<0)::integer * 200
 --END) AS gise,
---sqrt((deltax^2)+(deltay^2)) AS dist
+--sqrt((deltax2)+(deltay2)) AS dist
 --FROM
 --(SELECT 
 --id, x_local, y_local, z_local,
@@ -1402,25 +1140,25 @@ SELECT id_topo, id_collars, topo_x, collars_x, diffx, topo_y, collars_y, diffy, 
 
 
 CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes AS 
-SELECT nb_sondages_et_attributs, nb_sondages, nb_sondages_et_attributs-nb_sondages AS diff_SHOULD_BE_ZERO  FROM (SELECT count(*) AS nb_sondages_et_attributs FROM (SELECT /*drill_hole_id*/ id, planned_length/*, azim_nm,*/ /*dip*/ FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ id, planned_length/*, azim_nm, dip*/) tmp) tmp1, (SELECT count(DISTINCT /*drill_hole_id*/ id) AS nb_sondages FROM /*drilling_daily_reports*/ dh_shift_reports) tmp2 WHERE nb_sondages_et_attributs-nb_sondages <> 0;
+SELECT nb_sondages_et_attributs, nb_sondages, nb_sondages_et_attributs-nb_sondages AS diff_SHOULD_BE_ZERO  FROM (SELECT count(*) AS nb_sondages_et_attributs FROM (SELECT /*drill_hole_id*/ id, planned_length/*, azim_nm,*/ /*dip*/ FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ id, planned_length/*, azim_nm, dip*/) tmp) tmp1, (SELECT count(DISTINCT /*drill_hole_id*/ id) AS nb_sondages FROM /*drilling_daily_reports*/ shift_reports) tmp2 WHERE nb_sondages_et_attributs-nb_sondages <> 0;
 
 CREATE OR REPLACE VIEW checks.fichettes_infos_redondantes_incoherentes_quels_ouvrages AS 
-SELECT /*drill_hole_id*/ id, min(planned_length) AS min_planned_length, max(planned_length) AS max_planned_length/*, min(azim_nm) AS min_azim_nm, max(azim_nm) AS max_azim_nm, min(dip) AS min_dip, max(dip) AS max_dip*/ FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ id HAVING (count(DISTINCT planned_length)>1/* OR count(DISTINCT azim_nm)>1 OR count(DISTINCT dip)>1*/);
+SELECT /*drill_hole_id*/ id, min(planned_length) AS min_planned_length, max(planned_length) AS max_planned_length/*, min(azim_nm) AS min_azim_nm, max(azim_nm) AS max_azim_nm, min(dip) AS min_dip, max(dip) AS max_dip*/ FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ id HAVING (count(DISTINCT planned_length)>1/* OR count(DISTINCT azim_nm)>1 OR count(DISTINCT dip)>1*/);
 
 CREATE OR REPLACE VIEW checks.fichettes_infos_incoherentes_heures AS 
-SELECT date, /*drill_hole_id*/ id, time_start, time_end FROM /*drilling_daily_reports*/ dh_shift_reports WHERE time_start>time_end;
+SELECT date, /*drill_hole_id*/ id, time_start, time_end FROM /*drilling_daily_reports*/ shift_reports WHERE time_start>time_end;
 
 
 CREATE OR REPLACE VIEW checks.fichettes_vs_collars_ouvrages_dans_fichettes_pas_collars AS 
-SELECT /*drill_hole_id*/ dh_shift_reports.id AS shift_reports_id, dh_collars.id AS dh_collars_id FROM /*drilling_daily_reports*/ dh_shift_reports LEFT JOIN dh_collars ON (/*drilling_daily_reports*/ dh_shift_reports./*drill_hole_id*/ id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY /*drill_hole_id*/ dh_shift_reports.id, dh_collars.id;
+SELECT /*drill_hole_id*/ shift_reports.id AS shift_reports_id, dh_collars.id AS dh_collars_id FROM /*drilling_daily_reports*/ shift_reports LEFT JOIN dh_collars ON (/*drilling_daily_reports*/ shift_reports./*drill_hole_id*/ id = dh_collars.id) WHERE dh_collars.id IS NULL ORDER BY /*drill_hole_id*/ shift_reports.id, dh_collars.id;
 
 CREATE OR REPLACE VIEW checks.fichettes_longueurs_incoherentes AS 
-SELECT /*drill_hole_id*/ id, max_drilled_length, sum_drilled_length_during_shift FROM (SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ id ORDER BY /*drill_hole_id*/ id) tmp WHERE max_drilled_length <> sum_drilled_length_during_shift ;
+SELECT /*drill_hole_id*/ id, max_drilled_length, sum_drilled_length_during_shift FROM (SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ id ORDER BY /*drill_hole_id*/ id) tmp WHERE max_drilled_length <> sum_drilled_length_during_shift ;
 
 CREATE OR REPLACE VIEW checks.fichettes_vs_collars_longueurs_incoherentes AS 
 SELECT /*drill_hole_id*/ tmp.id, max_drilled_length, length 
 FROM 
-(SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ dh_shift_reports.id ORDER BY /*drill_hole_id*/ dh_shift_reports.id) tmp 
+(SELECT /*drill_hole_id*/ id, max(drilled_length) AS max_drilled_length, sum(drilled_length_during_shift) AS sum_drilled_length_during_shift FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ shift_reports.id ORDER BY /*drill_hole_id*/ shift_reports.id) tmp 
 JOIN 
 dh_collars 
 ON 
@@ -1430,7 +1168,7 @@ max_drilled_length <> length ;
 
 
 CREATE OR REPLACE VIEW checks.fichettes_ouvrages_non_completed AS 
-SELECT /*drill_hole_id*/ id, max(completed::integer) FROM /*drilling_daily_reports*/ dh_shift_reports GROUP BY /*drill_hole_id*/ id HAVING max(completed::integer) <> 1;
+SELECT /*drill_hole_id*/ id, max(completed::integer) FROM /*drilling_daily_reports*/ shift_reports GROUP BY /*drill_hole_id*/ id HAVING max(completed::integer) <> 1;
 
 
 
@@ -1486,10 +1224,5 @@ CREATE VIEW tanguy.geoch_multi_ana_subq AS
 */
 
 --}}}
--- COMMIT;
--- }
--- ; }}}
-
-*/ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
-
-
+COMMIT;
+" | psql -X -d bdexplo -h localhost -U pierre

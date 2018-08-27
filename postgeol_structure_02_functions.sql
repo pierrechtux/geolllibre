@@ -118,4 +118,35 @@ $$
 
 --#}}}
 COMMIT;
+
+--NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
+--CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
+--    LANGUAGE plpgsql
+--    AS $$
+--BEGIN
+----UPDATE public.lab_ana_results SET sample_id = lab_sampleid WHERE (sample_id IS NULL OR sample_id = '') AND (lab_sampleid IS NOT NULL OR lab_sampleid <> '');
+--UPDATE public.lab_ana_results SET sample_id_lab = sample_id;
+--UPDATE public.lab_ana_results SET sample_id = REPLACE(sample_id, 'STD:', '') WHERE sample_id ILIKE 'STD%';
 --
+--UPDATE public.lab_ana_results SET value_num =
+--REPLACE(
+--REPLACE(
+--REPLACE(
+--REPLACE(
+--REPLACE(
+--REPLACE(
+--REPLACE(
+--REPLACE(value,     'IS',           '-999'),
+--                  'NSS',           '-999'),
+--                  'LNR',          '-9999'),
+--                   'NA',            '-99'),
+--                    '<',              '-'),
+--                    '>',               ''),
+--                 'Not Received',  '-9999'),
+--                 'Bag Empty',     '-9999')::numeric WHERE value <> 'NULL' AND value IS NOT NULL AND value_num IS NULL;
+--RETURN NULL;
+--END;
+--$$;
+
+--}}}
+
