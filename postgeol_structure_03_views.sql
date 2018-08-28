@@ -314,7 +314,7 @@ CREATE VIEW dh_collars_points
                       )
     FROM dh_collars;
 
---les traces des sondages, pareil, --PAS pour un srid:
+--les traces des sondages, pareil, --PAS pour un srid:{{{
 CREATE OR REPLACE VIEW dh_traces_3d AS
 SELECT *,
        GeomFromEWKT(
@@ -344,9 +344,9 @@ CREATE VIEW field_observations_points
  AS SELECT *,
            GeomFromewkt('SRID=' || srid ||
                         ';POINT ('||
-                                 x || ' ' ||
-                                 y || ' ' ||
-                                 z ||
+                                  x || ' ' ||
+                                  y || ' ' ||
+                                  z ||
                                ')'
                        )
     FROM field_observations;
@@ -360,7 +360,7 @@ CREATE VIEW geoch_sampling_grades_points
                                   y || ' ' ||
                                   z ||
                                 ')'
-                      )
+                       )
     FROM geoch_sampling_grades;
 -- TODO:
 -- psql:/home/pierre/geolllibre/postgeol_structure_03_views.sql:363: ERROR:  column "srid" does not exist
@@ -374,9 +374,8 @@ CREATE VIEW index_geo_documentation_rectangles
                                     lat_min || ' ' ||
                                     lon_max || ' ' ||
                                     lat_max ||
-                                  '), ' || srid ||
-                        ')'
-           AS geomfromtext
+                                  '), ' || srid
+                       ) AS geomfromtext
  FROM index_geo_documentation;
 
 CREATE VIEW licences_quadrangles                           AS SELECT *, geomfromewkt('SRID=4326;POLYGON(' || lon_min || ' ' || lat_max || ',' || lon_max || ' ' || lat_max || ',' || lon_max || ' ' || lat_min || ',' || lon_min || ' ' || lat_min || ',' || lon_min || ' ' || lat_max || ')') AS geomfromewkt FROM        licences ORDER BY licences.licence_name;
@@ -539,7 +538,6 @@ FROM dh_sampling_grades
 ORDER BY opid, id, depto;
 
 
-
 --les teneurs et les passes minéralisées (de classe 0) raboutées:/*{{{*/
 CREATE VIEW dh_sampling_mineralised_intervals_graph_au6 AS
 
@@ -605,15 +603,15 @@ CREATE OR REPLACE FUNCTION create_crosstab_view (eavsql_inarg varchar, resview v
 \$body\$
 DECLARE
     casesql varchar;
-    dynsql varchar;   
+    dynsql varchar;
     r record;
-BEGIN  
+BEGIN
 dynsql='';
 for r in
       select * from pg_views where lower(viewname) = lower(resview)
   loop
       execute 'DROP VIEW ' || resview;
-  end loop;  
+  end loop;
 casesql='SELECT DISTINCT ' || colid || ' AS v from (' || eavsql_inarg || ') eav ORDER BY ' || colid;
 FOR r IN EXECUTE casesql
   Loop
@@ -721,29 +719,29 @@ SELECT dh_collars.opid, id FROM public.dh_collars JOIN operation_active ON (dh_c
 --(NOT (x < 1000 OR y < 10000)
 -- -- AND location IN (
 -- -- 'GBEITOUO'
--- -- ,'WALTER'   
+-- -- ,'WALTER'
 -- -- ,'GBEITOUO1'
 -- -- ,'GBEITOUO2'
--- -- ,'BAKATOUO' 
--- -- ,'DAAPLEU'  
+-- -- ,'BAKATOUO'
+-- -- ,'DAAPLEU'
 -- -- ,'DAAPLEUSW'
--- -- ,'DAHA'     
+-- -- ,'DAHA'
 -- -- ,'DIABYDOUGOU'
--- -- ,'FLOLEU'   
+-- -- ,'FLOLEU'
 -- -- ,'FLOTOUO_ZIA'
--- -- ,'ITY_FLAT' 
+-- -- ,'ITY_FLAT'
 -- -- ,'ITY_VILLAGE'
--- -- ,'MEANDRE'  
--- -- ,'MLAMBO'   
--- -- ,'MORGAN'   
+-- -- ,'MEANDRE'
+-- -- ,'MLAMBO'
+-- -- ,'MORGAN'
 -- -- ,'MORGAN-EXT'
--- -- ,'MT_ITY'   
--- -- ,'PLAQ'     
--- -- ,'TIAPLEU'  
--- -- ,'TONTOUO'  
--- -- ,'YACETOUO' 
--- -- ,'ZIA'      
--- -- ,'ZYA EXT'  
+-- -- ,'MT_ITY'
+-- -- ,'PLAQ'
+-- -- ,'TIAPLEU'
+-- -- ,'TONTOUO'
+-- -- ,'YACETOUO'
+-- -- ,'ZIA'
+-- -- ,'ZYA EXT'
 -- -- ,''
 -- -- )
 -- )
@@ -1077,8 +1075,6 @@ CREATE OR REPLACE VIEW checks.doublons_collars_xyz_ouvrages_concernes AS SELECT 
 
 
 ---}}}
-
-
 
 -- pour surpac:/*{{{*/
 CREATE VIEW surpac_survey AS
@@ -1536,5 +1532,4 @@ CREATE VIEW tanguy.geoch_multi_ana_subq AS
 -- ; }}}
 
 */ --DEBUG FIN DE TOUT CE QUI EST INVALIDÉ
-
 
