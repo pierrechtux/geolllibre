@@ -1,3 +1,6 @@
+/*
+_______________ENCOURS_______________GEOLLLIBRE */
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -107,34 +110,34 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 CREATE TABLE public.operations (
     opid            bigserial PRIMARY KEY NOT NULL,
-    name_short      text NOT NULL,  -- TODO attention, field previously named differently: operation
-    name_full       text NOT NULL,  -- TODO attention, field previously named differently: full_name
+    name_short      text NOT NULL,  -- TODO warning: field previously named differently: operation
+    name_full       text NOT NULL,  -- TODO warning: field previously named differently: full_name
     year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
     confidentiality boolean NOT NULL DEFAULT TRUE,
     operator        text NOT NULL,
-    addr1_street    text,
-    addr2_parcell   text,
-    addr3_areacode  text,
-    addr4_zipcode   text,
-	addr5_town      text,
+    address1_street    text,
+    address2_parcell   text,
+    address3_areacode  text,
+    address4_zipcode   text,
+	address5_town      text,
     srid            text,
     x               numeric,
     y               numeric,
     accuracy        integer,
-    lat_min         numeric(10,5) NOT NULL,
     lon_min         numeric(10,5) NOT NULL,
-    lat_max         numeric(10,5) NOT NULL,
+    lat_min         numeric(10,5) NOT NULL,
     lon_max         numeric(10,5) NOT NULL,
+    lat_max         numeric(10,5) NOT NULL,
     boundary_geom   geometry,
     comments        text NOT NULL,
-    --numauto         bigserial UNIQUE NOT NULL,  -- useless, since opid is already the bigserial PRIMARY KEY
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user NOT NULL
+    --numauto         bigserial UNIQUE NOT NULL,  -- useless, since opid is already the bigserial PRIMARY KEY
 );
 
 COMMENT ON TABLE public.operations                              IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
 COMMENT ON COLUMN public.operations.opid                        IS 'Operation identifier, automatic sequence; referred by all tables, since all data contained belongs to an operation';
- -- TODO ideally, to avoid any collisions, a centralised operations reference should be put in place, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.  In some cases, an "operation creation" is not something rare, though.
+ -- TODO *ideally*, to avoid any collisions, a centralised operations reference should be put in place, worldwide, so that, throughout the world and among all postgeol users, an opid would always be fully significant.  An "operation creation" procedure is something quite rare, and it should therefore be done online, whereas all subsequent work can be done off Internet.  In some cases, an "operation creation" is not something rare, though.
 COMMENT ON COLUMN public.operations.name_short                  IS 'Operation short name, aka code';
 COMMENT ON COLUMN public.operations.name_full                   IS 'Complete operation name';
 COMMENT ON COLUMN public.operations.year                        IS 'Year of operation activity';
@@ -160,12 +163,9 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 --COMMENT ON COLUMN public.operations.numauto                     IS 'Automatic integer';
 
 --}}}
--- _______________ENCOURS_______________GEOLLLIBRE
 -- x operation_active:{{{
 
 
---SET search_path = current_user $USER, pg_catalog; => in fact, this table should rather be in the user's schema => TODO later
--- => as written here, the table will end up in the current user's schema.
 CREATE TABLE :USER.operation_active (       -- TODO at some point, put back some logic in the SCHEMAs organisation.
     opid                integer PRIMARY KEY NOT NULL
         REFERENCES public.operations (opid)
@@ -197,11 +197,11 @@ CREATE TABLE public.field_observations (
     year                integer NOT NULL,
     date                date NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
     time                text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
-    waypoint_name       text NOT NULL,
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,
     y                   numeric(20,10) NOT NULL,
     z                   numeric(20, 2) NOT NULL,
+    geometry_corr       geometry,
     description         text NOT NULL,
     code_litho          text NOT NULL,
     code_unit           text NOT NULL,
@@ -210,10 +210,11 @@ CREATE TABLE public.field_observations (
     photos              text NOT NULL,
     geologist           text NOT NULL,
     device              text NOT NULL,
-    icon_descr          text NOT NULL,  -- Eventually get rid of this quite useless field.
     comments            text NOT NULL,
-    timestamp_epoch_ms  bigint NOT NULL,
     datasource          integer NOT NULL,
+    waypoint_name       text NOT NULL,
+    icon_descr          text NOT NULL,  -- Eventually get rid of this quite useless field.
+    timestamp_epoch_ms  bigint NOT NULL,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text NOT NULL DEFAULT current_user,
@@ -229,6 +230,7 @@ COMMENT ON COLUMN field_observations.srid                       IS 'Spatial Refe
 COMMENT ON COLUMN field_observations.x                          IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN field_observations.y                          IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN field_observations.z                          IS 'Z coordinate';
+COMMENT ON COLUMN field_observations.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the observation point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN field_observations.description                IS 'Naturalist description';
 COMMENT ON COLUMN field_observations.code_litho                 IS 'Lithological code';
 COMMENT ON COLUMN field_observations.code_unit                  IS 'Unit code: lithostratigraphic, and/or cartographic';
@@ -247,7 +249,7 @@ COMMENT ON COLUMN field_observations.creation_ts                IS 'Current date
 COMMENT ON COLUMN field_observations.username                   IS 'User (role) which created data record';
 
 --}}}
--- x field_observations_struct_measures_points:{{{
+-- x field_observations_struct_measures:{{{
 
 CREATE TABLE public.field_observations_struct_measures (
     opid                integer NOT NULL,
@@ -378,10 +380,10 @@ CREATE TABLE public.surface_samples_grades (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     sample_id           text,
+    srid                integer,
     x                   numeric,
     y                   numeric,
     z                   numeric,
-    srid                integer,
     description         text,
     sample_type         text,
     outcrop_id          text,
@@ -457,11 +459,13 @@ CREATE TABLE public.geoch_sampling (
         DEFERRABLE INITIALLY DEFERRED,
     id                  text,
     lab_id              text,
-    labo_ref            text,
-    amc_ref             text,
-    recep_date          date,
+    lab_ref             text,
+    amc_ref             text, -- <= get rid of this, after dispatching information in appropriate places
+    reception_date      date,
     sample_type         text,
-    sampl_index         text NOT NULL,
+    sample_index        text NOT NULL,
+    utm_zone            text,
+    srid                integer,
     x                   numeric(15,4),
     y                   numeric(15,4),
     z                   numeric(10,4),
@@ -472,7 +476,6 @@ CREATE TABLE public.geoch_sampling (
     geomorphology       text,
     rock_type           text,
     comments            text,
-    utm_zone            text,
     geologist           text,
     float_sampl         text,
     host_rock           text,
@@ -499,9 +502,9 @@ COMMENT ON COLUMN public.geoch_sampling.id                      IS 'Identificati
 COMMENT ON COLUMN public.geoch_sampling.lab_id                  IS 'Analysis laboratory';
 COMMENT ON COLUMN public.geoch_sampling.labo_ref                IS 'Analysis laboratory report reference';
 COMMENT ON COLUMN public.geoch_sampling.amc_ref                 IS 'AMC analysis report reference'; -- TODO get AMC mentions out
-COMMENT ON COLUMN public.geoch_sampling.recep_date              IS 'Report reception date by AMC';  -- TODO get AMC mentions out
+COMMENT ON COLUMN public.geoch_sampling.reception_date          IS 'Report reception date by AMC';  -- TODO get AMC mentions out
 COMMENT ON COLUMN public.geoch_sampling.sample_type             IS 'Analysis type'; -- TODO Hm. Voir.
-COMMENT ON COLUMN public.geoch_sampling.sampl_index             IS 'Auto increment integer';
+COMMENT ON COLUMN public.geoch_sampling.sample_index            IS 'Auto increment integer';
 COMMENT ON COLUMN public.geoch_sampling.x                       IS 'X coordinate, projected in UTM (m)';
 COMMENT ON COLUMN public.geoch_sampling.y                       IS 'Y coordinate, projected in UTM (m)';
 COMMENT ON COLUMN public.geoch_sampling.z                       IS 'Z coordinate, projected in UTM (m)';
@@ -531,12 +534,12 @@ CREATE TABLE public.geoch_ana (
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
-    sampl_index         integer,
+    sample_index        integer,
     ana_type            text,
     unit                text,
     det_lim             numeric(6,4),
     scheme              text,
-    comment             text,
+    comments            text,
     value               numeric(10,3),
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
@@ -545,7 +548,7 @@ CREATE TABLE public.geoch_ana (
 );
 COMMENT ON TABLE  public.geoch_ana IS 'Assay results from geochemistry samples';
 COMMENT ON COLUMN public.geoch_ana.opid                         IS 'Operation identifier';
-COMMENT ON COLUMN public.geoch_ana.sampl_index                  IS 'Sample identification related to the geoch_sampling table';
+COMMENT ON COLUMN public.geoch_ana.sample_index                 IS 'Sample identification related to the geoch_sampling table';
 COMMENT ON COLUMN public.geoch_ana.ana_type                     IS 'Analysis type ';
 COMMENT ON COLUMN public.geoch_ana.unit                         IS 'Unit of the analysis ';
 COMMENT ON COLUMN public.geoch_ana.det_lim                      IS 'Analysis detection limit';
@@ -558,6 +561,7 @@ COMMENT ON COLUMN public.geoch_ana.creation_ts                  IS 'Current date
 COMMENT ON COLUMN public.geoch_ana.username                     IS 'User (role) which created data record';
 
 --}}}
+-- _______________ENCOURS_______________GEOLLLIBRE
 -- x geoch_sampling_grades:{{{
 -- Vérifier si cette table est utile, et si oui en quoi, comment.
 
