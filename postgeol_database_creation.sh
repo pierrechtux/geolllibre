@@ -72,11 +72,12 @@ psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
 
 echo " 3) views:"
 # create the queries set:
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT########
 psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_03_views.sql
 
-exit 0 #################################### DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
+clear #########ENLEVER APRES MISE AU POINT SCRIPT########
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT########
+exit 0 #################################### DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
 
 
