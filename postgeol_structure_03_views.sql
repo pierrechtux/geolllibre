@@ -1,5 +1,5 @@
-BEGIN TRANSACTION;
 -- _______________ENCOURS_______________GEOLLLIBRE
+BEGIN TRANSACTION;
 -- o views:
 -- une vue retrouvée dans les tables:{{{
 -- TODO Is this view still valid?  If not, erase.
@@ -1517,7 +1517,6 @@ CREATE OR REPLACE VIEW checks.dh_collars_to_topo_points_lines AS SELECT dh_colla
 --
 
 --}}}
--- COMMIT;
 -- }
 -- ; }}}
 --}}}
@@ -1525,3 +1524,4 @@ CREATE OR REPLACE VIEW checks.dh_collars_to_topo_points_lines AS SELECT dh_colla
 /*  DEBUG *** DEBUT DE TOUT CE QUI EST INVALIDÉ/PAS ENCORE FAIT ***
 */ -- DEBUG *** FIN DE TOUT CE QUI EST INVALIDÉ ***
 
+COMMIT;

@@ -37,6 +37,7 @@
 
 #-- General variables:
 #-- TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
+clear ###################ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 
 echo "Make a new empty database, with postgis extension."
 echo "Also, create a schema with the current user's name."
@@ -45,15 +46,18 @@ echo "The database to be created comes from environment variable \$POSTGEOL, whi
 newdb=$POSTGEOL
 # TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
 
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 echo "Drop database $POSTGEOL, if it already exists:"
 # TODO prompt for a confirmation
 dropdb $newdb
 
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 echo "Database creation:"
 createdb $newdb --o $LOGNAME
 
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 echo "Implement extensions and languages:"
-psql -X -U postgres -d $newdb --single-transaction -c "
+psql -d $newdb -X --single-transaction -U postgres -c "
  CREATE EXTENSION postgis;
  CREATE EXTENSION postgis_topology;
  GRANT ALL ON geometry_columns to $LOGNAME;
@@ -63,27 +67,27 @@ psql -X -U postgres -d $newdb --single-transaction -c "
  CREATE SCHEMA $LOGNAME; 
  GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
 
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 echo "Creation of postgeol structure in database named: " $newdb
 echo " 1) schemas and tables:"
-psql -d $newdb -f ~/geolllibre/postgeol_structure_01_tables.sql | grep -v "^SET$\|^COMMENT$" | grep -v "^CREATE TABLE$" | grep -v "CREATE SCHEMA"
+psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 
+exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 echo " 2) functions (this part has to be run as postgresql superuser: postgres):"
-psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
+psql -d $newdb -X --single-transaction -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
 
 echo " 3) views:"
 # create the queries set:
-psql -d $newdb -U postgres -f ~/geolllibre/postgeol_structure_03_views.sql
+psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql
 
 
-clear #########ENLEVER APRES MISE AU POINT SCRIPT########
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT########
-exit 0 #################################### DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
 
 
 # à la fin, pour transférer les données de bdexplo vers postgeol:
 # postgeol_transfer_data_from_bdexplo.sh
 
+exit 0 ###### si jamais...
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
 -- Il convient de les traiter comme il convient, dans bdexplo, où elles restent. En versant leurs données dans la *bonne* structure, celle de postgeol.
 -- _______________ENCOURS_______________GEOLLLIBRE 5
