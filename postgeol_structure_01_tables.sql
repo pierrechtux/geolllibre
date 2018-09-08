@@ -734,7 +734,7 @@ CREATE TABLE public.dh_shift_reports (
     drilled_length_during_shift   numeric(10,2),
     drilled_length                numeric(10,2),
     completed                     boolean,
-    profile                       text,
+--  profile                       text,
     invoice_nr                    integer,
     drilled_shift_destr           numeric,
     drilled_shift_pq              numeric,
@@ -775,7 +775,7 @@ COMMENT ON COLUMN dh_shift_reports.tool                         IS 'Drilling (di
 COMMENT ON COLUMN dh_shift_reports.drilled_length_during_shift  IS 'Length of borehole drilled during the shift';
 COMMENT ON COLUMN dh_shift_reports.drilled_length               IS 'Total length of the borehole drilled at the end of the shift';
 COMMENT ON COLUMN dh_shift_reports.completed                    IS 'Borehole finished or not';
-COMMENT ON COLUMN dh_shift_reports.profile                      IS 'Section identifier';
+-- COMMENT ON COLUMN dh_shift_reports.profile                      IS 'Section identifier';
 COMMENT ON COLUMN dh_shift_reports.comments                     IS 'Comments on drilling (events, presence of water, difficulties, major facies, etc.)';
 COMMENT ON COLUMN dh_shift_reports.invoice_nr                   IS 'Subcontractor invoice number';
 COMMENT ON COLUMN dh_shift_reports.drilled_shift_destr          IS 'Drilled length during shift in destructive';
@@ -803,7 +803,7 @@ CREATE TABLE public.dh_followup (
     devia               text,
     quick_log           text,
     log_tech            text,
-    log_lith            text,
+    log_litho           text,
     sampling            text,
     results             text,
     relogging           text,
@@ -824,7 +824,7 @@ COMMENT ON COLUMN dh_followup.id                                IS 'Identifier, 
 COMMENT ON COLUMN dh_followup.devia                             IS 'Deviation survey (x: done; xx: done, data entered; xxx: data verified)';
 COMMENT ON COLUMN dh_followup.quick_log                         IS 'Quick geological log, typically done on hole finish, for an A4 log plot (x: done; xx: done, data entered; xxx: data verified)';
 COMMENT ON COLUMN dh_followup.log_tech                          IS 'Core fitting, core measurement, meters marking, RQD, fracture counts, etc. (x: done; xx: done, data entered; xxx: data verified)';
-COMMENT ON COLUMN dh_followup.log_lith                          IS 'Full geological log (x: done; xx: done, data entered; xxx: data verified)';
+COMMENT ON COLUMN dh_followup.log_litho                         IS 'Full geological log (x: done; xx: done, data entered; xxx: data verified)';
 COMMENT ON COLUMN dh_followup.sampling                          IS 'Hole sampling (x: done; xx: done, data entered; xxx: data verified)';
 COMMENT ON COLUMN dh_followup.results                           IS 'Assay results back from laboratory (x: received; xx: entered; xxx: verified)';
 COMMENT ON COLUMN dh_followup.relogging                         IS 'Geological log done afterwards on mineralised intervals (x: done; xx: done, data entered; xxx: data verified)';
@@ -851,8 +851,8 @@ CREATE TABLE public.dh_devia (
     temperature         numeric(10,2),
     magnetic            numeric(10,2),
     date                date,                   -- TODO change date and time fields for a timestamp value
+    time                integer,                -- TODO change field name
     roll                numeric(10,2),
-    "time"              integer,                -- TODO change field name
     comments            text,
     valid               boolean DEFAULT true,
     datasource          integer,
@@ -880,7 +880,7 @@ COMMENT ON COLUMN dh_devia.temperature                IS 'temperature';
 COMMENT ON COLUMN dh_devia.magnetic                   IS 'Magnetic field intensity measurement';
 COMMENT ON COLUMN dh_devia.date                       IS 'Date of deviation measurement';
 COMMENT ON COLUMN dh_devia.roll                       IS 'Roll angle';
-COMMENT ON COLUMN dh_devia."time"                     IS 'Time of deviation measurement';
+COMMENT ON COLUMN dh_devia.time                       IS 'Time of deviation measurement';
 COMMENT ON COLUMN dh_devia.comments                   IS 'Various comments; concerning measurements done with Reflex Gyro, all parameters are concatened as a json-like structure';
 COMMENT ON COLUMN dh_devia.valid                      IS 'True when a deviation measurement is usable; queries should take into account only valid records';
 COMMENT ON COLUMN dh_devia.datasource                 IS 'Datasource identifier, refers to lex_datasource';
@@ -1117,7 +1117,6 @@ COMMENT ON COLUMN dh_drill_params.username                    IS 'User (role) wh
 
 
 --}}}
--- _______________ENCOURS_______________GEOLLLIBRE
 -- x dh_struct_measures {{{
 
 CREATE TABLE public.dh_struct_measures (
@@ -1197,33 +1196,34 @@ CREATE TABLE public.dh_photos (
         DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE public.dh_photos IS 'Photographs of drill holes: location (with depto = 0, core, chips etc.';-- TODO il manque BEAUCOUP de choses. Et, aussi, est-il bien judicieux d'ainsi séparer les photos de trous des photos d'autre chose??
-COMMENT ON public.dh_photos.opid                IS 'Operation identifier';
-COMMENT ON public.dh_photos.id                  IS 'Full identifier for borehole or trench';
-COMMENT ON public.dh_photos.depfrom             IS 'Interval begining depth';
-COMMENT ON public.dh_photos.depto               IS 'Interval ending depth';
-COMMENT ON public.dh_photos.pho_id              IS 'Photograph identifier';
-COMMENT ON public.dh_photos.file                IS 'Photograph full filename, with relative or full path included; to be made consistent and usable';
-COMMENT ON public.dh_photos.file_size_kb        IS 'File size in kb: to be automatically set at INSERT time, and checked, along with md5sum, at SELECT time; this is to avoid some intrusions hidden within picture files (...)';
-COMMENT ON public.dh_photos.md5sum              IS 'Photograph file md5sum control sum; to be automatically set at INSERT time, and checked, along with file_size_kb, at SELECT time; this is to avoid some intrusions hidden within picture files (...)';
-COMMENT ON public.dh_photos.author              IS 'Photograph author; may not very useful, as it often is the geologist, as defined in dh_collars table';
-COMMENT ON public.dh_photos.datasource          IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON public.dh_photos.numauto             IS 'Automatic integer';
-COMMENT ON public.dh_photos.creation_ts         IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON public.dh_photos.username            IS 'User (role) which created data record';
+COMMENT ON COLUMN public.dh_photos.opid                IS 'Operation identifier';
+COMMENT ON COLUMN public.dh_photos.id                  IS 'Full identifier for borehole or trench';
+COMMENT ON COLUMN public.dh_photos.depfrom             IS 'Interval begining depth';
+COMMENT ON COLUMN public.dh_photos.depto               IS 'Interval ending depth';
+COMMENT ON COLUMN public.dh_photos.pho_id              IS 'Photograph identifier';
+COMMENT ON COLUMN public.dh_photos.file                IS 'Photograph full filename, with relative or full path included; to be made consistent and usable';
+COMMENT ON COLUMN public.dh_photos.file_size_kb        IS 'File size in kb: to be automatically set at INSERT time, and checked, along with md5sum, at SELECT time; this is to avoid some intrusions hidden within picture files (...)';
+COMMENT ON COLUMN public.dh_photos.md5sum              IS 'Photograph file md5sum control sum; to be automatically set at INSERT time, and checked, along with file_size_kb, at SELECT time; this is to avoid some intrusions hidden within picture files (...)';
+COMMENT ON COLUMN public.dh_photos.author              IS 'Photograph author; may not very useful, as it often is the geologist, as defined in dh_collars table';
+COMMENT ON COLUMN public.dh_photos.datasource          IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN public.dh_photos.numauto             IS 'Automatic integer';
+COMMENT ON COLUMN public.dh_photos.creation_ts         IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.dh_photos.username            IS 'User (role) which created data record';
 
 --}}}
+-- _______________ENCOURS_______________GEOLLLIBRE
 -- x dh_samples_submission:{{{
 
 CREATE TABLE public.dh_samples_submission (
-    opid integer,
-    id text,
-    sampfrom smallint,
-    sampto smallint,
-    nb smallint,
-    mspu_sub date,
-    sgs_subm date,
-    final_interm text,
-    results text,
+    opid                integer,
+    id                  text,
+    sampfrom            smallint,
+    sampto              smallint,
+    nb                  smallint,
+    mspu_sub            date,
+    sgs_subm            date,
+    final_interm        text,
+    results             text,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1235,30 +1235,30 @@ CREATE TABLE public.dh_samples_submission (
 -- x dh_sampling_grades: {{{
 
 CREATE TABLE public.dh_sampling_grades (
-    opid integer,
-    id text,
-    depfrom numeric(10,2),
-    depto numeric(10,2),
-    core_loss_cm numeric(5,1),
-    weight_kg numeric(6,2),
-    sample_type text,
-    sample_id text,
-    comments text,
-    batch_id integer,
-    au1_ppm numeric(8,3),
-    au2_ppm numeric(8,3),
-    au3_ppm numeric(8,3),
-    au4_ppm numeric(8,3),
-    au5_ppm numeric(8,3),
-    au6_ppm numeric(8,3),
-    ph numeric(4,2),
-    moisture numeric(8,4),
-    au_specks integer,
-    quartering integer,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user,
+    opid                integer,
+    id                  text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
+    sample_id           text,
+    sample_type         text,
+    weight_kg           numeric(6,2),
+    core_loss_cm        numeric(5,1),
+    batch_id            integer,
+    au1_ppm             numeric(8,3),
+    au2_ppm             numeric(8,3),
+    au3_ppm             numeric(8,3),
+    au4_ppm             numeric(8,3),
+    au5_ppm             numeric(8,3),
+    au6_ppm             numeric(8,3),
+    ph                  numeric(4,2),
+    moisture            numeric(8,4),
+    au_specks           integer,
+    quartering          integer,
+    comments            text,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1292,18 +1292,19 @@ COMMENT ON COLUMN dh_sampling_grades.creation_ts      IS 'Current date and time 
 COMMENT ON COLUMN dh_sampling_grades.username         IS 'User (role) which created data record';
 
 --}}}
--- x resistivity:{{{
+-- x dh_resistivity:{{{
 
 CREATE TABLE public.dh_resistivity (
-    opid            integer,
-    id              text,
-    depfrom         numeric(10,2),
-    depto           numeric(10,2),
-    rlld            numeric(10,2),
-    rlls            numeric(10,2),
-    numauto         bigserial PRIMARY KEY,
-    creation_ts     timestamptz DEFAULT now() NOT NULL,
-    username        text DEFAULT current_user,
+    opid                integer,
+    id                  text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
+    rlld                numeric(10,2),
+    rlls                numeric(10,2),
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1317,6 +1318,7 @@ COMMENT ON COLUMN public.dh_resistivity.depfrom       IS 'Interval beginning dep
 COMMENT ON COLUMN public.dh_resistivity.depto         IS 'Interval ending depth';
 COMMENT ON COLUMN public.dh_resistivity.rlld          IS ''; -- TODO
 COMMENT ON COLUMN public.dh_resistivity.rlls          IS ''; -- TODO
+COMMENT ON COLUMN public.dh_resistivity.datasource    IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN public.dh_resistivity.numauto       IS 'Automatic integer';
 COMMENT ON COLUMN public.dh_resistivity.creation_ts   IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.dh_resistivity.username      IS 'User (role) which created data record';
@@ -1329,10 +1331,11 @@ CREATE TABLE public.dh_radiometry (
     id              text,
     depfrom         numeric(10,2),
     depto           numeric(10,2),
-    a               text,
+--     a               text,
     probe           text,
     radiometry      numeric,
     comments        text,
+    datasource          integer,
     numauto         bigserial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
@@ -1347,9 +1350,10 @@ COMMENT ON COLUMN public.dh_radiometry.opid            IS 'Operation identifier'
 COMMENT ON COLUMN public.dh_radiometry.id              IS 'Full identifier for borehole or trench';
 COMMENT ON COLUMN public.dh_radiometry.depfrom         IS 'Interval beginning depth';
 COMMENT ON COLUMN public.dh_radiometry.depto           IS 'Interval ending depth';
-COMMENT ON COLUMN public.dh_radiometry.a               IS 'Mysterious field containing only A value'; -- TODO to be clarified
+-- COMMENT ON COLUMN public.dh_radiometry.a               IS 'Mysterious field containing only A value'; -- TODO to be clarified
 COMMENT ON COLUMN public.dh_radiometry.probe           IS 'Probe type: ST22, ST33, DHT-';
 COMMENT ON COLUMN public.dh_radiometry.radiometry      IS 'Radiometry measurement, equivalent AVP units (hits per second)';
+COMMENT ON COLUMN public.dh_radiometry.datasource      IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN public.dh_radiometry.numauto         IS 'Automatic integer';
 COMMENT ON COLUMN public.dh_radiometry.creation_ts     IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.dh_radiometry.username        IS 'User (role) which created data record';
@@ -1400,18 +1404,18 @@ COMMENT ON COLUMN dh_mineralised_intervals.username    IS 'User (role) which cre
 -- x dh_density {{{
 
 CREATE TABLE public.dh_density (
-    opid integer,
-    id text,
-    depfrom numeric(10,2),
-    depto numeric(10,2),
-    density numeric(10,2),
-    density_humid numeric,
-    moisture numeric,
-    method text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user,
+    opid                integer,
+    id                  text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
+    density             numeric(10,2),
+    density_humid       numeric,
+    moisture            numeric,
+    method              text,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1477,24 +1481,25 @@ COMMENT ON COLUMN dh_thinsections.username                      IS 'User (role) 
 --}}}
 -- x dh_sampling_bottle_roll {{{ -- TODO rename table to something like mineralurgical tests, something less Au-oriented
 
-CREATE TABLE public.dh_sampling_bottle_roll (
-    opid           integer,
-    id             text,
-    depfrom        numeric(10,2),
-    depto          numeric(10,2),
-    sample_id      text,
-    au_total       numeric(10,2),
-    au_24h         numeric(10,2),
-    au_48h         numeric(10,2),
-    au_72h         numeric(10,2),
-    au_residu      numeric(10,2),
-    rec_24h_pc     numeric(10,2),
-    rec_48h_pc     numeric(10,2),
-    rec_72h_pc     numeric(10,2),
-    datasource     integer,
-    numauto        bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username       text DEFAULT current_user,
+-- CREATE TABLE public.dh_sampling_bottle_roll (
+CREATE TABLE public.dh_sampling_mineralurgy (
+    opid                integer,
+    id                  text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
+    sample_id           text,
+    au_total            numeric(10,2),
+    au_24h              numeric(10,2),
+    au_48h              numeric(10,2),
+    au_72h              numeric(10,2),
+    au_residu           numeric(10,2),
+    rec_24h_pc          numeric(10,2),
+    rec_48h_pc          numeric(10,2),
+    rec_72h_pc          numeric(10,2),
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE

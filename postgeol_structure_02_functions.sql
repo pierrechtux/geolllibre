@@ -1,5 +1,4 @@
 -- functions:
-BEGIN TRANSACTION;
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 
@@ -117,7 +116,6 @@ $$
 ;
 
 --#}}}
-COMMIT;
 
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger

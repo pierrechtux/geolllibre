@@ -45,17 +45,14 @@ echo "Also, create a schema with the current user's name."
 echo "The database to be created comes from environment variable \$POSTGEOL, which is now '$POSTGEOL'."
 newdb=$POSTGEOL
 # TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
-
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#
 echo "Drop database $POSTGEOL, if it already exists:"
 # TODO prompt for a confirmation
 dropdb $newdb
-
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#
 echo "Database creation:"
 createdb $newdb --o $LOGNAME
-
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#
 echo "Implement extensions and languages:"
 psql -d $newdb -X --single-transaction -U postgres -c "
  CREATE EXTENSION postgis;
@@ -66,20 +63,20 @@ psql -d $newdb -X --single-transaction -U postgres -c "
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
  CREATE SCHEMA $LOGNAME; 
  GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
-
-newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#
 echo "Creation of postgeol structure in database named: " $newdb
 echo " 1) schemas and tables:"
-psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
+psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 
-exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 echo " 2) functions (this part has to be run as postgresql superuser: postgres):"
-psql -d $newdb -X --single-transaction -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql
+psql -d $newdb -X --single-transaction -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
 
 echo " 3) views:"
 # create the queries set:
-psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql
+psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 
+exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
 
