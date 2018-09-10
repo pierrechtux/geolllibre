@@ -117,7 +117,6 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 
 --}}}
--- BEGIN TRANSACTION;
 -- 1200* TABLES{{{
 --SET SCHEMA_DATA = 'public'; -- for the time being.  Eventually, data tables will be moved into another work schema.
 --SET search_path = SCHEMA_DATA, pg_catalog;
@@ -2540,9 +2539,4 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 --}}}
 
 --}}}
-
-
-
--- on verra à COMMITer en temps utile... => 2017_03_31__11_18_10 semble un temps utile, voilà:
--- COMMIT;
 
