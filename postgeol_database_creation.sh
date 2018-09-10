@@ -16,7 +16,7 @@
 #		##                                                                       ##
 #		###########################################################################
 #		  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
-#		 
+#
 #		    GeolLLibre is free software: you can redistribute it and/or modify
 #		    it under the terms of the GNU General Public License as published by
 #		    the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@
 #		
 #		    You should have received a copy of the GNU General Public License
 #		    along with this program.  If not, see <http://www.gnu.org/licenses/>
-#		    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+#		    or write to the Free Software Foundation, Inc., 51 Franklin Street,
 #		    Fifth Floor, Boston, MA 02110-1301, USA.
 #		    See LICENSE file.
 #		}
@@ -61,7 +61,7 @@ psql -d $newdb -X --single-transaction -U postgres -c "
  GRANT SELECT ON spatial_ref_sys to $LOGNAME;
  CREATE LANGUAGE plpythonu;
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
- CREATE SCHEMA $LOGNAME; 
+ CREATE SCHEMA $LOGNAME;
  GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
 #
 echo "Creation of postgeol structure in database named: " $newdb
@@ -75,14 +75,14 @@ echo " 3) views:"
 # create the queries set:
 psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
 newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
-
 exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
 ~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
 
 
+
 # à la fin, pour transférer les données de bdexplo vers postgeol:
-# postgeol_transfer_data_from_bdexplo.sh
+postgeol_transfer_data_from_bdexplo
 
 exit 0 ###### si jamais...
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{

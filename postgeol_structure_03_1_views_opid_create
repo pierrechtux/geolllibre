@@ -15,8 +15,8 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
- 
+  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
-    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+    or write to the Free Software Foundation, Inc., 51 Franklin Street,
     Fifth Floor, Boston, MA 02110-1301, USA.
     See LICENSE file.
 }
@@ -37,7 +37,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 
 ;	 _________
-;	< bdexplo >
+;	< bdexplo >               <= the ancester of postgeol
 ;	 ---------
 ;	        \   ^__^
 ;	         \  (xx)\_______
@@ -46,7 +46,28 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ;	                ||     ||
 ;	
 
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
+;do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
+options: to-string system/options/args
+
+switch/default length? options [
+0 [
+; #######################JEANSUILÀ
+  ]
+1 [
+
+ ]
+2 [
+ if error? try [new_datasource_id: to-integer system/options/args/2 ] [ msg_err ]
+
+ ]
+][				;=> autre cas: erreur
+msg_err
+]
+
+halt ; ###############DEBUG
+
+
+
 insert db "BEGIN TRANSACTION;"
 
 ;# on commence à fabriquer un gros texte en sql, qu'on fera tourner à la fin: {{{
@@ -59,7 +80,7 @@ BEGIN TRANSACTION;
 ;# -- 1. les vues homonymes des tables, dans le premier schéma dans l'ordre de recherche, en restreignant à l'opération active: {{{
 
 ;# La liste des tables pour lesquelles on veut faire une vue homonyme dans le schéma utilisateur:
-;comment [ {{{ } } } 
+;comment [ {{{ } } }
 ;tables_for_view_join_operationid = [
 ;'ancient_workings'        ,
 ;'dh_collars'              ,
@@ -99,9 +120,7 @@ tables_indesirables: ["dh_nb_samples" "dh_collars_lengths" "spatial_ref_sys" "ge
 tables_for_view_join_operationid: (exclude tables_for_view_join_operationid tables_indesirables)
 
 ; pour voir les tables concernées rapidos:
-;foreach t tables_for_view_join_operationid [
-;print rejoin ["TABLE public." t ";"]
-;]
+;foreach t tables_for_view_join_operationid [ print rejoin ["TABLE public." t ";"] ]
 
 ;#}}}
 
@@ -115,9 +134,8 @@ foreach tablename tables_for_view_join_operationid [
 ;# --}}}
 
 ;# À partir de l'instruction sql ainsi commencée, on l'agrège maintenant, avec un gros tas de requêtes déjà faites:
-; 2018_08_26__20_14_24 => no, rather store these views definition into a separate plain SQL file.
+; 2018_08_26__20_14_24 => no, rather store these views definition into a separate plain SQL file, which is played prior to this program.
 ;# Voilà, le sql est fabriqué.
-
 
 ;# ...que l'on runne ensuite:
 ;# (cancellé, pour le moment, par prudence: on montre juste le SQL)
@@ -127,9 +145,7 @@ foreach tablename tables_for_view_join_operationid [
 
 close  db
 
-
 ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
-
 
 either ( confirm "Run the generated script?" ) [
 	call/wait ligne_cmd ]
@@ -137,8 +153,8 @@ either ( confirm "Run the generated script?" ) [
 	; Prudemment, on ne runne pas, on affiche juste:
 	; print ligne_cmd
 	; Mieux, on génère un script à runner:
-	script: %tt_gll_bdexplo_views_create.sh 
+	script: %tt_gll_bdexplo_views_create.sh
 	write script ligne_cmd
-	print rejoin [newline "Bdexplo views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
+	print rejoin [newline "PostGeol views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
 	]
 ;###########################################################
