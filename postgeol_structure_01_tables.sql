@@ -469,7 +469,7 @@ CREATE TABLE public.geoch_sampling (
     x                   numeric(15,4),
     y                   numeric(15,4),
     z                   numeric(10,4),
-    soil_color          text,
+    soil_colour         text,
     type_sort           text,
     depth_cm            numeric(10,2),
     reg_type            text,
@@ -508,7 +508,7 @@ COMMENT ON COLUMN public.geoch_sampling.sample_index            IS 'Auto increme
 COMMENT ON COLUMN public.geoch_sampling.x                       IS 'X coordinate, projected in UTM (m)';
 COMMENT ON COLUMN public.geoch_sampling.y                       IS 'Y coordinate, projected in UTM (m)';
 COMMENT ON COLUMN public.geoch_sampling.z                       IS 'Z coordinate, projected in UTM (m)';
-COMMENT ON COLUMN public.geoch_sampling.soil_color              IS 'Soil color';
+COMMENT ON COLUMN public.geoch_sampling.soil_colour             IS 'Soil colour';
 COMMENT ON COLUMN public.geoch_sampling.type_sort               IS 'Sort of type';
 COMMENT ON COLUMN public.geoch_sampling.depth_cm                IS 'Sample depth';
 COMMENT ON COLUMN public.geoch_sampling.reg_type                IS 'Type of region';
@@ -1362,21 +1362,23 @@ COMMENT ON COLUMN public.dh_radiometry.username        IS 'User (role) which cre
 -- x dh_mineralised_intervals {{{
 
 CREATE TABLE public.dh_mineralised_intervals (
-    opid integer,
-    id text,
-    depfrom numeric(10,2),
-    depto numeric(10,2),
-    mine integer DEFAULT 1,
-    avau numeric(10,2),
-    stva text,
-    accu numeric(10,2),
-    recu numeric(10,2),
-    dens numeric(10,2),
-    comments text,
-    datasource integer,
-    numauto bigserial PRIMARY KEY,
-    creation_ts    timestamptz DEFAULT now() NOT NULL,
-    username text DEFAULT current_user,
+    opid            integer,
+    id              text,
+    depfrom         numeric(10,2),
+    depto           numeric(10,2),
+    mine            integer DEFAULT 1,
+    avau            numeric(10,2),
+    stva            text,
+    accu            numeric(10,2),
+    grade_avp       numeric,
+    probe           text,
+    recu            numeric(10,2),
+    dens            numeric(10,2),
+    comments        text,
+    datasource      integer,
+    numauto         bigserial PRIMARY KEY,
+    creation_ts     timestamptz DEFAULT now() NOT NULL,
+    username        text DEFAULT current_user,
     FOREIGN KEY (opid, id)
         REFERENCES public.dh_collars (opid, id)
         ON UPDATE CASCADE
@@ -1392,6 +1394,8 @@ COMMENT ON COLUMN dh_mineralised_intervals.mine        IS 'Take-out interval cla
 COMMENT ON COLUMN dh_mineralised_intervals.avau        IS 'Average grade (g/t)';
 COMMENT ON COLUMN dh_mineralised_intervals.stva        IS 'Stretch value, X m at Y g/t';
 COMMENT ON COLUMN dh_mineralised_intervals.accu        IS 'Accumulation in m.g/t over mineralised interval';
+COMMENT ON COLUMN dh_mineralised_intervals.grade_avp   IS 'Average grade computed from radiometry (AVP); specific to U';
+COMMENT ON COLUMN dh_mineralised_intervals.probe       IS 'Down-hole probe used to define the mineralised interval; specific to U';
 COMMENT ON COLUMN dh_mineralised_intervals.recu        IS 'recovery';
 COMMENT ON COLUMN dh_mineralised_intervals.dens        IS 'density';
 COMMENT ON COLUMN dh_mineralised_intervals.datasource  IS 'Datasource identifier, refers to lex_datasource';

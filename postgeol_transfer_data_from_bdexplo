@@ -5,7 +5,7 @@ rebol []
 ;# Transfert des données depuis la base bdexplo, historique, vers la base postgeol, après un gros ménage.
 ;# Script scindé en paragraphes à faire tourner, au furàmz, par des F8 bien sentis. Ou plutôt des F6. => bof.
 
-; Définition des bases de départ et d'arrivée:
+; x Définition des bases de départ et d'arrivée: {{{
 bd_depart: make object!			[	base: "bdexplo"		host: "autan"	]
 bd_destination: make object!	[	base: "postgeol"	host: "autan"	]
 connexion_bd_depart:  does      [
@@ -16,6 +16,7 @@ connexion_bd_destination: does  [
 	dbname: bd_destination/base
 	dbhost: bd_destination/host
 	connection_db               ]
+;}}}
 ; x la liste des tables de autan_bdexplo:{{{
 connexion_bd_depart
 tables_start: run_query "SELECT schemaname || '.' || tablename FROM pg_tables WHERE schemaname NOT IN ('backups', 'information_schema', 'pg_catalog', 'tmp_a_traiter', 'tmp_imports', 'tmp_ntoto', 'topology') ORDER BY 1;"
@@ -28,18 +29,18 @@ tables_destination: run_query "SELECT schemaname || '.' || tablename FROM pg_tab
 tables_a_transferer: intersect tables_destination tables_start
 ;
 ;}}}
+; x on affiche où l'on en est:{{{
 print rejoin [ length? tables_start " tables de la base de départ, " length? tables_destination " tables dans la base de destination, "length? tables_a_transferer " tables communes sont à tranférer."]
 print "Les tables présentes seulement dans la base d'arrivée sont:"
 foreach t (exclude tables_destination tables_start) [ print t ]
-
-;NB: shift_reports => dh_shift_reports
-; Ah oui, mais bon, en fait, il faut mettre ces tables dans un certain ordre, pour que ça passe, avec les contraintes d'intégrité référentielles: {{{
+;}}}
+;NB: TODO shift_reports => dh_shift_reports
+; x Ah oui, mais bon, en fait, il faut mettre ces tables dans un certain ordre, pour que ça passe, avec les contraintes d'intégrité référentielles: {{{
 
 ;>> foreach t tables_a_transferer [write/append/lines %/tmp/qty first t]
 ;:r /tmp/qty dans vim, et trafic:
 
-tables_a_transferer: [
-public.operations
+tables_a_transferer: [ public.operations
 pierre.operation_active
 public.dh_collars
 public.dh_core_boxes
@@ -88,7 +89,6 @@ public.qc_sampling
 public.qc_standards
 public.sections_array
 public.sections_definition
-public.spatial_ref_sys
 public.surface_samples_grades
 public.survey_lines
 public.topo_points
@@ -196,115 +196,94 @@ public.units
 ;public.spatial_ref_sys
 ] ;}}}
 ;}}}
-; Création d'un schéma temporaire:
+; mince, les numauto, creation_ts, username ne sont pas remplis automatiquement par la base, quand on fait ainsi. Hm. Virons les champs gênants; après tout, seul numauto est gênant: les autres reflètent l'historique véritable de la donnée; il y a les champs cachés magiques de postgres, si on veut vraiment pister les choses.
+; x Création d'un schéma temporaire:{{{
 ; (après un peu de ménage, au cas où la procédure aurait précédemment échoué)
 sql_txt: "DROP SCHEMA tmp_exports CASCADE;"
 append sql_txt newline
 append sql_txt "CREATE SCHEMA IF NOT EXISTS tmp_exports;"
-;e recopie de toutes les tables à transférer dans le schéma temporaire pour exports:{{{
-append sql_txt newline
+call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -c "} sql_txt {"}]
+;}}}
+; x recopie de toutes les tables à transférer dans le schéma temporaire pour exports:{{{
+sql_txt: copy ""
+cnt: 0
 foreach t tables_a_transferer [
-	parse to-string t [ copy s to "." thru "." copy t to end] 		; print s print t
-	append sql_txt rejoin ["CREATE TABLE tmp_exports." s "_" t " AS SELECT * FROM " s "." t ";" newline]
+	cnt: cnt + 1
+	print cnt
+	parse to-string t [ copy s to "." thru "." copy t to end] 		 prin s prin "." print t
+
+;t: first tables_a_transferer
+	append sql_txt rejoin ["CREATE TABLE tmp_exports." s "_" t " AS SELECT * FROM " s "." t " "]
+	unless (( t = "conversions_oxydes_elements" ) or (t = " units")) [ append sql_txt "ORDER BY opid"]
+	if ((left t 3) = "dh_") [
+		append sql_txt ", id"
+		unless (( t = "dh_collars") or (t = "dh_followup") or (t = "dh_samples_submission")) [ 
+			append sql_txt ", depto" 
+		]
 	]
+    append sql_txt ";"
+	append sql_txt newline
+]
+
 write %/tmp/copy_tables_tmp_exports sql_txt
 call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -f /tmp/copy_tables_tmp_exports} ]
-;}}}
-;o on enlève certains champs à toutes les tables:{{{
 
+;}}}
+; x on enlève certains champs à toutes ces tables:{{{
+sql_txt: copy ""
 foreach t tables_a_transferer [
 	parse to-string t [ copy s to "." thru "." copy t to end]
 	append sql_txt rejoin ["ALTER TABLE tmp_exports." s "_" t " DROP COLUMN IF EXISTS numauto;" newline]
 	]
+write %/tmp/copy_tables_tmp_exports sql_txt
+call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -f /tmp/copy_tables_tmp_exports} ]
 
-}}}
-_______________ENCOURS_______________GEOLLLIBRE
-; e dompage de ces tables depuis autan_bdexplo dans des fontchiers:{{{
-
+;}}}
+; x dompage de ces tables depuis autan_bdexplo dans des fontchiers:{{{
 dbname: bd_depart/base
 dbhost: bd_depart/host
 connection_db
 
-foreach t tables_a_transferer [
-	                           print t ]
-t: first tables_a_transferer ; ########DEBUG
-append cmd rejoin ["CREATE TABLE public.tt_" t " AS SELECT * FROM " t ";" newline]
-append cmd rejoin ["ALTER TABLE public.tt_"  t " DROP COLUMN numauto;"    newline]
-
-
 cmd: copy ""
-	append cmd rejoin ["pg_dump -h " bd_depart/host " -d " bd_depart/base " --disable-triggers --no-owner -a -t tt_" t { > /tmp/} t ".sql" newline]
-call_wait_output_error cmd
-
-"createdb tmp"
-
-
-
-
---inserts
-;{ | grep -v "^--" | grep -v "^$"
-
-sed -i "s/(opid, operation, full_name, operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username, numauto)/(opid, name_short, name_full, operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username, numauto)/g" /tmp/public.operations.sql
-
-; mince, les numauto, creation_ts, username ne sont pas remplis automatiquement par la base, quand on fait ainsi. Hm.
-
-append cmd
-call_wait_output_error rejoin ["psql -X -h " bd_destination/host " -d " bd_destination/base { -f /tmp/} t ".sql" newline]
+;length? tables_a_transferer
+;== 53
+foreach t tables_a_transferer [
+	;cnt: 0													; bunch of trucs for debugging first real-time migration
+	;while [cnt <= (length? tables_a_transferer)] [
+	;cnt: cnt + 1
+	;t: tables_a_transferer/:cnt
+	;?? t
+	parse to-string t [ copy s to "." thru "." copy t to end] 		 prin s prin "  " print t 	; parsing schema and table names
+	call_wait_output_error rejoin ["pg_dump -h " bd_depart/host " -d " bd_depart/base " --disable-triggers --no-owner -a -t tmp_exports." s "_" t { > /tmp/} s "." t ".sql" newline]	; dump each table from temporary schema
+	call_wait_output_error rejoin [ {sed -i "s/TABLE tmp_exports.} s {_} t {/TABLE } s {.} t {/g" /tmp/} s "." t ".sql" newline ]
+	call_wait_output_error rejoin [ {sed -i "s/COPY tmp_exports.} s {_} t {/COPY } s {.} t {/g" /tmp/} s "." t ".sql" newline ]
+	call_wait_output_error rejoin [ {sed -i "s/SET idle_in_transaction_session_timeout/--SET idle_in_transaction_session_timeout/g" /tmp/} s "." t ".sql" newline ]
+	call_wait_output_error rejoin [ {sed -i "s/SET row_security = off/--SET row_security = off/g" /tmp/} s "." t ".sql" newline ]
+] ;}}}
+; x Les modifications spécifiques, pour les tables ayant changé de structure, entre bdexplo et postgeol: mettre après la boucle:{{{
+call_wait_output_error {sed -i "s/(opid, operation, full_name, operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username)/(opid, name_short, name_full,operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username)/g" /tmp/public.operations.sql}
+call_wait_output_error {sed -i "s/(opid, id, devia, quick_log, log_tech, log_lith, sampling, results, relogging, beacon, in_gdm, creation_ts, username)/(opid, id, devia, quick_log, log_tech, log_litho, sampling, results, relogging, beacon, in_gdm, creation_ts, username)/g" /tmp/public.dh_followup.sql}
+call_wait_output_error {sed -i "s/(opid, id, depfrom, depto, description, oxid, alt, def, creation_ts, username, datasource, code)/(opid, id, depfrom, depto, description, oxidation, alteration, deformation, creation_ts, username, datasource, code)/g" /tmp/public.dh_quicklog.sql}
+call_wait_output_error {sed -i "s/(id, depfrom, depto, drilled_len, reco_len, rqd_len, diam, datasource, opid, comments, drillers_depto, core_loss_cm, joints_description, nb_joints, creation_ts, username)/(id, depfrom, depto, drilled_length, recovered_length, rqd_length, diameter, datasource, opid, comments, drillers_depto, core_loss_cm, joints_description, nb_joints, creation_ts, username)/g" /tmp/public.dh_tech.sql}
+call_wait_output_error {sed -i "s/(opid, year, obs_id, date, waypoint_name, x, y, z, description, code_litho, code_unit, srid, geologist, icon_descr, comments, sample_id, datasource, photos, audio, timestamp_epoch_ms, creation_ts, username, device, hour)/(opid, year, obs_id, date, waypoint_name, x, y, z, description, code_litho, code_unit, srid, geologist, icon_descr, comments, sample_id, datasource, photos, audio, timestamp_epoch_ms, creation_ts, username, device, time)/g" /tmp/public.field_observations.sql}
+call_wait_output_error {sed -i "s/(sampl_index, ana_type, unit, det_lim, scheme, comments, value, opid, creation_ts, username, datasource)/(sample_index, ana_type, unit, det_lim, scheme, comments, value, opid, creation_ts, username, datasource)/g" /tmp/public.geoch_ana.sql}
+call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/g" /tmp/public.geoch_sampling.sql}
+call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/g" /tmp/public.geoch_sampling_grades.sql}
+;}}}
+; x mettre les données de ces tables dans autan_postgeol depuis le dompage: ;{{{
+foreach t tables_a_transferer [
+	call_wait_output_error rejoin ["psql -X -h " bd_destination/host " -d " bd_destination/base { -U postgres -1 -f /tmp/} s "." t ".sql" newline]
+	print rejoin ["*** Table " s "." t " imported into " bd_destination/base " database hosted by " bd_destination/host ". ***"]
+	print "To have a glance at the imported data:"
+	print rejoin [newline newline {SELECT * FROM } s "." t { LIMIT 10;} newline]
+	print "=========================================="
 ]
-
-
-
-pg_dump bdexplo -t tmp_imports.tmp_tmp_tous_resultats_acme_lab_ana_batches_reception --inserts --no-owner > script_`date +%Y_%m_%d_%Hh%M`.sql
-pg_dump bdexplo -t tmp_imports.tmp_results_multi_elt --inserts --no-owner > script_`date +%Y_%m_%d_%Hh%M`.sql
-postgres@duran:~$ pg_dump -Fc bdexplo > database_duran_9_0_bdexplo_`date +%Y_%m_%d_%Hh%M`.pg_dump
-pg_dump -h duran -n public -n checks -n input -n stats_reports -O -s bdexplo -U postgres > schema_bdexplo_duran
-pg_dump -h autan -n public -n checks -n input -n stats_reports -O -s bdexplo -U postgres > schema_bdexplo_autan
-
-pg_dump -h duran -n public -O -s bdexplo -U postgres > schema_bdexplo_duran_public
-pg_dump -h autan -n public -O -s bdexplo -U postgres > schema_bdexplo_autan_public
-cat schema_bdexplo_autan_public | grep -v "^-" > schema_bdexplo_autan_public_sans_commentaires
-cat schema_bdexplo_duran_public | grep -v "^-" > schema_bdexplo_duran_public_sans_commentaires
-vimdiff schema_bdexplo_duran_public_sans_commentaires schema_bdexplo_autan_public_sans_commentaires
-
-pg_restore -C -d toto -t public.def_sampling_grades_fields database_autan_bdexplo_2013_08_08_08h52.pg_dump
-
-
-}}}
-; o mettre les données de ces tables dans autan_postgeol depuis le dompage:
-
-; o voir les erreurs, et sed le fichier de dump
+;}}}
+; x voir les erreurs, et sed le fichier de dump => cf. supra
+; o vérifier par exports csv massifs et diff
 ; o réitérer
 
-
--- à la fin, nettoyer: DROP TABLE tmp_exports.*;  DROP SCHEMA 'tmp_exports';
-
-
-
-
-
-
-
-{{{
-__________***_JEANSUILA_***__________
-pg_dump -d bdexplo -a -t public.doc_postgeol_table_categories | sed -e 's/doc_bdexplo_/doc_postgeol_/g'    |  psql postgeol --single-transaction
-pg_dump -d bdexplo -a -t public.doc_bdexplo_tables_descriptions  | sed -e 's/doc_bdexplo_/doc_postgeol_/g' |  psql postgeol --single-transaction
-__________***_JEANSUILA_***__________
-
-psql postgeol -c "ALTER TABLE public.operations ADD COLUMN numauto integer;"
-pg_dump -d bdexplo -a -t public.operations | grep -v "operations_numauto_seq"    |  psql postgeol --single-transaction
-psql postgeol -c "ALTER TABLE public.operations DROP COLUMN numauto;"
-
-SELECT * FROM public.operations;
-
-
-
-
-
-
-> /tmp/tt && less /tmp/tt
-psql postgeol -f /tmp/tt
-
-
-
-}}}
+;-- à la fin, nettoyer la base de départ: DROP TABLE tmp_exports.*;  DROP SCHEMA 'tmp_exports'; :
+call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -c "DROP SCHEMA tmp_exports CASCADE;"}]
+;-- et aussi un VACUUM FULL ANALYZE pour tout le monde ne fera pas de mal.
 
