@@ -37,7 +37,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 
 ;	 _________
-;	< bdexplo >               <= the ancester of postgeol
+;	< bdexplo >               <= the ancester of postgeol, ca. 1992 to 2018
 ;	 ---------
 ;	        \   ^__^
 ;	         \  (xx)\_______
@@ -45,29 +45,97 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ;	             U  ||----w |
 ;	                ||     ||
 ;	
+;	 __________
+;	< postgeol >                  <= the descendant of bdexplo, since 2016
+;	 ----------
+;	        \    __
+;	         \ /(  )\_---------_
+;	          { (°°) }          )\
+;	          { /()\ }          | \
+;	           / () \ |__ ____| |
+;	          /  !! |\|       | |
+;	             ! /__|      /_|_\
+
+
+; (gauled from man psql; double ;; when implemented here)
+;SYNOPSIS
+; postgeol_structure_03_1_views_opid_create [option...] [dbname [username]]
+;
+;OPTIONS
+;       -d dbname
+;       --dbname=dbname
+;           Specifies the name of the database to connect to. This is
+;           equivalent to specifying dbname as the first non-option argument on
+;           the command line.
+;
+;           If this parameter contains an = sign or starts with a valid URI
+;           prefix (postgresql:// or postgres://), it is treated as a conninfo
+;           string. See Section 33.1.1 for more information.
+;
+;       -h hostname
+;       --host=hostname
+;           Specifies the host name of the machine on which the server is
+;           running. If the value begins with a slash, it is used as the
+;           directory for the Unix-domain socket.
+;
+;       -p port
+;       --port=port
+;           Specifies the TCP port or the local Unix-domain socket file
+;           extension on which the server is listening for connections.
+;           Defaults to the value of the PGPORT environment variable or, if not
+;           set, to the port specified at compile time, usually 5432.
+;
+;       -U username
+;       --username=username
+;           Connect to the database as the user username instead of the
+;           default. (You must have permission to do so, of course.)
 
 ;do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
-options: to-string system/options/args
-
-switch/default length? options [
-0 [
-; #######################JEANSUILÀ
-  ]
-1 [
-
- ]
-2 [
- if error? try [new_datasource_id: to-integer system/options/args/2 ] [ msg_err ]
-
- ]
-][				;=> autre cas: erreur
-msg_err
+options: system/options/args
+msg_err: does [print "* Error *"]
+print probe options   ; DEBUG ##########
+unless (none? options) [ ; =>	No command line options: get default values, they are already defined in .gll_preferences and/or in environment variables
+;	print length? options ; DEBUG ##########
+	switch/default (length? options) [
+	1	[	; Just one word as argument: let's suppose that it is the database name
+		dbname: first options
+		]
+	2	[	; two words:
+		; does the first one start with - ?
+		either (first (to-string (first options)) = "-") [
+			case [
+				(second (to-string (first options)) = "d")	[ ; then the following argument is the database to connect to:
+				dbname: second options						]
+				(second (to-string (first options)) = "h") 	[ ; then the following argument is the host to connect to:
+				dbhost: second options						]
+				(second (to-string (first options)) = "p")	[ ; then the following argument is the port to connect to:
+				dbport: second options						]
+				(second (to-string (first options)) = "U")	[ ; then the following argument is the username to connect as:
+				user:   second options						]
+			]
+			] [ ; the first word doesn't start with - : therefore, it is the database to connect to:
+			dbname: first options
+			; now what is the second word?  It must be the username:
+			user: second options
+			]		
+		]
+	3	[	; three words:
+		; NOPE. TODO later. Find a better way to handle that, in any decent codebase...
+		msg_err ; pour le moment...
+		;	; => nothing to do
+		]
+	]
+	[		;=> autre cas: erreur
+		msg_err
+	]
 ]
 
-halt ; ###############DEBUG
+?? dbname
+?? dbhost
+?? dbport
+?? user
 
-
-
+connection_db 
 insert db "BEGIN TRANSACTION;"
 
 ;# on commence à fabriquer un gros texte en sql, qu'on fera tourner à la fin: {{{
@@ -143,18 +211,20 @@ foreach tablename tables_for_view_join_operationid [
 ; insert db to-string sql_string
 ; => marche pas, cf. Doc
 
-close  db
+close db
 
 ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
+call_wait_output_error ligne_cmd
 
-either ( confirm "Run the generated script?" ) [
-	call/wait ligne_cmd ]
-	[
-	; Prudemment, on ne runne pas, on affiche juste:
-	; print ligne_cmd
-	; Mieux, on génère un script à runner:
-	script: %tt_gll_bdexplo_views_create.sh
-	write script ligne_cmd
-	print rejoin [newline "PostGeol views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
-	]
-;###########################################################
+;
+;either ( confirm "Run the generated script?" ) [
+;	call/wait ligne_cmd ]
+;	[
+;	; Prudemment, on ne runne pas, on affiche juste:
+;	; print ligne_cmd
+;	; Mieux, on génère un script à runner:
+;	script: %tt_gll_bdexplo_views_create.sh
+;	write script ligne_cmd
+;	print rejoin [newline "PostGeol views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
+;	]
+;;###########################################################

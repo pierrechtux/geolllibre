@@ -1510,24 +1510,24 @@ CREATE TABLE public.dh_sampling_mineralurgy (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE public.dh_sampling_bottle_roll IS 'Mineralurgical samples, bottle-roll tests results';
-COMMENT ON COLUMN dh_sampling_bottle_roll.opid                  IS 'Operation identifier';
-COMMENT ON COLUMN dh_sampling_bottle_roll.id                    IS 'Identifier, refers to dh_collars';
-COMMENT ON COLUMN dh_sampling_bottle_roll.depfrom               IS 'Sample beginning depth';
-COMMENT ON COLUMN dh_sampling_bottle_roll.depto                 IS 'Sample ending depth';
-COMMENT ON COLUMN dh_sampling_bottle_roll.sample_id             IS 'Sample identifier: refers to assay results and quality check tables';
-COMMENT ON COLUMN dh_sampling_bottle_roll.au_total              IS 'Total gold recovered';
-COMMENT ON COLUMN dh_sampling_bottle_roll.au_24h                IS 'Gold recovered after 24 hours';
-COMMENT ON COLUMN dh_sampling_bottle_roll.au_48h                IS 'Gold recovered after 48 hours';
-COMMENT ON COLUMN dh_sampling_bottle_roll.au_72h                IS 'Gold recovered after 72 hours';
-COMMENT ON COLUMN dh_sampling_bottle_roll.au_residu             IS 'Residual gold';
-COMMENT ON COLUMN dh_sampling_bottle_roll.rec_24h_pc            IS 'Recovery after 24 hours, percent';
-COMMENT ON COLUMN dh_sampling_bottle_roll.rec_48h_pc            IS 'Recovery after 48 hours, percent';
-COMMENT ON COLUMN dh_sampling_bottle_roll.rec_72h_pc            IS 'Recovery after 72 hours, percent';
-COMMENT ON COLUMN dh_sampling_bottle_roll.datasource            IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN dh_sampling_bottle_roll.numauto               IS 'Automatic integer primary key';
-COMMENT ON COLUMN dh_sampling_bottle_roll.creation_ts           IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN dh_sampling_bottle_roll.username              IS 'User (role) which created data record';
+COMMENT ON TABLE public.dh_sampling_mineralurgy IS 'Mineralurgical samples, bottle-roll tests results';
+COMMENT ON COLUMN dh_sampling_mineralurgy.opid                  IS 'Operation identifier';
+COMMENT ON COLUMN dh_sampling_mineralurgy.id                    IS 'Identifier, refers to dh_collars';
+COMMENT ON COLUMN dh_sampling_mineralurgy.depfrom               IS 'Sample beginning depth';
+COMMENT ON COLUMN dh_sampling_mineralurgy.depto                 IS 'Sample ending depth';
+COMMENT ON COLUMN dh_sampling_mineralurgy.sample_id             IS 'Sample identifier: refers to assay results and quality check tables';
+COMMENT ON COLUMN dh_sampling_mineralurgy.au_total              IS 'Total gold recovered';
+COMMENT ON COLUMN dh_sampling_mineralurgy.au_24h                IS 'Gold recovered after 24 hours';
+COMMENT ON COLUMN dh_sampling_mineralurgy.au_48h                IS 'Gold recovered after 48 hours';
+COMMENT ON COLUMN dh_sampling_mineralurgy.au_72h                IS 'Gold recovered after 72 hours';
+COMMENT ON COLUMN dh_sampling_mineralurgy.au_residu             IS 'Residual gold';
+COMMENT ON COLUMN dh_sampling_mineralurgy.rec_24h_pc            IS 'Recovery after 24 hours, percent';
+COMMENT ON COLUMN dh_sampling_mineralurgy.rec_48h_pc            IS 'Recovery after 48 hours, percent';
+COMMENT ON COLUMN dh_sampling_mineralurgy.rec_72h_pc            IS 'Recovery after 72 hours, percent';
+COMMENT ON COLUMN dh_sampling_mineralurgy.datasource            IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN dh_sampling_mineralurgy.numauto               IS 'Automatic integer primary key';
+COMMENT ON COLUMN dh_sampling_mineralurgy.creation_ts           IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_sampling_mineralurgy.username              IS 'User (role) which created data record';
 
 --}}}
 --}}}
