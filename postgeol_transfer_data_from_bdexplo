@@ -33,69 +33,13 @@ tables_a_transferer: intersect tables_destination tables_start
 print rejoin [ length? tables_start " tables de la base de départ, " length? tables_destination " tables dans la base de destination, "length? tables_a_transferer " tables communes sont à tranférer."]
 print "Les tables présentes seulement dans la base d'arrivée sont:"
 foreach t (exclude tables_destination tables_start) [ print t ]
+print "Et, réciproquement, les tables présentes seulement dans la base de départ sont:"
+foreach t (exclude tables_start tables_destination ) [ print t ]
 ;}}}
-;NB: TODO shift_reports => dh_shift_reports
 ; x Ah oui, mais bon, en fait, il faut mettre ces tables dans un certain ordre, pour que ça passe, avec les contraintes d'intégrité référentielles: {{{
-
-;>> foreach t tables_a_transferer [write/append/lines %/tmp/qty first t]
-;:r /tmp/qty dans vim, et trafic:
-
-tables_a_transferer: [ public.operations
-pierre.operation_active
-public.dh_collars
-public.dh_core_boxes
-public.dh_density
-public.dh_devia
-public.dh_followup
-public.dh_litho
-public.dh_mineralised_intervals
-public.dh_photos
-public.dh_quicklog
-public.dh_radiometry
-public.dh_resistivity
-public.dh_samples_submission
-public.dh_sampling_bottle_roll
-public.dh_sampling_grades
-public.dh_struct_measures
-public.dh_tech
-public.dh_thinsections
-public.field_observations
-public.field_observations_struct_measures
-public.field_photos
-public.formations_group_lithos
-public.geoch_ana
-public.geoch_sampling
-public.geoch_sampling_grades
-public.gpy_mag_ground
-public.grade_ctrl
-public.index_geo_documentation
-public.lab_ana_batches_expedition
-public.lab_ana_batches_reception
-public.lab_ana_columns_definition
-public.lab_analysis_icp
-public.lab_ana_qaqc_results
-public.lab_ana_results
-public.lex_codes
-public.lex_datasource
-public.lex_standard
-public.licences
-public.ana_det_limit
-public.ancient_workings
-public.baselines
-public.conversions_oxydes_elements
-public.mag_declination
-public.occurrences
-public.qc_sampling
-public.qc_standards
-public.sections_array
-public.sections_definition
-public.surface_samples_grades
-public.survey_lines
-public.topo_points
-public.units
-]
-
-comment [ ;{{{
+; première solution, manuelle: {{{
+comment [ ; beurk, c'est trop crade ;{{{
+ ;{{{ brouillon
 ;>> write %/tmp/qty ""
 ;>> foreach t tables_autan_bdexplo [write/append/lines %/tmp/qty first t]
 pierre.ana_det_limit
@@ -194,45 +138,165 @@ public.topo_points
 public.units
 
 ;public.spatial_ref_sys
+;}}}
+
+;>> foreach t tables_a_transferer [write/append/lines %/tmp/qty first t]
+;:r /tmp/qty dans vim, et trafic:
+tables_a_transferer: [ public.operations
+pierre.operation_active
+public.dh_collars
+public.dh_core_boxes
+public.dh_density
+public.dh_devia
+public.dh_followup
+public.dh_litho
+public.dh_mineralised_intervals
+public.dh_photos
+public.dh_quicklog
+public.dh_radiometry
+public.dh_resistivity
+public.dh_samples_submission
+public.dh_sampling_bottle_roll
+public.dh_sampling_grades
+public.dh_struct_measures
+public.dh_tech
+public.dh_thinsections
+public.field_observations
+public.field_observations_struct_measures
+public.field_photos
+public.formations_group_lithos
+public.geoch_ana
+public.geoch_sampling
+public.geoch_sampling_grades
+public.gpy_mag_ground
+public.grade_ctrl
+public.index_geo_documentation
+public.lab_ana_batches_expedition
+public.lab_ana_batches_reception
+public.lab_ana_columns_definition
+public.lab_analysis_icp
+public.lab_ana_qaqc_results
+public.lab_ana_results
+public.lex_codes
+public.lex_datasource
+public.lex_standard
+public.licences
+public.ana_det_limit
+public.ancient_workings
+public.baselines
+public.conversions_oxydes_elements
+public.mag_declination
+public.occurrences
+public.qc_sampling
+public.qc_standards
+public.sections_array
+public.sections_definition
+public.surface_samples_grades
+public.survey_lines
+public.topo_points
+public.units
+public.shift_reports
+]
 ] ;}}}
+;}}}
+; Voilà une solution se voulant un peu plus élégante, et qui cale bien avec le nommage assez naturel des tables, à une (très) notable exception près, qu'on traite à la main: {{{
+; 2018_09_13__11_13_51 tentative de tri: ça merdoie, ça ne fait, en fait, que bouger l'enregistrement voulu vers le haut, cran par cran, au lieu de le trier direct en tête:
+; débogage et merdoyage: {{{
+;tables_a_transferer_copy: copy tables_a_transferer
+;tables_a_transferer: copy tables_a_transferer_copy
+
+;print-list tables_a_transferer
+;compare_t: func [a b] 									[
+;	case											[
+;	((to-string a) = "public.operations") [a < b]
+;	((to-string b) = "public.operations") [b < a]
+;	 true                                 [a < b]	]	]
+;
+;qq: sort/compare tables_a_transferer :compare_t
+;; curieux, on dirait que la liste n'est pas modifiée?
+;print-list tables_a_transferer
+;print-list qq
+;
+;qqq: sort/compare tables_a_transferer :compare_t
+;?? qqq
+;
+;
+;?? tables_a_transferer_txt
+;print index? "public.operations" tables_a_transferer_txt
+;
+;
+;qq: copy "" foreach t tables_a_transferer      [append qq rejoin [to-string t newline]] write %/tmp/qsdff qq
+;qq: copy "" foreach t tables_a_transferer_copy [append qq rejoin [to-string t newline]] write %/tmp/qsdf  qq
+;
+;
+;kk: sort/compare tables_a_transferer :compare_t
+;qq: copy "" foreach t kk [append qq rejoin [to-string t newline]] write %/tmp/qsdff qq
+;
+;? kk
+;call {xterm -e "vimdiff /tmp/qsdf /tmp/qsdff"}
+;
+;
+;
+;probe tables_a_transferer/1
+;find tables_a_transferer 'public.operations
+
+;}}}
+; Mince, marre de tergiverser, brutal et inélégant:
+tables_a_transferer: union [["public.operations"]] tables_a_transferer
+remove-each 
+;}}}
+;}}}
+; x Séparons les mots du schéma et de la table dans la liste: {{{
+
+;length? tables_a_transferer
+;== 53
+
+;foreach t tables_a_transferer [
+	;cnt: 0													; bunch of trucs for debugging first real-time migration
+	;while [cnt <= (length? tables_a_transferer)] [
+	;cnt: cnt + 1
+	;t: tables_a_transferer/:cnt
+	;?? t
+
+tt: copy []
+foreach t tables_a_transferer [
+	parse to-string t [ copy s to "." thru "." copy t to end] ;	prin s prin "  " print t 	; parsing schema and table names
+	append tt reduce [s t]
+]
+;foreach [s t] tt [ print s print t print ""]
+tables_a_transferer: copy tt
+
 ;}}}
 ; mince, les numauto, creation_ts, username ne sont pas remplis automatiquement par la base, quand on fait ainsi. Hm. Virons les champs gênants; après tout, seul numauto est gênant: les autres reflètent l'historique véritable de la donnée; il y a les champs cachés magiques de postgres, si on veut vraiment pister les choses.
 ; x Création d'un schéma temporaire:{{{
 ; (après un peu de ménage, au cas où la procédure aurait précédemment échoué)
-sql_txt: "DROP SCHEMA tmp_exports CASCADE;"
+sql_txt: "DROP SCHEMA IF EXISTS tmp_exports CASCADE;"
 append sql_txt newline
 append sql_txt "CREATE SCHEMA IF NOT EXISTS tmp_exports;"
 call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -c "} sql_txt {"}]
 ;}}}
 ; x recopie de toutes les tables à transférer dans le schéma temporaire pour exports:{{{
 sql_txt: copy ""
-cnt: 0
-foreach t tables_a_transferer [
-	cnt: cnt + 1
-	print cnt
-	parse to-string t [ copy s to "." thru "." copy t to end] 		 prin s prin "." print t
-
-;t: first tables_a_transferer
+;cnt: 0
+foreach [s t] tables_a_transferer 																		[
+	;cnt: cnt + 1
+	;print cnt
+	;t: first tables_a_transferer
 	append sql_txt rejoin ["CREATE TABLE tmp_exports." s "_" t " AS SELECT * FROM " s "." t " "]
 	unless (( t = "conversions_oxydes_elements" ) or (t = " units")) [ append sql_txt "ORDER BY opid"]
-	if ((left t 3) = "dh_") [
+	if ((left t 3) = "dh_") 																				[
 		append sql_txt ", id"
-		unless (( t = "dh_collars") or (t = "dh_followup") or (t = "dh_samples_submission")) [ 
-			append sql_txt ", depto" 
-		]
-	]
+		unless (( t = "dh_collars") or (t = "dh_followup") or (t = "dh_samples_submission")) 					[
+			append sql_txt ", depto" 																		]	]
     append sql_txt ";"
-	append sql_txt newline
-]
-
+	append sql_txt newline																				]
 write %/tmp/copy_tables_tmp_exports sql_txt
 call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -f /tmp/copy_tables_tmp_exports} ]
 
 ;}}}
 ; x on enlève certains champs à toutes ces tables:{{{
 sql_txt: copy ""
-foreach t tables_a_transferer [
-	parse to-string t [ copy s to "." thru "." copy t to end]
+foreach [s t] tables_a_transferer [
 	append sql_txt rejoin ["ALTER TABLE tmp_exports." s "_" t " DROP COLUMN IF EXISTS numauto;" newline]
 	]
 write %/tmp/copy_tables_tmp_exports sql_txt
@@ -245,15 +309,7 @@ dbhost: bd_depart/host
 connection_db
 
 cmd: copy ""
-;length? tables_a_transferer
-;== 53
-foreach t tables_a_transferer [
-	;cnt: 0													; bunch of trucs for debugging first real-time migration
-	;while [cnt <= (length? tables_a_transferer)] [
-	;cnt: cnt + 1
-	;t: tables_a_transferer/:cnt
-	;?? t
-	parse to-string t [ copy s to "." thru "." copy t to end] 		 prin s prin "  " print t 	; parsing schema and table names
+foreach [s t] tables_a_transferer [
 	call_wait_output_error rejoin ["pg_dump -h " bd_depart/host " -d " bd_depart/base " --disable-triggers --no-owner -a -t tmp_exports." s "_" t { > /tmp/} s "." t ".sql" newline]	; dump each table from temporary schema
 	call_wait_output_error rejoin [ {sed -i "s/TABLE tmp_exports.} s {_} t {/TABLE } s {.} t {/g" /tmp/} s "." t ".sql" newline ]
 	call_wait_output_error rejoin [ {sed -i "s/COPY tmp_exports.} s {_} t {/COPY } s {.} t {/g" /tmp/} s "." t ".sql" newline ]
@@ -269,19 +325,172 @@ call_wait_output_error {sed -i "s/(opid, year, obs_id, date, waypoint_name, x, y
 call_wait_output_error {sed -i "s/(sampl_index, ana_type, unit, det_lim, scheme, comments, value, opid, creation_ts, username, datasource)/(sample_index, ana_type, unit, det_lim, scheme, comments, value, opid, creation_ts, username, datasource)/g" /tmp/public.geoch_ana.sql}
 call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/g" /tmp/public.geoch_sampling.sql}
 call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/g" /tmp/public.geoch_sampling_grades.sql}
+call_wait_output_error {sed -i "s/public.shift_reports/public.dh_shift_reports/g" /tmp/public.shift_reports.sql}
+
+;call_wait_output_error {sed -i "s/
+;public.shift_reports (opid, date, shift, no_fichette, rig, geologist, time_start, time_end, id, peg_number, planned_length, tool, drilled_length_during_shift, drilled_length, completed, profile, comments, invoice_nr, drilled_shift_destr, drilled_shift_pq, drilled_shift_hq, drilled_shift_nq, recovered_length_shift, stdby_time1_h, stdby_time2_h, stdby_time3_h, moving_time_h, driller_name, geologist_supervisor, creation_ts, username, datasource)/public.dh_shift_reports (opid, date, shift, no_fichette, rig, geologist, time_start, time_end, id, peg_number, planned_length, tool, drilled_length_during_shift, drilled_length, completed, profile, comments, invoice_nr, drilled_shift_destr, drilled_shift_pq, drilled_shift_hq, drilled_shift_nq, recovered_length_shift, stdby_time1_h, stdby_time2_h, stdby_time3_h, moving_time_h, driller_name, geologist_supervisor, creation_ts, username, datasource)
+;}
+;
+;;,opid,date,shift,no_fichette,rig,geologist,time_start,time_end,id,peg_number,planned_length,tool,drilled_length_during_shift,drilled_length,completed,invoice_nr,drilled_shift_destr,drilled_shift_pq,drilled_shift_hq,drilled_shift_nq,recovered_length_shift,stdby_time1_h,stdby_time2_h,stdby_time3_h,moving_time_h,driller_name,geologist_supervisor,comments,datasource,numauto,creation_ts,username
+;
+;
+;
+;;COPY
+; FROM stdin;
+
 ;}}}
 ; x mettre les données de ces tables dans autan_postgeol depuis le dompage: ;{{{
-foreach t tables_a_transferer [
+foreach [s t] tables_a_transferer [
 	call_wait_output_error rejoin ["psql -X -h " bd_destination/host " -d " bd_destination/base { -U postgres -1 -f /tmp/} s "." t ".sql" newline]
 	print rejoin ["*** Table " s "." t " imported into " bd_destination/base " database hosted by " bd_destination/host ". ***"]
 	print "To have a glance at the imported data:"
-	print rejoin [newline newline {SELECT * FROM } s "." t { LIMIT 10;} newline]
+	sql_txt: rejoin [newline newline {SELECT * FROM } s "." t { LIMIT 10;} newline]
+	; pour le moment, pour traiter le cas shift_reports:
+	replace sql_txt "shift_reports" "dh_shift_reports"
+	print sql_txt
 	print "=========================================="
 ]
 ;}}}
 ; x voir les erreurs, et sed le fichier de dump => cf. supra
-; o vérifier par exports csv massifs et diff
-; o réitérer
+;NB: TODO shift_reports => dh_shift_reports => mince, failli l'oublier, lui...{{{
+
+; tables_a_transferer: [[public.shift_reports]]
+; et je refais tout tourner, en rajoutant quelques exceptions à la noix. Joies du refacteur...
+
+;}}}
+; e vérifier par exports csv massifs et diff{{{
+print "Check that the export and import procedures were done right, by comparing .csv exports of all tables from both bases? (Y/n)"
+res: input ; res: ""
+;{{{ } } } 
+unless ((uppercase res) = "N") [
+	nb_err: 0
+	log_msg: "==============================================================================="
+	append log_msg rejoin [newline now " {{{" newline "Just transferred data from host "
+bd_depart/host ", database " bd_depart/base " into host " bd_destination/host ", database " bd_destination/base "." newline "Starting check process." newline]
+	logfile: %/tmp/postgeol_err_chk_transfer_databases log_msg
+	write/append logfile log_msg
+	tables_err: copy []
+	; on se connecte à la base de départ:
+	connexion_bd_depart
+	cnt: 0	; DEBUG===============
+	foreach [s t] tables_a_transferer [
+		cnt: cnt + 1
+		?? cnt
+				;s: tables_a_transferer/15 t: tables_a_transferer/16
+		run_query rejoin ["SELECT * FROM " s "." t " LIMIT 1;"]
+		champs: copy sql_result_fields
+		remove-each t champs [(t = "numauto") or (t = "creation_ts") or (t = "username")]
+		sort champs
+		champs_cles: intersect ["opid" "id" "depto"] champs	; pour avoir ces champs, s'ils existent, en premier
+		champs: union champs_cles champs
+		champs_txt: copy ""
+		foreach c champs [ append champs_txt rejoin [to-string c ", "] ]
+		sql_txt: copy "SELECT "
+			;foreach c champs [ append sql_txt rejoin [c", "]]
+			append sql_txt champs_txt
+			sql_txt: trim_last_char trim_last_char sql_txt
+			append sql_txt rejoin [" FROM " s "." t " ORDER BY "]
+			foreach c champs [ append sql_txt rejoin [c", "]] ; c'est bestial, mais ainsi, on est trié par tous les champs
+			sql_txt: trim_last_char trim_last_char sql_txt
+			;append sql_txt ";" ; non nécessaire pour le COPY
+		outputfilename1: rejoin ["/tmp/check_export_" bd_depart/host "_" bd_depart/base "_" s "_" t ".csv"]
+		cmd: copy ""
+		append cmd rejoin [{echo "COPY (} sql_txt {) TO stdout WITH CSV FORCE QUOTE *" | psql -X -h } bd_depart/host { } bd_depart/base { > } outputfilename1 newline]
+		;traiter tous les cas particuliers, avec changements entre les structures de postgeol: {{{
+		; première tentative: {{{
+		case [
+		(t = "operations")	[
+			remove-each x champs [(x = "operation") or (x = "full_name")]
+			append champs ["name_short" "name_full"] ]
+		(t = "dh_followup")	[
+			remove-each x champs [(x = "log_lith") or (x = "")]
+			append champs ["log_litho"] ]
+		(t = "dh_quicklog")	[
+			remove-each x champs [(x = "oxid") or (x = "alt") or (x = "def")]
+			append champs ["oxidation" "alteration" "deformation"] ]
+		(t = "dh_tech")	[
+			remove-each x champs [(x = "drilled_len") or (x = "reco_len") or (x = "rqd_len") or (x = "diam")]
+			append champs ["drilled_length" "recovered_length" "rqd_length " "diameter"] ]
+		(t = "field_observations")	[
+			remove-each x champs [(x = "hour")]
+			append champs ["time"] ]
+		(t = "geoch_ana")	[
+			remove-each x champs [(x = "sampl_index")]
+			append champs ["sample_index"] ]
+		(t = "geoch_sampling")	[
+			remove-each x champs [(x = "soil_color") or (x = "comment")]
+			append champs ["soil_colour" "comments"] ]
+		(t = "geoch_sampling_grades")	[
+			remove-each x champs [(x = "soil_color") or (x = "comment")]
+			append champs ["soil_colour" "comments"] ]
+		]
+		;}}}
+		; ça va merdoyer pour les champs renommés changeant d'ordre... Boudiou...
+		; non, autre solution:{{{
+		case [
+		(t = "operations")	[ 			replace champs_txt "operation"		"name_short" 
+										replace champs_txt "full_name"		"name_full"			]
+		(t = "dh_followup")	[			replace champs_txt "log_lith"		"log_litho"			]
+		(t = "dh_quicklog")	[			replace champs_txt "oxid"			"oxidation"
+										replace champs_txt "alt"			"alteration"
+										replace champs_txt "def"			"deformation"		]
+		(t = "dh_tech")	[				replace champs_txt "drilled_len"	"drilled_length" 
+										replace champs_txt "reco_len"		"recovered_length" 
+										replace champs_txt "rqd_len"		"rqd_length" 
+										replace champs_txt "diam"			"diameter"			]
+		(t = "field_observations") [	replace champs_txt "hour"			"time"				]
+		(t = "geoch_ana")	[			replace champs_txt "sampl_index"	"sample_index"		]
+		(t = "geoch_sampling")	[		replace champs_txt "soil_color"		"soil_colour"
+										replace champs_txt "comment"		"comments"			]
+		(t = "geoch_sampling_grades") [	replace champs_txt "soil_color"		"soil_colour"
+										replace champs_txt "comment"		"comments"			]
+		]
+		;}}}
+		;s/public.shift_reports/public.dh_shift_reports/g" /tmp/public.shift_reports.sql}
+		;???
+
+		;}}}
+		outputfilename2: rejoin ["/tmp/check_export_" bd_destination/host "_" bd_destination/base "_" s "_" t ".csv"]
+		sql_txt: copy "SELECT "
+			;foreach c champs [ append sql_txt rejoin [c", "]]
+			append sql_txt champs_txt
+			sql_txt: trim_last_char trim_last_char sql_txt
+			append sql_txt rejoin [" FROM " s "." t " ORDER BY "]
+			foreach c champs [ append sql_txt rejoin [c", "]] ; c'est bestial, mais ainsi, on est trié par tous les champs
+			sql_txt: trim_last_char trim_last_char sql_txt
+			;append sql_txt ";" ; non nécessaire pour le COPY
+		append cmd rejoin [{echo "COPY (} sql_txt {) TO stdout WITH CSV FORCE QUOTE *" | psql -X -h } bd_destination/host { } bd_destination/base { > } outputfilename2 newline] ; sans HEADER pour contourner le problème des champs changeant de noms; idem supra
+		;call_wait_output_error cmd
+		;tt: copy ""
+		append cmd rejoin ["diff -q " outputfilename1 " " outputfilename2 newline]
+		call_wait_output_error cmd		
+		unless (tt = "") [		; si erreur:
+			nb_err: nb_err + 1
+			append tables_err reduce [s t]
+			replace cmd "WITH CSV FORCE QUOTE" "WITH CSV HEADER FORCE QUOTE"	; pour le débogage, dans le log, on met les noms de champs, et il faut avoir un vimdiff (qui n'en a pas?)
+			replace cmd "diff -q" "vimdiff "
+			msg: rejoin ["Differences in the data contained in tables " s "." t ": see these commands: {{{ " newline cmd newline "}}}"]
+			print msg
+			write/append logfile msg
+			write/append logfile newline
+		]
+	]
+	msg: copy ""
+	append msg rejoin [newline now newline "Finished check process: " ]
+	either (nb_err = 0) [
+		append msg "no errors while checking .csv exports from both bases."
+		][
+		append msg rejoin [ nb_err " table(s) returned an error while checking exports from both bases:"]
+		foreach [s t] tables_err [ append msg rejoin [newline s "." t ]]
+	append msg rejoin [newline newline "}}}" newline]
+	]
+write/append logfile msg
+]
+;}}}
+
+;}}}
+
+; o corriger et réitérer si échec
 
 ;-- à la fin, nettoyer la base de départ: DROP TABLE tmp_exports.*;  DROP SCHEMA 'tmp_exports'; :
 call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -d " bd_depart/base { -1 -c "DROP SCHEMA tmp_exports CASCADE;"}]

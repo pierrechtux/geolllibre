@@ -734,7 +734,7 @@ CREATE TABLE public.dh_shift_reports (
     drilled_length_during_shift   numeric(10,2),
     drilled_length                numeric(10,2),
     completed                     boolean,
---  profile                       text,
+    profile                       text,
     invoice_nr                    integer,
     drilled_shift_destr           numeric,
     drilled_shift_pq              numeric,
@@ -775,7 +775,7 @@ COMMENT ON COLUMN dh_shift_reports.tool                         IS 'Drilling (di
 COMMENT ON COLUMN dh_shift_reports.drilled_length_during_shift  IS 'Length of borehole drilled during the shift';
 COMMENT ON COLUMN dh_shift_reports.drilled_length               IS 'Total length of the borehole drilled at the end of the shift';
 COMMENT ON COLUMN dh_shift_reports.completed                    IS 'Borehole finished or not';
--- COMMENT ON COLUMN dh_shift_reports.profile                      IS 'Section identifier';
+COMMENT ON COLUMN dh_shift_reports.profile                      IS 'Section identifier';
 COMMENT ON COLUMN dh_shift_reports.comments                     IS 'Comments on drilling (events, presence of water, difficulties, major facies, etc.)';
 COMMENT ON COLUMN dh_shift_reports.invoice_nr                   IS 'Subcontractor invoice number';
 COMMENT ON COLUMN dh_shift_reports.drilled_shift_destr          IS 'Drilled length during shift in destructive';
