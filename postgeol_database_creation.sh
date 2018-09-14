@@ -2,7 +2,7 @@
 #	Title:   "Creation of postgeol database: postgresql database for geological data"
 #	Name:    postgeol_database_creation.sh
 #            (used to be: bdexplo_creation.r  => when it was a mining exploration database)
-#	Version: 0.0.1
+#	Version: 0.0.2
 #	Date:    22-Aug-2018/22:29:08+2:00
 #	Author:  "Pierre Chevalier"
 #	License: {
@@ -35,8 +35,31 @@
 #		}
 #]
 
-#-- General variables:
-#-- TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
+#	 _________
+#	< bdexplo >               <= the ancester of postgeol, ca. 1992 to 2018
+#	 ---------
+#	        \   ^__^
+#	         \  (xx)\_______
+#	            (__)\       )\/\
+#	             U  ||----w |
+#	                ||     ||
+#	
+#	 __________
+#	< postgeol >                  <= the descendant of bdexplo, since 2016
+#	 ----------
+#	        \    __
+#	         \ /(  )\_---------_
+#	          { (°°) }          )\
+#	          { /()\ }          | \
+#	           / () \ |_______| |
+#	          /  !! |\|       | |
+#	             ! /__|      /_|_\			TODO: hack cowsay source, and add an pachydermic option
+
+# General variables:
+# TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
+# nom de la base à créer, hôte, port
+# les rôles, sont-ils existants ou à créer, qui fait quoi (cf. autre script plus avant, de gestion des rôles).
+
 clear ###################ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 
 echo "Make a new empty database, with postgis extension."
@@ -69,18 +92,19 @@ echo " 1) schemas and tables:"
 psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 
 echo " 2) functions (this part has to be run as postgresql superuser: postgres):"
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 psql -d $newdb -X --single-transaction -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
 
 echo " 3) views:"
 # create the queries set:
-psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
 newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
+
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#~/geolllibre/gll_bdexplo_views_create.r 
+~/geolllibre/postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai.
+
 exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
-
-~/geolllibre/gll_bdexplo_views_create.r # TODO paramétrer le nom de la base
-
-
-
 # à la fin, pour transférer les données de bdexplo vers postgeol:
 postgeol_transfer_data_from_bdexplo
 
@@ -259,5 +283,5 @@ CREATE TABLE public.program (
 --);
 
 --}}}
-
 -- }}}
+
