@@ -1075,6 +1075,41 @@ COMMENT ON COLUMN dh_tech.creation_ts                 IS 'Current date and time 
 COMMENT ON COLUMN dh_tech.username                    IS 'User (role) which created data record';
 
 --}}}
+-- x dh_rqd {{{
+
+CREATE TABLE public.dh_rqd (
+    opid                integer,
+    id                  text,
+    depfrom             numeric(10,2),
+    depto               numeric(10,2),
+    rqd_length          numeric(10,2),
+    joints_description  text,
+    nb_joints           integer,
+    comments            text,
+    datasource          integer,
+    numauto             bigserial PRIMARY KEY,
+    creation_ts         timestamptz DEFAULT now() NOT NULL,
+    username            text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE public.dh_rqd IS 'Geotechnical data: RQD, which is sometimes logged with different intervals than coring intervals';
+COMMENT ON COLUMN dh_rqd.opid                        IS 'Operation identifier';
+COMMENT ON COLUMN dh_rqd.id                          IS 'Drill hole identification';
+COMMENT ON COLUMN dh_rqd.depfrom                     IS 'Interval begining depth';
+COMMENT ON COLUMN dh_rqd.depto                       IS 'Interval ending depth';
+COMMENT ON COLUMN dh_rqd.rqd_length                  IS 'RQD (Rock Quality Designation) 10 "length" over drilled interval; sometimes, RQD measurements are in this table; sometimes they are put in a separate table, with depth intervals different from drilled intervals';
+COMMENT ON COLUMN dh_rqd.joints_description          IS 'Joints description: rugosity, fillings, etc.';
+COMMENT ON COLUMN dh_rqd.nb_joints                   IS 'Count of natural joints along drilled run';
+COMMENT ON COLUMN dh_rqd.datasource                  IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN dh_rqd.numauto                     IS 'Automatic integer primary key';
+COMMENT ON COLUMN dh_rqd.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_rqd.username                    IS 'User (role) which created data record';
+
+--}}}
 -- x dh_drill_params {{{
 
 CREATE TABLE public. dh_drill_params  (
@@ -1117,6 +1152,7 @@ COMMENT ON COLUMN dh_drill_params.username                    IS 'User (role) wh
 
 
 --}}}
+
 -- x dh_struct_measures {{{
 
 CREATE TABLE public.dh_struct_measures (
