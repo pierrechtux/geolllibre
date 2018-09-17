@@ -342,7 +342,8 @@ call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date,
 call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/g" /tmp/public.geoch_sampling_grades.sql}
 call_wait_output_error {sed -i "s/public.shift_reports/public.dh_shift_reports/g" /tmp/public.shift_reports.sql}
 ;}}}
-; Du ménage drastique dans la base de destination, après accord: {{{
+comment [ Commenté: on va plutôt partir du principe qu'on a affaire à une base de destination vierge. TODO: il faudra paramétrer cela.
+; x Du ménage drastique dans la base de destination, après accord: {{{
 log_write "If destination database has records in its dataset, then a drastic clean must first be done, if agreed:"
 connexion_bd_destination
 tables_destination: run_query "SELECT schemaname || '.' || tablename FROM pg_tables WHERE schemaname NOT IN ('backups', 'information_schema', 'pg_catalog', 'tmp_a_traiter', 'tmp_imports', 'tmp_exports', 'tmp_ntoto', 'topology') ORDER BY 1;"
@@ -361,6 +362,7 @@ unless (uppercase res = "N") [
 ; purée, c'est ultralambin! Peut-être faudrait-il changer l'ordre des DELETE, pour les DELETEions en cascade dans les tables filles?
 ]
 ;}}}
+]
 ; x Mettre les données de ces tables dans la base postgeol de destination depuis le dompage: ;{{{
 ;_______________ENCOURS_______________GEOLLLIBRE
 
