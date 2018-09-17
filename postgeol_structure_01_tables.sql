@@ -241,7 +241,7 @@ COMMENT ON COLUMN field_observations.geologist                  IS 'Geologist or
 COMMENT ON COLUMN field_observations.device                     IS 'Device used to record data: good old fieldbook, PDA, smartphone, tablet, dictaphone, raw human memory (not recommended), etc.';
 COMMENT ON COLUMN field_observations.icon_descr                 IS 'If relevant, icon description from some GPS devices/programs';
 COMMENT ON COLUMN field_observations.comments                   IS 'Comments';
-COMMENT ON COLUMN field_observations."time"                     IS '?';
+COMMENT ON COLUMN field_observations.time                       IS '?';
 COMMENT ON COLUMN field_observations.timestamp_epoch_ms         IS 'Timestamp of observation: as defined in GeolPDA devices, as epoch in ms';
 COMMENT ON COLUMN field_observations.datasource                 IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN field_observations.numauto                    IS 'Automatic integer primary key';
@@ -1112,7 +1112,7 @@ COMMENT ON COLUMN dh_rqd.username                    IS 'User (role) which creat
 --}}}
 -- x dh_drill_params {{{
 
-CREATE TABLE public. dh_drill_params  (
+CREATE TABLE public.dh_drill_params (
     opid                    integer,
     id                      text,
     depto                   numeric(10,2),
@@ -1134,7 +1134,7 @@ CREATE TABLE public. dh_drill_params  (
         DEFERRABLE INITIALLY DEFERRED
 );
 
-COMMENT ON TABLE public.dh_drill_params IS 'Drilling parameters, recorded with logging device while drilling"';
+COMMENT ON TABLE public.dh_drill_params IS 'Drilling parameters, recorded with logging device while drilling';
 COMMENT ON COLUMN dh_drill_params.opid                        IS 'Operation identifier';
 COMMENT ON COLUMN dh_drill_params.id                          IS 'Drill hole identification';
 COMMENT ON COLUMN dh_drill_params.depto                       IS 'Interval ending depth; in fact it is rather a ponctual depth, depto refers to the convention that a depth is implicitely an end-of-run depth';
@@ -1152,6 +1152,150 @@ COMMENT ON COLUMN dh_drill_params.username                    IS 'User (role) wh
 
 
 --}}}
+-- x dh_pressiom_results {{{
+
+CREATE TABLE public.dh_pressiom_results (
+    opid                    integer,
+    id                      text,
+    depto                   numeric(10,2),
+    probe_pressiom_id       text,           -- TODO make appropriate entries within lex_code table
+    creep_pressure_bar      numeric(10,2),
+    limit_pressure_bar      numeric(10,2),
+    pmt_module              numeric(10,2),
+    comments                text,
+    datasource              integer,
+    numauto                 bigserial PRIMARY KEY,
+    creation_ts             timestamptz DEFAULT now() NOT NULL,
+    username                text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+COMMENT ON TABLE public.dh_pressiom_results IS 'Pressiometric geotechnicaaaaal test: results from the test, after computation of raw data';
+COMMENT ON COLUMN dh_pressiom_results.opid                        IS 'Operation identifier';
+COMMENT ON COLUMN dh_pressiom_results.id                          IS 'Drill hole identification';
+COMMENT ON COLUMN dh_pressiom_results.depto                       IS 'Interval ending depth; in fact it is rather a ponctual depth, depto refers to the convention that a depth is implicitely an end-of-run depth';
+COMMENT ON COLUMN dh_pressiom_results.probe_pressiom_id           IS 'Identifier of the pressiometric probe that has been used during the test; refer to lex_code table';
+COMMENT ON COLUMN dh_pressiom_results.creep_pressure_bar          IS 'Creep pressure, in bar, Pf => Pression de Fluage';
+COMMENT ON COLUMN dh_pressiom_results.limit_pressure_bar          IS 'Limit pressure, in bar, Pl => Pression Limite';
+COMMENT ON COLUMN dh_pressiom_results.pmt_module                  IS 'Pressiometric module => Module pressiométrique';
+COMMENT ON COLUMN dh_pressiom_results.comments                    IS 'Comments';
+COMMENT ON COLUMN dh_pressiom_results.datasource                  IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN dh_pressiom_results.numauto                     IS 'Automatic integer primary key';
+COMMENT ON COLUMN dh_pressiom_results.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_pressiom_results.username                    IS 'User (role) which created data record';
+
+--}}}
+-- x dh_pressiom_raw_data {{{
+
+CREATE TABLE public.dh_pressiom_raw_data (
+    opid                    integer,
+    id                      text,
+    depto                   numeric(10,2),
+	--TODO
+	comments				text,
+    datasource              integer,
+    numauto                 bigserial PRIMARY KEY,
+    creation_ts             timestamptz DEFAULT now() NOT NULL,
+    username                text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+COMMENT ON TABLE public.dh_pressiom_raw_data IS 'Pressiometric test, raw results';
+--}}}
+-- x dh_penetrometer {{{
+
+CREATE TABLE public.dh_penetrometer (
+    opid                    integer,
+    id                      text,
+    depto                   numeric(10,2),
+    probe_penetro_id        text,           -- TODO make appropriate entries within lex_code table
+	hits                    integer,
+    comments                text,
+    datasource              integer,
+    numauto                 bigserial PRIMARY KEY,
+    creation_ts             timestamptz DEFAULT now() NOT NULL,
+    username                text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+
+COMMENT ON TABLE public.dh_penetrometer IS 'Penetrometer geotechnical test';
+COMMENT ON COLUMN dh_penetrometer.opid                        IS 'Operation identifier';
+COMMENT ON COLUMN dh_penetrometer.id                          IS 'Drill hole identification';
+COMMENT ON COLUMN dh_penetrometer.depto                       IS 'Interval ending depth; in fact it is rather a ponctual depth, depto refers to the convention that a depth is implicitely an end-of-run depth';
+COMMENT ON COLUMN dh_penetrometer.probe_penetro_id            IS 'Identifier of the penetrometer machine, generally a rig that has been used to make the test; refer to lex_code table';
+COMMENT ON COLUMN dh_penetrometer.hits                        IS 'Number of hits to reach the depth';
+COMMENT ON COLUMN dh_penetrometer.comments                    IS 'Comments';
+COMMENT ON COLUMN dh_penetrometer.datasource                  IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN dh_penetrometer.numauto                     IS 'Automatic integer primary key';
+COMMENT ON COLUMN dh_penetrometer.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_penetrometer.username                    IS 'User (role) which created data record';
+
+--}}}
+
+-- x dh_piezo_measures {{{
+
+CREATE TABLE public.dh_piezo_measures (
+    opid                    integer,
+    id                      text,
+	operator                text,
+	date_time				timestamptz,
+    probe_piezo_id          text,
+	weather                 text,
+	top_reference           text,
+    top_z                   numeric(10,2),  -- TODO arranger ça différemment: faire une table des repères, avec l'historique par exemple
+	aquifer                 text,
+	investigated_formation  text,
+    superficial_formation   boolean,
+    captive_water_table     boolean,
+	water_depth				numeric(10,3),
+	eoh_depth				numeric(10,2),
+	comments				text,
+    datasource              integer,
+    numauto                 bigserial PRIMARY KEY,
+    creation_ts             timestamptz DEFAULT now() NOT NULL,
+    username                text DEFAULT current_user,
+    FOREIGN KEY (opid, id)
+        REFERENCES public.dh_collars (opid, id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+        DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE public.dh_piezo_measures IS 'Piezometric measurements';
+COMMENT ON COLUMN dh_piezo_measures.opid                        IS 'Operation identifier';
+COMMENT ON COLUMN dh_piezo_measures.id                          IS 'Drill hole identification';
+COMMENT ON COLUMN dh_piezo_measures.operator                    IS 'Operator name; should reference a lex_code entry';
+COMMENT ON COLUMN dh_piezo_measures.date_time                   IS 'Timestamp of measurement';
+COMMENT ON COLUMN dh_piezo_measures.probe_piezo_id              IS 'Identification of the piezometric probethat has been used; refer to lex_code table';
+COMMENT ON COLUMN dh_piezo_measures.weather                     IS 'Brief description of weather conditions at the time of measurement';
+COMMENT ON COLUMN dh_piezo_measures.top_reference               IS 'Top measurement reference: beacon, well border, cover, etc.';
+COMMENT ON COLUMN dh_piezo_measures.top_z                       IS 'Altitude of reference level'; -- TODO maybe done differently
+COMMENT ON COLUMN dh_piezo_measures.aquifer                     IS 'Name of aquifer, if defined'; --TODO reboucler avec Tristan
+COMMENT ON COLUMN dh_piezo_measures.investigated_formation      IS 'Geological formation in which the piezometer is measuring water';
+COMMENT ON COLUMN dh_piezo_measures.superficial_formation       IS 'Superficial formation, or not';
+COMMENT ON COLUMN dh_piezo_measures.captive_water_table         IS 'Water table captive or not';
+
+COMMENT ON COLUMN dh_piezo_measures.water_depth                 IS 'Water level measurement';
+COMMENT ON COLUMN dh_piezo_measures.eoh_depth                   IS 'End Of Hole depth: measurement of end of hole gives an idea whether sedimentation takes plac within hole or not';
+COMMENT ON COLUMN dh_piezo_measures.comments                    IS 'Comments';
+COMMENT ON COLUMN dh_piezo_measures.datasource                  IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN dh_piezo_measures.numauto                     IS 'Automatic integer primary key';
+COMMENT ON COLUMN dh_piezo_measures.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN dh_piezo_measures.username                    IS 'User (role) which created data record';
+
+--}}}
+--Todo faire une table avec les repères et leur historique; s'inspirer des tables de François au SGT/REU, ou de Vincent Mardhel, ou de la BSS
 
 -- x dh_struct_measures {{{
 
@@ -2318,6 +2462,7 @@ COMMENT ON COLUMN lex_standard.username               IS 'User (role) which crea
 --}}}
 --}}}
 
+-- reports table --TODO or, better to have a proper documentation system running, with its references stored in this database?
 
 -- e miscellaneous:{{{
 
