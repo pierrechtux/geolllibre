@@ -35,42 +35,124 @@
 #		}
 #]
 
-#	 _________
-#	< bdexplo >               <= the ancester of postgeol, ca. 1992 to 2018
-#	 ---------
-#	        \   ^__^
-#	         \  (xx)\_______
-#	            (__)\       )\/\
-#	             U  ||----w |
-#	                ||     ||
-#	
-#	 __________
-#	< postgeol >                  <= the descendant of bdexplo, since 2016
-#	 ----------
-#	        \    __
-#	         \ /(  )\_---------_
-#	          { (°°) }          )\
-#	          { /()\ }          | \
-#	           / () \  |____\   |
-#	          /  !! |\ |     |  |\
-#	             J  [__|     [__||			TODO: hack cowsay source, and add an pachydermic option
+echo "   oO------------------------------------Oo"
+echo "  °                                        °"
+echo " {     PostGeol: PostgreSQL for Geology     }"
+echo "  °                                        °"
+echo "   °o____________________________________o°"
+echo
+echo "	 _________                      "
+echo "	< BDexplo >               <= the ancester of postgeol, ca. 1992 to 2018"
+echo "	 ---------                      "
+echo "	        \   ^__^                "
+echo "	         \  (xx)\_______        "
+echo "	            (__)\       )\/\    "
+echo "	             U  ||----w |       "
+echo "	                ||     ||       "
+echo "	                                "
+echo
+echo "	 __________                     "
+echo "	< PostGeol >                  <= the descendant of bdexplo, since 2016"
+echo "	 ----------"
+echo "	        \    __                 "
+echo "	         \ /(  )\_---------_    "
+echo "	          { (°°) }          )\  "
+echo "	          { /()\ }          | \ "
+echo "	           / () \  |____\   |   "
+echo "	          /  !! |\ |     |  |\  "
+echo "	             J  [__|     [__||  "  #	TODO: hack cowsay source, and add a pachydermic option"
 
 # General variables:
 # TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
 # nom de la base à créer, hôte, port
 # les rôles, sont-ils existants ou à créer, qui fait quoi (cf. autre script plus avant, de gestion des rôles).
 
-clear ###################ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+#clear ###################ENLEVER APRES MISE AU POINT SCRIPT######## TODO
+echo
+echo
+echo "Now Running script $0"
+echo
+echo "Generation of a new empty database with PostGIS extension, with the PostgreSQL structure."
+echo
+echo "Make a new empty database."
+echo "Also, create a schema with the current user's name, who becomes the creator and owner of the database."
+echo
 
-echo "Make a new empty database, with postgis extension."
-echo "Also, create a schema with the current user's name."
+############ DEFINE SERVER:
+echo "- 1. SERVER DEFINITION:"
+############   HOST
+echo "- 1.1 HOST:"
+echo "Default postgresql database server is named after environment variable \$GLL_BD_HOST, which is now: '$GLL_BD_HOST'."
+echo "Press <Enter> to confirm, or type a valid postgresql server hostname and then <Enter>:"
+read tmp
+[[ ! -z "$tmp" ]] && GLL_BD_HOST=$tmp
+echo "  Hostname: $GLL_BD_HOST"
+echo
 
-echo "The database to be created comes from environment variable \$POSTGEOL, which is now '$POSTGEOL'."
+############   PORT
+echo "- 1.2 PORT:"
+echo "Default port (traditionnally 5432) of the postgresql database is named after environment variable \$GLL_BD_PORT, which is now '$GLL_BD_PORT'."
+echo "Press <Enter> to confirm, or type a valid port number used by postgresql on $GLL_BD_HOST server:"
+read tmp
+[[ ! -z "$tmp" ]] && GLL_BD_PORT=$tmp
+echo "  Port: $GLL_BD_PORT"
+echo
+
+############   DATABASE NAME
+echo "- 1.3 DATABASE NAME:"
+echo "The default database to be created is named after environment variable \$POSTGEOL, which is now '$POSTGEOL'."
+#echo "Enter to validate this database name for the new database to be created; otherwise, enter a valid database name (no dashes, preferrably lowercase, underscores, etc.) to be created with postgeol structure:"
+echo "Press <Enter> to confirm, or type 
+a valid database name (no dashes, preferrably lowercase, underscores, etc.) to be created with postgeol structure on postgresql $GLL_BD_HOST server:"
+read tmp
+[[ ! -z "$tmp" ]] && POSTGEOL=$tmp
+echo "  Database: $POSTGEOL"
+echo
+
+############   USER
+echo "- 1.4 SUPERUSER NAME:"
+echo "The default database to be created is named after environment variable \$POSTGEOL, which is now '$POSTGEOL'."
+#echo "Enter to validate this database name for the new database to be created; otherwise, enter a valid database name (no dashes, preferrably lowercase, underscores, etc.) to be created with postgeol structure:"
+echo "Press <Enter> to confirm, or type 
+a valid database name (no dashes, preferrably lowercase, underscores, etc.) to be created with postgeol structure on postgresql $GLL_BD_HOST server:"
+read tmp
+[[ ! -z "$tmp" ]] && POSTGEOL=$tmp
+echo "  Database: $POSTGEOL"
+echo
+
+
+
+
+
+exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
+
+
+############   USER
+
+######## On rappelle la connexion:
+echo "- SUMMARY:
+echo "On postgresql server $GLL_BD_HOST listening on port $GLL_BD_PORT, the database $POSTGEOL is about to be created, with owner $USER.  Enter to confirm, Ctrl-C to cancel."
+
+
+
+
+
+
+
+
 newdb=$POSTGEOL
 # TODO treat case when environment variable is not defined; maybe offer a choice to the user, for another database name.
-#
-echo "Drop database $POSTGEOL, if it already exists:"
+read tmp
+[[ ! -z "$tmp" ]] && newdb=$tmp && echo $newdb
+echo
+echo "Port of server $newdb 
+
+
+echo
+echo "Drop database $newdb, if it already exists:"
 # TODO prompt for a confirmation
+echo "Enter to continue, Ctrl-C to cancel:"
+read
 dropdb $newdb
 #
 echo "Database creation:"
@@ -104,7 +186,6 @@ newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 #~/geolllibre/gll_bdexplo_views_create.r 
 ~/geolllibre/postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai.
 
-exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 # à la fin, pour transférer les données de bdexplo vers postgeol:
 postgeol_transfer_data_from_bdexplo
 
