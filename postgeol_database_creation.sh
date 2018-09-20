@@ -51,9 +51,9 @@
 #	         \ /(  )\_---------_
 #	          { (°°) }          )\
 #	          { /()\ }          | \
-#	           / () \ |_______| |
-#	          /  !! |\|       | |
-#	             ! /__|      /_|_\			TODO: hack cowsay source, and add an pachydermic option
+#	           / () \  |____\   |
+#	          /  !! |\ |     |  |\
+#	             J  [__|     [__||			TODO: hack cowsay source, and add an pachydermic option
 
 # General variables:
 # TODO => les mettre dans ce script, plutôt que dans les .sql ; demander, au besoin, les valeurs interactivement.
