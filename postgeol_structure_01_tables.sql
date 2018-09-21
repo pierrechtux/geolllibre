@@ -1411,6 +1411,7 @@ CREATE TABLE public.dh_samples_submission (
         DEFERRABLE INITIALLY DEFERRED
 );
 
+COMMENT ON TABLE public.dh_samples_submission IS 'Samples submission track: sequence of sent samples, used for follow-up'; -- TODO add relevant information, and get rid of too specific fields (such as sgs_subm).
 --}}}
 -- x dh_sampling_grades: {{{
 
