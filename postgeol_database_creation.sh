@@ -104,10 +104,12 @@ newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 #~/geolllibre/gll_bdexplo_views_create.r 
 ~/geolllibre/postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai.
 
-exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
+newdb=$POSTGEOL #########ENLEVER APRES MISE AU POINT SCRIPT######## TODO
 # à la fin, pour transférer les données de bdexplo vers postgeol:
-postgeol_transfer_data_from_bdexplo
+~/geolllibre/postgeol_transfer_data_from_bdexplo # TODO paramétrer le nom de la base
 
+
+exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 exit 0 ###### si jamais...
 --DES TABLES QUE, FINALEMENT, TOUT BIEN PESÉ, ON NE MET PAS DANS POSTGEOL:{{{
 -- Il convient de les traiter comme il convient, dans bdexplo, où elles restent. En versant leurs données dans la *bonne* structure, celle de postgeol.
