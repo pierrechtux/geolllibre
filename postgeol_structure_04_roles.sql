@@ -1,4 +1,3 @@
-BEGIN TRANSACTION;
 -- Roles definition
 /*
 --Des alter owner: {{{
@@ -51,4 +50,3 @@ ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tien
 -- TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
 
 */
-

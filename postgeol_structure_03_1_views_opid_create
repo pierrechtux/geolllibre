@@ -15,8 +15,8 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
- 
+  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
-    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
+    or write to the Free Software Foundation, Inc., 51 Franklin Street,
     Fifth Floor, Boston, MA 02110-1301, USA.
     See LICENSE file.
 }
@@ -37,7 +37,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 
 ;	 _________
-;	< bdexplo >
+;	< bdexplo >               <= the ancester of postgeol, ca. 1992 to 2018
 ;	 ---------
 ;	        \   ^__^
 ;	         \  (xx)\_______
@@ -45,8 +45,97 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ;	             U  ||----w |
 ;	                ||     ||
 ;	
+;	 __________
+;	< postgeol >                  <= the descendant of bdexplo, since 2016
+;	 ----------
+;	        \    __
+;	         \ /(  )\_---------_
+;	          { (°°) }          )\
+;	          { /()\ }          | \
+;	           / () \ |__ ____| |
+;	          /  !! |\|       | |
+;	             ! /__|      /_|_\
 
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
+
+; (gauled from man psql; double ;; when implemented here)
+;SYNOPSIS
+; postgeol_structure_03_1_views_opid_create [option...] [dbname [username]]
+;
+;OPTIONS
+;       -d dbname
+;       --dbname=dbname
+;           Specifies the name of the database to connect to. This is
+;           equivalent to specifying dbname as the first non-option argument on
+;           the command line.
+;
+;           If this parameter contains an = sign or starts with a valid URI
+;           prefix (postgresql:// or postgres://), it is treated as a conninfo
+;           string. See Section 33.1.1 for more information.
+;
+;       -h hostname
+;       --host=hostname
+;           Specifies the host name of the machine on which the server is
+;           running. If the value begins with a slash, it is used as the
+;           directory for the Unix-domain socket.
+;
+;       -p port
+;       --port=port
+;           Specifies the TCP port or the local Unix-domain socket file
+;           extension on which the server is listening for connections.
+;           Defaults to the value of the PGPORT environment variable or, if not
+;           set, to the port specified at compile time, usually 5432.
+;
+;       -U username
+;       --username=username
+;           Connect to the database as the user username instead of the
+;           default. (You must have permission to do so, of course.)
+
+;do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
+options: system/options/args
+msg_err: does [print "* Error *"]
+print probe options   ; DEBUG ##########
+unless (none? options) [ ; =>	No command line options: get default values, they are already defined in .gll_preferences and/or in environment variables
+;	print length? options ; DEBUG ##########
+	switch/default (length? options) [
+	1	[	; Just one word as argument: let's suppose that it is the database name
+		dbname: first options
+		]
+	2	[	; two words:
+		; does the first one start with - ?
+		either (first (to-string (first options)) = "-") [
+			case [
+				(second (to-string (first options)) = "d")	[ ; then the following argument is the database to connect to:
+				dbname: second options						]
+				(second (to-string (first options)) = "h") 	[ ; then the following argument is the host to connect to:
+				dbhost: second options						]
+				(second (to-string (first options)) = "p")	[ ; then the following argument is the port to connect to:
+				dbport: second options						]
+				(second (to-string (first options)) = "U")	[ ; then the following argument is the username to connect as:
+				user:   second options						]
+			]
+			] [ ; the first word doesn't start with - : therefore, it is the database to connect to:
+			dbname: first options
+			; now what is the second word?  It must be the username:
+			user: second options
+			]		
+		]
+	3	[	; three words:
+		; NOPE. TODO later. Find a better way to handle that, in any decent codebase...
+		msg_err ; pour le moment...
+		;	; => nothing to do
+		]
+	]
+	[		;=> autre cas: erreur
+		msg_err
+	]
+]
+
+?? dbname
+?? dbhost
+?? dbport
+?? user
+
+connection_db 
 insert db "BEGIN TRANSACTION;"
 
 ;# on commence à fabriquer un gros texte en sql, qu'on fera tourner à la fin: {{{
@@ -59,7 +148,7 @@ BEGIN TRANSACTION;
 ;# -- 1. les vues homonymes des tables, dans le premier schéma dans l'ordre de recherche, en restreignant à l'opération active: {{{
 
 ;# La liste des tables pour lesquelles on veut faire une vue homonyme dans le schéma utilisateur:
-;comment [ {{{ } } } 
+;comment [ {{{ } } }
 ;tables_for_view_join_operationid = [
 ;'ancient_workings'        ,
 ;'dh_collars'              ,
@@ -99,9 +188,7 @@ tables_indesirables: ["dh_nb_samples" "dh_collars_lengths" "spatial_ref_sys" "ge
 tables_for_view_join_operationid: (exclude tables_for_view_join_operationid tables_indesirables)
 
 ; pour voir les tables concernées rapidos:
-;foreach t tables_for_view_join_operationid [
-;print rejoin ["TABLE public." t ";"]
-;]
+;foreach t tables_for_view_join_operationid [ print rejoin ["TABLE public." t ";"] ]
 
 ;#}}}
 
@@ -115,9 +202,8 @@ foreach tablename tables_for_view_join_operationid [
 ;# --}}}
 
 ;# À partir de l'instruction sql ainsi commencée, on l'agrège maintenant, avec un gros tas de requêtes déjà faites:
-; 2018_08_26__20_14_24 => no, rather store these views definition into a separate plain SQL file.
+; 2018_08_26__20_14_24 => no, rather store these views definition into a separate plain SQL file, which is played prior to this program.
 ;# Voilà, le sql est fabriqué.
-
 
 ;# ...que l'on runne ensuite:
 ;# (cancellé, pour le moment, par prudence: on montre juste le SQL)
@@ -125,20 +211,20 @@ foreach tablename tables_for_view_join_operationid [
 ; insert db to-string sql_string
 ; => marche pas, cf. Doc
 
-close  db
-
+close db
 
 ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
+call_wait_output_error ligne_cmd
 
-
-either ( confirm "Run the generated script?" ) [
-	call/wait ligne_cmd ]
-	[
-	; Prudemment, on ne runne pas, on affiche juste:
-	; print ligne_cmd
-	; Mieux, on génère un script à runner:
-	script: %tt_gll_bdexplo_views_create.sh 
-	write script ligne_cmd
-	print rejoin [newline "Bdexplo views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
-	]
-;###########################################################
+;
+;either ( confirm "Run the generated script?" ) [
+;	call/wait ligne_cmd ]
+;	[
+;	; Prudemment, on ne runne pas, on affiche juste:
+;	; print ligne_cmd
+;	; Mieux, on génère un script à runner:
+;	script: %tt_gll_bdexplo_views_create.sh
+;	write script ligne_cmd
+;	print rejoin [newline "PostGeol views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
+;	]
+;;###########################################################

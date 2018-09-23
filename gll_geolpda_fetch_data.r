@@ -269,7 +269,7 @@ print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidential
 
 opids: run_query "SELECT opid FROM public.operations;"
 until [
-	tt: ask rejoin ["OPeration IDentifier; default: " opid newline "?"]
+	tt: ask rejoin ["OPeration IDentifier (default: " opid ")?" newline ]
 	; check that the temporary variable holds an integer, or nothing:
 	either (tt = "") [
 		true 			; if tt = "", nothing to do, since opid is already defined

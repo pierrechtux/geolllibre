@@ -15,7 +15,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
+  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
 
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,7 +39,10 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	1.0.3	[26-Jan-2014/18:27:07+1:00 {Inclusion d'objets et fonction en liaison avec des structures}]
 	1.0.4	[8-Mar-2014/0:08:07+1:00   {Calculs de structures à partir des mesures d'orientations du GeolPDA semblent corrects}]
 	1.0.5	[23-Apr-2014/14:44:58+1:00 {Functions concerning GeolPDA moved here, from gll_geolpda_fetch_data.r and gll_geolpda_report_generator.r}]
+	2.0    	[21-Sep-2018/19:39:10+2:00 {Bof, no more history here: see git log, rather}]
 ]	]
+
+;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES
 
 ; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
 catch [
