@@ -90,6 +90,14 @@ read tmp
 [[ ! -z "$tmp" ]] && GLL_BD_HOST=$tmp
 echo "  Hostname: $GLL_BD_HOST"
 echo
+echo -e "If $GLL_BD_HOST is a GeoPoppy server, then the docker role is used, instead of postgres; is this a GeoPoppy server (default = yes)?"
+POSTGRES=docker
+echo "Press <Enter> to confirm, or anything else if $GLL_BD_HOST is $not* a GeoPoppy server, and then <Enter>:"
+read tmp
+[[ ! -z "$tmp" ]] && POSTGRES=postgres
+echo "  Postgres superuser: $POSTGRES"
+echo
+
 echo "                                                                          }}}"
 echo "- 1.2 PORT:                                                               {{{"
 echo -e "Default port (traditionnally 5432) of the postgresql database is named after environment variable \$GLL_BD_PORT, which is now:\n  $GLL_BD_PORT"
@@ -121,7 +129,7 @@ echo "                                                                          
 ######## On rappelle la connexion:
 echo "- 1. SUMMARY:"
 CONNINFO="-h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER $POSTGEOL"
-echo -e "Summary: on postgresql server *$GLL_BD_HOST* listening on port *$GLL_BD_PORT*, the database *$POSTGEOL* is about to be created, with owner role *$GLL_BD_USER*.\nThis can be summarised as the options below:\  $CONNINFO\nPress enter to confirm, Ctrl-C to cancel."
+echo -e "Summary: on postgresql server *$GLL_BD_HOST* listening on port *$GLL_BD_PORT*, the database *$POSTGEOL* is about to be created, with owner role *$GLL_BD_USER*.\nThis can be summarised as the options below:\n  $CONNINFO\nPress enter to confirm, Ctrl-C to cancel."
 read tmp
 echo "                                                                             }}}"
 echo "- 2. DATABASE CREATION:                                                      {{{"
@@ -130,6 +138,7 @@ echo "Before creating $POSTGEOL database, drop database $POSTGEOL, if it already
 echo "Enter to continue, Ctrl-C to cancel:"
 read
 #dropdb -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER $POSTGEOL
+echo "... deleting..."
 dropdb $CONNINFO
 echo "                                                                          }}}"
 echo "- 2.2 CREATION:                                                           {{{"
@@ -140,16 +149,6 @@ createdb $CONNINFO -O $GLL_BD_USER
 echo "                                                                          }}}"
 echo "                                                                             }}}"
 echo "- 3. IMPLEMENT EXTENSIONS AND LANGUAGES:                                     {{{"
-echo "- 3.1 DESTRUCTION (...):                                                  {{{"
-dropdb -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER $POSTGEOL
-echo "                                                                          }}}"
-echo "- 2.2 CREATION:                                                           {{{"
-echo "Database creation:"
-createdb $POSTGEOL --o $GLL_BD_USER -h $GLL_BD_HOST -p $GLL_BD_PORT
-createdb -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -O $GLL_BD_USER $POSTGEOL
-echo "                                                                          }}}"
-
-exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 
 #echo "IMPLEMENT EXTENSIONS AND LANGUAGES:"
 #psql -d $POSTGEOL -X --single-transaction -U postgres -c "
@@ -163,30 +162,33 @@ exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 # GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
 
 echo "IMPLEMENT EXTENSIONS AND LANGUAGES:"
-psql $CONNINFO -U postgres -c "
+psql $CONNINFO -U $POSTGRES -c "
  CREATE EXTENSION postgis;
  CREATE EXTENSION postgis_topology;
- GRANT ALL ON geometry_columns to $LOGNAME;
- GRANT SELECT ON spatial_ref_sys to $LOGNAME;
+ GRANT ALL ON geometry_columns to $GLL_BD_USER;
+ GRANT SELECT ON spatial_ref_sys to $GLL_BD_USER;
  CREATE LANGUAGE plpythonu;
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
- CREATE SCHEMA $LOGNAME;
- GRANT ALL ON SCHEMA $LOGNAME TO $LOGNAME;"
+ CREATE SCHEMA $GLL_BD_USER;
+ ALTER SCHEMA $GLL_BD_USER OWNER TO $GLL_BD_USER;
+ GRANT ALL ON SCHEMA $GLL_BD_USER TO $GLL_BD_USER;"
+
 echo "                                                                             }}}"
 
-echo "Creation of postgeol structure in database named: " $newdb
+echo "Creation of postgeol structure in database named: " $POSTGEOL
 echo " 1) schemas and tables:"
-psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
+psql $CONNINFO -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 
-echo " 2) functions (this part has to be run as postgresql superuser: postgres):"
-psql -d $newdb -X --single-transaction -U postgres -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
+echo " 2) functions (this part has to be run as postgresql superuser: $POSTGRES):"
+psql $CONNINFO -X --single-transaction -U $POSTGRES -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
 
 echo " 3) views:"
 # create the queries set:
-psql -d $newdb -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
+psql $CONNINFO -X --single-transaction             -f ~/geolllibre/postgeol_structure_03_views.sql     |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE VIEW$" |& grep -v "^CREATE RULE$"
 
+exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 #~/geolllibre/gll_bdexplo_views_create.r 
-~/geolllibre/postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai.
+~/geolllibre/postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai => NON, PAS SI AUQUAI: À FAIRE PLUS TARD, POSÉMENT, EN REPRENANT BIEN LES VARIABLES D'ENVIRONNEMENT
 
 # à la fin, pour transférer les données de bdexplo vers postgeol:
 postgeol_transfer_data_from_bdexplo
@@ -369,3 +371,6 @@ CREATE TABLE public.program (
 -- }}}
 
 ############## TODO MÉNAGE
+/newdb
+/LOGNAME
+/
