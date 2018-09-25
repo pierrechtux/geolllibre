@@ -42,15 +42,43 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	2.0    	[21-Sep-2018/19:39:10+2:00 {Bof, no more history here: see git log, rather}]
 ]	]
 
-;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES
+
+;;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES => postponed; strange beheviour from scripts, sometimes not reading environment variables, for unknown reason.
+;get_env_or_gll_preferences: func ["Function to retreive environment variables or a value from .gll_preferences var] [ ; {{{ } } }
+;
+;gll_varenv: [ GLL_BD_HOST POSTGEOL GLL_BD_NAME GLL_BD_PORT GLL_BD_USER ]
+;foreach v gll_varenv [
+;	v: to-string v
+;; v: to-string gll_varenv/1
+;; v: to-string gll_varenv/2
+;; v: to-string gll_varenv/3
+;; v: to-string gll_varenv/4
+;; v: to-string gll_varenv/4
+;; v: to-string gll_varenv/5
+;??? v
+;;	code: [
+;		a: rejoin [ "if (not error? try [varenv_" lowercase v {: get-env "} v {"]) [ } lowercase v ": " (v) ": varenv_" (v) "]"]
+;print to-string a
+;do a
+;]
+;
+;?? varenv_gll_bd_host
+;?? varenv_postgeol
+;?? varenv_gll_bd_name 
+;?? varenv_gll_bd_port
+;?? varenv_gll_bd_user
+;
+;;	return sql_result
+;;] ; }}}
 
 ; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
+; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
 	[print "-"]
 if error? try [	do load to-file %/usr/bin/.gll_preferences
-		throw ".gll_preferences load from /usr/bin/"			]
+		throw ".gll_preferences loaded from /usr/bin/"			]
 	[print "-"]
 if error? try [	do load to-file rejoin [ system/options/path ".gll_preferences"]
 		throw ".gll_preferences loaded from current directory"		]
@@ -58,7 +86,9 @@ if error? try [	do load to-file rejoin [ system/options/path ".gll_preferences"]
 if error? try [ do load to-file system/options/home/.gll_preferences] [
 	do load to-file %.gll_preferences		; modif chez Corentin sur windows 7
 		throw {.gll_preferences loaded from "system/options/home/"}	]
-	[print "- No .gll_preferences file found."]
+	[print "- No .gll_preferences file found."
+	;TODO set some default values
+	]
 ] ;}}}
 
 do [ ; inclusion du pilote postgresql de Nenad: {{{ } } }
@@ -1415,10 +1445,10 @@ connection_db: does [ ;{{{ } } }
 	; on fait une connexion à la base de données:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	if error? try 	[
-			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost "/" dbname]
-			print rejoin [{Connected to database } dbname { hosted by } dbhost {, logged in as role } user]
+			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost ":" dbport "/" dbname]
+			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } user]
 	] 		[
-			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost {, as role } user]
+			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
 	]
 ] ;}}}
 do [ ; inclusion de l'utilitaire CSV.r : {{{ } } }
