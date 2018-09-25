@@ -194,26 +194,26 @@ CREATE TABLE public.field_observations (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     obs_id              text NOT NULL,
-    year                integer NOT NULL,
-    date                date NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
-    time                text NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
+    year                integer --NOT NULL,
+    date                date --NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
+    time                text --NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,
     y                   numeric(20,10) NOT NULL,
     z                   numeric(20, 2) NOT NULL,
     geometry_corr       geometry,
-    description         text NOT NULL,
-    code_litho          text NOT NULL,
-    code_unit           text NOT NULL,
-    sample_id           text NOT NULL,
-    audio               text NOT NULL,
-    photos              text NOT NULL,
-    geologist           text NOT NULL,
-    device              text NOT NULL,
-    comments            text NOT NULL,
-    datasource          integer NOT NULL,
-    waypoint_name       text NOT NULL,
-    icon_descr          text NOT NULL,  -- Eventually get rid of this quite useless field.
+    description         text --NOT NULL,
+    code_litho          text --NOT NULL,
+    code_unit           text --NOT NULL,
+    sample_id           text --NOT NULL,
+    audio               text --NOT NULL,
+    photos              text --NOT NULL,
+    geologist           text --NOT NULL,
+    device              text --NOT NULL,
+    comments            text --NOT NULL,
+    datasource          integer --NOT NULL,
+    waypoint_name       text --NOT NULL,
+    icon_descr          text --NOT NULL,  -- Eventually get rid of this quite useless field.
     timestamp_epoch_ms  bigint NOT NULL,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
