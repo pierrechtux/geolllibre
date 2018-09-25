@@ -1,123 +1,70 @@
-#!/usr/bin/rebol -qs
-rebol	[
-	Title:   "Création des vues de bdexplo"
-	Name:    gll_bdexplo_views_create.r
-	Version: 1.0.0
-	Date:    "5-Aug-2013/17:53:46"
-	Author:  "Pierre Chevalier"
-	License: {
-This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
-###########################################################################
-##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##
-##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##
-##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##
-##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##
-##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
-##                                                                       ##
-###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
- 
-    GeolLLibre is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>
-    or write to the Free Software Foundation, Inc., 51 Franklin Street, 
-    Fifth Floor, Boston, MA 02110-1301, USA.
-    See LICENSE file.
-}
-]
-
-
-;	 _________
-;	< bdexplo >
-;	 ---------
-;	        \   ^__^
-;	         \  (xx)\_______
-;	            (__)\       )\/\
-;	             U  ||----w |
-;	                ||     ||
-;	
-
-do load to-file system/options/home/bin/gll_routines.r	; Récupération des routines et préférences et connexion à la base
-insert db "BEGIN TRANSACTION;"
-
-;# on commence à fabriquer un gros texte en sql, qu'on fera tourner à la fin: {{{
-sql_string: {
+echo "
 BEGIN TRANSACTION;
-} ; fait doublon, mais c'est pour le moment du débogage où l'on ne fait qu'afficher le SQL résultant
-;}}}
+CREATE VIEW field_photos AS SELECT field_photos.* FROM field_photos JOIN operation_active ON field_photos.opid = operation_active.opid;
+CREATE VIEW dh_litho AS SELECT dh_litho.* FROM dh_litho JOIN operation_active ON dh_litho.opid = operation_active.opid;
+CREATE VIEW dh_sampling_grades AS SELECT dh_sampling_grades.* FROM dh_sampling_grades JOIN operation_active ON dh_sampling_grades.opid = operation_active.opid;
+CREATE VIEW shift_reports AS SELECT shift_reports.* FROM shift_reports JOIN operation_active ON shift_reports.opid = operation_active.opid;
+CREATE VIEW baselines AS SELECT baselines.* FROM baselines JOIN operation_active ON baselines.opid = operation_active.opid;
+CREATE VIEW lab_ana_results AS SELECT lab_ana_results.* FROM lab_ana_results JOIN operation_active ON lab_ana_results.opid = operation_active.opid;
+CREATE VIEW dh_density AS SELECT dh_density.* FROM dh_density JOIN operation_active ON dh_density.opid = operation_active.opid;
+CREATE VIEW dh_sampling_bottle_roll AS SELECT dh_sampling_bottle_roll.* FROM dh_sampling_bottle_roll JOIN operation_active ON dh_sampling_bottle_roll.opid = operation_active.opid;
+CREATE VIEW dh_quicklog AS SELECT dh_quicklog.* FROM dh_quicklog JOIN operation_active ON dh_quicklog.opid = operation_active.opid;
+CREATE VIEW dh_followup AS SELECT dh_followup.* FROM dh_followup JOIN operation_active ON dh_followup.opid = operation_active.opid;
+CREATE VIEW dh_thinsections AS SELECT dh_thinsections.* FROM dh_thinsections JOIN operation_active ON dh_thinsections.opid = operation_active.opid;
+CREATE VIEW field_observations AS SELECT field_observations.* FROM field_observations JOIN operation_active ON field_observations.opid = operation_active.opid;
+CREATE VIEW dh_tech AS SELECT dh_tech.* FROM dh_tech JOIN operation_active ON dh_tech.opid = operation_active.opid;
+CREATE VIEW formations_group_lithos AS SELECT formations_group_lithos.* FROM formations_group_lithos JOIN operation_active ON formations_group_lithos.opid = operation_active.opid;
+CREATE VIEW lab_ana_batches_expedition AS SELECT lab_ana_batches_expedition.* FROM lab_ana_batches_expedition JOIN operation_active ON lab_ana_batches_expedition.opid = operation_active.opid;
+CREATE VIEW grade_ctrl AS SELECT grade_ctrl.* FROM grade_ctrl JOIN operation_active ON grade_ctrl.opid = operation_active.opid;
+CREATE VIEW geoch_sampling AS SELECT geoch_sampling.* FROM geoch_sampling JOIN operation_active ON geoch_sampling.opid = operation_active.opid;
+CREATE VIEW gpy_mag_ground AS SELECT gpy_mag_ground.* FROM gpy_mag_ground JOIN operation_active ON gpy_mag_ground.opid = operation_active.opid;
+CREATE VIEW index_geo_documentation AS SELECT index_geo_documentation.* FROM index_geo_documentation JOIN operation_active ON index_geo_documentation.opid = operation_active.opid;
+CREATE VIEW lab_ana_batches_reception AS SELECT lab_ana_batches_reception.* FROM lab_ana_batches_reception JOIN operation_active ON lab_ana_batches_reception.opid = operation_active.opid;
+CREATE VIEW lab_ana_columns_definition AS SELECT lab_ana_columns_definition.* FROM lab_ana_columns_definition JOIN operation_active ON lab_ana_columns_definition.opid = operation_active.opid;
+CREATE VIEW geoch_sampling_grades AS SELECT geoch_sampling_grades.* FROM geoch_sampling_grades JOIN operation_active ON geoch_sampling_grades.opid = operation_active.opid;
+CREATE VIEW lex_codes AS SELECT lex_codes.* FROM lex_codes JOIN operation_active ON lex_codes.opid = operation_active.opid;
+CREATE VIEW lex_datasource AS SELECT lex_datasource.* FROM lex_datasource JOIN operation_active ON lex_datasource.opid = operation_active.opid;
+CREATE VIEW licences AS SELECT licences.* FROM licences JOIN operation_active ON licences.opid = operation_active.opid;
+CREATE VIEW lab_ana_qaqc_results AS SELECT lab_ana_qaqc_results.* FROM lab_ana_qaqc_results JOIN operation_active ON lab_ana_qaqc_results.opid = operation_active.opid;
+CREATE VIEW surface_samples_grades AS SELECT surface_samples_grades.* FROM surface_samples_grades JOIN operation_active ON surface_samples_grades.opid = operation_active.opid;
+CREATE VIEW occurrences_recup_depuis_dump AS SELECT occurrences_recup_depuis_dump.* FROM occurrences_recup_depuis_dump JOIN operation_active ON occurrences_recup_depuis_dump.opid = operation_active.opid;
+CREATE VIEW qc_sampling AS SELECT qc_sampling.* FROM qc_sampling JOIN operation_active ON qc_sampling.opid = operation_active.opid;
+CREATE VIEW field_sampling AS SELECT field_sampling.* FROM field_sampling JOIN operation_active ON field_sampling.opid = operation_active.opid;
+CREATE VIEW geometry_columns_old AS SELECT geometry_columns_old.* FROM geometry_columns_old JOIN operation_active ON geometry_columns_old.opid = operation_active.opid;
+CREATE VIEW spatial_ref_sys_old AS SELECT spatial_ref_sys_old.* FROM spatial_ref_sys_old JOIN operation_active ON spatial_ref_sys_old.opid = operation_active.opid;
+CREATE VIEW survey_lines AS SELECT survey_lines.* FROM survey_lines JOIN operation_active ON survey_lines.opid = operation_active.opid;
+CREATE VIEW dh_struct_measures AS SELECT dh_struct_measures.* FROM dh_struct_measures JOIN operation_active ON dh_struct_measures.opid = operation_active.opid;
+CREATE VIEW field_observations_struct_measures AS SELECT field_observations_struct_measures.* FROM field_observations_struct_measures JOIN operation_active ON field_observations_struct_measures.opid = operation_active.opid;
+CREATE VIEW mag_declination AS SELECT mag_declination.* FROM mag_declination JOIN operation_active ON mag_declination.opid = operation_active.opid;
+CREATE VIEW qc_standards AS SELECT qc_standards.* FROM qc_standards JOIN operation_active ON qc_standards.opid = operation_active.opid;
+CREATE VIEW doc_postgeol_table_categories AS SELECT doc_postgeol_table_categories.* FROM doc_postgeol_table_categories JOIN operation_active ON doc_postgeol_table_categories.opid = operation_active.opid;
+CREATE VIEW occurrences AS SELECT occurrences.* FROM occurrences JOIN operation_active ON occurrences.opid = operation_active.opid;
+CREATE VIEW ancient_workings AS SELECT ancient_workings.* FROM ancient_workings JOIN operation_active ON ancient_workings.opid = operation_active.opid;
+CREATE VIEW topo_points AS SELECT topo_points.* FROM topo_points JOIN operation_active ON topo_points.opid = operation_active.opid;
+CREATE VIEW geoch_ana AS SELECT geoch_ana.* FROM geoch_ana JOIN operation_active ON geoch_ana.opid = operation_active.opid;
+CREATE VIEW lex_standard AS SELECT lex_standard.* FROM lex_standard JOIN operation_active ON lex_standard.opid = operation_active.opid;
+CREATE VIEW dh_core_boxes AS SELECT dh_core_boxes.* FROM dh_core_boxes JOIN operation_active ON dh_core_boxes.opid = operation_active.opid;
+CREATE VIEW dh_radiometry AS SELECT dh_radiometry.* FROM dh_radiometry JOIN operation_active ON dh_radiometry.opid = operation_active.opid;
+CREATE VIEW dh_devia AS SELECT dh_devia.* FROM dh_devia JOIN operation_active ON dh_devia.opid = operation_active.opid;
+CREATE VIEW dh_mineralised_intervals AS SELECT dh_mineralised_intervals.* FROM dh_mineralised_intervals JOIN operation_active ON dh_mineralised_intervals.opid = operation_active.opid;
+CREATE VIEW dh_collars AS SELECT dh_collars.* FROM dh_collars JOIN operation_active ON dh_collars.opid = operation_active.opid;
+CREATE VIEW dh_resistivity AS SELECT dh_resistivity.* FROM dh_resistivity JOIN operation_active ON dh_resistivity.opid = operation_active.opid;
+CREATE VIEW dh_devia_runs_xyz AS SELECT dh_devia_runs_xyz.* FROM dh_devia_runs_xyz JOIN operation_active ON dh_devia_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_core_boxes_runs_xyz AS SELECT dh_core_boxes_runs_xyz.* FROM dh_core_boxes_runs_xyz JOIN operation_active ON dh_core_boxes_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_density_runs_xyz AS SELECT dh_density_runs_xyz.* FROM dh_density_runs_xyz JOIN operation_active ON dh_density_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_litho_runs_xyz AS SELECT dh_litho_runs_xyz.* FROM dh_litho_runs_xyz JOIN operation_active ON dh_litho_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_mineralised_intervals_runs_xyz AS SELECT dh_mineralised_intervals_runs_xyz.* FROM dh_mineralised_intervals_runs_xyz JOIN operation_active ON dh_mineralised_intervals_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_quicklog_runs_xyz AS SELECT dh_quicklog_runs_xyz.* FROM dh_quicklog_runs_xyz JOIN operation_active ON dh_quicklog_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_radiometry_runs_xyz AS SELECT dh_radiometry_runs_xyz.* FROM dh_radiometry_runs_xyz JOIN operation_active ON dh_radiometry_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_resistivity_runs_xyz AS SELECT dh_resistivity_runs_xyz.* FROM dh_resistivity_runs_xyz JOIN operation_active ON dh_resistivity_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_sampling_bottle_roll_runs_xyz AS SELECT dh_sampling_bottle_roll_runs_xyz.* FROM dh_sampling_bottle_roll_runs_xyz JOIN operation_active ON dh_sampling_bottle_roll_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_sampling_grades_runs_xyz AS SELECT dh_sampling_grades_runs_xyz.* FROM dh_sampling_grades_runs_xyz JOIN operation_active ON dh_sampling_grades_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_struct_measures_runs_xyz AS SELECT dh_struct_measures_runs_xyz.* FROM dh_struct_measures_runs_xyz JOIN operation_active ON dh_struct_measures_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_tech_runs_xyz AS SELECT dh_tech_runs_xyz.* FROM dh_tech_runs_xyz JOIN operation_active ON dh_tech_runs_xyz.opid = operation_active.opid;
+CREATE VIEW dh_thinsections_runs_xyz AS SELECT dh_thinsections_runs_xyz.* FROM dh_thinsections_runs_xyz JOIN operation_active ON dh_thinsections_runs_xyz.opid = operation_active.opid;
+CREATE VIEW field_sampling_ana AS SELECT field_sampling_ana.* FROM field_sampling_ana JOIN operation_active ON field_sampling_ana.opid = operation_active.opid;
+CREATE VIEW mine_plant_daily_production AS SELECT mine_plant_daily_production.* FROM mine_plant_daily_production JOIN operation_active ON mine_plant_daily_production.opid = operation_active.opid;
 
-; on y met d'abord les vues homonymes des tables dans le premier schéma: {{{
-;# -- 1. les vues homonymes des tables, dans le premier schéma dans l'ordre de recherche, en restreignant à l'opération active: {{{
-
-;# La liste des tables pour lesquelles on veut faire une vue homonyme dans le schéma utilisateur:
-;comment [ {{{ } } } 
-;tables_for_view_join_operationid = [
-;'ancient_workings'        ,
-;'dh_collars'              ,
-;'dh_collars_program'      ,
-;'dh_density'              ,
-;'dh_devia'                ,
-;'dh_litho'                ,
-;'dh_mineralised_intervals',
-;#'dh_sampling'             ,
-;'dh_sampling_grades'      ,
-;'dh_struct'               ,
-;'dh_tech'                 ,
-;'field_observations'      ,
-;'field_photos'            ,
-;'geoch_ana'               ,
-;'geoch_sampling'          ,
-;'geoch_sampling_grades'   ,
-;'grade_ctrl'              ,
-;'lab_ana_batches'         ,
-;'lab_ana_results'         ,
-;'lab_analysis_icp'        ,
-;'occurrences'             ,
-;'qc_sampling'             ,
-;'qc_standards'            ,
-;'rock_ana'                ,
-;'rock_sampling'           ,
-;'shift_reports'           ,
-;'topo_points'
-;]
-;] ; }}}
-
-tables_for_view_join_operationid: []
-tables_public: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public';"
-; on enlève les tables qui n'ont pas à être VIEWées:
-foreach t tables_public [ append tables_for_view_join_operationid to-string t ]
-tables_indesirables: ["dh_nb_samples" "dh_collars_lengths" "spatial_ref_sys" "geometry_columns" "operations" "operation_active" "units" "conversions_oxydes_elements" "doc_bdexplo_table_categories" "doc_bdexplo_tables_descriptions" ]
-tables_for_view_join_operationid: (exclude tables_for_view_join_operationid tables_indesirables)
-
-; pour voir les tables concernées rapidos:
-;foreach t tables_for_view_join_operationid [
-;print rejoin ["TABLE public." t ";"]
-;]
-
-;#}}}
-
-;# on fabrique le gros texte en sql:{{{
-
-foreach tablename tables_for_view_join_operationid [
-	append sql_string rejoin ["CREATE VIEW " tablename " AS SELECT " tablename ".* FROM " tablename " JOIN operation_active ON " tablename ".opid = operation_active.opid;" newline]
-	]
-
-;#}}}
-;# --}}}
-
-;# À partir de l'instruction sql ainsi commencée, on l'agrège maintenant, avec un gros tas de requêtes déjà faites:
-;# */ {{{ 
-
-append sql_string {
 -- 4. vues pour postgis:{{{
 
 -- 2014_02_01__17_55_45
@@ -960,7 +907,7 @@ CREATE VIEW surpac_survey AS
 --}}}
 --dist    = {{{
 --=RACINE((E11*E11)+(F11*F11))
---=sqrt((deltax^2)+(deltay^2))
+--=sqrt((deltax2)+(deltay2))
 --
 --}}}
 --crctn_g = {{{
@@ -1009,7 +956,7 @@ CREATE VIEW surpac_survey AS
 -- +(deltax>=0 AND deltay<0)::integer * 200
 -- +(deltax<=0 AND deltay<0)::integer * 200
 --END) AS gise,
---sqrt((deltax^2)+(deltay^2)) AS dist
+--sqrt((deltax2)+(deltay2)) AS dist
 --FROM
 --(SELECT 
 --id, x_local, y_local, z_local,
@@ -1086,7 +1033,7 @@ CREATE VIEW surpac_survey AS
 -- +(deltax>=0 AND deltay<0)::integer * 200
 -- +(deltax<=0 AND deltay<0)::integer * 200
 --END) AS gise,
---sqrt((deltax^2)+(deltay^2)) AS dist
+--sqrt((deltax2)+(deltay2)) AS dist
 --FROM
 --(SELECT 
 --id, x_local, y_local, z_local,
@@ -1278,31 +1225,4 @@ CREATE VIEW tanguy.geoch_multi_ana_subq AS
 
 --}}}
 COMMIT;
-}
-; }}}
-;# Voilà, le sql est fabriqué.
-
-
-;# ...que l'on runne ensuite:
-;# (cancellé, pour le moment, par prudence: on montre juste le SQL)
-;print to-string sql_string
-; insert db to-string sql_string
-; => marche pas, cf. Doc
-
-close  db
-
-
-ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
-
-
-either ( confirm "Run the generated script?" ) [
-	call/wait ligne_cmd ]
-	[
-	; Prudemment, on ne runne pas, on affiche juste:
-	; print ligne_cmd
-	; Mieux, on génère un script à runner:
-	script: %tt_gll_bdexplo_views_create.sh 
-	write script ligne_cmd
-	print rejoin [newline "Bdexplo views creation script generated: " to-string script newline "to run it:" newline "sh " to-string script newline]
-	]
-;###########################################################
+" | psql -X -d bdexplo -h localhost -U pierre

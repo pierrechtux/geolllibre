@@ -1,0 +1,17 @@
+# Je scripte un peu tout ce bordel qui dure bien trop. (à faire tourner par F8 dans mon vim => bof, à faire tourner depuis le shell, vu le temps que tout ça dure)
+
+# echo "suppression echo $POSTGEOL"
+# dropdb $POSTGEOL
+# echo "création $POSTGEOL"
+# createdb $POSTGEOL
+#psql     -d $POSTGEOL -f ~/geolllibre/postgeol_structure.sql | grep -v "SET\|COMMENT"
+# => chuicon, tout ça a déjà été scripté:
+~/bin/postgeol_database_creation.sh
+exit 0 ############ DEBUG ############
+#xterm -geometry 122x18+-1+-1 -e "vimdiff -R geolllibre/postgeol_structure.sql geolllibre/tmp_bdexplo_structure_from_cluster_autan.sql" &
+xterm -geometry 122x18+-1+-1 -e "vim -O geolllibre/postgeol_structure.sql geolllibre/tmp_bdexplo_structure_from_cluster_autan.sql" &
+xterm -geometry 62x8+-1+249  -T "psql *** POSTGEOL ***" -e "psql -d $POSTGEOL -h autan" &
+xterm -geometry 62x8+439+249 -T "psql *** BDEXPLO ***" -e "psql -d bdexplo -h autan" &
+xterm -geometry 20x8--1+249  -T "psql *** PIERRE ***" -e "psql -d pierre -h autan" &
+xterm -geometry 86x14+0-33 -T "*** shell dans geolllibre***" -e "cd ~/geolllibre && bash" &
+
