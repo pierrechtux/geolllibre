@@ -84,7 +84,7 @@ append output "<h1>Bdexplo: documentation automatique</h1>"
 foreach t tables [ ;{{{ } } }
 	append output rejoin [newline "<h2>" t "</h2>" newline]
 
-	cmd: rejoin [{echo "\dt+ public.} t {" | psql -X -d bdexplo -H} ]
+	cmd: rejoin [{echo "\dt+ public.} t {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname { -H} ]
 	print cmd
 	tt: copy ""
 	err: copy ""
@@ -93,7 +93,7 @@ foreach t tables [ ;{{{ } } }
 	append output newline
 
 	append output "<p>Structure:</p>"
-	cmd: rejoin [{echo "\d+ public.} t {" | psql -X -d bdexplo -H} ]
+	cmd: rejoin [{echo "\d+ public.} t {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname { -H} ]
 	print cmd
 	tt: copy ""
 	err: copy ""
@@ -101,7 +101,7 @@ foreach t tables [ ;{{{ } } }
 	append output rejoin [newline tt "</p>" newline]
 
 	append output "<p>Extrait:</p>"
-	cmd: rejoin [{echo "SELECT * FROM public.} t { WHERE opid IN(11, 18) ORDER BY 1, 2, 3 LIMIT 10;" | psql -X -d bdexplo -H} ]
+	cmd: rejoin [{echo "SELECT * FROM public.} t { WHERE opid IN(11, 18) ORDER BY 1, 2, 3 LIMIT 10;" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname { -H} ]
 	print cmd
 	tt: copy ""
 	err: copy ""

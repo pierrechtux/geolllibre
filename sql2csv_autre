@@ -2,5 +2,5 @@
 # Pierre Chevalier
 # Ce script fait un fichier csv à partir de la bd postgresql bdexploy (une autre bd, pour comparaison), avec la requête en entrée
 #$1: requete
-echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X -h $GLL_BD_HOST bdexploy
+echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER bdexploy
 

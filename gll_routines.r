@@ -2121,7 +2121,7 @@ run_sql_string_update: does [ ;{{{ } } }
 do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
-	tt: call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost]
+	tt: call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
 	return tt
 	] ;}}}
 compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }

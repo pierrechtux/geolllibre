@@ -374,9 +374,7 @@ append sql_text newline
 close  db
 
 ; => en attendant que ça marche (voir doc ou Doc), on passe bêtement par une bonne vieille ligne de commande:
-ligne_cmd: rejoin [{echo "} sql_text {" | psql -X -d } dbname { -h } dbhost { -U } user ]
-
-either ( confirm "Run the generated script?" ) [
+ligne_cmd: rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
 	call/wait ligne_cmd ]
 	[
 	; Prudemment, on ne runne pas, on affiche juste:

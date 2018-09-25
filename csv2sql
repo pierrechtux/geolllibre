@@ -50,38 +50,38 @@ schema="tmp_imports"
 # echo "--------------------------------------------------------------"
 cmd_sql="DROP TABLE IF EXISTS $schema.$table;"
 # echo $cmd_sql
-echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME
 
 # echo "--------------------------------------------------------------"
 cmd_sql="CREATE TABLE $schema.$table (`head -1 $fichier | sed -e 's/"//g' | sed -e 's/,\ /,/g' | sed -e 's/ /_/g' | sed -e 's/,/ varchar, /g'` varchar);"
 # echo $cmd_sql
-echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME
 
 # echo "--------------------------------------------------------------"
 cmd_sql="DELETE FROM $schema.$table;"
 # echo $cmd_sql
-echo $cmd_sql | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME
+echo $cmd_sql | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME
 
 # echo "--------------------------------------------------------------"
 # echo "Import ..."
-tail -n +2 $fichier | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME -c "\COPY $schema.$table FROM stdin WITH CSV"
+tail -n +2 $fichier | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME -c "\COPY $schema.$table FROM stdin WITH CSV"
 # echo "           done."
 # echo "--------------------------------------------------------------"
 
 
 #	if [option=="-v"]; then 
-#	echo "Record count of table $schema.$table: `echo "SELECT count(*) FROM $schema.$table;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | head -3 | tail -1`"
+#	echo "Record count of table $schema.$table: `echo "SELECT count(*) FROM $schema.$table;" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME | head -3 | tail -1`"
 # echo "--------------------------------------------------------------"
 #	echo "Overview of table $schema.$table (2 first records):"
-#	echo "SELECT * FROM $schema.$table LIMIT 2;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME 
+#	echo "SELECT * FROM $schema.$table LIMIT 2;" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME 
 #	echo "...     (and 2 last records):"
-#	echo "SELECT * FROM $schema.$table OFFSET (SELECT count(*) FROM $schema.$table) -2 ;" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | tail -n +3
+#	echo "SELECT * FROM $schema.$table OFFSET (SELECT count(*) FROM $schema.$table) -2 ;" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME | tail -n +3
 # echo "--------------------------------------------------------------"
 
 #	echo "If you saw your data, it is ok in $schema.$table."
 #	fi
 
 echo "Data from $fichier_orig should be in $schema.$table. To browse it:"
-echo "echo \"SELECT * FROM $schema.$table;\" | psql -X -h $GLL_BD_HOST -d $GLL_BD_NAME | less"
+echo "echo \"SELECT * FROM $schema.$table;\" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME | less"
 #echo "=============================================================="
 

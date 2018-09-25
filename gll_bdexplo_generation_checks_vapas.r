@@ -189,7 +189,8 @@ printGraph: func [var table] [ ;{{{ } } }
 	datafile: rejoin [(replace sql_text " " "_") ".dat"]
 	;img_filename = "plots" + os.sep + "tmp_graph_select_" + var + "_from_" + table + ".png"
 	img_filename: rejoin ["plots/tmp_graph_select_" var "_from_" table ".png"]
-	ligne_cmd1: rejoin [{'echo "}  sql_text {;" | psql -X -d} dbname { -h } dbhost {  | sed -e 's/,/ /g' | tail -n +3 | head -n -2 > } datafile]
+	;ligne_cmd1: rejoin [{'echo "}  sql_text {;" | psql -X -d} dbname { -h } dbhost {  | sed -e 's/,/ /g' | tail -n +3 | head -n -2 > } datafile]
+	ligne_cmd1: rejoin [{'echo "}  sql_text {;" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname { | sed -e 's/,/ /g' | tail -n +3 | head -n -2 > } datafile]
 	ligne_cmd2: {echo "
 plot '} datafile {' w p
 set ylabel '} var {'

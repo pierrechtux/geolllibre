@@ -7,5 +7,5 @@
 #$1: query
 #$2: .csv output file       => bof, no, better to just redirect or pipe, later
 #echo "COPY ($1) TO stdout WITH CSV HEADER" | psql -X bdexplo #> $2
-echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X -h $GLL_BD_HOST $GLL_BD_NAME
+echo "COPY ($1) TO stdout WITH CSV HEADER FORCE QUOTE *" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER $GLL_BD_NAME
 #> $2   #=> non, ça met aussi des guillemets autour des champs non textuels

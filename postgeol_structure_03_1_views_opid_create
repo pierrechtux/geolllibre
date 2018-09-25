@@ -213,7 +213,7 @@ foreach tablename tables_for_view_join_operationid [
 
 close db
 
-ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -d } dbname { -h } dbhost { -U } user ]
+ligne_cmd: rejoin [{echo "} sql_string {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
 call_wait_output_error ligne_cmd
 
 ;

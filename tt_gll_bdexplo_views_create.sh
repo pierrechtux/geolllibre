@@ -1225,4 +1225,4 @@ CREATE VIEW tanguy.geoch_multi_ana_subq AS
 
 --}}}
 COMMIT;
-" | psql -X -d bdexplo -h localhost -U pierre
+" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME

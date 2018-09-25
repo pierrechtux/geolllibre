@@ -4,4 +4,4 @@
 #$1: requete
 #$2: fichier .csv => bof, non, on redirigera, plutôt
 # pour surpac, faut pas de ligne de titre, donc voilà
-echo "COPY ($1) TO stdout WITH CSV" | psql -X bdexplo #> $2
+echo "COPY ($1) TO stdout WITH CSV" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME #> $2
