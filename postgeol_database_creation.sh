@@ -1,62 +1,62 @@
 #!/bin/bash
-#	Title:   "Creation of postgeol database: postgresql database for geological data"
-#	Name:    postgeol_database_creation.sh
+#   Title:   "Creation of postgeol database: postgresql database for geological data"
+#   Name:    postgeol_database_creation.sh
 #            (used to be: bdexplo_creation.r  => when it was a mining exploration database)
-#	Version: 0.0.2
-#	Date:    22-Aug-2018/22:29:08+2:00
-#	Author:  "Pierre Chevalier"
-#	License: {
+#   Version: 0.0.2
+#   Date:    22-Aug-2018/22:29:08+2:00
+#   Author:  "Pierre Chevalier"
+#   License: {
 echo "    Now running script $0"
 echo "{{{"
-echo "		This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences."
-echo "		###########################################################################"
-echo "		##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##"
-echo "		##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##"
-echo "		##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##"
-echo "		##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##"
-echo "		##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##"
-echo "		##                                                                       ##"
-echo "		###########################################################################"
-echo "		  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>"
+echo "      This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences."
+echo "      ###########################################################################"
+echo "      ##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##"
+echo "      ##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##"
+echo "      ##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##"
+echo "      ##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##"
+echo "      ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##"
+echo "      ##                                                                       ##"
+echo "      ###########################################################################"
+echo "        Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>"
 echo ""
-echo "		    GeolLLibre is free software: you can redistribute it and/or modify"
-echo "		    it under the terms of the GNU General Public License as published by"
-echo "		    the Free Software Foundation, either version 3 of the License, or"
-echo "		    (at your option) any later version."
-echo "		"
-echo "		    This program is distributed in the hope that it will be useful,"
-echo "		    but WITHOUT ANY WARRANTY; without even the implied warranty of"
-echo "		    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
-echo "		    GNU General Public License for more details."
-echo "		"
-echo "		    You should have received a copy of the GNU General Public License"
-echo "		    along with this program.  If not, see <http://www.gnu.org/licenses/>"
-echo "		    or write to the Free Software Foundation, Inc., 51 Franklin Street,"
-echo "		    Fifth Floor, Boston, MA 02110-1301, USA."
-echo "		    See LICENSE file."
-#		}
+echo "          GeolLLibre is free software: you can redistribute it and/or modify"
+echo "          it under the terms of the GNU General Public License as published by"
+echo "          the Free Software Foundation, either version 3 of the License, or"
+echo "          (at your option) any later version."
+echo "      "
+echo "          This program is distributed in the hope that it will be useful,"
+echo "          but WITHOUT ANY WARRANTY; without even the implied warranty of"
+echo "          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
+echo "          GNU General Public License for more details."
+echo "      "
+echo "          You should have received a copy of the GNU General Public License"
+echo "          along with this program.  If not, see <http://www.gnu.org/licenses/>"
+echo "          or write to the Free Software Foundation, Inc., 51 Franklin Street,"
+echo "          Fifth Floor, Boston, MA 02110-1301, USA."
+echo "          See LICENSE file."
+#      }
 #]
 
 echo
-echo "	 _________                      "
-echo "	< BDexplo >               <= the ancester of postgeol, ca. 1992 to 2018"
-echo "	 ---------                      "
-echo "	        \   ^__^                "
-echo "	         \  (xx)\_______        "
-echo "	            (__)\       )\/\    "
-echo "	             U  ||----w |       "
-echo "	                ||     ||       "
+echo "   _________                      "
+echo "  < BDexplo >               <= the ancester of postgeol, ca. 1992 to 2018"
+echo "   ---------                      "
+echo "          \   ^__^                "
+echo "           \  (xx)\_______        "
+echo "              (__)\       )\/\    "
+echo "               U  ||----w |       "
+echo "                  ||     ||       "
 echo
-echo "	 __________                     "
-echo "	< PostGeol >                  <= the descendant of bdexplo, since 2016"
-echo "	 ----------"
-echo "	        \    __                 "
-echo "	         \ /(  )\_---------_    "
-echo "	          { (°°) }          )\  "
-echo "	          { /()\ }          | \ "
-echo "	           / () \  |____\   |   "
-echo "	          /  !! |\ |     |  |\  "
-echo "	             J  [__|     [__||  "  #	TODO: hack cowsay source, and add a pachydermic option"
+echo "   __________                     "
+echo " < PostGeol >                  <= the descendant of bdexplo, since 2016"
+echo "   ----------"
+echo "          \    __                 "
+echo "           \ /(  )\_---------_    "
+echo "            { (°°) }          )\  "
+echo "            { /()\ }          | \ "
+echo "             / () \  |____\   |   "
+echo "            /  !! |\ |     |  |\  "
+echo "               J  [__|     [__||  "  # TODO: hack cowsay source, and add a pachydermic option"
 echo
 echo "           ____________________________________"
 echo "         oO                                    Oo"
@@ -154,7 +154,7 @@ psql $CONNINFO -U $POSTGRES -c "
  CREATE EXTENSION postgis_topology;
  GRANT ALL ON geometry_columns to $GLL_BD_USER;
  GRANT SELECT ON spatial_ref_sys to $GLL_BD_USER;
- CREATE LANGUAGE plpythonu;
+ --CREATE LANGUAGE plpythonu;  -- TODO removed also functions which called python scripts; put back, when issues of having plpythonu on geopopy will be solved
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
  CREATE SCHEMA $GLL_BD_USER;
  ALTER SCHEMA $GLL_BD_USER OWNER TO $GLL_BD_USER;
@@ -171,7 +171,8 @@ echo "- 4.2. FUNCTIONS:                                                         
 echo "Note: this part has to be run as postgresql superuser: $POSTGRES:"
 psql $CONNINFO -X --single-transaction -U $POSTGRES -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
 echo "                                                                          }}}"
-exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
+
+echo "FIN PROVISOIRE" exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 echo "- 4.3. VIEWS:                                                                {{{"
 #echo " 3) views:"
 # create the queries set:

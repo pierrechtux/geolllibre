@@ -1,4 +1,5 @@
 -- functions:
+/* TEMPORARILY DISABLED, TO ALLOW DEPLOYMENT ON A GEOPOPPY INSTANCE, WHICH CONTAINER DOES NOT HAVE postgresql-plpython STUFF.
 -- x generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 
@@ -82,6 +83,7 @@ return 'OK'
 $$;
 --\c $USER
 --}}}
+*/
 --#lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
 
 CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
