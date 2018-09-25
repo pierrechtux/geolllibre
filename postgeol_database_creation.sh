@@ -167,7 +167,7 @@ echo "- 4.1. SCHEMAS AND TABLES:                                                
 psql $CONNINFO -X --single-transaction             -f ~/geolllibre/postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 echo "                                                                          }}}"
 echo "- 4.2. FUNCTIONS:                                                            {{{"
-#echo " 2) functions 
+#echo " 2) functions
 echo "Note: this part has to be run as postgresql superuser: $POSTGRES:"
 psql $CONNINFO -X --single-transaction -U $POSTGRES -f ~/geolllibre/postgeol_structure_02_functions.sql |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE FUNCTION$"
 echo "                                                                          }}}"
