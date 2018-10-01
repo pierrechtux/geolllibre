@@ -201,7 +201,6 @@ CREATE TABLE public.field_observations (
     x                   numeric(20,10) NOT NULL,
     y                   numeric(20,10) NOT NULL,
     z                   numeric(20, 2) NOT NULL,
-    cq3d                numeric,
     geometry_corr       geometry,
     description         text --NOT NULL,
     code_litho          text --NOT NULL,
@@ -231,7 +230,6 @@ COMMENT ON COLUMN field_observations.srid                       IS 'Spatial Refe
 COMMENT ON COLUMN field_observations.x                          IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN field_observations.y                          IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN field_observations.z                          IS 'Z coordinate';
-COMMENT ON COLUMN field_observations.cq3d                       IS 'Quality control of GPS survey';  -- TODO demander à quidedroit
 COMMENT ON COLUMN field_observations.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the observation point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN field_observations.description                IS 'Naturalist description';
 COMMENT ON COLUMN field_observations.code_litho                 IS 'Lithological code';
@@ -2508,6 +2506,7 @@ CREATE TABLE public.topo_points (
     x                   numeric(10,3),
     y                   numeric(10,3),
     z                   numeric(10,3),
+    cq3d                numeric,
     geometry_corr       geometry,  
     survey_date         date,
     topo_survey_type    text,
@@ -2529,6 +2528,7 @@ COMMENT ON COLUMN topo_points.srid                    IS 'Spatial Reference Iden
 COMMENT ON COLUMN topo_points.x                       IS 'X coordinate (Easting),  in coordinate system srid';       --'X coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.y                       IS 'Y coordinate (Northing), in coordinate system srid';       --'Y coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate';                                             --'Z coordinate, projected in UTM (m) or other similar CRS';
+COMMENT ON COLUMN topo_points.cq3d                    IS 'Quality control of GPS survey';  -- TODO demander à quidedroit
 COMMENT ON COLUMN topo_points.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN topo_points.survey_date             IS 'Date of surveying';
 COMMENT ON COLUMN topo_points.surveyor                IS 'Survey operator name';
