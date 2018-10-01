@@ -2501,26 +2501,35 @@ CREATE TABLE public.topo_points (
     location            text,
     id                  text,
     num                 numeric(10,0),
+    name                text,
+	srid                integer,
     x                   numeric(10,3),
     y                   numeric(10,3),
     z                   numeric(10,3),
+    geometry_corr       geometry,  
     survey_date         date,
     topo_survey_type    text,
-    coordsys            text,
+--     coordsys            text,
     surveyor            text,
+    filename            text,
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
-COMMENT ON TABLE public.topo_points IS 'topographical data, points';
+COMMENT ON TABLE public.topo_points IS 'Topographical data, survey points';
 COMMENT ON COLUMN topo_points.opid                    IS 'Operation identifier';
-COMMENT ON COLUMN topo_points.location                IS 'Topographical zone';
-COMMENT ON COLUMN topo_points.num                     IS 'Topographical point number';
+COMMENT ON COLUMN topo_points.location                IS 'Zone';
+COMMENT ON COLUMN topo_points.num                     IS 'Point number, within topo survey context';
 COMMENT ON COLUMN topo_points.id                      IS 'Full identifier for borehole or trench, including zone code with type and sequential number';
-COMMENT ON COLUMN topo_points.x                       IS 'X coordinate, projected in UTM (m) or other similar CRS';
-COMMENT ON COLUMN topo_points.y                       IS 'Y coordinate, projected in UTM (m) or other similar CRS';
-COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate, projected in UTM (m) or other similar CRS';
+COMMENT ON COLUMN topo_points.srid                    IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
+COMMENT ON COLUMN topo_points.x                       IS 'X coordinate (Easting),  in coordinate system srid';       --'X coordinate, projected in UTM (m) or other similar CRS';
+COMMENT ON COLUMN topo_points.y                       IS 'Y coordinate (Northing), in coordinate system srid';       --'Y coordinate, projected in UTM (m) or other similar CRS';
+COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate';                                             --'Z coordinate, projected in UTM (m) or other similar CRS';
+COMMENT ON COLUMN topo_points.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN topo_points.survey_date             IS 'Date of surveying';
+COMMENT ON COLUMN topo_points.surveyor                IS 'Survey operator name';
+COMMENT ON COLUMN topo_points.filename                IS 'Original data file name (when datasource is not used, for some reason)';
 COMMENT ON COLUMN topo_points.datasource              IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN topo_points.numauto                 IS 'Automatic integer primary key';
 COMMENT ON COLUMN topo_points.creation_ts             IS 'Current date and time stamp when data is loaded in table';
