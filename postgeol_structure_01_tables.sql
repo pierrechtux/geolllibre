@@ -110,11 +110,11 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 
 CREATE TABLE public.operations (
     opid            bigserial PRIMARY KEY NOT NULL,
-    name_short      text NOT NULL,  -- TODO warning: field previously named differently: operation
-    name_full       text NOT NULL,  -- TODO warning: field previously named differently: full_name
+    name_short      text, --NOT NULL,  -- TODO warning: field previously named differently: operation
+    name_full       text, --NOT NULL,  -- TODO warning: field previously named differently: full_name
     year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
     confidentiality boolean NOT NULL DEFAULT TRUE,
-    operator        text NOT NULL,
+    operator        text, --NOT NULL,
     address1_street    text,
     address2_parcell   text,
     address3_areacode  text,
@@ -124,12 +124,12 @@ CREATE TABLE public.operations (
     x               numeric,
     y               numeric,
     accuracy        integer,
-    lon_min         numeric(10,5) NOT NULL,
-    lat_min         numeric(10,5) NOT NULL,
-    lon_max         numeric(10,5) NOT NULL,
-    lat_max         numeric(10,5) NOT NULL,
+    lon_min         numeric(10,5), --NOT NULL,
+    lat_min         numeric(10,5), --NOT NULL,
+    lon_max         numeric(10,5), --NOT NULL,
+    lat_max         numeric(10,5), --NOT NULL,
     boundary_geom   geometry,
-    comments        text NOT NULL,
+    comments        text, --NOT NULL,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user NOT NULL
     --numauto         bigserial UNIQUE NOT NULL,  -- useless, since opid is already the bigserial PRIMARY KEY
@@ -2513,6 +2513,7 @@ CREATE TABLE public.topo_points (
     topo_survey_type    text,
 --     coordsys            text,
     surveyor            text,
+    comments            text,
     filename            text,
     datasource          integer,
     numauto             bigserial PRIMARY KEY,
@@ -2531,6 +2532,7 @@ COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate';        
 COMMENT ON COLUMN topo_points.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN topo_points.survey_date             IS 'Date of surveying';
 COMMENT ON COLUMN topo_points.surveyor                IS 'Survey operator name';
+COMMENT ON COLUMN licences.comments                   IS 'Comments, especially useful information such as peg not found, elevation measured at top of beacon, etc.';
 COMMENT ON COLUMN topo_points.filename                IS 'Original data file name (when datasource is not used, for some reason)';
 COMMENT ON COLUMN topo_points.datasource              IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN topo_points.numauto                 IS 'Automatic integer primary key';
