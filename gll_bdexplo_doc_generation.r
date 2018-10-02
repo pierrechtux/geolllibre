@@ -18254,7 +18254,7 @@ COMMIT
 -------------+------------------------+--------------------------------------------------------------------+----------+-------------------------------------------------
  gid         | integer                | not null default nextval('ancient_workings_gid_seq'::regclass)     | plain    | Identifier
  description | character varying(254) |                                                                    | extended | Full description
- the_geom    | geometry               |                                                                    | main     | Geometry, usded in GIS
+ the_geom    | geometry               |                                                                    | main     | Geometry, used in GIS
  opid        | integer                |                                                                    | plain    | Operation identifier
  numauto     | integer                | not null default nextval('ancient_workings_numauto_seq'::regclass) | plain    | Automatic integer
  datasource  | integer                |                                                                    | plain    | Datasource identifier, refers to lex_datasource

@@ -130,6 +130,7 @@ CREATE TABLE public.operations (
     lon_max         numeric(10,5), --NOT NULL,
     lat_max         numeric(10,5), --NOT NULL,
     boundary_geom   geometry,
+    geography_4326  geography,
     comments        text, --NOT NULL,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user NOT NULL
@@ -159,6 +160,7 @@ COMMENT ON COLUMN public.operations.lon_min                     IS 'West longitu
 COMMENT ON COLUMN public.operations.lat_max                     IS 'North latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.lon_max                     IS 'East latitude, decimal degrees, WGS84';
 COMMENT ON COLUMN public.operations.boundary_geom               IS 'Yet another way to locate an operation: a geometry, most often a polygon following the boundary surrounding the operation zone.  All these location solutions can be used with a sort of priority order, with spatial queries returning such or such location type, accordingly.  In the long term, however, those fields should be somehow trimmed';
+COMMENT ON COLUMN public.operations.geography_4326              IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN public.operations.creation_ts                 IS 'Current date and time stamp when data is loaded in table';
 COMMENT ON COLUMN public.operations.username                    IS 'User (role) which created data record';
 --COMMENT ON COLUMN public.operations.numauto                     IS 'Automatic integer';
@@ -203,6 +205,7 @@ CREATE TABLE public.field_observations (
     y                   numeric(20,10) NOT NULL,
     z                   numeric(20, 2) NOT NULL,
     geometry_corr       geometry,
+    geography_4326      geography,
     description         text --NOT NULL,
     code_litho          text --NOT NULL,
     code_unit           text --NOT NULL,
@@ -232,6 +235,7 @@ COMMENT ON COLUMN field_observations.x                          IS 'X coordinate
 COMMENT ON COLUMN field_observations.y                          IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN field_observations.z                          IS 'Z coordinate';
 COMMENT ON COLUMN field_observations.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the observation point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN field_observations.geography_4326             IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN field_observations.description                IS 'Naturalist description';
 COMMENT ON COLUMN field_observations.code_litho                 IS 'Lithological code';
 COMMENT ON COLUMN field_observations.code_unit                  IS 'Unit code: lithostratigraphic, and/or cartographic';
@@ -594,6 +598,8 @@ CREATE TABLE public.gpy_mag_ground (
     x                        numeric,
     y                        numeric,
     z                        numeric,
+    geometry_corr            geometry,
+    geography_4326           geography,
     x_local                  numeric,
     y_local                  numeric,
     mag_nanotesla            double precision,
@@ -605,6 +611,11 @@ CREATE TABLE public.gpy_mag_ground (
 );
 COMMENT ON TABLE public.gpy_mag_ground IS 'Geophysics: ground mag';
 COMMENT ON COLUMN gpy_mag_ground.opid                           IS 'Operation identifier';
+
+COMMENT ON COLUMN gpy_mag_ground.geometry_corr                  IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the survey point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN gpy_mag_ground.geography_4326                 IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
+
+
 COMMENT ON COLUMN gpy_mag_ground.datasource                     IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN gpy_mag_ground.numauto                        IS 'Automatic integer primary key';
 COMMENT ON COLUMN gpy_mag_ground.creation_ts                    IS 'Current date and time stamp when data is loaded in table';
@@ -635,6 +646,8 @@ CREATE TABLE public.dh_collars (
     x                   numeric,
     y                   numeric,
     z                   numeric,
+    geometry_corr       geometry,
+    geography_4326      geography,
     azim_ng             numeric,    -- TODO change for a structure with mag declination stored elsewhere
     azim_nm             numeric,
     dip_hz              numeric,
@@ -680,6 +693,9 @@ COMMENT ON COLUMN dh_collars.srid                               IS 'Spatial Refe
 COMMENT ON COLUMN dh_collars.x                                  IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN dh_collars.y                                  IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN dh_collars.z                                  IS 'Z coordinate';
+COMMENT ON COLUMN dh_collars.geometry_corr                      IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the collar point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN dh_collars.geography_4326                     IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
+
 COMMENT ON COLUMN dh_collars.azim_ng                            IS 'Hole or trench azimuth (°) relative to geographic North';
 COMMENT ON COLUMN dh_collars.azim_nm                            IS 'Hole or trench azimuth (°) relative to Magnetic North';
 COMMENT ON COLUMN dh_collars.dip_hz                             IS 'Drill hole or trench dip relative to horizontal (°)';
@@ -2201,7 +2217,9 @@ CREATE TABLE public.ancient_workings (
         DEFERRABLE INITIALLY DEFERRED,
     gid                 integer NOT NULL,
     description         text,
-    the_geom            geometry,
+    the_geom            geometry,  --TODO rename that field...
+    geometry_corr       geometry,
+    geography_4326      geography,
     datasource          integer,
     numauto             serial PRIMARY KEY,
     CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL))
@@ -2214,7 +2232,9 @@ CREATE TABLE public.ancient_workings (
 COMMENT ON TABLE public.ancient_workings IS 'Ancient workings, either historic or recent';
 COMMENT ON COLUMN ancient_workings.gid                IS 'Identifier';
 COMMENT ON COLUMN ancient_workings.description        IS 'Full description';
-COMMENT ON COLUMN ancient_workings.the_geom           IS 'Geometry, usded in GIS';
+COMMENT ON COLUMN ancient_workings.the_geom           IS 'Geometry, used in GIS';
+COMMENT ON COLUMN ancient_workings.geometry_corr      IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the works (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN ancient_workings.geography_4326     IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN ancient_workings.opid               IS 'Operation identifier';
 COMMENT ON COLUMN ancient_workings.datasource         IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN ancient_workings.numauto            IS 'Automatic integer';
@@ -2237,6 +2257,7 @@ CREATE TABLE public.occurrences (
     w_todo              text,
     comments            text,
     geom                geometry,
+    geography_4326      geography,
     datasource          integer,
     numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
@@ -2254,6 +2275,7 @@ COMMENT ON COLUMN occurrences.status                  IS 'Status: OCCUR = occure
 COMMENT ON COLUMN occurrences.description             IS 'Occurence description: geological context, significant figures at current stage of exploration or exploitation';
 COMMENT ON COLUMN occurrences.w_done                  IS 'Exploration work done, codified field: PROSPection (rock sampling on surface), SOIL geochemistry, MAPping, DECAPage, TRenches, Drill Holes';
 COMMENT ON COLUMN occurrences.w_todo                  IS 'Exploration work to be done, codified field: PROSPection (rock sampling on surface), SOIL geochemistry, MAPping, DECAPage, TRenches, Drill Holes';
+COMMENT ON COLUMN occurrences.geography_4326          IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN occurrences.datasource              IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN occurrences.numauto                 IS 'Automatic integer primary key';
 COMMENT ON COLUMN occurrences.creation_ts             IS 'Current date and time stamp when data is loaded in table';
@@ -2508,7 +2530,7 @@ CREATE TABLE public.topo_points (
     y                   numeric(10,3),
     z                   numeric(10,3),
     cq3d                numeric,
-    geometry_corr       geometry,  
+    geometry_corr       geometry,
     geography_4326      geography,
     survey_date         date,
     topo_survey_type    text,
@@ -2531,7 +2553,7 @@ COMMENT ON COLUMN topo_points.x                       IS 'X coordinate (Easting)
 COMMENT ON COLUMN topo_points.y                       IS 'Y coordinate (Northing), in coordinate system srid';       --'Y coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate';                                             --'Z coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.cq3d                    IS 'Quality control of GPS survey';  -- TODO demander à quidedroit
-COMMENT ON COLUMN topo_points.geometry_corr           IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN topo_points.geometry_corr           IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the survey point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN topo_points.geography_4326          IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN topo_points.survey_date             IS 'Date of surveying';
 COMMENT ON COLUMN topo_points.surveyor                IS 'Survey operator name';
