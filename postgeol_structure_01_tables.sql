@@ -2509,6 +2509,7 @@ CREATE TABLE public.topo_points (
     z                   numeric(10,3),
     cq3d                numeric,
     geometry_corr       geometry,  
+    geography_4326      geography,
     survey_date         date,
     topo_survey_type    text,
 --     coordsys            text,
@@ -2530,7 +2531,8 @@ COMMENT ON COLUMN topo_points.x                       IS 'X coordinate (Easting)
 COMMENT ON COLUMN topo_points.y                       IS 'Y coordinate (Northing), in coordinate system srid';       --'Y coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.z                       IS 'Z coordinate';                                             --'Z coordinate, projected in UTM (m) or other similar CRS';
 COMMENT ON COLUMN topo_points.cq3d                    IS 'Quality control of GPS survey';  -- TODO demander à quidedroit
-COMMENT ON COLUMN topo_points.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN topo_points.geometry_corr           IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the point; when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
+COMMENT ON COLUMN topo_points.geography_4326          IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 COMMENT ON COLUMN topo_points.survey_date             IS 'Date of surveying';
 COMMENT ON COLUMN topo_points.surveyor                IS 'Survey operator name';
 COMMENT ON COLUMN licences.comments                   IS 'Comments, especially useful information such as peg not found, elevation measured at top of beacon, etc.';
