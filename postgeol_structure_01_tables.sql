@@ -13,7 +13,7 @@ SET client_min_messages = warning;
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
 -- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
-	-- => ce fut une mauvaise idée: postgis requiert, apparemment, une clé en int4; donc un serial; je rechange tout.
+                        -- => ce fut une mauvaise idée: postgis requiert, apparemment, une clé en int4; donc un serial; je rechange tout.
 -- o chercher un algorithme de géocodage street address => lat-lon  ==> BAN => implémenter sous forme:
 --     o de traitement par lots:
 --         o export en .csv des données pour lesquelles on veut un géocodage
@@ -43,36 +43,36 @@ SET client_min_messages = warning;
 -- }}}
 
 -- En-tête, copyright {{{
---	Title:   "Structure of POSTGEOL database: PostgreSQL database for GEOLogical data"
---	Author:  "Pierre Chevalier"
---	License: {
---		This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
---		###########################################################################
---		##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##
---		##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##
---		##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##
---		##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##
---		##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
---		##                                                                       ##
---		###########################################################################
---		  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+--  Title:   "Structure of POSTGEOL database: PostgreSQL database for GEOLogical data"
+--  Author:  "Pierre Chevalier"
+--  License: {
+--      This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Sciences.
+--      ###########################################################################
+--      ##          ____  ___/_ ____  __   __   __   _()____   ____  _____       ##
+--      ##         / ___\/ ___// _  |/ /  / /  / /  /  _/ _ \ / __ \/ ___/       ##
+--      ##        / /___/ /_  / / | / /  / /  / /   / // /_/_/ /_/ / /_          ##
+--      ##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___         ##
+--      ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
+--      ##                                                                       ##
+--      ###########################################################################
+--        Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
 --
---		    GeolLLibre is free software: you can redistribute it and/or modify
---		    it under the terms of the GNU General Public License as published by
---		    the Free Software Foundation, either version 3 of the License, or
---		    (at your option) any later version.
---		
---		    This program is distributed in the hope that it will be useful,
---		    but WITHOUT ANY WARRANTY; without even the implied warranty of
---		    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
---		    GNU General Public License for more details.
---		
---		    You should have received a copy of the GNU General Public License
---		    along with this program.  If not, see <http://www.gnu.org/licenses/>
---		    or write to the Free Software Foundation, Inc., 51 Franklin Street,
---		    Fifth Floor, Boston, MA 02110-1301, USA.
---		    See LICENSE file.
---		}
+--          GeolLLibre is free software: you can redistribute it and/or modify
+--         it under the terms of the GNU General Public License as published by
+--         the Free Software Foundation, either version 3 of the License, or
+--         (at your option) any later version.
+--
+--         This program is distributed in the hope that it will be useful,
+--         but WITHOUT ANY WARRANTY; without even the implied warranty of
+--         MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--         GNU General Public License for more details.
+--
+--         You should have received a copy of the GNU General Public License
+--         along with this program.  If not, see <http://www.gnu.org/licenses/>
+--         or write to the Free Software Foundation, Inc., 51 Franklin Street,
+--         Fifth Floor, Boston, MA 02110-1301, USA.
+--         See LICENSE file.
+--}
 --}}}
 
 -- Create schemas:{{{
@@ -120,7 +120,7 @@ CREATE TABLE public.operations (
     address2_parcell   text,
     address3_areacode  text,
     address4_zipcode   text,
-	address5_town      text,
+    address5_town      text,
     srid            text,
     x               numeric,
     y               numeric,
@@ -1196,8 +1196,8 @@ CREATE TABLE public.dh_pressiom_raw_data (
     opid                    integer,
     id                      text,
     depto                   numeric(10,2),
-	--TODO
-	comments				text,
+    --TODO
+    comments                text,
     datasource              integer,
     numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
@@ -1218,7 +1218,7 @@ CREATE TABLE public.dh_penetrometer (
     id                      text,
     depto                   numeric(10,2),
     probe_penetro_id        text,           -- TODO make appropriate entries within lex_code table
-	hits                    integer,
+    hits                    integer,
     comments                text,
     datasource              integer,
     numauto                 serial PRIMARY KEY,
@@ -1250,19 +1250,19 @@ COMMENT ON COLUMN dh_penetrometer.username                    IS 'User (role) wh
 CREATE TABLE public.dh_piezo_measures (
     opid                    integer,
     id                      text,
-	operator                text,
-	date_time				timestamptz,
+    operator                text,
+    date_time               timestamptz,
     probe_piezo_id          text,
-	weather                 text,
-	top_reference           text,
+    weather                 text,
+    top_reference           text,
     top_z                   numeric(10,2),  -- TODO arranger ça différemment: faire une table des repères, avec l'historique par exemple
-	aquifer                 text,
-	investigated_formation  text,
+    aquifer                 text,
+    investigated_formation  text,
     superficial_formation   boolean,
     captive_water_table     boolean,
-	water_depth				numeric(10,3),
-	eoh_depth				numeric(10,2),
-	comments				text,
+    water_depth             numeric(10,3),
+    eoh_depth               numeric(10,2),
+    comments                text,
     datasource              integer,
     numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
@@ -1513,11 +1513,11 @@ CREATE TABLE public.dh_radiometry (
     id              text,
     depfrom         numeric(10,2),
     depto           numeric(10,2),
---     a               text,
+--  a               text,
     probe           text,
     radiometry      numeric,
     comments        text,
-    datasource          integer,
+    datasource     integer,
     numauto         serial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
@@ -2503,7 +2503,7 @@ CREATE TABLE public.topo_points (
     id                  text,
     num                 numeric(10,0),
     name                text,
-	srid                integer,
+    srid                integer,
     x                   numeric(10,3),
     y                   numeric(10,3),
     z                   numeric(10,3),
