@@ -13,6 +13,7 @@ SET client_min_messages = warning;
 -- o faire le rôle data_admin, et les autres rôles "génériques" (groupes)
 -- o d'autres rôles du genre db_admin, data_entry, data_query, etc.
 -- e mettre des types comme conseillé dans (? cf. twitter), par exemple des TEXT au lieu de VARCHAR => bigserial au lieu de serial: fait; ...
+	-- => ce fut une mauvaise idée: postgis requiert, apparemment, une clé en int4; donc un serial; je rechange tout.
 -- o chercher un algorithme de géocodage street address => lat-lon  ==> BAN => implémenter sous forme:
 --     o de traitement par lots:
 --         o export en .csv des données pour lesquelles on veut un géocodage
@@ -109,7 +110,7 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 -- x operations:{{{
 
 CREATE TABLE public.operations (
-    opid            bigserial PRIMARY KEY NOT NULL,
+    opid            serial PRIMARY KEY NOT NULL,
     name_short      text, --NOT NULL,  -- TODO warning: field previously named differently: operation
     name_full       text, --NOT NULL,  -- TODO warning: field previously named differently: full_name
     year            integer   DEFAULT substring(now()::text, 0, 5)::integer,                -- Careful at the end of year 9999.        -- NOT NULL, -- => NULL autorisé, tout bien pesé
@@ -132,7 +133,7 @@ CREATE TABLE public.operations (
     comments        text, --NOT NULL,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user NOT NULL
-    --numauto         bigserial UNIQUE NOT NULL,  -- useless, since opid is already the bigserial PRIMARY KEY
+    --numauto         serial UNIQUE NOT NULL,  -- useless, since opid is already the serial PRIMARY KEY
 );
 
 COMMENT ON TABLE public.operations                              IS 'Operations, projects: master table, to be queried all the time, especially for confidentiality purposes.';
@@ -172,7 +173,7 @@ CREATE TABLE :USER.operation_active (       -- TODO at some point, put back some
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
---     numauto             bigserial PRIMARY KEY,   -- BOF, on pourrait s'en passer
+--     numauto             serial PRIMARY KEY,   -- BOF, on pourrait s'en passer
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 --     UNIQUE (opid) -- on s'en passe
@@ -215,7 +216,7 @@ CREATE TABLE public.field_observations (
     waypoint_name       text --NOT NULL,
     icon_descr          text --NOT NULL,  -- Eventually get rid of this quite useless field.
     timestamp_epoch_ms  bigint NOT NULL,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text NOT NULL DEFAULT current_user,
     UNIQUE (opid, obs_id)
@@ -271,7 +272,7 @@ CREATE TABLE public.field_observations_struct_measures (
     geolpda_poi_id      integer NOT NULL,
     sortgroup           text NOT NULL,
     datasource          integer NOT NULL,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, obs_id)
@@ -323,7 +324,7 @@ CREATE TABLE public.field_photos (
     dip_hz              numeric,   --WARNING, field renamed from dip to something a bit more meaningful.
     author              text,   --hm, useful? Geologist from field_observations should do it, no? TODO drop this field, if unnecessary.
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
     --FOREIGN KEY (opid, obs_id) REFERENCES public.field_observations(opid, obs_id)
@@ -359,7 +360,7 @@ CREATE TABLE public.formations_group_lithos (  -- TODO name formations_group_lit
     formation_name      text,
     code_litho          text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -432,7 +433,7 @@ CREATE TABLE public.surface_samples_grades (
     spp2                double precision,
     campaign            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -492,7 +493,7 @@ CREATE TABLE public.geoch_sampling (
     slope_dir           text,
     soil_description    text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -542,7 +543,7 @@ CREATE TABLE public.geoch_ana (
     comments            text,
     value               numeric(10,3),
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -565,7 +566,7 @@ COMMENT ON COLUMN public.geoch_ana.username                     IS 'User (role) 
 -- Vérifier si cette table est utile, et si oui en quoi, comment.
 
 CREATE TABLE public.geoch_sampling_grades (
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     au_ppb              numeric
 )
 INHERITS (geoch_sampling);
@@ -598,7 +599,7 @@ CREATE TABLE public.gpy_mag_ground (
     mag_nanotesla            double precision,
     val_corr_mag_nanotesla   double precision,
     datasource               integer,
-    numauto                  bigserial PRIMARY KEY,
+    numauto                  serial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
 );
@@ -657,7 +658,7 @@ CREATE TABLE public.dh_collars (
     z_pject             numeric,
     shid                text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     UNIQUE (opid, id)
@@ -749,7 +750,7 @@ CREATE TABLE public.dh_shift_reports (
     geologist_supervisor          text,
     comments                      text,
     datasource                    integer,
-    numauto                       bigserial PRIMARY KEY,
+    numauto                       serial PRIMARY KEY,
     creation_ts                   timestamptz DEFAULT now() NOT NULL,
     username                      text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -809,7 +810,7 @@ CREATE TABLE public.dh_followup (
     relogging           text,
     beacon              text,
     in_gdm              text,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -856,7 +857,7 @@ CREATE TABLE public.dh_devia (
     comments            text,
     valid               boolean DEFAULT true,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -903,7 +904,7 @@ CREATE TABLE public.dh_quicklog (
     alteration          integer,
     deformation         integer,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -951,7 +952,7 @@ CREATE TABLE public.dh_litho (
     value6              integer,
     colour              text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     UNIQUE (opid, id, depto),
@@ -1008,7 +1009,7 @@ CREATE TABLE public.dh_core_boxes (
     box_number          integer,
     comments            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1047,7 +1048,7 @@ CREATE TABLE public.dh_tech (
     nb_joints           integer,
     comments            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1087,7 +1088,7 @@ CREATE TABLE public.dh_rqd (
     nb_joints           integer,
     comments            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1124,7 +1125,7 @@ CREATE TABLE public.dh_drill_params (
     retaining_pressure_bar  numeric(10,2),    -- TODO trouver le terme anglois adéquat (pression de retenue de l'outil, en bars)
     injection_pression_bar  numeric(10,2),
     datasource              integer,
-    numauto                 bigserial PRIMARY KEY,
+    numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
     username                text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1164,7 +1165,7 @@ CREATE TABLE public.dh_pressiom_results (
     pmt_module              numeric(10,2),
     comments                text,
     datasource              integer,
-    numauto                 bigserial PRIMARY KEY,
+    numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
     username                text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1198,7 +1199,7 @@ CREATE TABLE public.dh_pressiom_raw_data (
 	--TODO
 	comments				text,
     datasource              integer,
-    numauto                 bigserial PRIMARY KEY,
+    numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
     username                text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1220,7 +1221,7 @@ CREATE TABLE public.dh_penetrometer (
 	hits                    integer,
     comments                text,
     datasource              integer,
-    numauto                 bigserial PRIMARY KEY,
+    numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
     username                text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1263,7 +1264,7 @@ CREATE TABLE public.dh_piezo_measures (
 	eoh_depth				numeric(10,2),
 	comments				text,
     datasource              integer,
-    numauto                 bigserial PRIMARY KEY,
+    numauto                 serial PRIMARY KEY,
     creation_ts             timestamptz DEFAULT now() NOT NULL,
     username                text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1319,7 +1320,7 @@ CREATE TABLE public.dh_struct_measures (
     struct_description  text,
     sortgroup           text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1366,7 +1367,7 @@ CREATE TABLE public.dh_photos (
     md5sum              text,
     author              text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1437,7 +1438,7 @@ CREATE TABLE public.dh_sampling_grades (
     quartering          integer,
     comments            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1483,7 +1484,7 @@ CREATE TABLE public.dh_resistivity (
     rlld                numeric(10,2),
     rlls                numeric(10,2),
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1517,7 +1518,7 @@ CREATE TABLE public.dh_radiometry (
     radiometry      numeric,
     comments        text,
     datasource          integer,
-    numauto         bigserial PRIMARY KEY,
+    numauto         serial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1557,7 +1558,7 @@ CREATE TABLE public.dh_mineralised_intervals (
     dens            numeric(10,2),
     comments        text,
     datasource      integer,
-    numauto         bigserial PRIMARY KEY,
+    numauto         serial PRIMARY KEY,
     creation_ts     timestamptz DEFAULT now() NOT NULL,
     username        text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1598,7 +1599,7 @@ CREATE TABLE public.dh_density (
     moisture            numeric,
     method              text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1637,7 +1638,7 @@ CREATE TABLE public.dh_thinsections (
     mineralisations                    text,
     origin                             text,
     datasource                         integer,
-    numauto                            bigserial PRIMARY KEY,
+    numauto                            serial PRIMARY KEY,
     creation_ts                        timestamptz DEFAULT now() NOT NULL,
     username                           text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1682,7 +1683,7 @@ CREATE TABLE public.dh_sampling_mineralurgy (
     rec_48h_pc          numeric(10,2),
     rec_72h_pc          numeric(10,2),
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, id)
@@ -1741,7 +1742,7 @@ CREATE TABLE public.lab_ana_batches_expedition (
     sample_id_first     text,
     sample_id_last      text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 --     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -1797,7 +1798,7 @@ CREATE TABLE public.lab_ana_batches_reception (
     certificate_comments     text,
     info_suppl_json          text,
     datasource               integer,
-    numauto                  bigserial PRIMARY KEY,
+    numauto                  serial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
 --     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -1838,7 +1839,7 @@ CREATE TABLE public.lab_ana_columns_definition (
     unit           text,
     scheme         text,
     colid          text,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 --     FOREIGN KEY (opid, xx) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -1910,7 +1911,7 @@ CREATE TABLE public.lab_ana_results (
     uplim          numeric,
     valid          boolean DEFAULT true,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 --     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -2072,7 +2073,7 @@ CREATE TABLE public.lab_ana_qaqc_results (
     generic_txt_col4    text,
     generic_txt_col5    text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 --     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -2115,7 +2116,7 @@ CREATE TABLE public.qc_sampling (
     refers_to                text,
     weight_kg                numeric(6,2),
     datasource               integer,
-    numauto                  bigserial PRIMARY KEY,
+    numauto                  serial PRIMARY KEY,
     creation_ts              timestamptz DEFAULT now() NOT NULL,
     username                 text DEFAULT current_user
 --     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -2160,7 +2161,7 @@ CREATE TABLE public.qc_standards (
     ag_ppm_95pc_conf_interval  numeric,
     ni_ppm_95pc_conf_interval  numeric,
     datasource                 integer,
-    numauto                    bigserial PRIMARY KEY,
+    numauto                    serial PRIMARY KEY,
     creation_ts                timestamptz DEFAULT now() NOT NULL,
     username                   text DEFAULT current_user
 --     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
@@ -2202,7 +2203,7 @@ CREATE TABLE public.ancient_workings (
     description         text,
     the_geom            geometry,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     CONSTRAINT enforce_geotype_the_geom CHECK ((geometrytype(the_geom) = 'POINT') OR (the_geom IS NULL))
 --     FOREIGN KEY (opid, id) -- TODO remettre ça avec les bons champs, les bonnes connexions
 --         REFERENCES public.dh_collars (opid, id)
@@ -2237,7 +2238,7 @@ CREATE TABLE public.occurrences (
     comments            text,
     geom                geometry,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     --CONSTRAINT chk_status CHECK (status = ANY (ARRAY[('OCCUR'::varchar)::text, ('OREB'::varchar)::text, ('MINE'::varchar)::text, ('MINED'::varchar)::text, ('MCO'::varchar)::text, ('DISTRICT'::varchar)::text])),
@@ -2308,7 +2309,7 @@ CREATE TABLE public.licences (
     geometry_literal_description_plain_txt text,
     geometry_wkt        text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -2355,7 +2356,7 @@ CREATE TABLE public.grade_ctrl (
     litho          text,
     old_id         text,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2395,7 +2396,7 @@ CREATE TABLE public.lex_codes (
     description    text,
     comments       text,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2418,7 +2419,7 @@ CREATE TABLE public.lex_datasource (
     datasource_id  integer NOT NULL,
     filename       text,
     comments       text,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2449,7 +2450,7 @@ CREATE TABLE public.lex_standard (
     std_origin     text,
     type_analyse   text NOT NULL,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2478,7 +2479,7 @@ CREATE TABLE public.mag_declination (
     mag_decl       numeric,
     date           date,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2515,7 +2516,7 @@ CREATE TABLE public.topo_points (
     comments            text,
     filename            text,
     datasource          integer,
-    numauto             bigserial PRIMARY KEY,
+    numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
 );
@@ -2555,7 +2556,7 @@ CREATE TABLE public.survey_lines (
     y_end          numeric,
     length         numeric,
     srid           numeric,
-    numauto        bigserial PRIMARY KEY
+    numauto        serial PRIMARY KEY
 );
 COMMENT ON TABLE public.survey_lines IS 'Survey lines, for geophysics or other types of linear surveys; defined with start and end points.';
 
@@ -2588,7 +2589,7 @@ CREATE TABLE public.baselines (
     y2             numeric(10,3),
     z2             numeric(10,3),
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2697,7 +2698,7 @@ CREATE TABLE public.index_geo_documentation (
     lon_max        numeric(20,8),
     filename       text,
     datasource     integer,
-    numauto        bigserial PRIMARY KEY,
+    numauto        serial PRIMARY KEY,
     creation_ts    timestamptz DEFAULT now() NOT NULL,
     username       text DEFAULT current_user
 );
@@ -2720,7 +2721,7 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 --     description_en text,
 --     description_es text,
 --     description_fr text,
---     numauto        bigserial NOT NULL,
+--     numauto        serial NOT NULL,
 --     creation_ts    timestamptz DEFAULT now() NOT NULL,
 --     username       text DEFAULT current_user
 -- );
@@ -2760,7 +2761,7 @@ COMMENT ON COLUMN index_geo_documentation.username    IS 'User (role) which crea
 --         DEFERRABLE INITIALLY DEFERRED,
 --     comment_en     text,
 --     comment_fr     text,
---     numauto        bigserial NOT NULL,
+--     numauto        serial NOT NULL,
 --     creation_ts    timestamptz DEFAULT now() NOT NULL,
 --     username       text DEFAULT current_user
 -- );
@@ -2809,7 +2810,7 @@ COMMENT ON COLUMN locations.lon_max                   IS 'East latitude, decimal
 DROP TABLE IF EXISTS tmp_xy CASCADE;
 CREATE TABLE public.tmp_xy (
     shid text NOT NULL,
-    id bigserial NOT NULL,
+    id serial NOT NULL,
     srid integer,
     x numeric(10,2),
     y numeric(10,2),
@@ -2836,7 +2837,7 @@ CREATE TABLE public.grid (
     x numeric,
     y numeric,
     srid integer,
-    numauto bigserial PRIMARY KEY,
+    numauto serial PRIMARY KEY,
 );
 
 CREATE VIEW grid_points AS

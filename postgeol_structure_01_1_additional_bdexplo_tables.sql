@@ -18,7 +18,7 @@ CREATE TABLE public.lab_ana_batches_reception_18_corr (
     certificate_comments text,
     info_suppl_json text
     datasource integer,
-    numauto bigserial PRIMARY KEY,
+    numauto serial PRIMARY KEY,
     creation_ts timestamp without time zone,
     username text
 );
@@ -82,7 +82,7 @@ CREATE TABLE public.field_sampling_ana (  -- Nota bene: field_sampling_ana used 
     labo_batch          text,
     value               numeric(10,2),
     comments            text,
-    numauto             bigserial PRIMARY KEY
+    numauto             serial PRIMARY KEY
 );
 -- COMMENT ON COLUMN public.rock_ana.hammer_index       IS 'Sample identification related to the hammer_sampling table';
 COMMENT ON COLUMN public.rock_ana.value               IS 'Analysis value';
@@ -123,7 +123,7 @@ CREATE TABLE public.dh_collars_lengths (
     len_hq numeric(10,2),
     len_nq numeric(10,2),
     len_bq numeric(10,2),
-    numauto bigserial PRIMARY KEY
+    numauto serial PRIMARY KEY
 );
 COMMENT ON TABLE dh_collars_lengths                   IS 'Old data, fields removed from dh_collars table, values stored here';
 COMMENT ON COLUMN dh_collars_lengths.len_destr        IS 'Destructive (percussion or rotary drilling) length (m)';
