@@ -82,6 +82,9 @@ tail -n +2 $fichier | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d
 #	fi
 
 echo "Data from $fichier_orig should be in $schema.$table. To browse it:"
+echo "From the shell:"
 echo "echo \"SELECT * FROM $schema.$table;\" | psql -X -h $GLL_BD_HOST -p $GLL_BD_PORT -U $GLL_BD_USER -d $GLL_BD_NAME | less"
+echo "From a psql or equivalent:"
+echo "SELECT * FROM $schema.$table;"
 #echo "=============================================================="
 
