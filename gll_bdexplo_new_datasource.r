@@ -15,7 +15,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2013 Pierre Chevalier <pierrechevaliergeol@free.fr>
+  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
  
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 }
 ]
 
-; initialisation:
-if error? try [						; Récupération des routines (et des préférences) et connexion à la base
-do load to-file system/options/home/bin/gll_routines.r	; soit depuis ~/bin
-] [
-do load to-file %gll_routines.r				; ou sinon là où se trouve le script présent
-]
+;; initialisation:
+;if error? try [						; Récupération des routines (et des préférences) et connexion à la base
+;do load to-file system/options/home/bin/gll_routines.r	; soit depuis ~/bin
+;] [
+;do load to-file %gll_routines.r				; ou sinon là où se trouve le script présent
+;]
 
 if error? try [ type? journal_sql ] [journal_sql: [] ]	; si pas de journal des instructions SQL, on en crée un vide
 

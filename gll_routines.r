@@ -4242,10 +4242,10 @@ change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
 print "Gll preferences loaded: "
-?? dbhost
-?? dbname
-?? user
-?? tmp_schema
+;?? dbhost
+;?? dbname
+;?? user
+;?? tmp_schema
 print rejoin ["Current working directory: " what-dir ]
 
 ; on lance la connexion à la base
