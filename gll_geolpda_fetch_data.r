@@ -316,6 +316,8 @@ datasource: new_datasource_id
 ;}}}
 ;}}}
 ; TODO BUG: no records are added to public.lex_datasource
+; => 2018_10_15__19_38_10 ?? No bug (?): records have correctly been added to public.lex_datasource
+; => recheck, later on.
 append sql_string newline
 
 ; observations:{{{ } } }
@@ -348,10 +350,9 @@ if (length? geolpda_orientations) > 0 [
 	sql_string: rejoin [copy/part sql_string ((length? sql_string) - 1) ";"]
 ]
 
-print "SQL statement to be run:"
-prin copy/part sql_string 300
-print "..."
 ;}}}
+print "SQL statement to be run:"
+prin copy/part sql_string 300 print "..."
 ;}}}
 
 ; Play INSERT queries on database and COMMIT: {{{ } } } ;TODO BUG: Il n'y a pas de TRANSACTION de commencée?? Remédier à cela...
