@@ -2847,18 +2847,20 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 	measures: copy sql_result
 	;print-list measures
 	sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
-	foreach m measures [ ; iteration over structural measurements in measures
-		; NB: SELECT opid, obs_id, rotation_matrix, numauto
-		; on crée un objet mesure structurale:
-		o: orientation/new first (to-block m/3)
-		; on en prend les informations, et on les met dans le sql à faire jouer:
-		append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
+	; if there is anything to add:
+	if (length? measures) > 0 [  ; the case when no structural measurements were imported never rose until 2018_10_15__19_44_23! => bugfix.
+		foreach m measures [ ; iteration over structural measurements in measures
+			; NB: SELECT opid, obs_id, rotation_matrix, numauto
+			; on crée un objet mesure structurale:
+			o: orientation/new first (to-block m/3)
+			; on en prend les informations, et on les met dans le sql à faire jouer:
+			append sql_string rejoin ["UPDATE public.field_observations_struct_measures SET north_ref = '" o/north_reference "', direction = " o/plane_direction ", dip = " o/plane_dip ", dip_quadrant = '" o/plane_quadrant_dip "', pitch = " o/line_pitch ", pitch_quadrant = '" o/line_pitch_quadrant "', movement = '" o/line_movement "' WHERE numauto = " m/4 ]
 
-		either overwrite [
-			append sql_string rejoin [";" newline]
-		][	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline] ]
-		; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); ce n'est qu'ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
-	]
+			either overwrite [
+				append sql_string rejoin [";" newline]
+			][	append sql_string rejoin [" AND (north_ref IS NULL OR direction IS NULL OR dip IS NULL OR dip_quadrant IS NULL OR pitch IS NULL OR pitch_quadrant IS NULL OR movement IS NULL);" newline] ]
+			; NB: on fait le choix de convertir toutes les informations, quel que soit le type de géométrie (plan, plan-ligne, ligne...); ce n'est qu'ultérieurement qu'on piochera les valeurs utiles dans les champs appropriés, en fonction du type de géométrie.
+	]	]
 	comment: [; prudemment, dans la phase de débogage:
 		;, on ne fait qu'imprimer sur stdout la requête à faire tourner:
 		;print sql_string
