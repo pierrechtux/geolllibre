@@ -2298,7 +2298,7 @@ call_wait_output_error: func [ ;{{{ } } }
 	"Run a shell call and get stdio output, and err output"
 	cmd [string!] "command to be run by the shell"
 	] [
-		print rejoin["Running: " cmd]
+		;print rejoin["Running: " cmd]  ; too verbose in numerous cases TODO do that if a DEBUG flag is on.
 		tt:  copy ""
 		err: copy ""
 		call/wait/output/error cmd tt err
