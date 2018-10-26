@@ -207,8 +207,6 @@ while [((answer != "y") and (answer != "n") and (answer != ""))] [
 ]
 if ((answer = "y") or (answer = "")) [ synchronize_geolpda_files ]
 
-
-
 ;}}}
 
 ; Open sqlite geolpda, get data:{{{ } } }

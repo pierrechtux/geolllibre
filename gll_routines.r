@@ -2429,41 +2429,42 @@ synchronize_geolpda_files: does [; {{{ } } }
 	ls_photos_local:  read to-file rejoin [dir_geolpda_local         "photos/" ]
 	ls_photos_device: read to-file rejoin [dir_mount_geolpda_android "photos/" ]
 	photos_to_transfer: exclude ls_photos_device ls_photos_local ; for the (abnormal, yet possible) case if photos are still in the android device in the geolpda/photos directory while they have already been transferred in the local directory.
-	prin "Photos to be transferred: "
-	print photos_to_transfer
-	prin "Perform the transfer: Y/n?"
-	tt: input
-	either  ((lowercase tt ) = "y") OR (tt = "") [
-		print "copying files:"
-		foreach f photos_to_transfer [
-			prin rejoin [to-string f " "]
-			copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
-		]
-		; Move photos in the dir_photos_transferred directory:
-		; Rebol apparently does not provide a way to move files to directories,
-		; so the shell will do:
-		cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
-		print "On android device, move photo files to an archive directory:"
-		call_wait_output_error cmd
-		;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
-		; Reduce geolpda pictures sizes in the local copy:{{{
-		size_max: 700
-		print rejoin ["Reduction of pictures to " size_max " pixels:"]
-		dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
-		dir_ori: rejoin [dir_geolpda_local "photos/original"]
-		unless exists? dir_red [ make-dir dir_red ]
-		unless exists? dir_ori [ make-dir dir_ori ]
-		foreach f photos_to_transfer [
-			if find f "jpg" [
-				call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "photos/" f " " dir_red "/" f ]
-				call_wait_output_error rejoin ["mv " dir_geolpda_local "photos/" f " " dir_ori]
-			] ]
-		call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
-		; TODO apply rotation, if any, to file
-		; TODO set timestamp to exif timestamp
-		; TODO add geotags, if any gpx?
-	] [ print "No synchronization done."]
-
+	either ((length? photos_to_transfer) < 1) [ print "No photos to be transferred."] [
+		prin "Photos to be transferred: "
+		print photos_to_transfer
+		prin "Perform the transfer: Y/n?"
+		tt: input
+		either  ((lowercase tt ) = "y") OR (tt = "") [
+			print "copying files:"
+			foreach f photos_to_transfer [
+				prin rejoin [to-string f " "]
+				copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
+			]
+			; Move photos in the dir_photos_transferred directory:
+			; Rebol apparently does not provide a way to move files to directories,
+			; so the shell will do:
+			cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
+			print "On android device, move photo files to an archive directory:"
+			call_wait_output_error cmd
+			;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
+			; Reduce geolpda pictures sizes in the local copy:{{{
+			size_max: 700
+			print rejoin ["Reduction of pictures to " size_max " pixels:"]
+			dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
+			dir_ori: rejoin [dir_geolpda_local "photos/original"]
+			unless exists? dir_red [ make-dir dir_red ]
+			unless exists? dir_ori [ make-dir dir_ori ]
+			foreach f photos_to_transfer [
+				if find f "jpg" [
+					call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "photos/" f " " dir_red "/" f ]
+					call_wait_output_error rejoin ["mv " dir_geolpda_local "photos/" f " " dir_ori]
+				] ]
+			call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
+			; TODO apply rotation, if any, to file
+			; TODO set timestamp to exif timestamp
+			; TODO add geotags, if any gpx?
+		] [ print "No synchronization done."]
+	]
 	print "DCIM pictures synchronization and reduction process:"
 	; Get photos listings:
 	tt: rejoin [dir_dcim_local now/year "/reduit_700/"]
@@ -2490,14 +2491,20 @@ synchronize_geolpda_files: does [; {{{ } } }
 	sort ls_photos_local
 	sort ls_photos_device
 
-	; first photo to transfer: oldest one among the geolpda photos which have already been transferred:
-	sort photos_to_transfer
-	date_start: first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (first photos_to_transfer)) ".jpg" "" "_"
-	date_start: to-date rejoin [substring date_start 1 4 "-" substring date_start 5 2 "-" substring date_start 7 2]
-	; last one: youngest one among the same list:
-	date_end:   first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
-	date_end: to-date rejoin [substring date_end 1 4 "-" substring date_end 5 2 "-" substring date_end 7 2]
-
+	either ((length? photos_to_transfer) > 1) [
+		; In case there were GeolPDA photos transferred:
+		; first photo to transfer: oldest one among the geolpda photos which have already been transferred:
+		sort photos_to_transfer
+		date_start: first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (first photos_to_transfer)) ".jpg" "" "_"
+		date_start: to-date rejoin [substring date_start 1 4 "-" substring date_start 5 2 "-" substring date_start 7 2]
+		; last one: youngest one among the same list:
+		date_end:   first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
+		date_end: to-date rejoin [substring date_end 1 4 "-" substring date_end 5 2 "-" substring date_end 7 2]
+	] [
+		; No photos were transferred: get dates from observation points: => impossible, the process of getting data from sqlite database has not yet taken place:
+		; TODO problem to be solved later.
+		print "No photos were transferred."
+	]
 	ls_photos_device_to_be_transferred: copy []
 	foreach p ls_photos_device [
 		if (find p ".jpg") [
@@ -2848,7 +2855,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 	;print-list measures
 	sql_string: copy {}	;make another SQL statement, which will contain the UPDATE clauses
 	; if there is anything to add:
-	if (length? measures) > 0 [  ; the case when no structural measurements were imported never rose until 2018_10_15__19_44_23! => bugfix.
+	if ((length? measures) > 0) [  ; the case when no structural measurements were imported never rose until 2018_10_15__19_44_23! => bugfix.
 		foreach m measures [ ; iteration over structural measurements in measures
 			; NB: SELECT opid, obs_id, rotation_matrix, numauto
 			; on crée un objet mesure structurale:
