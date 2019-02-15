@@ -15,7 +15,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+  Copyright (C) 2019 Pierre Chevalier <pierrechevaliergeol@free.fr>
 
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 
 ;;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES => postponed; strange beheviour from scripts, sometimes not reading environment variables, for unknown reason.
-;get_env_or_gll_preferences: func ["Function to retreive environment variables or a value from .gll_preferences var] [ ; {{{ } } }
+;get_env_or_gll_preferences: func ["Function to retreive environment variables or a value from .gll_preferences var] [ ; {{{
 ;
 ;gll_varenv: [ GLL_BD_HOST POSTGEOL GLL_BD_NAME GLL_BD_PORT GLL_BD_USER ]
 ;foreach v gll_varenv [
@@ -64,14 +64,14 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ;
 ;?? varenv_gll_bd_host
 ;?? varenv_postgeol
-;?? varenv_gll_bd_name 
+;?? varenv_gll_bd_name
 ;?? varenv_gll_bd_port
 ;?? varenv_gll_bd_user
 ;
 ;;	return sql_result
 ;;] ; }}}
 
-; Récupération des préférences (dbname dbhost user passw opid tmp_schema): {{{ } } }
+; Get preferences (dbname dbhost user passw opid tmp_schema) from .gll_preferences file. Récupération des préférences (dbname dbhost user passw opid tmp_schema) à partir du fichier .gll_preferences: {{{
 ; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
@@ -88,10 +88,23 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 		throw {.gll_preferences loaded from "system/options/home/"}	]
 	[print "- No .gll_preferences file found."
 	;TODO set some default values
+	dbname: postgeol: "postgeol"
+	dbhost:      "localhost"
+	dbport:      5432
+	user:        "geononymous"
+	passw:       "chut"
+	geologist:   "Anonymous Geologo"
+	opid:        0
+	tmp_schema:  "tmp_imports"
+	working_directory: %~/geolllibre/
+	dir_geolpda_local:           %~/geolpda/android_cp/geolpda/
+	dir_dcim_local:              %~/photos/
+	dir_oruxmaps_local:          %~/gps/oruxmaps/
 	]
 ] ;}}}
 
-do [ ; inclusion du pilote postgresql de Nenad: {{{ } } }
+; Include Nenad's postgeol driver. Inclusion du pilote postgresql de Nenad: {{{
+do [
 
 REBOL [
 	Title: "PostgresQL Protocol"
@@ -116,10 +129,10 @@ make root-protocol [
 	sys-insert: get in system/words 'insert
 	sys-pick: 	get in system/words 'pick
 	sys-close: 	get in system/words 'close
-	net-log: 	get in net-utils	'net-log	
-	
+	net-log: 	get in net-utils	'net-log
+
 	throws: [closed "closed"]
-	
+
 ;------ Internals --------
 
 	defs: [
@@ -188,7 +201,7 @@ make root-protocol [
 		matched-rows:
 		cursor:
 		columns:
-		;protocol:			
+		;protocol:
 		;version:
 		process-id:
 		last-notice:
@@ -200,28 +213,28 @@ make root-protocol [
 	column-class: context [name: length: type: flags: none]
 
 	conv-model: make block! length? defs/types
-	
+
 ;------ Type Conversion ------
-	
+
 	extract-conv-list: does [
 		blk: defs/types
 		forskip blk 3 [append conv-model sys-copy/deep reduce [blk/2 blk/3]]
 	]
-	
+
 	set 'change-type-handler func [p [port!] type [word!] blk [block!]][
 		head change/only next find p/locals/conv-list type blk
 	]
-	
+
 	try-to-date: func [val][error? try [val: to-date val] val]
-	
+
 	to-rebol-inet: func [val][
 		set [a b] parse val "/"
 		either b [reduce [to tuple! a to integer! b]][to tuple! a]
 	]
-	
+
 	special: charset [#"'" #"\"]
 	digit: charset [#"0" - #"9"]
-		
+
 	to-rebol-binary: func [val /local out a b c][
 		out: make binary! length? val
 		parse/all val [
@@ -236,7 +249,7 @@ make root-protocol [
 		]
 		out
 	]
-		
+
 	convert-types: func [p [port!] rows [block!] /local row i
 		convert-body action cols col conv-func tmp
 	][
@@ -252,11 +265,11 @@ make root-protocol [
 		]
 		if not empty? convert-body [foreach row rows :convert-body]
 	]
-	
+
 	decode: func [int [integer!]][any [select defs/types int 'unknown]]
 
 	printable: exclude charset [#" " - #"~"] charset [#"\" #"'"]
-	
+
 	to-octal: func [val][
 		head sys-insert tail sys-copy "\\" reduce [
 			first to string! to integer! val / 64
@@ -264,7 +277,7 @@ make root-protocol [
 			to string! remainder val 8
 		]
 	]
-	
+
 	sql-escape: func [value [string!] /local out mark][
 		out: make string! 3 * length? value
 		parse/all value [
@@ -277,7 +290,7 @@ make root-protocol [
 		]
 		out
 	]
-	
+
 	to-sql: func [value /local res][
 		switch/default type?/word value [
 			none!	["NULL"]
@@ -296,7 +309,7 @@ make root-protocol [
 			pair!	[rejoin ["(" value/x "," value/y ")"]]
 		][form value]
 	]
-	
+
 	map-rebol-values: func [data [block!] /local args sql mark][
 		args: reduce next data
 		sql: sys-copy sys-pick data 1
@@ -317,7 +330,7 @@ make root-protocol [
 	read-int:	[copy bytes 2 skip (int: to integer! to binary! bytes)]
 	read-int32:	[copy bytes 4 skip (int32: to integer! to binary! bytes)]
 	read-bytes:	[read-int32 (int32: int32 - sz) copy bytes [int32 skip]]
-					
+
 	read: func [[throw] port [port!] /local len][
 		pl: port/locals
 		if -1 = len: read-io port/sub-port pl/buffer pl/buf-size - length? pl/buffer [
@@ -402,7 +415,7 @@ make root-protocol [
 					)
 				]
 				| #"G" [
-				
+
 				]
 				| #"H" [
 
@@ -462,7 +475,7 @@ make root-protocol [
 			]
 		] | end
 	]
-	
+
 	flush-pending-data: func [port [port!] /local pl len][
 		pl: port/locals
 		if not pl/stream-end? [
@@ -483,35 +496,35 @@ make root-protocol [
 	write-lim-string: func [len [integer!] value [string!]][
 		head sys-insert/dup tail sys-copy value #"^@" (len - length? value)
 	]
-	
+
 	send-packet: func [port [port!] data [string!]][
 		write-io port/sub-port to binary! data length? data
 		port/locals/stream-end?: false
 	]
-	
+
 	insert-query: func [port [port!] data [string! block!]][
 		send-packet port rejoin ["Q" data #"^@"]
 		port/locals/state: 'query-sent
 		read-stream/wait port 'fields-fetched
 		none
 	]
-	
+
 	try-reconnect: func [port [port!]][
 		net-log "Connection closed by server! Reconnecting..."
 		if throws/closed = catch [open port][net-error "Server down!"]
 	]
-	
+
 	reply-password: func [port data /local tmp][
 		data: either data [
 			tmp: lowercase enbase/base checksum/method join port/pass port/user 'md5 16
 			join "md5" lowercase enbase/base checksum/method join tmp data 'md5 16
-		][port/pass]		
+		][port/pass]
 		send-packet port rejoin [
 			write-int32 5 + length? data		; 4 + 1 for '\0'
 			write-string data
 		]
 	]
-	
+
 	do-handshake: func [port [port!] /local pl client-param][
 		pl: port/locals: make locals-class []
 		pl/state: 'auth
@@ -527,7 +540,7 @@ make root-protocol [
 			write-lim-string 64 ""
 			write-lim-string 64 ""
 		]
-		
+
 		read-stream/wait port 'ready
 		net-log "Connected to server. Handshake OK"
 	]
@@ -575,11 +588,11 @@ make root-protocol [
     	][net-log "Error on closing port!"][net-log "Close ok."]
         sys-close port/sub-port
     ]
-	
+
 	insert: func [[throw] port [port!] data [string! block!] /local res][
 		flush-pending-data port
 		port/locals/columns: none
-		
+
 		if all [port/locals/auto-ping? data <> [ping]][
 			net-log "sending ping..."
 			res: catch [insert-cmd port [ping]]
@@ -601,13 +614,13 @@ make root-protocol [
 		][net-error  "Connection lost - Port closed!"]
 		res
 	]
-	
+
 	pick: func [port [port!] data][
 		either any [none? data data = 1][
 			either port/locals/stream-end? [sys-copy []][copy/part port 1]
 		][none]
 	]
-	
+
 	copy: func [port /part n [integer!] /local rows][
 		either not port/locals/stream-end? [
 			either all [value? 'part part][
@@ -623,15 +636,16 @@ make root-protocol [
 			rows
 		][none]
 	]
-	
+
 	; init 'conv-model
 	extract-conv-list
-	
+
 	;--- Register ourselves.
 	net-utils/net-install pgSQL self 5432
 ]
 ] ;}}}
-do [ ; inclusion du pilote mysql de Nenad: {{{ } } }
+; Include Nenad's mysql driver. Inclusion du pilote mysql de Nenad: {{{
+do [
 ; :r /home/pierre/.rebol/view/public/rebol.softinnov.org/old/mysql/mysql-r099/mysql-protocol.r
 
 REBOL [
@@ -658,13 +672,13 @@ make root-protocol [
 	sys-insert: get in system/words 'insert
 	sys-pick: 	get in system/words 'pick
 	sys-close: 	get in system/words 'close
-	net-log: 	get in net-utils	'net-log	
-	
+	net-log: 	get in net-utils	'net-log
+
 	std-header-length: 4
 	std-comp-header-length:	3
-	
+
 	throws: [closed "closed"]
-	
+
 ;------ Internals --------
 
 	defs: [
@@ -810,11 +824,11 @@ make root-protocol [
 		var-string		none
 		string			none
 	]
-	
+
 	set 'change-type-handler func [p [port!] type [word!] blk [block!]][
 		head change/only next find p/locals/conv-list type blk
 	]
-	
+
 	convert-types: func [p [port!] rows [block!] /local row i
 		convert-body action cols col conv-func tmp
 	][
@@ -830,19 +844,19 @@ make root-protocol [
 		]
 		if not empty? convert-body [foreach row rows :convert-body]
 	]
-	
+
 	decode: func [int [integer!] /features /flags /type /local list name value][
 		either type [
 			any [select defs/types int 'unknown]
 		][
 			list: make block! 10
 			foreach [name value] either flags [defs/flag][defs/client][
-				if value = (int and value) [append list :name]	
+				if value = (int and value) [append list :name]
 			]
 			list
 		]
 	]
-	
+
 	encode-refresh: func [blk [block!] /local total name value][
 		total: 0
 		foreach name blk [
@@ -890,7 +904,7 @@ make root-protocol [
 			]
 		][form value]
 	]
-	
+
 	map-rebol-values: func [data [block!] /local args sql mark][
 		args: reduce next data
 		sql: sys-copy sys-pick data 1
@@ -901,7 +915,7 @@ make root-protocol [
 		]
 		sql
 	]
-	
+
 	show-server: func [obj [object!]][
 		net-log reform [						newline
 			"----- Server ------" 				newline
@@ -911,7 +925,7 @@ make root-protocol [
 			"Crypt Seed:"		obj/crypt-seed	newline
 			"Capabilities:"		mold obj/capabilities newline
 			"-------------------"
-		]	
+		]
 	]
 
 ;------ Encryption functions ------
@@ -970,7 +984,7 @@ make root-protocol [
 			max-value: to-pair to-integer #01FFFFFF
 			clip-max: func [value][remainder-pair value max-value]
 			hp: hash-v9 seed
-			hm: hash-v9 data	
+			hm: hash-v9 data
 			nr: clip-max xor-pair hp hm
 			seed1: nr
 			seed2: nr / 2x1
@@ -993,7 +1007,7 @@ make root-protocol [
 			max-value: to-pair to-integer #3FFFFFFF
 			clip-max: func [value][remainder-pair value max-value]
 			pw: hash-v10 seed
-			msg: hash-v10 data	
+			msg: hash-v10 data
 
 			seed1: clip-max xor-pair pw/1 msg/1
 			seed2: clip-max xor-pair pw/2 msg/2
@@ -1003,7 +1017,7 @@ make root-protocol [
 				seed2: clip-max (seed1 + seed2 + 33x1)
 				d: seed1/x / to-decimal max-value/x
 				append new to-char floor (d * 31) + 64
-			]		
+			]
 			seed1: clip-max (seed1 * 3x1) + seed2
 			seed2: clip-max seed1 + seed2 + 33x0
 			d: seed1/x / to-decimal max-value/x
@@ -1012,7 +1026,7 @@ make root-protocol [
 			forall new [new/1: new/1 xor b]
 			head new
 		]
-		
+
 		scramble: func [data [string!] port [port!]][
 			either port/locals/protocol > 9 [
 				crypt-v10 data port/locals/crypt-seed
@@ -1023,7 +1037,7 @@ make root-protocol [
 	]
 
 	scramble: get in scrambler 'scramble
-	
+
 ;------ Data reading ------
 
 	b0: b1: b2: b3: int: int24: long: string: field: len: none
@@ -1090,11 +1104,11 @@ make root-protocol [
 			read port buf expected - length? buf
 		]
 	]
-	
+
 	read-packet: func [port [port!] /local packet-len pl status][
 		pl: port/locals
 		pl/stream-end?: false
-		
+
 	;--- reading header ---
 		defrag-read port pl/buffer std-header-length
 
@@ -1110,10 +1124,10 @@ make root-protocol [
 		defrag-read port pl/buffer packet-len
 		if packet-len <> length? pl/buffer [
 			net-error "Error: inconsistent packet length !"
-		]	
+		]
 		pl/last-status: status: to integer! pl/buffer/1
 		pl/error-code: pl/error-msg: none
-		
+
 		if status = 255 [
 			parse/all next pl/buffer either [none? pl/protocol pl/protocol > 9][
 				[	read-int 	(pl/error-code: int)
@@ -1128,20 +1142,20 @@ make root-protocol [
 		if all [status = 254 packet-len = 1][pl/stream-end?: true]
 		pl/buffer
 	]
-	
+
 	read-packet-via: func [port [port!] /local pl tmp][
 		pl: port/locals
 		if empty? pl/cache [
 			read-packet port
 			if pl/stream-end? [return #{}]	; empty set !
 		]
-		tmp: pl/cache			; swap cache<=>buffer		
+		tmp: pl/cache			; swap cache<=>buffer
 		pl/cache: pl/buffer
 		pl/buffer: :tmp
 		read-packet port
 		pl/cache
 	]
-	
+
 	read-columns-number: func [port [port!] /local colnb][
 		parse/all/case read-packet port [
 			read-length (if zero? colnb: len [port/locals/stream-end?: true])
@@ -1151,7 +1165,7 @@ make root-protocol [
 		if not zero? colnb [port/locals/matched-rows: none]
 		colnb
 	]
-	
+
 	read-columns-headers: func [port [port!] cols [integer!] /local pl col][
 		pl: port/locals
 		pl/columns: make block! cols
@@ -1196,7 +1210,7 @@ make root-protocol [
 		recycle		; lot of garbage to recycle here ! :)
 		rows
 	]
-	
+
 	read-cmd: func [port [port!] cmd [integer!] /local res][
 		either cmd = defs/cmd/statistics [
 			to-string read-packet port
@@ -1206,7 +1220,7 @@ make root-protocol [
 				[true][none]
 		]
 	]
-	
+
 	flush-pending-data: func [port [port!] /local pl len][
 		pl: port/locals
 		if not pl/stream-end? [
@@ -1224,7 +1238,7 @@ make root-protocol [
 ;------ Data sending ------
 
 	write-byte: func [value [integer!]][to char! value]
-	
+
 	write-int: func [value [integer!]][
 		join to char! value // 256 to char! value / 256
 	]
@@ -1281,7 +1295,7 @@ make root-protocol [
 			][either string? cmd-data [cmd-data][sys-pick cmd-data 1]]
 		]
 	]
-	
+
 	insert-query: func [port [port!] data [string! block!] /local colnb][
 		send-cmd port defs/cmd/query data
 		colnb: read-columns-number port
@@ -1303,12 +1317,12 @@ make root-protocol [
 			net-error reform ["Unknown command" data/1]
 		]
 	]
-	
+
 	try-reconnect: func [port [port!]][
 		net-log "Connection closed by server! Reconnecting..."
 		if throws/closed = catch [open port][net-error "Server down!"]
 	]
-	
+
 	do-handshake: func [port [port!] /local pl client-param][
 		pl: port/locals: make locals-class []
 		pl/buffer: make binary! pl/buf-size
@@ -1397,7 +1411,7 @@ make root-protocol [
     	][net-log "Error on closing port!"][net-log "Close ok."]
         sys-close port/sub-port
     ]
-	
+
 	insert: func [[throw] port [port!] data [string! block!] /local res][
 		flush-pending-data port
 		port/locals/columns: none
@@ -1420,7 +1434,7 @@ make root-protocol [
 		][net-error  "Connection lost - Port closed!"]
 		res
 	]
-	
+
 	pick: func [port [port!] data][
 		either any [none? data data = 1][
 			either port/locals/stream-end? [sys-copy []][copy/part port 1]
@@ -1440,18 +1454,8 @@ make root-protocol [
 
 
 ] ;}}}
-
-connection_db: does [ ;{{{ } } }
-	; on fait une connexion à la base de données:
-	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
-	if error? try 	[
-			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost ":" dbport "/" dbname]
-			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } user]
-	] 		[
-			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
-	]
-] ;}}}
-do [ ; inclusion de l'utilitaire CSV.r : {{{ } } }
+; Include CSV.r utility. Inclusion de l'utilitaire CSV.r : {{{
+do [
 ;do %~/rebol/library/scripts/csv.r
 ;:r ~/rebol/library/scripts/csv.r
 
@@ -1557,7 +1561,8 @@ Mold-CSV: function [
 
 ]
 ;}}}
-do [	; inclusion de l'utilitaire csv-tools.r:;{{{ } } }
+; Include csv-tools.r utility. Inclusion de l'utilitaire csv-tools.r:;{{{
+do [
 
 ;do %~/rebol/library/scripts/csv.r
 ;:r ~/rebol/library/scripts/csv-tools.r
@@ -1875,7 +1880,8 @@ load-csv: funct [
 
 ]
 ;/*}}}*/
-do [ ; inclusion de l'utilitaire btn-sqlite.r:;{{{ } } }
+; Include btn-sqlite.r utility. Inclusion de l'utilitaire btn-sqlite.r:;{{{
+do [
 ; Library to access sqlite geolpda database:
 ;{{{
 ;do %~/rebol/library/scripts/btn-sqlite.r
@@ -1922,7 +1928,7 @@ make root-protocol [
 	sys-pick: get in system/words 'pick
 	sys-close: get in system/words 'close
 	sys-write: get in system/words 'write
-	net-log: get in net-utils 'net-log	
+	net-log: get in net-utils 'net-log
 
 	init: func [[catch] port spec] [
 	        if not url? spec [net-error "Bad URL"]
@@ -2090,10 +2096,20 @@ comment {
 ;}}}
 ]
 ;/*}}}*/
+connection_db:       does [ "Connect to database" ;{{{
+	; on fait une connexion à la base de données:
+	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
+	if error? try 	[
+			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost ":" dbport "/" dbname]
+			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } user]
+	] 		[
+			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
+	]
+] ;}}}
 
 ; === functions and objects definitions ==========
 ; utility functions related to database:
-run_query: func ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
+run_query:                   func      ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{
 	if error? try [	insert db sql  ; send a SQL query
 			] [ print "**Error**"	; TODO mieux gérer l'erreur
 			]
@@ -2112,26 +2128,26 @@ run_query: func ["Utility function: sends a SQL query, returns the result as a b
 	]
 	return sql_result
 ] ; }}}
-run_sql_string_update: does [ ;{{{ } } }
+run_sql_string_update:       does      [ ;{{{
 	append journal_sql rejoin ["--" now ]
 	append journal_sql sql_string_update
 	insert db sql_string_update
 	?? journal_sql
 	] ;}}}
-do_psql: func ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{ } } }
+do_psql:                     func      ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
 	tt: call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
 	return tt
 	] ;}}}
-compare_schemas_2_bdexplos: function ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }
+compare_schemas_2_bdexplos:  function  ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{
 	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
 	;TODO à déplacer dans un module utilitaire plus général, à distribuer hors gll, pour tout postgresql
 	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin"]
 
 	; première solution: on fait un pg_dump de la base
 	;   => 	abandonné, le résultat n'est pas trié, et incomparable,
-	;	même avec le secours de pg_dump_splitsort.py	{{{ } } }
+	;	même avec le secours de pg_dump_splitsort.py	{{{
 	;fabrique_cmd: does [
 	;	cmd: rejoin ["pg_dump -s -h " dbhost " " dbname " -U postgres"]
 	;	foreach s schemas_exclus [
@@ -2139,7 +2155,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	;		]
 	;	append cmd "> tmp_schema"
 	;]
-	
+
 	;dbhost: dbhost1
 	;dbname: dbname1
 	;fabrique_cmd
@@ -2164,8 +2180,8 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	;print cmd1
 	;print cmd2
 	;print cmd
-	
-	comment [ ; {{{ } } }
+
+	comment [ ; {{{
 	;pg_dump -s -h autan bdexplo -N amc -N  amc                -N  backups             -N  bof                -N information_schema  -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  smi                 -N  tanguy              -N  tmp_a_traiter       -N  tmp_imports         -N  tmp_ntoto           -N  zz_poubelle        > schema_bdexplo_autan_.sql
 	;pg_dump -U postgres -s -h duran bdexplo -N information_schema -N  input               -N  pg_catalog          -N  pg_toast            -N  pg_toast_temp_1     -N  tanguy              -N  tmp_imports         -N  zz_poubelle        > schema_bdexplo_duran_.sql
 	;#vimdiff schema_bdexplo_autan_.sql schema_bdexplo_duran_.sql
@@ -2176,7 +2192,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	;}}}
 
 	; seconde solution: on fait pour chaque table un pg_dump, qu'on agrège au fur et à mesure
-	fabrique_cmd: does [ ;{{{ } } }
+	fabrique_cmd: does [ ;{{{
 		write to-file filename rejoin ["-- bdexplo dump generated by gll_routines.r/compare_schemas_2_bdexplos: " newline "-- host:" dbhost " dbname: " dbname newline "-- " now]
 		; la liste des tables avec leurs schémas:
 		tables: run_query "SELECT schemaname, tablename FROM pg_tables WHERE tableowner <> 'postgres' ORDER BY schemaname, tablename;"
@@ -2193,7 +2209,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 		]	]
 		;print cmd
 	] ; }}}
-	
+
 	dbhost: dbhost1
 	dbname: dbname1
 	filename: "tt_gll_1.sql"
@@ -2204,7 +2220,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 	err: copy ""
 	call/wait/error cmd err ;TODO replace by call_wait_output_error; sort out first how we pass the output, for the use of err in the next line.
 	if err [print rejoin ["Error while dumping database structure using command: " newline cmd newline {Error message, if any: "} err {"}]]
-	
+
 	dbhost: dbhost2
 	dbname: dbname2
 	filename: "tt_gll_2.sql"
@@ -2229,7 +2245,7 @@ compare_schemas_2_bdexplos: function ["Compare structure from two running instan
 
 	return tt
 ]; }}}
-sql_result_csv: does ["Utility function to be run after run_query: returns a .csv dataset from sql_result_fields and sql_result datasets" ; {{{ } } }
+sql_result_csv:              does      ["Utility function to be run after run_query: returns a .csv dataset from sql_result_fields and sql_result datasets" ; {{{
 	tt: copy []
 	append/only tt sql_result_fields
 	append      tt sql_result
@@ -2237,7 +2253,7 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 ] ;}}}
 
 ; general utility functions:
-; Definition of standard charsets useful for PARSEing: {{{ } } }
+; Definition of standard charsets useful for PARSEing: {{{
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
 	digit: charset  [#"0" - #"9"]
 	space: charset  [#" "]
@@ -2245,57 +2261,61 @@ sql_result_csv: does ["Utility function to be run after run_query: returns a .cs
 	letter-or-digit-nospace: exclude letter-or-digit space
 	digit-decimalplace: union digit charset [#"."]
 ;}}}
-chk_file_exists: func ["Simply checks for the existence of a file" file_in] [ ;{{{ } } }
+chk_file_exists:             func      ["Simply checks for the existence of a file" file_in] [ ;{{{
 	if error? try [
 	file_in_reader: open/string/lines/read to-file file_in
 	close file_in_reader
 	return true] [
 	return false ]
 	] ;}}}
-trim_last_char: func ["Trims last character from a given string" txt] [ ;{{{ } } }
+trim_last_char:              func      ["Trims last character from a given string" txt] [ ;{{{
 	txt: (copy/part txt ((length? txt) - 1))
 	return txt
 	] ;}}}
-trim_first_char: func ["Trims first character from a given string" txt] [ ;{{{ } } }
+trim_first_char:             func      ["Trims first character from a given string" txt] [ ;{{{
 	txt: (copy/part at txt 2 ((length? txt) - 1))
 	return txt
 	] ;}}}
-substring: func ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{ } } }
+substring:                   func      ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{
     copy/part at string offset length
 ];}}}
-left:  func ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{ } } }
+left:                        func      ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
     copy/part string length
 ] ;}}}
-right: func ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{ } } }
+right:                       func      ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
 	offset: (length? string) - length + 1
     copy/part at string offset length
-] ;}}}
+]
 ;>> right "bonjour" 4
 ;== "jour"
 ;>> left "bonjour" 3
 ;== "bon"
-pad: func [ "Pads a value with leading zeroes or a specified fill character." ;{{{ } } }
+;}}}
+pad:                         func      [ "Pads a value with leading zeroes or a specified fill character." ;{{{
   val [string! number!] n [integer!]
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-; continue: as in python; to use in a loop, do: "loop [catch[...]]"{{{ } } }
-continue: does [;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
-throw 'continue]
-;}}}
-timestamp_: does [; an underscored timestamp{{{
+continue:                    does      [ {continue: as in python; to use in a loop, do: "loop [catch[...]]"} ;{{{
+;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
+throw 'continue] ;}}}
+timestamp_:                  does      [; gets an underscored timestamp{{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
-; a very simple function, to quickly print a list:{{{
-print-list: func [ l [block!]] [
+print-list:                  func      [ l [block!]] [" A very simple function, to quickly print a list" ;{{{
 	foreach i l [
 		print i
 	]
 ]
 ;}}}
-call_wait_output_error: func [ ;{{{ } } }
+msg:                         func      [txt] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
+	switch lang [
+		"fr" [print txt/1]
+		"en" [print txt/2]
+]	]
+;}}}
+call_wait_output_error:      func      [ "Run a shell call and get stdio output, and err output" ; {{{
 		;TODO make a wrapper call_wait_output_error including this code, and replace all call/... by this wrapper in the geolllibre codebase => done
-	"Run a shell call and get stdio output, and err output"
 	cmd [string!] "command to be run by the shell"
 	] [
 		;print rejoin["Running: " cmd]  ; too verbose in numerous cases TODO do that if a DEBUG flag is on.
@@ -2306,7 +2326,7 @@ call_wait_output_error: func [ ;{{{ } } }
 		if (err != "") [print rejoin ["Error: " newline err]]
 		return tt
 ] ;}}}]
-contig_sequences: function [{Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{ } } }
+contig_sequences:            function  [{Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{
 	input_serie [series!]
 	]
 	[
@@ -2337,8 +2357,9 @@ contig_sequences: function [{Function taking input = list of values, integers or
 ];}}}
 
 ; Les dates du geolpda sont au format epoch en millisecondes;
-; voici deux fonctions pour convertir les epoch en date et réciproquement: {{{
-epoch-to-date: func [ ; from http://www.rebol.net/cookbook/recipes/0051.html
+; voici deux fonctions pour convertir les epoch en date et réciproquement:
+epoch-to-date:               func      [ "Converts an epoch to a date" ; {{{
+; from http://www.rebol.net/cookbook/recipes/0051.html
 	"Return REBOL date from unix time format"
 	epoch [integer!] "Date in unix time format"
 	] [
@@ -2351,8 +2372,8 @@ epoch-to-date: func [ ; from http://www.rebol.net/cookbook/recipes/0051.html
 															   ;beau jour,
 															   ;remettre ça;
 															   ;ça boguait.
-]
-date-to-epoch: func [
+];}}}
+date-to-epoch:               func      [ "Converts a date to an epoch" ; {{{
 	"Return date in unix time format from a date in REBOL format"
 	rebol-date [date!] "Date in REBOL time format"
 	][
@@ -2364,14 +2385,14 @@ date-to-epoch: func [
 	(rebol-date/time/hour * 3600) +
 	(rebol-date/time/minute * 60) + rebol-date/time/second
 ] ;}}}
-; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg: {{{ } } }
-epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [
+epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [ ;{{{
+; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg:
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
 ]
 ;}}}
-; et voici la réciproque, pour convertir des dates au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg en epoch en ms: {{{ } } }
-AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (default pictures names on android) to epoch ms format (pictures from geolpda)" timestamp ] [
+AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (default pictures names on android) to epoch ms format (pictures from geolpda)" timestamp ] [ ; {{{
+; et voici la réciproque, pour convertir des dates au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg en epoch en ms:
 ;	timestamp: "20160915_145150"
 	y: m: d: hr: min: sec: copy ""
 	parse timestamp [ copy y 4 digit copy m 2 digit copy d 2 digit "_" copy hr 2 digit copy min 2 digit copy sec 2 digit end]
@@ -2382,16 +2403,16 @@ AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (d
 	return (date-to-epoch tmp) * 1000.0
 ]
 ;}}}
-; et une fonction pour convertir directement le format epoch ms de geolpda en date au format rebol: {{{ } } }
-epoch_ms_geolpda_to_date: func ["Converts directly epoch ms format (pictures from geolpda) to dd/mm/yyyy (default date on rebol)" epoch_ms] [
+epoch_ms_geolpda_to_date: func ["Converts directly epoch ms format (pictures from geolpda) to dd/mm/yyyy (default date on rebol)" epoch_ms] [ ;{{{
+; et une fonction pour convertir directement le format epoch ms de geolpda en date au format rebol:
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
 	return to-date rejoin [ pad tmp/day 2 "/" pad tmp/month 2 "/" tmp/year ]
 ]
 ;}}}
 
 
-; Functions concerning GeolPDA data management: {{{ } } }
-synchronize_geolpda_files: does [; {{{ } } }
+; Functions concerning GeolPDA data management: {{{
+synchronize_geolpda_files: does [; {{{
 	print "Synchronization process..."
 			;DONE move the next piece of code in synchronize_geolpda_files (!...) => done. TODO => test
 	; Apparently due to the new MTP protocol used to connect to Android devices,
@@ -2407,7 +2428,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	; the "photos_transferred" directory saturation (which may well lock MTP).
 	append dir_photos_transferred rejoin ["/" timestamp_]
 	make-dir dir_photos_transferred
-	; first solution, using rsync: abandoned, as rsync does not seem to cope well with MTP protocol used on recent (as of 2016_09_21__23_23_08) android devices: ; {{{ } } }
+	; first solution, using rsync: abandoned, as rsync does not seem to cope well with MTP protocol used on recent (as of 2016_09_21__23_23_08) android devices: ; {{{
 	;; TODO: make this platform-independent:
 	;; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
 	;;rsync --inplace -auv --del --exclude="tmp/" /mnt/galaxy1/geolpda/ geolpda/android_cp/geolpda/
@@ -2500,11 +2521,12 @@ synchronize_geolpda_files: does [; {{{ } } }
 		; last one: youngest one among the same list:
 		date_end:   first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
 		date_end: to-date rejoin [substring date_end 1 4 "-" substring date_end 5 2 "-" substring date_end 7 2]
-	] [
+	] [
 		; No photos were transferred: get dates from observation points: => impossible, the process of getting data from sqlite database has not yet taken place:
 		; TODO problem to be solved later.
 		print "No photos were transferred."
 	]
+
 	ls_photos_device_to_be_transferred: copy []
 	foreach p ls_photos_device [
 		if (find p ".jpg") [
@@ -2552,7 +2574,7 @@ synchronize_geolpda_files: does [; {{{ } } }
 	] [ print "No synchronization done."]
 ;_______________________________________________________________________________________________________________________________
 ];}}}
-synchronize_oruxmaps_tracklogs: does [; {{{ } } }
+synchronize_oruxmaps_tracklogs: does [; {{{
 ;	; first attempt, using rsync:{{{
 ;	; TODO: make this platform-independent:
 ;	; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
@@ -2594,7 +2616,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{ } } }
 
 ];}}}
 
-get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{ } } }
+get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{
 ;TODO function name not very appropriate: to be changed to something better
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
@@ -2613,7 +2635,7 @@ if error? try [
 	]
 ; and, later, only consider data with higher _id
 ];}}}
-get_postgeol_max_timestamp_epoch_ms: does [ ; Even more simple than get_postgeol_max__id: get the maximum of timestamp_epoch_ms in the postgeol database:{{{ } } }
+get_postgeol_max_timestamp_epoch_ms: does [ ; Even more simple than get_postgeol_max__id: get the maximum of timestamp_epoch_ms in the postgeol database:{{{
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
 	either ( x/1/1 = 0 ) [
@@ -2633,14 +2655,14 @@ if error? try [
 ; and, later, only consider data with higher timestamp_epoch_ms
 ] ;}}}
 
-chk_directories_mount_and_local: does [;{{{ } } }
+chk_directories_mount_and_local: does [;{{{
 	all [
 		exists? dir_mount_geolpda_android
 		exists? dir_geolpda_local
 	]
 ];}}}
 
-get_geolpda_data_from_csv: does [ ; Inutile si on n'utilise pas le .csv: {{{ } } }
+get_geolpda_data_from_csv: does [ ; Inutile si on n'utilise pas le .csv: {{{
 ; l'en-tête du csv => (TODO: les noms de champs sont à réviser!):
 ;lines/1 == {_id,poiname,poitime,elevation,poilat,poilon,photourl,audiourl,note}
 
@@ -2655,9 +2677,9 @@ foreach line lines [     ; on remplit ce tableau
 ; On enlève la première ligne d'en-tête:
 remove observations
 
-; On trie la table: {{{ } } }
+; On trie la table: {{{
 ;sort observations
-; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{ } } }
+; non, ça déconnait, pour Fred Rossi, qui, les [ 27-Feb-2013 28-Feb-2013 1-Mar-2013 ], avait des identifiants sans zéros préfixant, donc des tris asciibétiques aberrants: [ ;{{{
 ;TotBol1
 ;TotBol10
 ;TotBol11
@@ -2688,7 +2710,7 @@ sort/compare observations func [a b] [(at a field) < (at b field)]
 
 ; TODO récupérer les données d'orientations
 ] ;}}}
-get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{ } } }
+get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{
 ; Library to access sqlite geolpda database:
 do %~/rebol/library/scripts/btn-sqlite.r
 
@@ -2702,7 +2724,7 @@ db: open to-url rejoin [{btn://localhost/} dir_geolpda_local {geolpda_copy.db}]
 
 ; Get data: as db is the same name as defined for default
 ; database connexion in gll_routines.r, we can use the functions:
-; observations: {{{ } } }
+; observations: {{{
 run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par la suite
 	; DEBUG TODO remove ça
 	; write %qq1 sql_result_csv
@@ -2718,7 +2740,7 @@ geolpda_observations:        copy sql_result
 geolpda_observations_fields: copy sql_result_fields
 ;print rejoin [tab length? geolpda_observations " records in observations table"]
 ;}}}
-; orientations:{{{ } } }
+; orientations:{{{
 run_query "SELECT * FROM orientation"
 ; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
@@ -2783,11 +2805,11 @@ if (none? date_start) [
 	foreach j jours [print j]   ; <= la liste des jours, triée
 ]
 ] ;}}}
-get_geolpda_data_from_postgresql: does [;{{{ } } }
+get_geolpda_data_from_postgresql: does [;{{{
 	; if we are not yet connected to the database:
 	connection_db
 	print rejoin ["Open GeolPDA data in field_observations table on " dbname " database hosted by " dbhost "..."]
-	; observations: {{{ } } }
+	; observations: {{{
 	;run_query "SELECT * FROM public.field_observations ORDER BY date"	; ORDER BY évitera de trier par la suite
 	; mettre les mêmes champs que dans get_geolpda_data_from_sqlite:
 	;         "_id" "poiname"           "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
@@ -2803,7 +2825,7 @@ get_geolpda_data_from_postgresql: does [;{{{ } } }
 	geolpda_observations_fields: copy sql_result_fields
 	print rejoin [tab length? geolpda_observations " records in observations table"]
 	;}}}
-	; orientations:{{{ } } }
+	; orientations:{{{
 	run_query "SELECT * FROM public.field_observations_struct_measures ORDER BY obs_id, geolpda_poi_id, geolpda_id"
 	;>> ?? sql_result_fields
 	;sql_result_fields: ["opid" "obs_id" "measure_type" "structure_type" "north_ref" "direction" "dip" "dip_quadrant" "pitch" "pitch_quadrant" "movement" "valid" "comments" "numauto" "db_update_timestamp" "username" "datasource" "rotation_matrix" "geolpda_id" "geolpda_poi_id" "sortgroup"]
@@ -2830,7 +2852,7 @@ get_geolpda_data_from_postgresql: does [;{{{ } } }
 
 	;}}}
 ] ;}}}
-update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ } } } ; old name: computes_structural_measurements_from_geolpda_matrix
+update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ ; old name: computes_structural_measurements_from_geolpda_matrix
 	"Updates field_observations_struct_measures table in bdexplo database, fields (north_ref, direction, dip, dip_quadrant, pitch, pitch_quadrant, movement) are computed from rotation_matrix field, which comes from GeolPDA measurements"
 	/criteria {optional criteria to select records to be updated}
 	sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
@@ -2891,7 +2913,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 ;****************************************************************************************************************
 
 ; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
-dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"} ;{{{ } } }
+dd2dms:                      function  [{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"} ;{{{
 	dd [string! decimal!]
 	/quadrant_lat "Appends latitude N or S to output"
 	/quadrant_lon "Appends longitude E or W to output"
@@ -2934,7 +2956,7 @@ dd2dms: function [{Converts decimal degrees to degrees, minutes, seconds, format
 	append output rejoin [degrees "d" minutes "m" seconds "s"]	; FIXME:    for the moment, use of d m s instead of ° ' "
 	return output
 	] ;}}}
-dms2dd: function ["Converts degrees, minutes, seconds to decimal degrees" dms [string!] ] ;{{{ } } }
+dms2dd:                      function  ["Converts degrees, minutes, seconds to decimal degrees" dms [string!] ] ;{{{
 	[ sign rule_quadrant rule_degree rule_minute rule_second degrees minutes seconds ]
 	[
 	comment [
@@ -2979,7 +3001,7 @@ dms2dd: function ["Converts degrees, minutes, seconds to decimal degrees" dms [s
 	return ((degrees + (minutes / 60) + (seconds / 3600)) * sign)
 	]
 ;}}}
-dd2dms_lon_lat_from_qgis: function [{Converts a pair of longitude,latitude coordinates separated by a comma, as it comes from the QGIS "Saisie de coordonnées" extension from decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS} ;{{{ } } }
+dd2dms_lon_lat_from_qgis:    function  [{Converts a pair of longitude,latitude coordinates separated by a comma, as it comes from the QGIS "Saisie de coordonnées" extension from decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS} ;{{{
 	xy [string!]
 	/quadrant_lat "Appends latitude N or S to output"
 	/quadrant_lon "Appends longitude E or W to output"
@@ -3013,7 +3035,7 @@ dd2dms_lon_lat_from_qgis: function [{Converts a pair of longitude,latitude coord
 ] ;}}}
 
 ; from LouGit:
-copy-file: func [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{ } } }
+copy-file:                   func      [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{
 	if (source = target) [alert "Error: source and destination are the same" return none]
 	; open source		;o)
 	port_source: open/direct/binary/read to-file source
@@ -3039,8 +3061,9 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 
 ]; }}}
 
+process_cases_table:         function  ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{
 ; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
-; exemple: {{{ } } }
+; exemple: {{{
  ; une matrice de cas, volontairement simple, avec des tabulations séparant les choses, de manière à pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la dernière chaÃ®ne qui correspond à ce que renverra la fonction:
 
 ;case_matrix: {
@@ -3058,7 +3081,6 @@ copy-file: func [{Copies file from source to destination. Destination can be a d
 ;if (all [(v1 > 1) (v2 = 0) (v3 >= 1)]) [return "bon"]
 ;if (all [(v1 < 1) (v2 = 0) (v3 >1)] [return "moyen"]
 ;}}}
-process_cases_table: function ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{ } } }
 	mm: parse/all case_matrix "^/"
 	foreach ii mm [if ((to-string first mm) = "") [remove first mm mm: next mm ]] 	; skip empty lines, if any
 	code: copy {case [^/} 															; final code, returned by function
@@ -3087,15 +3109,14 @@ process_cases_table: function ["Processes a matrix (table) of cases, which is a 
 	return code
 ];}}}
 
-mkdiraujourdhui: function ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{ } } }
+mkdiraujourdhui:             function  ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{
 tt: now
 make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
 ];}}}
 
 
 ; Functions less general, more specific to GeolLLibre.
-; Creation of a new operation in the public.operations (master table): at the moment, just a mere procedure, to be greatly improved:
-gll_create_new_operation: does [ ; {{{ } } }
+gll_create_new_operation:    does      [ "Creation of a new operation in the public.operations (master table): at the moment, just a mere procedure, to be greatly improved." ; {{{
 	helptxt: {Creation of a new operation: it INSERTs a record in public.operations table, with a new opid value, which will be the max incremented by 1.  An "operation" is a homogeneous set of data, typically an area, a licence, operated by a single operator over years; or an area studied by a scientific team.}
 	; Define opid as the maximum incremented:
 	new_opid: (first first run_query "SELECT max(opid) FROM public.operations") + 1
@@ -3127,14 +3148,14 @@ gll_create_new_operation: does [ ; {{{ } } }
 ];}}}
 
 ; fonctions pour la gestion des datasource:
-test_datasource_available: func ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{ } } }
+test_datasource_available:   func      ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{
 	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '"
 	                      opid "' AND datasource_id = " new_datasource_id ";"]
 	 res: to-string run_query sql_string
 	 ;print probe res
 	 either ( res = "") [ return true ] [return false ]
 	] ;}}}
-get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } } }
+get_new_datasource_id:       does      [ ; récupère le premier datasource_id libre {{{
 	; 2013_07_09__09_13_51
 		; on n'INSERTe pas tout de suite: on fait valider d'abord, dans une ihm
 	tt: run_query rejoin ["SELECT max(datasource_id) AS max_datasource_id FROM public.lex_datasource WHERE opid = " opid ";"]
@@ -3147,10 +3168,10 @@ get_new_datasource_id: does [ ; récupère le premier datasource_id libre {{{ } 
 	]
 	] ;}}}
 
-generate_sql_string_update: func ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{ } } }
+generate_sql_string_update:  func      ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{
 	sql_string_update: rejoin [ "INSERT INTO public.lex_datasource (opid, filename, datasource_id) VALUES (" opid ", '" file_in "', " new_datasource_id ");" ]
 	] ;}}}
-get_datasource_dependant_information: func [ ;{{{ } } }
+get_datasource_dependant_information:            func      [ ;{{{
 	"Returns the list of tables where a given datasource is mentioned in the current opid, with the count of records concerned" datasource] [
 	tables: run_query "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner <> 'postgres';"
 	; Ôt des tables inutiles, où datasource n'est pas référencé:
@@ -3173,7 +3194,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 	;length? tables
 	;== 34
 	sort tables
-	
+
 	; vérifions en premier lieu que le datasource demandé existe bien dans lex_datasource:
 	lex_datasource_record: run_query rejoin ["SELECT * FROM public.lex_datasource WHERE opid = "opid " AND datasource_id = " datasource ";"]
 	if ((length? lex_datasource_record) = 0) [
@@ -3200,7 +3221,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 	return output
 ]
 
-; usage: {{{ } } }
+; usage: {{{
 ;get_datasource_dependant_information 912
 ;== [["lab_ana_results" 207.0]]
 ;>> get_datasource_dependant_information 912
@@ -3241,7 +3262,7 @@ get_datasource_dependant_information: func [ ;{{{ } } }
 ;== [["lab_ana_results" 207.0]]
 ;}}}
 ;}}}
-delete_datasource_and_dependant_information: func ["Deletes a datasource from all tables from bdexplo where its datasource_id is mentioned" datasource] [ ; {{{ } } }
+delete_datasource_and_dependant_information:     func      ["Deletes a datasource from all tables from bdexplo where its datasource_id is mentioned" datasource] [ ; {{{
 	if (none? datasource) [
 		prin "Identifiant de datasource (champ datasource_id de la table lex_datasource), champs datasource des autres tables): "
 		datasource: to-integer input
@@ -3268,7 +3289,7 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 ] ;}}}
 
 ; fonctions et objets utilisés pour les structures: géométrie dans l'espace, vecteurs, objets structuraux, etc.
-	azimuth_vector: func [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{ } } }
+azimuth_vector:              func      [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{
 		x: v/1
 		y: v/2
 		either (x = 0) [azim: 0] [azim: 90 - arctangent (y / x )] ;(nota bene: calculs directement en degrés chez rebol)
@@ -3303,7 +3324,7 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 		]
 		return azim
 	]
-; test de la fonction: {{{ } } }
+; test de la fonction: {{{
 	;u: [0.5 0.5 1] ; azim = N45
 	;azimuth_vector u
 	;== 45.0
@@ -3314,8 +3335,8 @@ delete_datasource_and_dependant_information: func ["Deletes a datasource from al
 ;}}}
 
 ;=======================================
-orientation: make object! [ ;--## An orientation object, which fully characterises a plane and/or a line: ;==={{{ } } }
-	; ## Les données initiales: {{{ } } }
+orientation: make object! [ ;--## An orientation object, which fully characterises a plane and/or a line: ;==={{{
+	; ## Les données initiales: {{{
 	;# J'ai pris une mesure de ma planchette dans ma position de
 	;# travail chez moi, avec le téléphone pitchant vers la
 	;# gauche.
@@ -3375,11 +3396,11 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	a: b: c: d: e: f: g: h: i: make decimal! 0	; (only for coder's convenience... variables in the matrix; TODO: one day, get rid of these)
 	;--## methods:
 	; construction:
-	new: func ["Constructor, builds an orientation object! based on a measurement, as given by GeolPDA device, a rotation matrix represented by a suite of 9 values provided as a block!" m [block!]] [;{{{ } } }
+	new: func ["Constructor, builds an orientation object! based on a measurement, as given by GeolPDA device, a rotation matrix represented by a suite of 9 values provided as a block!" m [block!]] [;{{{
 		make self [
 			; Convert matrix m to a block of blocks named matrix:
 			foreach [u v w] m [append/only matrix to-block reduce [u v w]]
-			; variables abcdefghi: juste pour un souci d'ergonomie du codeur: {{{ } } }
+			; variables abcdefghi: juste pour un souci d'ergonomie du codeur: {{{
 			; la notation de la matrice de rotation est bien plus pratique à manier sous forme de abcdefghi, dans les formules:
 			; No: too ringard: => yes, ringard, but works... (cf.infra)
 			a: self/matrix/1/1
@@ -3402,7 +3423,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 				h: matrix/3/2
 				i: matrix/3/3
 				]
-			; Better, more rebolish: (but doesn't work... :-/ {{{ } } }
+			; Better, more rebolish: (but doesn't work... :-/ {{{
 			;variables_short: [a b c d e f g h i]
 			;count: 1
 			;code: copy ""
@@ -3414,9 +3435,9 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;do code
 			;}}}
 			;}}}
-			;1) on détecte les jeux et l'overturn: {{{ } } }
+			;1) on détecte les jeux et l'overturn: {{{
 			; As if the measurement was a fault, determination of the attitude (overturned or not) and movement, both vertical and horizontal components.
-			; Cancelled: nice tentative, but merdalors, fonctionne pas, zut: {{{ } } }
+			; Cancelled: nice tentative, but merdalors, fonctionne pas, zut: {{{
 			comment [
 			; table with cases of attitude and movements; result of the matrix "nNS" reads as: (overturned: 0(normal) or 1(overturned), movement vertical, movement horizontal
 			table_cases_rotation_movements: {
@@ -3454,7 +3475,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;}}}
 			; Calculation of variables:
 			; Definition of vectors which fully caracterise the geometry:
-			; plane normal vector:: {{{ } } }
+			; plane normal vector:: {{{
 			;=======================================================
 			;# ON ou N (plane_Normal_vector): vecteur unitaire normal
 			;# au plan du GeolPDA, se définit par xn,
@@ -3488,7 +3509,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;;; => semble correct ; mais je préfère le vecteur, finaloumen.
 			;;}}}
 			; }}}
-			; axis vector: : {{{ } } }
+			; axis vector: : {{{
 			;=======================================================
 			; OA ou A est le vecteur de l'Axe du téléphone, vers le haut
 			; quand on tient le téléphone normalement.
@@ -3513,7 +3534,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 			;						self/matrix/3/2 ]
 			axis_vector: reduce [ b e h ]
 			;}}}
-	;down_dip_vect: func [] [;{{{ } } } ;=> annulé: en fait, on s'en fout.
+	;down_dip_vect: func [] [;{{{ ;=> annulé: en fait, on s'en fout.
 	;	; OD est le vecteur aval-pendage; D pour Down-Dip:
 	;	down_dip_vect: reduce [
 	;		x: i / (square-root 3)
@@ -3534,7 +3555,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 	;	;    dip: func [][return arccosine (z / ((x ** 2) + (y ** 2) + (z ** 2)))]
 	;	;]
 	;	; => le z semble bizarre...
-	;	
+	;
 	;	;probe OD
 	;	;OD/azim
 	;	;OD/dip
@@ -3600,7 +3621,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 						]
 				]
 			];==========================================================
-			either (line_azimuth - plane_downdip_azimuth < 0) [	; la ligne est à "gauche" de la plus grande pente		
+			either (line_azimuth - plane_downdip_azimuth < 0) [	; la ligne est à "gauche" de la plus grande pente
 				case [
 					(plane_quadrant_dip = "E") [ line_pitch_quadrant: "N" ]
 					(plane_quadrant_dip = "S") [ line_pitch_quadrant: "E" ]
@@ -3615,8 +3636,8 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 					(plane_quadrant_dip = "N") [ line_pitch_quadrant: "E" ]
 					]
 				]
-		
-			;;line_movement: => inutile {{{ } } }
+
+			;;line_movement: => inutile {{{
 			;		; Avec les conventions prises (GeolPDA en position "lisible" sur une
 			;		; mesure de faille normale sans surplomb), ça va être ON ^ AO qui tourne
 			;		; dans le sens du mouvement (le tire-bouchon de Maxwell se trouve coincé
@@ -3656,12 +3677,12 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		]
 	];}}}
 	; outputs:
-	print_matrix: does [ ;{{{ } } }
+	print_matrix: does [ ;{{{
 		;return rejoin ["Matrix: " tab self/matrix]
 		tt: copy ""
 		foreach [item] self/matrix [
 			append tt rejoin [ "(" tab item/1 tab item/2 tab item/3 tab ")" newline]
-		]	
+		]
 		return tt
 		;		"Normal vector: " 		probe plane_normal_vector newline
 		;		"Axis vector: " 		probe axis_vector newline
@@ -3669,44 +3690,44 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;		"Dip: " 				plane_dip newline
 		;		"Plane direction: " 	plane_direction newline
 	];}}}
-	print_plane: does [ ;{{{ } } }
+	print_plane: does [ ;{{{
 		return rejoin [
 			;"Plane "
 			north_reference to-string to-integer self/plane_direction "/" to-string to-integer self/plane_dip "/" self/plane_quadrant_dip
 		]
 	];}}}
-	print_line:  does [ ;{{{ } } }
+	print_line:  does [ ;{{{
 		return rejoin [
 			;"Line "
 			north_reference to-string to-integer self/line_azimuth "/" to-string to-integer self/line_plunge
 		]
 	];}}}
-;	print_plane_line: does [ ;{{{ } } }
+;	print_plane_line: does [ ;{{{
 ;		return rejoin [print_matrix newline print_plane newline print_line]
 ;	];}}}
-	print_plane_line: does [ ;{{{ } } }
+	print_plane_line: does [ ;{{{
 		;Prints a human-readable string; numeric values converted to integers
 		sep: "/" ; separator
 		return rejoin [
 			;"Plane+line "
 			north_reference to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant]
 	];}}}
-	print_plane_line_movement: does [ ;{{{ } } }
+	print_plane_line_movement: does [ ;{{{
 		;Prints a human-readable string; numeric values converted to integers
 		sep: "/" ; separator
 		return rejoin [
 			;"Plane+line, movement "
 			north_reference to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement]
 	];}}}
-	print_tectri: does [ ;{{{ } } }
+	print_tectri: does [ ;{{{
 		;Prints a tectri-readable string; numeric values converted to integers
 		sep: " " ; separator
 		return rejoin [to-integer plane_direction sep to-integer plane_dip sep plane_quadrant_dip sep to-integer line_pitch sep line_pitch_quadrant sep line_movement " " comments]
 	];}}}
 
 
-	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{ } } }
-		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{ } } }
+	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{
+		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{
 		;# Il s'agit maintenant de tracer le Té de
 		;# pendage:
 		;# Les coordonnées sont centrées autour de
@@ -3729,7 +3750,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;#
 		;# La "queue" du Té a ici une longueur de 0.3;
 		;# question de goÃ»t et d'esthétique; on met ça
-		;# dans la variable len_queue_t:	
+		;# dans la variable len_queue_t:
 		len_queue_t: 0.3
 		;
 		;# Il faudra tracer la ligne symbolisant
@@ -3745,7 +3766,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;#     L
 		;#
 		;}}}
-		;# Calcul des coordonnées des points A,B,C,L: {{{ } } }
+		;# Calcul des coordonnées des points A,B,C,L: {{{
 		;# Un point tmp, colinéaire au projeté de plane_normal_vector
 		;# sur le plan horizontal, à 1 de l'origine:
 		tmp: reduce [
@@ -3769,7 +3790,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;# B: on repart de tmp et on tourne à droite de 90°:
 		B: reduce  [    tmp/2
 					0 - tmp/1]
-		;; => TRÃS piégeux en Rebol; si on met:{{{ } } }
+		;; => TRÈS piégeux en Rebol; si on met:{{{
 		;;B: reduce  [  tmp/2             - tmp/1]
 		;;>> B: reduce  [  tmp/2                - tmp/1]
 		;;== [-1.39497166492583]  <= erreur!
@@ -3794,7 +3815,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 		;#    trace_ligne (O, C)
 		;#    trace_ligne (O, L)
 		; en python tk => passé à la poubelle =>
-		; => en VID, plutôt:;{{{ } } }
+		; => en VID, plutôt:;{{{
 		; tracé of elements:
 		;A: [0 0]
 		;B: [0.5 0.5]
@@ -3814,7 +3835,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 ;=======================================
 
 ;### attention:
-diagram: make object! [ ;--## A diagram, which will contain a DRAW string with the T trace from the orientation measurement: ;{{{ } } }
+diagram: make object! [ ;--## A diagram, which will contain a DRAW string with the T trace from the orientation measurement: ;{{{
 	; attributes:
 		; plot is a DRAW dialect block containing the diagram:
 			plot: copy [pen black]
@@ -3824,7 +3845,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW string with t
 	; methods:
 		; functions to trace graphics elements in the plot block:
 		plot_reset: does [	plot: copy [pen black]]
-		trace_line: func ["traces a line from A point to B point; both are block!s" A [block!] B [block!]] [; {{{ } } }
+		trace_line: func ["traces a line from A point to B point; both are block!s" A [block!] B [block!]] [; {{{
 			append plot [line]
 			x: (     A/1  * scale) + offset/1
 			y: ((0 - A/2) * scale) + offset/2
@@ -3833,7 +3854,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW string with t
 			y: ((0 - B/2) * scale) + offset/2
 			append plot as-pair x y
 		];}}}
-		trace_circle: func [{traces a circle from center (block! containing xy coordinates) with diameter} center [block!] diameter [number!]] [; {{{ } } }
+		trace_circle: func [{traces a circle from center (block! containing xy coordinates) with diameter} center [block!] diameter [number!]] [; {{{
 			append plot [circle]
 			x: (     center/1  * scale) + offset/1
 			y: ((0 - center/2) * scale) + offset/2
@@ -3855,7 +3876,7 @@ diagram: make object! [ ;--## A diagram, which will contain a DRAW string with t
 ] ;}}}
 ;### attention, duplicata avec rondibet.r
 
-;--## structure containing the variables of a structural measurement, using French usual conventions: ;{{{ } } }
+;--## structure containing the variables of a structural measurement, using French usual conventions: ;{{{
 
 structural_measurement_convention_fr: make object! [
 	; attributes:
@@ -3884,7 +3905,7 @@ structural_measurement_convention_fr: make object! [
 ]
 
 ;}}}
-parse_tecto_measure: func [{Converts a string structural measurement in the form "Nm85/80/N/70/W/I Overturned plane" to a structural_measurement_convention_fr object} m] [ ; {{{ } } }
+parse_tecto_measure:         func      [{Converts a string structural measurement in the form "Nm85/80/N/70/W/I Overturned plane" to a structural_measurement_convention_fr object} m] [ ; {{{
 	; m is for the string containing the structural measurement, with the associated comment
 	; RAZ variables, to avoid side-effects:
 		NORTH_REF_: DIP_QUADRANT_: PITCH_QUADRANT_: MOVEMENT_: COMMENTS_: copy ""
@@ -3916,7 +3937,7 @@ parse_tecto_measure: func [{Converts a string structural measurement in the form
 	]
 	return output
 	] ;}}}
-generate_tectri_file: function [ ;{{{ } } }
+generate_tectri_file:        function  [ ;{{{
 	"Generates a file for TecTri from structural measurements contained in bdexplo database in field_observations_struct_measures table"
 	/criteria {optional criteria to select records to be exported}
 		sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
@@ -4061,7 +4082,7 @@ generate_tectri_file: function [ ;{{{ } } }
 ];}}}
 ; WARNING: code duplication between generate_tectri_file and generate_tectri_file_from_dh_structures
 ; => TODO remove duplicate code, rationalize.
-generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
+generate_tectri_file_from_dh_structures: function [ ;{{{
 	"Generates a file for TecTri from structural measurements contained in bdexplo database in dh_struct_measures table"
 	/criteria {optional criteria to select records to be exported}
 		sql_criteria [string!] {criteria, must be a valid SQL statement; i.e. "WHERE opid = 4 AND obs_id ILIKE 'GF2012%'}
@@ -4187,18 +4208,18 @@ generate_tectri_file_from_dh_structures: function [ ;{{{ } } }
 ];}}}
 
 ; Fonctions utilisées pour faire des programmes de sondages:
-cogo: func [ "COordinates GO, modifies x and y variables" azim distance ][; {{{ } } }
+cogo:                        func      [ "COordinates GO, modifies x and y variables" azim distance ][; {{{
     x: x + (distance * (sine    azim))
     y: y + (distance * (cosine  azim))
     ;return reduce [x y]
 ];}}}
-xyz_from_dh_collar: func ["une fonction qui retourne les x, y, z d'un sondage" id] [ ;{{{ } } }
+xyz_from_dh_collar:          func      ["une fonction qui retourne les x, y, z d'un sondage" id] [ ;{{{
     sql: rejoin ["SELECT x, y, z FROM dh_collars WHERE id = '" id "'"]
 	result: run_query sql
     return reduce [to-decimal result/1/1 to-decimal result/1/2 to-decimal result/1/3]
 ]
 ;# /*}}}*/
-plante_un_sondage_ici: func [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{ } } }
+plante_un_sondage_ici:       func      [ "append current values to list planned holes, optional parameter = comment" /comment comm [string!]] [ ;{{{
 	;?? comm
 	unless comment [comm: copy ""]
 	; correct when an azimuth azim_ng is incorrect, either < 0 or > 360:
@@ -4219,19 +4240,19 @@ plante_un_sondage_ici: func [ "append current values to list planned holes, opti
 	number: number + 1
 	;probe last sondages_prevus
 	];}}}
-mark_set: does [ ; set a mark, to go back afterwards; {{{ } } }
+mark_set:                    does      [ ; set a mark, to go back afterwards; {{{
 	mark_x: x
 	mark_y: y
 	mark_z: z
 ];}}}
-mark_go: does [  ; go back to a previously marked place; {{{ } } }
+mark_go:                     does      [  ; go back to a previously marked place; {{{
 	x: mark_x
 	y: mark_y
 	z: mark_z
 ];}}}
 
 ; Functions used for maintenance of geolllibre.org server, aka linutopch, hosted in Gers as of 2014:
-gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [block!]] [ ; {{{ } } }
+gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [block!]] [ ; {{{
 	foreach p pads [
 		p: to-string p
 		url: rejoin ["https://geolllibre.org/pad/p/" p]
@@ -4244,12 +4265,14 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 
 
 ; === fin des définitions de fonctions ==========
-
+; === end of functions' definitions =============
 
 ; on se met dans le répertoire courant
+; change to current directory
 change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
+; give out some information to the user onto the console
 print "Gll preferences loaded: "
 ;?? dbhost
 ;?? dbname
@@ -4258,5 +4281,6 @@ print "Gll preferences loaded: "
 print rejoin ["Current working directory: " what-dir ]
 
 ; on lance la connexion à la base
+; connect to the database
 connection_db
 
