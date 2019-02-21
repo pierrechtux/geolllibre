@@ -2096,7 +2096,10 @@ comment {
 ;}}}
 ]
 ;/*}}}*/
-connection_db:       does [ "Connect to database" ;{{{
+
+; === functions and objects definitions ==========
+; utility functions related to database:
+connection_db:               does      [ "Connect to database" ;{{{
 	; on fait une connexion à la base de données:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	if error? try 	[
@@ -2106,9 +2109,6 @@ connection_db:       does [ "Connect to database" ;{{{
 			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
 	]
 ] ;}}}
-
-; === functions and objects definitions ==========
-; utility functions related to database:
 run_query:                   func      ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{
 	if error? try [	insert db sql  ; send a SQL query
 			] [ print "**Error**"	; TODO mieux gérer l'erreur
@@ -2137,8 +2137,8 @@ run_sql_string_update:       does      [ ;{{{
 do_psql:                     func      ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
-	tt: call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
-	return tt
+	return call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
+re
 	] ;}}}
 compare_schemas_2_bdexplos:  function  ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{
 	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
@@ -2319,12 +2319,12 @@ call_wait_output_error:      func      [ "Run a shell call and get stdio output,
 	cmd [string!] "command to be run by the shell"
 	] [
 		;print rejoin["Running: " cmd]  ; too verbose in numerous cases TODO do that if a DEBUG flag is on.
-		tt:  copy ""
-		err: copy ""
-		call/wait/output/error cmd tt err
-		prin tt
-		if (err != "") [print rejoin ["Error: " newline err]]
-		return tt
+		call_output:  copy "" copy			; used to be called tt
+		call_error: copy ""					; used to be called err
+		call/wait/output/error cmd call_output call_error
+		prin call_output
+		if (call_error != "") [print rejoin ["Error: " newline call_error]]
+		return call_output
 ] ;}}}]
 contig_sequences:            function  [{Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{
 	input_serie [series!]
@@ -2355,9 +2355,19 @@ contig_sequences:            function  [{Function taking input = list of values,
 	]
 	return to-block output
 ];}}}
+confirm:                     func      [ "Confirms a user choice." ; gotten from r3 => no, rewritten, rather ; {{{
+    question [series!]
+][
+until [
+	response: ask rejoin [question " (y-o-s-1 or n-0)? " ]
+	parse (lowercase response) [ ["1" | "o" | "n" | "y" | "s" | "0"]]
+]
+return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
+]
+;}}}
 
-; Les dates du geolpda sont au format epoch en millisecondes;
-; voici deux fonctions pour convertir les epoch en date et réciproquement:
+; Les dates du GeolPDA sont au format epoch en millisecondes; voici deux fonctions pour convertir les epoch en date et réciproquement:
+; Dates from GeolPDA are expressed as epoch in millisecond; these are two functions converting these epoch to date and vice versa.
 epoch-to-date:               func      [ "Converts an epoch to a date" ; {{{
 ; from http://www.rebol.net/cookbook/recipes/0051.html
 	"Return REBOL date from unix time format"
@@ -2385,13 +2395,13 @@ date-to-epoch:               func      [ "Converts a date to an epoch" ; {{{
 	(rebol-date/time/hour * 3600) +
 	(rebol-date/time/minute * 60) + rebol-date/time/second
 ] ;}}}
-epoch_ms_geolpda_to_AAAAMMJJ_hhmmss: func ["Converts directly epoch ms format (pictures from geolpda) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [ ;{{{
-; et voici une fonction pour convertir directement le format epoch ms de geolpda en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg:
+epoch_ms_to_AAAAMMJJ_hhmmss: func      [ "Converts directly epoch ms format (pictures from GeolPDA) to AAAAMMJJ_hhmmss.jpg (default pictures names on android)" epoch_ms] [ ;{{{
+; et voici une fonction pour convertir directement le format epoch ms de GeolPDA en date au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg:
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
 	return rejoin [ tmp/year pad tmp/month 2 pad tmp/day 2 "_" pad tmp/time/hour 2 pad tmp/time/minute 2 pad to-integer tmp/time/second 2]
 ]
 ;}}}
-AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (default pictures names on android) to epoch ms format (pictures from geolpda)" timestamp ] [ ; {{{
+AAAAMMJJ_hhmmss_to_epoch_ms: func      [ "Converts directly AAAAMMJJ_hhmmss (default pictures names on android) to epoch ms format (pictures from GeolPDA)" timestamp ] [ ; {{{
 ; et voici la réciproque, pour convertir des dates au format des noms des photos par défaut d'android, à savoir AAAAMMJJ_hhmmss.jpg en epoch en ms:
 ;	timestamp: "20160915_145150"
 	y: m: d: hr: min: sec: copy ""
@@ -2403,16 +2413,15 @@ AAAAMMJJ_hhmmss_to_epoch_ms_geolpda: func ["Converts directly AAAAMMJJ_hhmmss (d
 	return (date-to-epoch tmp) * 1000.0
 ]
 ;}}}
-epoch_ms_geolpda_to_date: func ["Converts directly epoch ms format (pictures from geolpda) to dd/mm/yyyy (default date on rebol)" epoch_ms] [ ;{{{
-; et une fonction pour convertir directement le format epoch ms de geolpda en date au format rebol:
+epoch_ms_to_date:            func      [ "Converts directly epoch ms format (pictures from GeolPDA) to dd/mm/yyyy (default date on rebol)" epoch_ms] [ ;{{{
+; et une fonction pour convertir directement le format epoch ms de GeolPDA en date au format rebol:
 	tmp: to-date epoch-to-date (to-integer ((to-decimal epoch_ms) / 1000))
 	return to-date rejoin [ pad tmp/day 2 "/" pad tmp/month 2 "/" tmp/year ]
 ]
 ;}}}
 
-
-; Functions concerning GeolPDA data management: {{{
-synchronize_geolpda_files: does [; {{{
+; Functions concerning GeolPDA data management:
+synchronize_geolpda_files: does [ "Synchronises data from files retreived from a GeolPDA"; {{{
 	print "Synchronization process..."
 			;DONE move the next piece of code in synchronize_geolpda_files (!...) => done. TODO => test
 	; Apparently due to the new MTP protocol used to connect to Android devices,
@@ -2467,8 +2476,8 @@ synchronize_geolpda_files: does [; {{{
 			cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
 			print "On android device, move photo files to an archive directory:"
 			call_wait_output_error cmd
-			;TODO: idea for geolpda: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
-			; Reduce geolpda pictures sizes in the local copy:{{{
+			;TODO: idea for GeolPDA: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
+			; Reduce GeolPDA pictures sizes in the local copy:{{{
 			size_max: 700
 			print rejoin ["Reduction of pictures to " size_max " pixels:"]
 			dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
@@ -2514,12 +2523,12 @@ synchronize_geolpda_files: does [; {{{
 
 	either ((length? photos_to_transfer) > 1) [
 		; In case there were GeolPDA photos transferred:
-		; first photo to transfer: oldest one among the geolpda photos which have already been transferred:
+		; first photo to transfer: oldest one among the GeolPDA photos which have already been transferred:
 		sort photos_to_transfer
-		date_start: first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (first photos_to_transfer)) ".jpg" "" "_"
+		date_start: first parse epoch_ms_to_AAAAMMJJ_hhmmss replace (to-string (first photos_to_transfer)) ".jpg" "" "_"
 		date_start: to-date rejoin [substring date_start 1 4 "-" substring date_start 5 2 "-" substring date_start 7 2]
 		; last one: youngest one among the same list:
-		date_end:   first parse epoch_ms_geolpda_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
+		date_end:   first parse epoch_ms_to_AAAAMMJJ_hhmmss replace (to-string (last  photos_to_transfer)) ".jpg" "" "_"
 		date_end: to-date rejoin [substring date_end 1 4 "-" substring date_end 5 2 "-" substring date_end 7 2]
 	] [
 		; No photos were transferred: get dates from observation points: => impossible, the process of getting data from sqlite database has not yet taken place:
@@ -2560,7 +2569,7 @@ synchronize_geolpda_files: does [; {{{
 		; TODO apply rotation, if any, to file
 		; TODO set timestamp to exif timestamp
 		; TODO add geotags, if any gpx?
-		; make symlinks in geolpda photos directory:
+		; make symlinks in GeolPDA photos directory:
 		;cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
 		;call_wait_output_error cmd
 		cmd_big: copy ""
@@ -2616,7 +2625,7 @@ synchronize_oruxmaps_tracklogs: does [; {{{
 
 ];}}}
 
-get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from geolpda which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{
+get_bdexplo_max__id: does [; TODO REMOVE THIS FUNCTION Remove records from dataset from GeolPDA which are already in database: 2014_02_12__10_32_25: much more simple: get the maximum of _id in the bdexplo database (the field is waypoint_name): {{{
 ;TODO function name not very appropriate: to be changed to something better
 if error? try [
 	x: run_query rejoin [{SELECT count(*) FROM public.field_observations WHERE device = '} geolpda_device {';}]
@@ -2710,8 +2719,8 @@ sort/compare observations func [a b] [(at a field) < (at b field)]
 
 ; TODO récupérer les données d'orientations
 ] ;}}}
-get_geolpda_data_from_sqlite: does [ ; Open sqlite geolpda, get data:{{{
-; Library to access sqlite geolpda database:
+get_geolpda_data_from_sqlite: does [ ; Open sqlite GeolPDA, get data:{{{
+; Library to access sqlite GeolPDA database:
 do %~/rebol/library/scripts/btn-sqlite.r
 
 print "Open GeolPDA database..."
@@ -2732,7 +2741,7 @@ run_query "SELECT * FROM poi ORDER BY poitime"	; ORDER BY évitera de trier par 
 ; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poiname" "poitime" "elevation" "poilat" "poilon" "photourl" "audiourl" "note"] [
-	print "WARNING! field names differ from geolpda reference implementation"
+	print "WARNING! field names differ from GeolPDA reference implementation"
 	print "Error, halting"
 	halt
 ]
@@ -2745,7 +2754,7 @@ run_query "SELECT * FROM orientation"
 ; Comparison of field list: to be sure that the table structure matches the
 ; one used at the time of coding (23-Oct-2013/9:24:01+2:00)
 unless sql_result_fields = ["_id" "poi_id" "orientationtype" "rot1" "rot2" "rot3" "rot4" "rot5" "rot6" "rot7" "rot8" "rot9" "v1" "v2" "v3"] [
-	print "ATTENTION! field names differ from geolpda reference implementation"
+	print "ATTENTION! field names differ from GeolPDA reference implementation"
 	print "Error, halting"
 	halt
 ]
@@ -3060,7 +3069,6 @@ copy-file:                   func      [{Copies file from source to destination.
 	; => oups, pas bon!
 
 ]; }}}
-
 process_cases_table:         function  ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{
 ; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
 ; exemple: {{{
@@ -3108,7 +3116,6 @@ process_cases_table:         function  ["Processes a matrix (table) of cases, wh
 	;print code
 	return code
 ];}}}
-
 mkdiraujourdhui:             function  ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{
 tt: now
 make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
@@ -3727,7 +3734,7 @@ orientation: make object! [ ;--## An orientation object, which fully characteris
 
 
 	trace_structural_symbol: func [diag [object!]] ["Return a DRAW dialect block containing the structural symbol";{{{
-		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le geolpda: {{{
+		;Je tente de passer en rebol le code python que je fis pour tracer le té de pendage dans le GeolPDA: {{{
 		;# Il s'agit maintenant de tracer le Té de
 		;# pendage:
 		;# Les coordonnées sont centrées autour de
@@ -4263,7 +4270,6 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 		] ] ]
 ;}}}
 
-
 ; === fin des définitions de fonctions ==========
 ; === end of functions' definitions =============
 
@@ -4272,7 +4278,7 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
-; give out some information to the user onto the console
+; print out some information to the user on the console
 print "Gll preferences loaded: "
 ;?? dbhost
 ;?? dbname
@@ -4284,3 +4290,5 @@ print rejoin ["Current working directory: " what-dir ]
 ; connect to the database
 connection_db
 
+; et on laisse finalement le champ libre au programme appelant, ou à l'invite interactive.
+; and we eventually give way to the calling program, or to the shell.

@@ -60,9 +60,9 @@ echo "               J  [__|     [__||  "  # TODO: hack cowsay source, and add a
 echo
 echo "           ____________________________________"
 echo "         oO                                    Oo"
-echo "         °                                        °"
+echo "         °                                        \"
 echo "        {     PostGeol: PostgreSQL for Geology     }"
-echo "         °                                        °"
+echo "         \                                        °"
 echo "          °o____________________________________o°"
 
 # General variables:

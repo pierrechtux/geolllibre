@@ -481,11 +481,9 @@ unless ((uppercase res) = "N") [
 			sql_txt: trim_last_char trim_last_char sql_txt
 			;append sql_txt ";" ; non nécessaire pour le COPY
 		append cmd rejoin [{echo "COPY (} sql_txt {) TO stdout WITH CSV FORCE QUOTE *" | psql -X -h } bd_destination/host " -p " bd_destination/port " -U " bd_destination/user { } bd_destination/base { > } outputfilename2 newline] ; sans HEADER pour contourner le problème des champs changeant de noms; idem supra
-		;call_wait_output_error cmd
-		;tt: copy ""
 		append cmd rejoin ["diff -q " outputfilename1 " " outputfilename2 newline]
 		call_wait_output_error cmd		
-		unless (tt = "") [		; si erreur:
+		unless (call_output = "") [		; si erreur:
 			nb_err: nb_err + 1
 			append tables_err reduce [s t]
 			replace cmd "WITH CSV FORCE QUOTE" "WITH CSV HEADER FORCE QUOTE"	; pour le débogage, dans le log, on met les noms de champs, et il faut avoir un vimdiff (qui n'en a pas?)
