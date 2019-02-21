@@ -1,0 +1,37 @@
+REBOL [
+	title: "partie d'implementation de Tectri et Rosace en Rebol"
+	version: 0.1
+	description: {objet rondibet=fenetre avec diagramme rond, rosace ou stereo. Hérité pour rosace.r et tectri.r. premier codage "en aveugle", sur visor. bcp de code reste a traduire de vb; faire tests de vitesses; faire 1 autre test en python}
+	auteur: "Pierre Chevalier"
+	date: 07/05/2004
+]
+
+rondibet: make object! [
+	;diamètre en cm
+	diametre: make decimal! 5.0
+		;ça, c plutôt pour le stéréo: @#à déplacer dans l'objet stereo
+		hemisphere: make string! "S"
+	diagramme: [
+		box 200x200
+	]
+	
+	;fenetre: [
+	;	across
+	;	reduce ['draw diagramme]
+	;]
+	
+	trace_rond: function [][][
+		append diagramme compose [
+			circle 100x100 50
+			text 100x10 "N" 
+			line 100x50 100x45
+			line 150x100 155x100
+			line 100x200 100x205
+			line 50x100 45x100
+		]
+		view layout [
+			box white 200x200 effect reduce ['draw diagramme ]
+		]
+		
+	]
+]
