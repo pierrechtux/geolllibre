@@ -180,7 +180,7 @@ CREATE TABLE :USER.operation_active (       -- TODO at some point, put back some
     username            text DEFAULT current_user
 --     UNIQUE (opid) -- on s'en passe
 );
-COMMENT ON TABLE :USER.operation_active                               IS 'table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
+COMMENT ON TABLE :USER.operation_active                               IS 'Table containing active opid(s), in order to query only some operations by systematically JOINing on opid; homonymous views (same name as public.tables in user schema are doing this seamlessly, once operation_active is properly filled.'; -- TODO add a constraint per user - authorised opid(s)
 COMMENT ON COLUMN :USER.operation_active.opid                         IS 'Operation identifier';
 -- COMMENT ON COLUMN :USER.operation_active.numauto                   IS 'Automatic integer';
 COMMENT ON COLUMN :USER.operation_active.creation_ts                  IS 'Current date and time stamp when data is loaded in table';

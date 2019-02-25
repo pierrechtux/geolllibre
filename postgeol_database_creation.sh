@@ -17,7 +17,7 @@ echo "      ##       / /_/ / /___|  \/ / /__/ /__/ /___/ // /_/ / _, _/ /___    
 echo "      ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##"
 echo "      ##                                                                       ##"
 echo "      ###########################################################################"
-echo "        Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>"
+echo "        Copyright (C) 2019 Pierre Chevalier <pierrechevaliergeol@free.fr>"
 echo ""
 echo "          GeolLLibre is free software: you can redistribute it and/or modify"
 echo "          it under the terms of the GNU General Public License as published by"
@@ -60,7 +60,7 @@ echo "               J  [__|     [__||  "  # TODO: hack cowsay source, and add a
 echo
 echo "           ____________________________________"
 echo "         oO                                    Oo"
-echo "         °                                        \"
+echo "         °                                        \ "
 echo "        {     PostGeol: PostgreSQL for Geology     }"
 echo "         \                                        °"
 echo "          °o____________________________________o°"
@@ -91,7 +91,7 @@ echo "  Hostname: $GLL_BD_HOST"
 echo
 echo -e "If $GLL_BD_HOST is a GeoPoppy server, then the docker role is used, instead of postgres; is this a GeoPoppy server (default = yes)?"
 POSTGRES=docker
-echo "Press <Enter> to confirm, or anything else if $GLL_BD_HOST is $not* a GeoPoppy server, and then <Enter>:"
+echo "Press <Enter> to confirm, or anything else if $GLL_BD_HOST is *not* a GeoPoppy server, and then <Enter>:"
 read tmp
 [[ ! -z "$tmp" ]] && POSTGRES=postgres
 echo "  Postgres superuser: $POSTGRES"

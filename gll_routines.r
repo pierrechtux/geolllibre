@@ -2310,8 +2310,8 @@ print-list:                  func      [ l [block!]] [" A very simple function, 
 ;}}}
 msg:                         func      [txt] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
 	switch lang [
-		"fr" [print txt/1]
-		"en" [print txt/2]
+		"fr" [print rejoin to-block txt/1]
+		"en" [print rejoin to-block txt/2]
 ]	]
 ;}}}
 call_wait_output_error:      func      [ "Run a shell call and get stdio output, and err output" ; {{{
