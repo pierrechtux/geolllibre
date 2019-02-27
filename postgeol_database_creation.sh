@@ -155,11 +155,22 @@ psql $CONNINFO -U $POSTGRES -c "
  CREATE EXTENSION postgis_topology;
  GRANT ALL ON geometry_columns to $GLL_BD_USER;
  GRANT SELECT ON spatial_ref_sys to $GLL_BD_USER;
- --CREATE LANGUAGE plpythonu;  -- TODO removed also functions which called python scripts; put back, when issues of having plpythonu on geopopy will be solved
  CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
  CREATE SCHEMA $GLL_BD_USER;
  ALTER SCHEMA $GLL_BD_USER OWNER TO $GLL_BD_USER;
  GRANT ALL ON SCHEMA $GLL_BD_USER TO $GLL_BD_USER;"
+
+## -- TODO removed also functions which called python scripts; put back, when issues of having plpythonu on geopopy will be solved
+## => test on $POSTGRES='docker' => far to be ideal: TODO detect platform architecture to asses if plpythonu can be implemented
+#if [ $POSTGRES='docker' ]; then
+#	echo "This is apparently a GeoPoppy server: for the time being, plpythonu is not implemented within PostGeol on a Raspberry Pi platform."
+#else
+#	echo "This is not a GeoPoppy server, so we suppose that plpythonu can be implemented on the current platform."
+#	psql $CONNINFO -U $POSTGRES -c "CREATE LANGUAGE plpythonu;"
+#fi
+# => DOESN'T WORK AS EXPECTED: TODO TO BE FIXED
+
+
 echo "Enter to continue, Ctrl-C to cancel:"
 read
 echo "                                                                             }}}"
