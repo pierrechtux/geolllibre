@@ -55,7 +55,7 @@ SET client_min_messages = warning;
 --      ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 --      ##                                                                       ##
 --      ###########################################################################
---        Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+--        Copyright (C) 2019 Pierre Chevalier <pierrechevaliergeol@free.fr>
 --
 --          GeolLLibre is free software: you can redistribute it and/or modify
 --         it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ SET client_min_messages = warning;
 -- COMMENT ON SCHEMA data                                IS 'Schema where data tables actually are';  -- in fact not; TODO to be done later on
 
 CREATE SCHEMA checks;
-COMMENT ON SCHEMA checks                              IS 'Views selecting unconsistent, incoherent, unprobable data';
+COMMENT ON SCHEMA checks                              IS 'Views selecting unconsistent, incoherent, unprobable data: useful to chase incorrect data';
 
 CREATE SCHEMA gdm;
 COMMENT ON SCHEMA gdm                                 IS 'Views for connection with GDM software through ODBC';
@@ -197,28 +197,28 @@ CREATE TABLE public.field_observations (
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     obs_id              text NOT NULL,
-    year                integer --NOT NULL,
-    date                date --NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
-    time                text --NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
+    year                integer, --NOT NULL,
+    date                date, --NOT NULL,    -- TODO virer ce champ, après avoir, dans les données historiques, combiné son contenu avec la date pour en faire un format timestamp ou équivalent (ou pas...)
+    time                text, --NOT NULL, -- TODO voir ce que contient ce champ; le renommer mieux => moui.
     srid                integer NOT NULL,
     x                   numeric(20,10) NOT NULL,
     y                   numeric(20,10) NOT NULL,
-    z                   numeric(20, 2) NOT NULL,
+    z                   numeric(20, 2), -- NOT NULL,
     geometry_corr       geometry,
     geography_4326      geography,
-    description         text --NOT NULL,
-    code_litho          text --NOT NULL,
-    code_unit           text --NOT NULL,
-    sample_id           text --NOT NULL,
-    audio               text --NOT NULL,
-    photos              text --NOT NULL,
-    geologist           text --NOT NULL,
-    device              text --NOT NULL,
-    comments            text --NOT NULL,
-    datasource          integer --NOT NULL,
-    waypoint_name       text --NOT NULL,
-    icon_descr          text --NOT NULL,  -- Eventually get rid of this quite useless field.
-    timestamp_epoch_ms  bigint NOT NULL,
+    description         text, --NOT NULL,
+    code_litho          text, --NOT NULL,
+    code_unit           text, --NOT NULL,
+    sample_id           text, --NOT NULL,
+    audio               text, --NOT NULL,
+    photos              text, --NOT NULL,
+    geologist           text, --NOT NULL,
+    device              text, --NOT NULL,
+    comments            text, --NOT NULL,
+    datasource          integer, --NOT NULL,
+    waypoint_name       text, --NOT NULL,
+    icon_descr          text, --NOT NULL,  -- Eventually get rid of this quite useless field.
+    timestamp_epoch_ms  bigint, -- NOT NULL,
     numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text NOT NULL DEFAULT current_user,

@@ -15,7 +15,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ##       \____/_____/ \___/_____/___/_____/__/_____/_/ |_/_____/         ##
 ##                                                                       ##
 ###########################################################################
-  Copyright (C) 2018 Pierre Chevalier <pierrechevaliergeol@free.fr>
+  Copyright (C) 2019 Pierre Chevalier <pierrechevaliergeol@free.fr>
 
     GeolLLibre is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -105,19 +105,19 @@ unless (none? options) [ ; =>	No command line options: get default values, they 
 		either (first (to-string (first options)) = "-") [
 			case [
 				(second (to-string (first options)) = "d")	[ ; then the following argument is the database to connect to:
-				dbname: second options						]
+																dbname: second options										]
 				(second (to-string (first options)) = "h") 	[ ; then the following argument is the host to connect to:
-				dbhost: second options						]
+																dbhost: second options										]
 				(second (to-string (first options)) = "p")	[ ; then the following argument is the port to connect to:
-				dbport: second options						]
+																dbport: second options										]
 				(second (to-string (first options)) = "U")	[ ; then the following argument is the username to connect as:
-				user:   second options						]
+																user:   second options										]
 			]
 			] [ ; the first word doesn't start with - : therefore, it is the database to connect to:
 			dbname: first options
 			; now what is the second word?  It must be the username:
 			user: second options
-			]		
+			]
 		]
 	3	[	; three words:
 		; NOPE. TODO later. Find a better way to handle that, in any decent codebase...
