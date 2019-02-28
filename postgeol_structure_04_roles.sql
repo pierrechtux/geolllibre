@@ -1,4 +1,35 @@
 -- Roles definition
+
+-- psql $CONNINFO -U $POSTGRES -c "
+--  CREATE ROLE db_admin                 NOLOGIN   SUPERUSER CREATEDB CREATEROLE INHERIT;
+--  CREATE ROLE data_admin               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE subcontractors           NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE data_entry               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE data_consult             NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE data_consult_restricted  NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE geologists               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE ingeneers                NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE technicians              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+--  CREATE ROLE prospectors              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
+-- 
+-- 
+-- --soustraitants:
+-- --mathieu
+-- CREATE USER mathieu;
+-- --corentin
+-- CREATE USER corentin;
+-- GRANT soustraitants TO mathieu, corentin;
+-- 
+-- 
+-- 
+-- 
+-- Créer les rôles individuels:
+-- CREATE ROLE pol;
+-- Et les assigner à des rôles:
+-- 
+-- 
+-- 
+-- 
 /*
 --Des alter owner: {{{
 ALTER TABLE grid OWNER TO pierre;
