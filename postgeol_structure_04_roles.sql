@@ -1,35 +1,17 @@
--- Roles definition
+-- Roles definition:
 
--- psql $CONNINFO -U $POSTGRES -c "
---  CREATE ROLE db_admin                 NOLOGIN   SUPERUSER CREATEDB CREATEROLE INHERIT;
---  CREATE ROLE data_admin               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE subcontractors           NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE data_entry               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE data_consult             NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE data_consult_restricted  NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE geologists               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE ingeneers                NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE technicians              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
---  CREATE ROLE prospectors              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;
--- 
--- 
--- --soustraitants:
--- --mathieu
--- CREATE USER mathieu;
--- --corentin
--- CREATE USER corentin;
--- GRANT soustraitants TO mathieu, corentin;
--- 
--- 
--- 
--- 
--- Créer les rôles individuels:
--- CREATE ROLE pol;
--- Et les assigner à des rôles:
--- 
--- 
--- 
--- 
+CREATE ROLE db_admin                 NOLOGIN   SUPERUSER   CREATEDB INHERIT CREATEROLE; COMMENT ON ROLE db_admin                IS 'PostGeol - database administrator';
+CREATE ROLE data_admin               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE data_admin              IS 'PostGeol - data administrator';
+CREATE ROLE subcontractors           NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE subcontractors          IS 'PostGeol - Group of subcontractors, with restricted access rights';
+CREATE ROLE data_entry               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE data_entry              IS 'PostGeol - Group of data entry operators, with very restricted access rights';
+CREATE ROLE data_consult             NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE data_consult            IS 'PostGeol - Group of roles with read-only access rights only';
+CREATE ROLE data_consult_restricted  NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE data_consult_restricted IS 'PostGeol - Group of roles with read-only access rights to restricted datasets only';
+CREATE ROLE geologists               NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE geologists              IS 'PostGeol - Job group: geologists';
+CREATE ROLE engineers                NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE engineers               IS 'PostGeol - Job group: engineers';
+CREATE ROLE technicians              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE technicians             IS 'PostGeol - Job group: technicians';
+CREATE ROLE prospectors              NOLOGIN NOSUPERUSER NOCREATEDB INHERIT;            COMMENT ON ROLE prospectors             IS 'PostGeol - Job group: prospectors';
+
+-- TODO define ownerships, roles' rights, etc. (big job)
 /*
 --Des alter owner: {{{
 ALTER TABLE grid OWNER TO pierre;
@@ -77,7 +59,6 @@ ALTER TABLE grade_ctrl OWNER TO data_admin;
 ALTER TABLE lex_codes OWNER TO data_admin;
 ALTER FUNCTION public.generate_cross_sections_array() OWNER TO postgres; -- tiens, et pourquoi donc to postgres??
 --}}}
-
--- TODO Les droits: trucs du genre: ALTER TABLE field_photos OWNER TO data_admin;
-
 */
+
+

@@ -1,3 +1,4 @@
+TODO pasql à remplacer par psql ...
 _______________ENCOURS_______________GEOLLLIBRE
 #!/bin/bash
 #   Title:   "Creation of postgeol database: postgresql database for geological data"
@@ -173,10 +174,10 @@ psql $CONNINFO -U $POSTGRES -c "
 
 ## -- Removed also functions which called python scripts; put back, when issues of having plpythonu on GeoPoppy will be solved
 if [[ $GEOPOPPY == true ]]; then
-	echo "This is apparently a GeoPoppy server: for the time being, plpythonu is not implemented within PostGeol on a Raspberry Pi platform.  So some functions will not be implemented.";
+    echo "This is apparently a GeoPoppy server: for the time being, plpythonu is not implemented within PostGeol on a Raspberry Pi platform.  So some functions will not be implemented.";
 else
-	echo "This is not a GeoPoppy server, so we suppose that plpythonu can be implemented on the current platform."
-	psql $CONNINFO -U $POSTGRES -c "CREATE LANGUAGE plpythonu;";
+    echo "This is not a GeoPoppy server, so we suppose that plpythonu can be implemented on the current platform."
+    psql $CONNINFO -U $POSTGRES -c "CREATE LANGUAGE plpythonu;";
 fi
 echo "Enter to continue, Ctrl-C to cancel:"
 read
@@ -184,29 +185,73 @@ read
 echo "                                                                             }}}"
 echo "- 4. SETUP ROLES (USERS, GROUPS, ETC.):                                      {{{"
 
+echo "Creation of ROLEs:"
+psql $CONNINFO -X --single-transaction -c "\du+"
+psql $CONNINFO --single-transaction -U $POSTGRES -X              -f ./postgeol_structure_04_roles.sql
 
-# _______________ENCOURS_______________GEOLLLIBRE
-# TODO TESTER!
-psql $CONNINFO -X --single-transaction             -f ./postgeol_structure_04_roles.sql
+echo "The following groups (roles) have been created:"
+psql $CONNINFO -U $POSTGRES -X --single-transaction -c "\du+"
 
-echo "- 4.1. ROLES:                                                             {{{"
-boucler tant que ça continue:
-	demander un nom d'utilisateur à créer:
-	à quel(s) rôles il appartient
-		(lister les rôles)
-echo "                                                                          }}}"
-echo "- 4.2. ROLES:                                                             {{{"
-	 
 
-echo "                                                                          }}}"
+#-- Create individual roles:     -- Créer les rôles individuels:
+
+# Définition des rôles et appartenances:
+#CREATE ROLE pierre;
+#CREATE ROLE pol;
+#-- And assign to roles:         -- Et les assigner à des rôles:
+#GRANT db_admin TO pierre;
+
+#boucler tant que ça continue:
+#    demander un nom d'utilisateur à créer:
+#    à quel(s) rôles il appartient
+
+#        (lister les rôles)
+
+echo "Create actual usernames (roles able to connect to database):"
+while read -r -p "Username to be created (Enter to quit)? " && [[ $REPLY != "" ]]; do
+	case $REPLY in
+		*) #echo "What?"
+			ROLENAME=$REPLY
+			echo $ROLENAME
+			psql $CONNINFO -U $POSTGRES -X --single-transaction -c "CREATE ROLE $ROLENAME LOGIN; COMMENT ON ROLE $ROLENAME               IS 'PostGeol user';"
+echo "Choose one or several group (ROLE) to be assigned to $ROLENAME:
+0: db_admin
+1: data_admin
+2: subcontractors
+3: data_entry
+4: data_consult
+5: data_consult_restricted
+6: geologists
+7: engineers
+8: technicians
+9: prospectors            "
+			while read -n1 -r -p " => choose a number, Enter to quit: " && [[ $REPLY != "" ]]; do
+				case $REPLY in
+				0) ROL=db_admin                ;;
+				1) ROL=data_admin              ;;
+				2) ROL=subcontractors          ;;
+				3) ROL=data_entry              ;;
+				4) ROL=data_consult            ;;
+				5) ROL=data_consult_restricted ;;
+				6) ROL=geologists              ;;
+				7) ROL=engineers               ;;
+				8) ROL=technicians             ;;
+				9) ROL=prospectors             ;;
+				*) echo "What?";;
+				esac
+				psql $CONNINFO -U $POSTGRES -X --single-transaction -c "GRANT $ROL to $ROLENAME;" # TODO Instead of GRANT, do a REVOKE if $ROLENAME is already member of $ROL.  This way, pressing on 0-9 will act as on/off buttons.
+			done
+			echo ""
+		;;
+	esac
+	psql $CONNINFO -U $POSTGRES -X --single-transaction -c "\du+ $ROLENAME"
+echo ""
+done
+
 echo "Enter to continue, Ctrl-C to cancel:"
 read
 
 echo "                                                                             }}}"
-_______________ENCOURS_______________GEOLLLIBRE
-
-CREATE SCHEMA input;
-
 echo "- 5. SETUP POSTGEOL STRUCTURE:                                               {{{"
 echo "Creation of postgeol structure in database named: " $POSTGEOL
 echo "- 5.1. SCHEMAS AND TABLES:                                                {{{"
@@ -247,12 +292,6 @@ exit 0 ###### si jamais...
 
 Tous les fontchiers postgeol*:
 
-  # pierre@latitude: ~/geolllibre        < 2019_02_28__12_10_01 >
-ls postgeol_*
-postgeol_database_creation.sh
-postgeol_structure_01_1_additional_bdexplo_tables.sql
-postgeol_structure_01_tables.sql
-postgeol_structure_02_functions.sql
 postgeol_structure_03_1_views_opid_create
 postgeol_structure_03_views.sql
 postgeol_structure_04_roles.sql
