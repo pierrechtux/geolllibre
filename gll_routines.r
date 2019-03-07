@@ -42,7 +42,6 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	2.0    	[21-Sep-2018/19:39:10+2:00 {Bof, no more history here: see git log, rather}]
 ]	]
 
-
 ;;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES => postponed; strange beheviour from scripts, sometimes not reading environment variables, for unknown reason.
 ;get_env_or_gll_preferences: func ["Function to retreive environment variables or a value from .gll_preferences var] [ ; {{{
 ;
@@ -102,6 +101,59 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 	dir_oruxmaps_local:          %~/gps/oruxmaps/
 	]
 ] ;}}}
+; Get more preferences from environment variables. Récupération d'autres préférences à partir de variables d'environnement:{{{
+
+; List "interesting" environment variables:
+vars: [
+BROWSER
+DISPLAY
+CONNINFO
+EDITOR
+HOSTNAME
+LANG
+HOSTTYPE
+LC_NUMERIC
+LOGNAME
+OSTYPE
+GDM_LANG
+GROUPS
+SHELL
+GTK_MODULES
+HOME
+SHELLOPTS
+SHLVL
+SSH_AGENT_PID
+SSH_AUTH_SOCK
+TERM
+UID
+USER
+WINDOWID
+XAUTHORITY
+XDG_CURRENT_DESKTOP
+XDG_GREETER_DATA_DIR
+XDG_RUNTIME_DIR
+XDG_SEAT
+XDG_SEAT_PATH
+XDG_SESSION_CLASS
+XDG_SESSION_DESKTOP
+XDG_SESSION_ID
+XDG_SESSION_PATH
+XDG_SESSION_TYPE
+XDG_VTNR
+XTERM_LOCALE
+XTERM_SHELL
+]
+
+; For each of these variables, get its value:
+foreach v vars [
+	v: to-string v
+	do rejoin [v {: get-env "} uppercase v {"}]
+]
+
+; Just to check:
+;foreach v vars [ print get v ]
+
+;}}}
 
 ; Include Nenad's postgeol driver. Inclusion du pilote postgresql de Nenad: {{{
 do [
@@ -2308,10 +2360,11 @@ print-list:                  func      [ l [block!]] [" A very simple function, 
 	]
 ]
 ;}}}
-msg:                         func      [txt] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
-	switch lang [
-		"fr" [print rejoin to-block txt/1]
-		"en" [print rejoin to-block txt/2]
+print_lang:                         func      [txt] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
+print probe txt
+	switch (left lang 2) [
+		"fr" [print txt/1]
+		"en" [print txt/2]
 ]	]
 ;}}}
 call_wait_output_error:      func      [ "Run a shell call and get stdio output, and err output" ; {{{
