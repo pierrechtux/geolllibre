@@ -2161,7 +2161,7 @@ connection_db:               does      [ "Connect to database" ;{{{
 			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
 	]
 ] ;}}}
-run_query:                   func      ["Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{
+run_query:                   func      [ "Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{
 	if error? try [	insert db sql  ; send a SQL query
 			] [ print "**Error**"	; TODO mieux gérer l'erreur
 			]
@@ -2180,19 +2180,19 @@ run_query:                   func      ["Utility function: sends a SQL query, re
 	]
 	return sql_result
 ] ; }}}
-run_sql_string_update:       does      [ ;{{{
+run_sql_string_update:       does      [ "Utility function, similar to run_query, for UPDATEs" ;{{{
 	append journal_sql rejoin ["--" now ]
 	append journal_sql sql_string_update
 	insert db sql_string_update
 	?? journal_sql
 	] ;}}}
-do_psql:                     func      ["Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{
+do_psql:                     func      [ "Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
 	return call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
 re
 	] ;}}}
-compare_schemas_2_bdexplos:  function  ["Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{
+compare_schemas_2_bdexplos:  function  [ "Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{
 	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
 	;TODO à déplacer dans un module utilitaire plus général, à distribuer hors gll, pour tout postgresql
 	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin"]
@@ -2297,13 +2297,12 @@ compare_schemas_2_bdexplos:  function  ["Compare structure from two running inst
 
 	return tt
 ]; }}}
-sql_result_csv:              does      ["Utility function to be run after run_query: returns a .csv dataset from sql_result_fields and sql_result datasets" ; {{{
+sql_result_csv:              does      [ "Utility function to be run after run_query: returns a .csv dataset from sql_result_fields and sql_result datasets" ; {{{
 	tt: copy []
 	append/only tt sql_result_fields
 	append      tt sql_result
 	return Mold-CSV tt
 ] ;}}}
-
 ; general utility functions:
 ; Definition of standard charsets useful for PARSEing: {{{
 	letter: charset [#"a" - #"z" #"A" - #"Z"]
@@ -2313,28 +2312,28 @@ sql_result_csv:              does      ["Utility function to be run after run_qu
 	letter-or-digit-nospace: exclude letter-or-digit space
 	digit-decimalplace: union digit charset [#"."]
 ;}}}
-chk_file_exists:             func      ["Simply checks for the existence of a file" file_in] [ ;{{{
+chk_file_exists:             func      [ "Simply checks for the existence of a file" file_in] [ ;{{{
 	if error? try [
 	file_in_reader: open/string/lines/read to-file file_in
 	close file_in_reader
 	return true] [
 	return false ]
 	] ;}}}
-trim_last_char:              func      ["Trims last character from a given string" txt] [ ;{{{
+trim_last_char:              func      [ "Trims last character from a given string" txt] [ ;{{{
 	txt: (copy/part txt ((length? txt) - 1))
 	return txt
 	] ;}}}
-trim_first_char:             func      ["Trims first character from a given string" txt] [ ;{{{
+trim_first_char:             func      [ "Trims first character from a given string" txt] [ ;{{{
 	txt: (copy/part at txt 2 ((length? txt) - 1))
 	return txt
 	] ;}}}
-substring:                   func      ["substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{
+substring:                   func      [ "substring: useless, but still, sometimes useful" string [string!] offset [integer!] length [integer!]] [ ;{{{
     copy/part at string offset length
 ];}}}
-left:                        func      ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
+left:                        func      [ "as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
     copy/part string length
 ] ;}}}
-right:                       func      ["as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
+right:                       func      [ "as useless but still sometimes useful, as substring" string [string!] length [integer!] ] [ ;{{{
 	offset: (length? string) - length + 1
     copy/part at string offset length
 ]
@@ -2348,10 +2347,10 @@ pad:                         func      [ "Pads a value with leading zeroes or a 
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-continue:                    does      [ {continue: as in python; to use in a loop, do: "loop [catch[...]]"} ;{{{
+continue:                    does      [ {continue: as in python; to use in a loop, do: "loop [catch[...]]"} ; {{{
 ;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
 throw 'continue] ;}}}
-timestamp_:                  does      [; gets an underscored timestamp{{{
+timestamp_:                  does      [ "Gets an underscored timestamp" ; {{{
 trim_last_char trim_last_char replace/all replace/all replace/all to-iso-date now " " "__" "-" "_" ":" "_"]
 ;}}}
 print-list:                  func      [ l [block!]] [" A very simple function, to quickly print a list" ;{{{
@@ -2360,11 +2359,10 @@ print-list:                  func      [ l [block!]] [" A very simple function, 
 	]
 ]
 ;}}}
-print_lang:                         func      [txt] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
-print probe txt
+print_lang:                  func      [ txt ] [ "A very simple function, to print a text from a block of strings, depending on a language.  A sort of i18n àlamordmoilnœud."; {{{
 	switch (left lang 2) [
-		"fr" [print txt/1]
-		"en" [print txt/2]
+		"fr" [print (reduce (txt/1))]
+		"en" [print (reduce (txt/2))]
 ]	]
 ;}}}
 call_wait_output_error:      func      [ "Run a shell call and get stdio output, and err output" ; {{{
@@ -2379,7 +2377,7 @@ call_wait_output_error:      func      [ "Run a shell call and get stdio output,
 		if (call_error != "") [print rejoin ["Error: " newline call_error]]
 		return call_output
 ] ;}}}]
-contig_sequences:            function  [{Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{
+contig_sequences:            function  [ {Function taking input = list of values, integers or dates; output = list of list of contiguous sequences with only starts and ends.  Single items (not contiguous with any other) are listed as a single-item sublist.} ;{{{
 	input_serie [series!]
 	]
 	[
@@ -2418,6 +2416,89 @@ until [
 return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
 ]
 ;}}}
+run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebol code in the clipboard, or just highlighted text in X systems." ; {{{ } } }
+;run_clipboard_rebol_code: does [ "A utility to automatically run Rebol code in the clipboard, or just highlighted in X systems" ; { {{
+;Un utilitaire pour faire tourner automatiquement le code Rebol surligné:
+ timewait: 0.2
+ changed: false
+ wait-duration: :0:2
+ code_before: copy ""
+ err: copy []
+ write clipboard:// ""
+ c: open/binary/no-wait [scheme: 'console]
+ print "Press any key to suspend automatic execution of code in the clipboard..."
+ enroute: true
+ forever [
+  if not none? wait/all [c timewait] [
+   ask "Automatic clipboard code execution suspended; press Enter to resume..."
+   print "Automatic clipboard code execution resumed; press any key to suspend..."
+  ]
+; enroute: not enroute changed: true]
+;  if changed [
+;   either enroute [
+;   ][
+;   ]
+;  changed: false
+;  ]
+;  if enroute [
+   code: copy read clipboard://
+   if code != code_before [
+    ;print "début"
+    code_before: copy code
+    print ";======================================================="
+    print ";========== Code from clipboard: =========="
+    print code
+    print ";======== Code evaluation output: ========="
+    if error? try [ do load code ] [
+     print ";### code not valid ###"
+     ;err: disarm :err
+     ;print probe disarm err
+     ;print reform [
+     ; err/id err/where err/arg1
+     ; newline
+     ;]
+     print ";######################"
+    ]
+    print ";==========================================^/"
+   ]
+;  ]
+  wait timewait
+] ]
+
+;
+;;Un utilitaire pour faire tourner automatiquement le code Rebol surligné:
+; timewait: 0.2
+; code_before: copy ""
+; err: copy []
+; write clipboard:// ""
+; forever [
+;  code: copy read clipboard://
+;  if code != code_before [
+;   ;print "début"
+;   code_before: copy code
+;   print ";======================================================="
+;   print ";========== Code from clipboard: =========="
+;   print code
+;   print ";======== Code evaluation output: ========="
+;   if error? try [ do load code ] [
+;    print ";### code not valid ###"
+;    ;err: disarm :err
+;    ;print probe disarm err
+;    ;print reform [
+;    ; err/id err/where err/arg1
+;    ; newline
+;    ;]
+;    print ";######################"
+;   ]
+;   print ";==========================================^/"
+;  ]
+;  wait timewait
+;] ]
+;}}}
+
+
+
+
 
 ; Les dates du GeolPDA sont au format epoch en millisecondes; voici deux fonctions pour convertir les epoch en date et réciproquement:
 ; Dates from GeolPDA are expressed as epoch in millisecond; these are two functions converting these epoch to date and vice versa.
@@ -2975,7 +3056,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 ;****************************************************************************************************************
 
 ; Conversion from decimal degrees to degrees, minutes, seconds ande vice-versa:
-dd2dms:                      function  [{Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"} ;{{{
+dd2dms:                      function  [ {Converts decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS"} ;{{{
 	dd [string! decimal!]
 	/quadrant_lat "Appends latitude N or S to output"
 	/quadrant_lon "Appends longitude E or W to output"
@@ -3018,7 +3099,7 @@ dd2dms:                      function  [{Converts decimal degrees to degrees, mi
 	append output rejoin [degrees "d" minutes "m" seconds "s"]	; FIXME:    for the moment, use of d m s instead of ° ' "
 	return output
 	] ;}}}
-dms2dd:                      function  ["Converts degrees, minutes, seconds to decimal degrees" dms [string!] ] ;{{{
+dms2dd:                      function  [ "Converts degrees, minutes, seconds to decimal degrees" dms [string!] ] ;{{{
 	[ sign rule_quadrant rule_degree rule_minute rule_second degrees minutes seconds ]
 	[
 	comment [
@@ -3063,7 +3144,7 @@ dms2dd:                      function  ["Converts degrees, minutes, seconds to d
 	return ((degrees + (minutes / 60) + (seconds / 3600)) * sign)
 	]
 ;}}}
-dd2dms_lon_lat_from_qgis:    function  [{Converts a pair of longitude,latitude coordinates separated by a comma, as it comes from the QGIS "Saisie de coordonnées" extension from decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS} ;{{{
+dd2dms_lon_lat_from_qgis:    function  [ {Converts a pair of longitude,latitude coordinates separated by a comma, as it comes from the QGIS "Saisie de coordonnées" extension from decimal degrees to degrees, minutes, seconds, formatted as DD°MM'SS.SSS} ;{{{
 	xy [string!]
 	/quadrant_lat "Appends latitude N or S to output"
 	/quadrant_lon "Appends longitude E or W to output"
@@ -3097,7 +3178,7 @@ dd2dms_lon_lat_from_qgis:    function  [{Converts a pair of longitude,latitude c
 ] ;}}}
 
 ; from LouGit:
-copy-file:                   func      [{Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{
+copy-file:                   func      [ {Copies file from source to destination. Destination can be a directory or a filename.} source [file!] target [file! url!]] [ ;{{{
 	if (source = target) [alert "Error: source and destination are the same" return none]
 	; open source		;o)
 	port_source: open/direct/binary/read to-file source
@@ -3122,7 +3203,7 @@ copy-file:                   func      [{Copies file from source to destination.
 	; => oups, pas bon!
 
 ]; }}}
-process_cases_table:         function  ["Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{
+process_cases_table:         function  [ "Processes a matrix (table) of cases, which is a simple multi-line string containing a first line of variables, then one line per case, with the criteria, and the value to be returned for every case. All items are tab or space separated, so that a matrix can be easily pasted to-from a spreadsheet." case_matrix] [mm code v tt ii count] [ ;{{{
 ; A generic function, which processes a matrix of cases, a bit like in the erosion study expert-case on Reunion Island:
 ; exemple: {{{
  ; une matrice de cas, volontairement simple, avec des tabulations séparant les choses, de manière à pouvoir coller depuis un simple tableur. Une ligne avec les variables en premier, puis une ligne par cas, avec la dernière chaÃ®ne qui correspond à ce que renverra la fonction:
@@ -3169,7 +3250,7 @@ process_cases_table:         function  ["Processes a matrix (table) of cases, wh
 	;print code
 	return code
 ];}}}
-mkdiraujourdhui:             function  ["A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{
+mkdiraujourdhui:             function  [ "A simple mkdiraujourdhui utility: creates in the current directory a directory named after the date, i.e. 2015_03_08"] [ tt ] [;{{{
 tt: now
 make-dir to-file rejoin [tt/year "_" pad tt/month 2 "_" pad tt/day 2]
 ];}}}
@@ -3208,7 +3289,7 @@ gll_create_new_operation:    does      [ "Creation of a new operation in the pub
 ];}}}
 
 ; fonctions pour la gestion des datasource:
-test_datasource_available:   func      ["Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{
+test_datasource_available:   func      [ "Teste si new_datasource_id est libre dans la base" new_datasource_id ] [ ;{{{
 	 sql_string: rejoin ["SELECT * FROM public.lex_datasource WHERE opid = '"
 	                      opid "' AND datasource_id = " new_datasource_id ";"]
 	 res: to-string run_query sql_string
@@ -3228,7 +3309,7 @@ get_new_datasource_id:       does      [ ; récupère le premier datasource_id l
 	]
 	] ;}}}
 
-generate_sql_string_update:  func      ["Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{
+generate_sql_string_update:  func      [ "Insertion dans public.lex_datasource => TODO renommer cette fonction" new_datasource_id file_in] [ ;{{{
 	sql_string_update: rejoin [ "INSERT INTO public.lex_datasource (opid, filename, datasource_id) VALUES (" opid ", '" file_in "', " new_datasource_id ");" ]
 	] ;}}}
 get_datasource_dependant_information:            func      [ ;{{{
@@ -3349,7 +3430,7 @@ delete_datasource_and_dependant_information:     func      ["Deletes a datasourc
 ] ;}}}
 
 ; fonctions et objets utilisés pour les structures: géométrie dans l'espace, vecteurs, objets structuraux, etc.
-azimuth_vector:              func      [{Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{
+azimuth_vector:              func      [ {Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{
 		x: v/1
 		y: v/2
 		either (x = 0) [azim: 0] [azim: 90 - arctangent (y / x )] ;(nota bene: calculs directement en degrés chez rebol)
