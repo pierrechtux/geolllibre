@@ -2417,7 +2417,6 @@ return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
 ]
 ;}}}
 run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebol code in the clipboard, or just highlighted text in X systems." ; {{{ } } }
-;run_clipboard_rebol_code: does [ "A utility to automatically run Rebol code in the clipboard, or just highlighted in X systems" ; { {{
 ;Un utilitaire pour faire tourner automatiquement le code Rebol surligné:
  timewait: 0.2
  changed: false
@@ -2426,79 +2425,51 @@ run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebo
  err: copy []
  write clipboard:// ""
  c: open/binary/no-wait [scheme: 'console]
- print "Press any key to suspend automatic execution of code in the clipboard..."
+ print "Press Ctrl-C to stop, and any key to suspend automatic execution of code in the clipboard..."
  enroute: true
  forever [
   if not none? wait/all [c timewait] [
    ask "Automatic clipboard code execution suspended; press Enter to resume..."
    print "Automatic clipboard code execution resumed; press any key to suspend..."
   ]
-; enroute: not enroute changed: true]
-;  if changed [
-;   either enroute [
-;   ][
-;   ]
-;  changed: false
-;  ]
-;  if enroute [
-   code: copy read clipboard://
-   if code != code_before [
-    ;print "début"
-    code_before: copy code
-    print ";======================================================="
-    print ";========== Code from clipboard: =========="
-    print code
-    print ";======== Code evaluation output: ========="
-    if error? try [ do load code ] [
-     print ";### code not valid ###"
-     ;err: disarm :err
-     ;print probe disarm err
-     ;print reform [
-     ; err/id err/where err/arg1
-     ; newline
-     ;]
+  code: copy read clipboard://
+  if code != code_before [
+   code_before: copy code
+   print ";======================================================="
+   print ";========== Code from clipboard: =========="
+   print code
+   print ";======== Code evaluation output: ========="
+   if error? try [ do load code ] [
+    print ";### code not valid ###"
      print ";######################"
-    ]
-    print ";==========================================^/"
    ]
-;  ]
-  wait timewait
+   print ";==========================================^/"
+  ]
+ wait timewait
 ] ]
-
-;
-;;Un utilitaire pour faire tourner automatiquement le code Rebol surligné:
-; timewait: 0.2
-; code_before: copy ""
-; err: copy []
-; write clipboard:// ""
-; forever [
-;  code: copy read clipboard://
-;  if code != code_before [
-;   ;print "début"
-;   code_before: copy code
-;   print ";======================================================="
-;   print ";========== Code from clipboard: =========="
-;   print code
-;   print ";======== Code evaluation output: ========="
-;   if error? try [ do load code ] [
-;    print ";### code not valid ###"
-;    ;err: disarm :err
-;    ;print probe disarm err
-;    ;print reform [
-;    ; err/id err/where err/arg1
-;    ; newline
-;    ;]
-;    print ";######################"
-;   ]
-;   print ";==========================================^/"
-;  ]
-;  wait timewait
-;] ]
 ;}}}
 
 
+sanity: func [ txt ] [ "Sanitises a string with àccéntûätéd characters into something less significant, but a bit easier to handle"  ; {{{ } } }
 
+replacements: "àâä a éèëê e îï i ôö o ùüû u"
+replacements: parse/all replacements " "
+foreach [x y] replacements [
+	foreach z x [
+		txt: replace txt z y ] ]
+return txt
+]
+; }}}
+;Not au point:{{{
 
+;txt: "toùt ést bïën qùï fînît bïén"
+;print sanity txt
+;=>
+;;======== Code evaluation output: =========
+;toaut aest baieen qe�e� feini�t bi�o�n
+;;==========================================
+
+;}}}
 
 ; Les dates du GeolPDA sont au format epoch en millisecondes; voici deux fonctions pour convertir les epoch en date et réciproquement:
 ; Dates from GeolPDA are expressed as epoch in millisecond; these are two functions converting these epoch to date and vice versa.
