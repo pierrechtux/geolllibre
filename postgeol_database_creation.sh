@@ -1,6 +1,5 @@
-TODO pasql à remplacer par psql ...
-_______________ENCOURS_______________GEOLLLIBRE
 #!/bin/bash
+#_______________ENCOURS_______________GEOLLLIBRE
 #   Title:   "Creation of postgeol database: postgresql database for geological data"
 #   Name:    postgeol_database_creation.sh
 #            (used to be: bdexplo_creation.r  => when it was a mining exploration database)
@@ -147,13 +146,17 @@ echo "Before creating $POSTGEOL database, drop database $POSTGEOL, if it already
 echo "Enter to continue, Ctrl-C to cancel:"
 read
 echo "... deleting..."
-dropdb $CONNINFO
+#dropdb $CONNINFO # => does not work on a ssh session on a geopoppy, since the postgres instance is in a container.
+# So, rather, use psql:
+psql -h $GLL_BD_HOST -p $GLL_BD_PORT -U $POSTGRES postgres -c "DROP DATABASE $POSTGEOL;"
 
 echo "                                                                          }}}"
 echo "- 2.2. CREATION:                                                          {{{"
 
 echo "Database creation:"
-createdb $CONNINFO -O $GLL_BD_USER
+#createdb $CONNINFO -O $GLL_BD_USER
+psql -h $GLL_BD_HOST -p $GLL_BD_PORT -U $POSTGRES postgres -c "CREATE DATABASE $POSTGEOL OWNER $GLL_BD_USER;"
+
 echo "Enter to continue, Ctrl-C to cancel:"
 read
 
@@ -173,6 +176,7 @@ psql $CONNINFO -U $POSTGRES -c "
 
 
 ## -- Removed also functions which called python scripts; put back, when issues of having plpythonu on GeoPoppy will be solved
+
 if [[ $GEOPOPPY == true ]]; then
     echo "This is apparently a GeoPoppy server: for the time being, plpythonu is not implemented within PostGeol on a Raspberry Pi platform.  So some functions will not be implemented.";
 else
@@ -256,7 +260,8 @@ echo "- 5. SETUP POSTGEOL STRUCTURE:                                            
 echo "Creation of postgeol structure in database named: " $POSTGEOL
 echo "- 5.1. SCHEMAS AND TABLES:                                                {{{"
 #echo " 1) schemas and tables:"
-psql $CONNINFO -X --single-transaction             -f ./postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$" # Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
+psql $CONNINFO -X --single-transaction             -f ./postgeol_structure_01_tables.sql    |& grep -v "^SET$\|^COMMENT$" |& grep -v "^CREATE TABLE$" |& grep -v "CREATE SCHEMA" |& grep -v "^psql:.* ERROR:  current transaction is aborted, commands ignored until end of transaction block$"
+# Note: all psql calls used to be the --single-transaction option, but it proved to make it very difficult to debug; so, instead, all .sql files have BEGIN TRANSACTION; and COMMIT; statements. => no... it proved to be easier to just grep -v ...
 echo "                                                                          }}}"
 echo "- 5.2. FUNCTIONS:                                                            {{{"
 #echo " 2) functions
