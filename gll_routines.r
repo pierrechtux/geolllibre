@@ -2410,7 +2410,7 @@ confirm:                     func      [ "Confirms a user choice." ; gotten from
     question [series!]
 ][
 until [
-	response: ask rejoin [question " (y-o-s-1 or n-0)? " ]
+	response: ask rejoin [question " (y-o-s-1 or n-N)? " ]
 	parse (lowercase response) [ ["1" | "o" | "n" | "y" | "s" | "0"]]
 ]
 return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
