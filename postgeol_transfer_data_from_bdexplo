@@ -7,8 +7,8 @@ rebol []
 ;# Script scindé en paragraphes à faire tourner, au furàmz, par des F8 bien sentis. Ou plutôt des F6. => bof.
 
 ; x Définition des bases de départ et d'arrivée:
-bd_depart: make object!			[	host: "autan"   port: 5432  user: "pierre"  base: "bdexplo"			]	; } «= PARAMÈTRES À DÉFINIR ICI
-bd_destination: make object!	[	host: "autan"	port: 5432  user: "pierre"  base: "postgeol"	    ]	; }
+bd_depart: make object!			[	host: "latitude"   port: 5432  user: "pierre"  base: "bdexplo"			]	; } «= PARAMÈTRES À DÉFINIR ICI
+bd_destination: make object!	[	host: "latitude"	port: 5432  user: "pierre"  base: "postgeol"	    ]	; }
 ; x routines de connexion: {{{
 connexion_bd_depart:  does      [
 	dbname:   bd_depart/base
@@ -22,11 +22,11 @@ connexion_bd_destination: does  [
 logfile: %/tmp/postgeol_err_chk_transfer_databases
 log_write: func [x]  [write/append logfile rejoin [to-string x newline] print x]
 log_write rejoin ["===============================================================================" now "{{{"] ;} } }
-; x La liste des tables de autan_bdexplo:{{{
+; x La liste des tables de bdexplo:{{{
 connexion_bd_depart
 tables_start: run_query "SELECT schemaname || '.' || tablename FROM pg_tables WHERE schemaname NOT IN ('backups', 'information_schema', 'pg_catalog', 'tmp_a_traiter', 'tmp_imports', 'tmp_exports', 'tmp_ntoto', 'topology') ORDER BY 1;"
 ;}}}
-; x La liste des tables de autan_postgeol:{{{
+; x La liste des tables de postgeol:{{{
 connexion_bd_destination
 tables_destination: run_query "SELECT schemaname || '.' || tablename FROM pg_tables WHERE schemaname NOT IN ('backups', 'information_schema', 'pg_catalog', 'tmp_a_traiter', 'tmp_imports', 'tmp_exports', 'tmp_ntoto', 'topology') ORDER BY 1;"	; Todo When postgeol will have a better defined namespace (schema) for data tables, this will be easier to handle.
 ;}}}
@@ -54,7 +54,7 @@ log_write msg
 comment [ ; beurk, c'est trop crade ;{{{
  ;{{{ brouillon
 ;>> write %/tmp/qty ""
-;>> foreach t tables_autan_bdexplo [write/append/lines %/tmp/qty first t]
+;>> foreach t tables_bdexplo [write/append/lines %/tmp/qty first t]
 pierre.ana_det_limit
 pierre.coords
 pierre.dh_collars_lengths
@@ -314,7 +314,7 @@ write %/tmp/copy_tables_tmp_exports sql_txt
 call_wait_output_error rejoin ["psql -X -h " bd_depart/host " -p " bd_depart/port " -U " bd_depart/user " -d " bd_depart/base { -1 -f /tmp/copy_tables_tmp_exports} ]
 
 ;}}}
-; x Dompage de ces tables depuis autan_bdexplo dans des fontchiers:{{{
+; x Dompage de ces tables depuis bdexplo dans des fontchiers:{{{
 log_write "Domp all these tables in plain SQL files in /tmp/ directory:"
 dbname: bd_depart/base
 dbhost: bd_depart/host
@@ -331,6 +331,7 @@ foreach [s t] tables_a_transferer [
 ]
 ;}}}
 ; x Les modifications spécifiques, pour les tables ayant changé de structure, entre bdexplo et postgeol: mettre après la boucle:{{{
+
 log_write "Specific changes, for tables with structure changed between bdexplo and postgeol:"
 call_wait_output_error {sed -i "s/(opid, operation, full_name, operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username)/(opid, name_short, name_full,operator, year, confidentiality, lat_min, lon_min, lat_max, lon_max, comments, creation_ts, username)/g" /tmp/public.operations.sql}
 call_wait_output_error {sed -i "s/(opid, id, devia, quick_log, log_tech, log_lith, sampling, results, relogging, beacon, in_gdm, creation_ts, username)/(opid, id, devia, quick_log, log_tech, log_litho, sampling, results, relogging, beacon, in_gdm, creation_ts, username)/g" /tmp/public.dh_followup.sql}
@@ -341,6 +342,7 @@ call_wait_output_error {sed -i "s/(sampl_index, ana_type, unit, det_lim, scheme,
 call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username)/g" /tmp/public.geoch_sampling.sql}
 call_wait_output_error {sed -i "s/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_color, type_sort, depth_cm, reg_type, geomorphology, rock_type, comment, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/(id, lab_id, lab_ref, amc_ref, reception_date, sample_type, sample_index, x, y, z, soil_colour, type_sort, depth_cm, reg_type, geomorphology, rock_type, comments, utm_zone, geologist, float_sampl, host_rock, prospect, spacing, horizon, datasource, date, survey_type, opid, grid_line, grid_station, alteration, occ_soil, slope, slope_dir, soil_description, creation_ts, username, au_ppb)/g" /tmp/public.geoch_sampling_grades.sql}
 call_wait_output_error {sed -i "s/public.shift_reports/public.dh_shift_reports/g" /tmp/public.shift_reports.sql}
+
 ;}}}
 comment [ Commenté: on va plutôt partir du principe qu'on a affaire à une base de destination vierge. TODO: il faudra paramétrer cela.
 ; x Du ménage drastique dans la base de destination, après accord: {{{
