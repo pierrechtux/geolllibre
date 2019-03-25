@@ -263,7 +263,7 @@ print rejoin [tab length? geolpda_orientations " records in orientations measure
 
 connection_db		; => careful: now DB points to the default database, not to the geolpda any more.
 ; default opid from .gll_preferences can be irrelevant, for field_observations: it rather leads to unconsistencies. So it is better to ask the user which opid he wishes. {{{ } } }
-print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidentiality THEN substring(full_name, 0, 5) || '-----' ELSE full_name END FROM public.operations ORDER BY opid;"
+print-list run_query "SELECT opid, ': ', confidentiality, CASE WHEN confidentiality THEN substring(name_full, 0, 5) || '-----' ELSE name_full END FROM public.operations ORDER BY opid;"
 
 opids: run_query "SELECT opid FROM public.operations;"
 until [
