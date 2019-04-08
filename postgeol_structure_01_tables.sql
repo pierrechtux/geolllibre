@@ -1319,7 +1319,7 @@ COMMENT ON COLUMN dh_piezo_measures.creation_ts                 IS 'Current date
 COMMENT ON COLUMN dh_piezo_measures.username                    IS 'User (role) which created data record';
 
 --}}}
---Todo faire une table avec les repères et leur historique; s'inspirer des tables de François au SGT/REU, ou de Vincent Mardhel, ou de la BSS
+--Todo faire une table avec les repères et leur historique; s'inspirer des tables de François au SGR/REU, ou de Vincent Mardhel, ou de la BSS
 
 -- x dh_struct_measures {{{
 
