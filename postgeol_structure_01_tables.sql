@@ -646,6 +646,7 @@ CREATE TABLE public.dh_collars (
     x                   numeric,
     y                   numeric,
     z                   numeric,
+	z_reference         text,
     geometry_corr       geometry,
     geography_4326      geography,
     azim_ng             numeric,    -- TODO change for a structure with mag declination stored elsewhere
@@ -657,9 +658,11 @@ CREATE TABLE public.dh_collars (
     date_completed      date,
     completed           boolean DEFAULT false,
     contractor          text,
+	contractor_id       text,
     geologist           text,
     nb_samples          integer,
     topo_survey_type    text,
+    anomaly             text,
     comments            text,
     x_local             numeric,  -- TODO get rid
     y_local             numeric,  -- TODO get rid
@@ -693,6 +696,7 @@ COMMENT ON COLUMN dh_collars.srid                               IS 'Spatial Refe
 COMMENT ON COLUMN dh_collars.x                                  IS 'X coordinate (Easting),  in coordinate system srid';
 COMMENT ON COLUMN dh_collars.y                                  IS 'Y coordinate (Northing), in coordinate system srid';
 COMMENT ON COLUMN dh_collars.z                                  IS 'Z coordinate';
+COMMENT ON COLUMN dh_collars.z_reference                        IS 'Altimetry (z) reference: worth mentioning, if different from srid';
 COMMENT ON COLUMN dh_collars.geometry_corr                      IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the collar point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
 COMMENT ON COLUMN dh_collars.geography_4326                     IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
 
@@ -705,9 +709,12 @@ COMMENT ON COLUMN dh_collars.date_start                         IS 'Work start d
 COMMENT ON COLUMN dh_collars.date_completed                     IS 'Work finish date';
 COMMENT ON COLUMN dh_collars.completed                          IS 'True: completed; False: planned';
 COMMENT ON COLUMN dh_collars.contractor                         IS 'Drilling contractor';
+COMMENT ON COLUMN dh_collars.contractor_id                      IS 'Drilling contractor work identifier';
 COMMENT ON COLUMN dh_collars.geologist                          IS 'Geologist name';
 COMMENT ON COLUMN dh_collars.nb_samples                         IS 'Number of samples; mainly for quality check purpose, redundancy with count from dh_sampling child table';
 COMMENT ON COLUMN dh_collars.topo_survey_type                   IS 'Topographic collar survey type: GPS, GPSD, geometry, theodolite, relative, computed from local coordinate system, etc.';
+
+COMMENT ON COLUMN dh_collars.anomaly                            IS 'Various uses: in geotechnics, boolean for a borehole showing an anomaly, hence a special attention to be given to; in mining exploration, the name of a soil geochemistry anomaly, for instance';
 COMMENT ON COLUMN dh_collars.comments                           IS 'Comments, e.g. quick history of the hole, why it stopped, remarkable facts, etc.';
 COMMENT ON COLUMN dh_collars.x_local                            IS 'Local x coordinate';
 COMMENT ON COLUMN dh_collars.y_local                            IS 'Local y coordinate';
@@ -1191,14 +1198,14 @@ CREATE TABLE public.dh_pressiom_results (
         DEFERRABLE INITIALLY DEFERRED
 );
 
-COMMENT ON TABLE public.dh_pressiom_results IS 'Pressiometric geotechnicaaaaal test: results from the test, after computation of raw data';
+COMMENT ON TABLE public.dh_pressiom_results IS 'Pressiometric geotechnical test: results from the test, after computation of raw data';
 COMMENT ON COLUMN dh_pressiom_results.opid                        IS 'Operation identifier';
 COMMENT ON COLUMN dh_pressiom_results.id                          IS 'Drill hole identification';
 COMMENT ON COLUMN dh_pressiom_results.depto                       IS 'Interval ending depth; in fact it is rather a ponctual depth, depto refers to the convention that a depth is implicitely an end-of-run depth';
 COMMENT ON COLUMN dh_pressiom_results.probe_pressiom_id           IS 'Identifier of the pressiometric probe that has been used during the test; refer to lex_code table';
 COMMENT ON COLUMN dh_pressiom_results.creep_pressure_bar          IS 'Creep pressure, in bar, Pf => Pression de Fluage';
 COMMENT ON COLUMN dh_pressiom_results.limit_pressure_bar          IS 'Limit pressure, in bar, Pl => Pression Limite';
-COMMENT ON COLUMN dh_pressiom_results.pmt_module                  IS 'Pressiometric module => Module pressiométrique';
+COMMENT ON COLUMN dh_pressiom_results.pmt_module                  IS 'Pressiometric module => Module pressiométrique';   -- specify unit in field name, i.e. pmt_module_bars
 COMMENT ON COLUMN dh_pressiom_results.comments                    IS 'Comments';
 COMMENT ON COLUMN dh_pressiom_results.datasource                  IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_pressiom_results.numauto                     IS 'Automatic integer primary key';
