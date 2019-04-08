@@ -261,7 +261,7 @@ CREATE TABLE public.field_observations_struct_measures (
     obs_id              text NOT NULL,
     measure_type        text NOT NULL,
     device              text NOT NULL,
-    structure_type      text NOT NULL,
+    structure_type      text ,
     rotation_matrix     text NOT NULL,
     north_ref           text NOT NULL,
     direction           integer NOT NULL,
