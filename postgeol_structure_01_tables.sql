@@ -1183,9 +1183,9 @@ CREATE TABLE public.dh_pressiom_results (
     id                      text,
     depto                   numeric(10,2),
     probe_pressiom_id       text,           -- TODO make appropriate entries within lex_code table
-    creep_pressure_bar      numeric(10,2),
-    limit_pressure_bar      numeric(10,2),
-    pmt_module              numeric(10,2),
+    creep_pressure_mpa      numeric(10,2),
+    limit_pressure_mpa      numeric(10,2),
+    pmt_module_mpa          numeric(10,2),
     comments                text,
     datasource              integer,
     numauto                 serial PRIMARY KEY,
@@ -1203,9 +1203,9 @@ COMMENT ON COLUMN dh_pressiom_results.opid                        IS 'Operation 
 COMMENT ON COLUMN dh_pressiom_results.id                          IS 'Drill hole identification';
 COMMENT ON COLUMN dh_pressiom_results.depto                       IS 'Interval ending depth; in fact it is rather a ponctual depth, depto refers to the convention that a depth is implicitely an end-of-run depth';
 COMMENT ON COLUMN dh_pressiom_results.probe_pressiom_id           IS 'Identifier of the pressiometric probe that has been used during the test; refer to lex_code table';
-COMMENT ON COLUMN dh_pressiom_results.creep_pressure_bar          IS 'Creep pressure, in bar, Pf => Pression de Fluage';
-COMMENT ON COLUMN dh_pressiom_results.limit_pressure_bar          IS 'Limit pressure, in bar, Pl => Pression Limite';
-COMMENT ON COLUMN dh_pressiom_results.pmt_module                  IS 'Pressiometric module => Module pressiométrique';   -- specify unit in field name, i.e. pmt_module_bars
+COMMENT ON COLUMN dh_pressiom_results.creep_pressure_mpa          IS 'Creep pressure, in megapascals, Pf => Pression de Fluage';
+COMMENT ON COLUMN dh_pressiom_results.limit_pressure_mpa          IS 'Limit pressure, in megapascals, Pl => Pression Limite';
+COMMENT ON COLUMN dh_pressiom_results.pmt_module_mpa              IS 'Pressiometric module, in megapascals => Module pressiométrique, en mégapascals';
 COMMENT ON COLUMN dh_pressiom_results.comments                    IS 'Comments';
 COMMENT ON COLUMN dh_pressiom_results.datasource                  IS 'Datasource identifier, refers to lex_datasource';
 COMMENT ON COLUMN dh_pressiom_results.numauto                     IS 'Automatic integer primary key';
