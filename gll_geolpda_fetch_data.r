@@ -422,8 +422,8 @@ if confirm {Generate report using gll_geolpda_report_generator.r using data just
 		append times o/3
 	]
 	sort times
-	date_start: epoch_ms_geolpda_to_date (first times)
-	date_end:   epoch_ms_geolpda_to_date (last  times)
+	date_start: epoch_ms_to_date (first times)
+	date_end:   epoch_ms_to_date (last  times)
 	flag_create_tec_files: true
 	do load to-file system/options/home/geolllibre/gll_geolpda_report_generator.r 
 ]
