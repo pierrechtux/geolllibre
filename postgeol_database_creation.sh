@@ -282,8 +282,12 @@ _______________ENCOURS_______________GEOLLLIBRE
 ./postgeol_structure_03_1_views_opid_create # TODO paramétrer le nom de la base => auquai => NON, PAS SI AUQUAI: À FAIRE PLUS TARD, POSÉMENT, EN REPRENANT BIEN LES VARIABLES D'ENVIRONNEMENT
 
 echo "                                                                          }}}"
-echo "                                                                             }}}"
+echo "- 5.4. A FEW ADJUSTMENTS:                                                    {{{"
 
+ALTER DATABASE postgeol SET datestyle TO "ISO, DMY";
+
+echo "                                                                          }}}"
+echo "                                                                             }}}"
 echo "- 6. TRANSFER DATA FROM ANOTHER BASE:                                        {{{"
 
 # à la fin, pour transférer les données de bdexplo vers postgeol:
@@ -292,6 +296,7 @@ echo "In order to transfer data from another database (i.e. bdexplo, postgeol an
 echo "                                                                             }}}"
 echo "                                                                                }}}"
 echo "End."
+
 #echo "FIN PROVISOIRE" && exit 0 ######## DEBUG #### _______________ENCOURS_______________GEOLLLIBRE
 exit 0 ###### si jamais...
 
@@ -301,5 +306,4 @@ postgeol_structure_03_1_views_opid_create
 postgeol_structure_03_views.sql
 postgeol_structure_04_roles.sql
 postgeol_transfer_data_from_bdexplo
-
 
