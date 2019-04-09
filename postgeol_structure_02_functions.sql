@@ -1,5 +1,5 @@
 -- functions:
--- x generate_cross_sections_array:{{{
+-- generate_cross_sections_array:{{{
 -- TODO doit être fait en tant que postgres; voir à améliorer ça.
 
 CREATE FUNCTION public.generate_cross_sections_array() RETURNS trigger
@@ -82,7 +82,7 @@ return 'OK'
 $$;
 --\c $USER
 --}}}
---#lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
+-- lab_ana_results_sample_id_default_value_num:{{{ -- VERSION À 9 REPLACE
 
 CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
 LANGUAGE 'plpgsql'
@@ -116,6 +116,21 @@ $$
 ;
 
 --#}}}
+-- isnumeric: {{{
+-- A useful function from https://stackoverflow.com/questions/16195986/isnumeric-with-postgresql
+CREATE OR REPLACE FUNCTION isnumeric(text) RETURNS BOOLEAN AS $$
+DECLARE x NUMERIC;
+BEGIN
+    x = $1::NUMERIC;
+    RETURN TRUE;
+EXCEPTION WHEN others THEN
+    RETURN FALSE;
+END;
+$$
+STRICT
+LANGUAGE plpgsql IMMUTABLE;
+--}}}
+
 
 --NON, DÉFINI PLUS BAS --lab_ana_results_sample_id_default_value_num:{{{
 --CREATE FUNCTION public.lab_ana_results_sample_id_default_value_num() RETURNS trigger
