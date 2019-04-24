@@ -2347,6 +2347,29 @@ pad:                         func      [ "Pads a value with leading zeroes or a 
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
+
+; Debug useful utilities:
+; Pour déboguer: il suffit de mettre DEBUG à TRUE pour que ??? s'utilise à la place de ?? pour afficher des variables. Et quand on est content, on met DEBUG à FALSE, ou carrément à rien.
+debug: false ; il suffit de le mettre à TRUE dans le script à déboguer, et voilà.
+???:                         func      [ "Prints a variable name followed by its molded value. (for debugging => only if variable DEBUG is TRUE) (code copied from SOURCE ??)" ;{{{
+	{}
+	'name
+][
+	if debug [
+		print either word? :name [head insert tail form name reduce [": " mold name: get name]] [mold :name] 
+	:name
+	]
+]
+;}}}
+debug_print:                 func      [ "Prints out something, just like print, only if DEBUG is true." ;{{{
+	val
+][
+	if debug [
+		print val
+	]
+]
+;}}}
+
 continue:                    does      [ {continue: as in python; to use in a loop, do: "loop [catch[...]]"} ; {{{
 ;suivant conseil Nenad, pour mimer le comportement d'un continue dans une boucle
 throw 'continue] ;}}}
