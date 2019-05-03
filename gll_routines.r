@@ -77,7 +77,7 @@ catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
 	[print "-"]
-if error? try [ do load to-file /etc/gll_preferences
+if error? try [ do load to-file %/etc/gll_preferences
   throw "gll_preferences loaded from /etc/gll_preferences"]
  [print "-"]
 if error? try [	do load to-file %/usr/bin/.gll_preferences
