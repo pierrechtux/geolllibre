@@ -71,7 +71,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ;;	return sql_result
 ;;] ; }}}
 
-; Get preferences (dbname dbhost user passw opid tmp_schema) from .gll_preferences file. Récupération des préférences (dbname dbhost user passw opid tmp_schema) à partir du fichier .gll_preferences: {{{
+; Get preferences (dbname dbhost dbuser passw opid tmp_schema) from .gll_preferences file. Récupération des préférences (dbname dbhost dbuser passw opid tmp_schema) à partir du fichier .gll_preferences: {{{
 ; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
 catch [
 if error? try [	do load to-file system/options/home/.gll_preferences
@@ -94,7 +94,7 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 	dbname: postgeol: "postgeol"
 	dbhost:      "localhost"
 	dbport:      5432
-	user:        "geononymous"
+	dbuser:        "geononymous"
 	passw:       "chut"
 	geologist:   "Anonymous Geologo"
 	opid:        0
@@ -2688,10 +2688,10 @@ connection_db:               does      [ "Connect to database" ;{{{
 	; on fait une connexion à la base de données:
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	if error? try 	[
-			db: open to-url rejoin ["pgsql://" user ":" passw "@" dbhost ":" dbport "/" dbname]
-			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } user]
+			db: open to-url rejoin ["pgsql://" dbuser ":" passw "@" dbhost ":" dbport "/" dbname]
+			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } dbuser]
 	] 		[
-			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } user]
+			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } dbuser]
 	]
 ] ;}}}
 run_query:                   func      [ "Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{
@@ -2722,7 +2722,7 @@ run_sql_string_update:       does      [ "Utility function, similar to run_query
 do_psql:                     func      [ "Prend du SQL en entrée, et fait tourner psql avec, en renvoyant la sortie" sql_text] [ ;{{{
 	;TODO: ajouter un raffinement /unaligned qui rajoute le flag "-A" pour psql
 	;TODO: pouvoir choisir psql (pour les plateformes à la noix qui l'ont pas dans le $PATH...)
-	return call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } user { -d } dbname]
+	return call_wait_output_error rejoin [{echo "} sql_text {" | psql -X -h } dbhost { -p } dbport { -U } dbuser { -d } dbname]
 re
 	] ;}}}
 compare_schemas_2_bdexplos:  function  [ "Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{
@@ -4943,7 +4943,7 @@ change-dir system/options/path
 print "Gll preferences loaded: "
 ;?? dbhost
 ;?? dbname
-;?? user
+;?? dbuser
 ;?? tmp_schema
 print rejoin ["Current working directory: " what-dir ]
 
