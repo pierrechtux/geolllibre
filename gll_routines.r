@@ -74,6 +74,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ; Get preferences (dbname dbhost dbuser passw opid tmp_schema) from .gll_preferences file. Récupération des préférences (dbname dbhost dbuser passw opid tmp_schema) à partir du fichier .gll_preferences: {{{
 ; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
 catch [
+; TODO very inelegant code style.  Replace with a loop, a bit like (but better than) in log_send function.
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
 	[print "-"]
@@ -2880,6 +2881,42 @@ pad:                         func      [ "Pads a value with leading zeroes or a 
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
+
+;NONlog_send:                    func      [ "Sends information in a log file, such as /var/log/gll.log" val ] [;{{{
+;	unless value? in system/words 'logfile [
+;		; no logfile initialise: 
+;		logfiles: [ %/var/log/gll.log %~/gll.log %gll.log ]         ; A list of possible files in which to log
+;		line80: copy "" loop 80 [ append line80 "-" ]
+;		append line80 newline
+;		append line80 form now/precise
+;		append line80 newline
+;		foreach l logfiles [
+;			catch [
+;				??? l
+;				if error? try [ logfile: l write/append l line80 throw ( rejoin [ "Log to " logfile ] ) break ] [ print "-" ]
+;	]	]	]
+;	write/append logfile rejoin [ to-string val newline ] 
+;] ;}}}
+
+log_send:                    func      [ "Sends information in a log file, such as /var/log/gll.log" val ] [;{{{
+	unless value? in system/words 'logfile [
+		; no logfile initialise:
+		logfiles: [ %/var/log/gll.log %~/gll.log %gll.log ]         ; A list of possible files in which to log
+		line80: copy "" loop 80 [ append line80 "-" ]
+		foreach l logfiles [
+			??? l
+			if error? try [
+				write/lines/append l ( rejoin [line80 newline ( form now/precise ) ] )
+				logfile: l
+				;throw ( rejoin [ "Log to " logfile ] )
+				break ]
+			[ print "-" ]
+	]	]   
+	write/lines/append logfile rejoin [ to-string val ]
+] ;}}}
+
+
+
 
 ; Debug useful utilities:
 ; Pour déboguer: il suffit de mettre DEBUG à TRUE pour que ??? s'utilise à la place de ?? pour afficher des variables. Et quand on est content, on met DEBUG à FALSE, ou carrément à rien.
