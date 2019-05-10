@@ -2881,23 +2881,6 @@ pad:                         func      [ "Pads a value with leading zeroes or a 
   /with c [char!] "Optional Fill Character"
 ][
   head insert/dup val: form val any [all [with c] #"0"] n - length? val] ;}}}
-
-;NONlog_send:                    func      [ "Sends information in a log file, such as /var/log/gll.log" val ] [;{{{
-;	unless value? in system/words 'logfile [
-;		; no logfile initialise: 
-;		logfiles: [ %/var/log/gll.log %~/gll.log %gll.log ]         ; A list of possible files in which to log
-;		line80: copy "" loop 80 [ append line80 "-" ]
-;		append line80 newline
-;		append line80 form now/precise
-;		append line80 newline
-;		foreach l logfiles [
-;			catch [
-;				??? l
-;				if error? try [ logfile: l write/append l line80 throw ( rejoin [ "Log to " logfile ] ) break ] [ print "-" ]
-;	]	]	]
-;	write/append logfile rejoin [ to-string val newline ] 
-;] ;}}}
-
 log_send:                    func      [ "Sends information in a log file, such as /var/log/gll.log" val ] [;{{{
 	unless value? in system/words 'logfile [
 		; no logfile initialise:
