@@ -538,8 +538,88 @@ ORDER BY id, depfrom, depto, mine;
 
 -- }}}
 
-CREATE OR REPLACE VIEW        topo_points_points AS
-SELECT *, geomfromewkt('POINT(' || topo_points.x || ' ' || topo_points.y || ' ' || topo_points.z || ')') AS geometry FROM topo_points;
+-- CREATE OR REPLACE VIEW public.topo_points_points AS SELECT *, ST_Transform(GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || z || ')'), 4326)::geography AS geomfromewkt_4326 FROM public.topo_points;
+CREATE OR REPLACE VIEW public.topo_points_points AS SELECT *, 
+ST_Transform(GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || (coalesce(z, 0)::text) || ')'), 4326) AS geomfromewkt_4326
+--ST_Transform(GeomFromewkt('SRID=' || srid || ';POINT ('|| x || ' ' || y || ' ' || coalesce(z, 0) || ')'), 4326)::geometry AS geomfromewkt_4326 
+FROM public.topo_points WHERE x IS NOT NULL AND Y IS NOT NULL;
+-- les règles associées: {{{
+-- (pas très convaincu que ce soit exactement bon; à vérifier)
+CREATE OR REPLACE RULE topo_points_rule_update_no_geom as on UPDATE TO public.topo_points_points
+--WHERE geomfromewkt = NEW.geomfromewkt
+WHERE OLD.numauto = NEW.numauto
+DO INSTEAD UPDATE public.topo_points
+SET opid             = NEW.opid,
+    location         = NEW.location,
+    id               = NEW.id,
+    num              = NEW.num,
+    name             = NEW.name,
+    srid             = NEW.srid,
+    x                = NEW.x,
+    y                = NEW.y,
+    z                = NEW.z,
+    cq3d             = NEW.cq3d,
+    geometry_corr    = NEW.geometry_corr,
+    geography_4326   = NEW.geography_4326,
+    survey_date      = NEW.survey_date,
+    topo_survey_type = NEW.topo_survey_type,
+    surveyor         = NEW.surveyor,
+    comments         = NEW.comments,
+    filename         = NEW.filename,
+    datasource       = NEW.datasource,
+    numauto          = NEW.numauto,
+    creation_ts      = NEW.creation_ts,
+    username         = NEW.username
+WHERE NEW.numauto = OLD.numauto;
+
+CREATE OR REPLACE RULE topo_points_points_upd AS ON UPDATE TO public.topo_points_points
+ DO INSTEAD
+  UPDATE public.topo_points
+   SET
+	opid             = NEW.opid,
+	location         = NEW.location,
+	id               = NEW.id,
+	num              = NEW.num,
+	name             = NEW.name,
+	srid             = NEW.srid,
+	x                = NEW.x,
+	y                = NEW.y,
+	z                = NEW.z,
+	cq3d             = NEW.cq3d,
+	geometry_corr    = NEW.geometry_corr,
+	geography_4326   = NEW.geography_4326,
+	survey_date      = NEW.survey_date,
+	topo_survey_type = NEW.topo_survey_type,
+	surveyor         = NEW.surveyor,
+	comments         = NEW.comments,
+	filename         = NEW.filename,
+	datasource       = NEW.datasource,
+	numauto          = NEW.numauto,
+	creation_ts      = NEW.creation_ts,
+	username         = NEW.username
+  WHERE numauto = OLD.numauto;
+
+CREATE OR REPLACE RULE topo_points_points_upd_del AS ON DELETE TO public.topo_points_points
+ DO INSTEAD
+  DELETE FROM public.topo_points
+   WHERE numauto = OLD.numauto;
+
+CREATE OR REPLACE RULE topo_points_points_upd_ins_xy AS
+ ON INSERT TO public.topo_points_points
+ WHERE x IS NOT NULL AND y IS NOT NULL AND geomfromewkt_4326 IS NULL
+  DO INSTEAD
+ INSERT INTO public.topo_points ( opid , location , id , num , name , srid , x , y , z , cq3d , geometry_corr , geography_4326 , survey_date , topo_survey_type, surveyor , comments , filename , datasource , numauto , creation_ts , username )
+    VALUES ( NEW.opid , NEW.location , NEW.id , NEW.num , NEW.name , NEW.srid , NEW.x , NEW.y , NEW.z , NEW.cq3d , NEW.geometry_corr , NEW.geography_4326 , NEW.survey_date , NEW.topo_survey_type, NEW.surveyor , NEW.comments , NEW.filename , NEW.datasource , NEW.numauto , NEW.creation_ts , NEW.username );
+
+CREATE OR REPLACE RULE topo_points_points_ins_geom AS
+ ON INSERT TO public.topo_points_points 
+ WHERE x IS NULL AND y IS NULL AND geomfromewkt_4326 IS NOT NULL
+  DO INSTEAD
+   INSERT INTO public.topo_points ( opid , location , id , num , name , srid , x , y , z , cq3d , geometry_corr , geography_4326 , survey_date , topo_survey_type, surveyor , comments , filename , datasource , numauto , creation_ts , username )
+    VALUES ( NEW.opid , NEW.location , NEW.id , NEW.num , NEW.name , NEW.srid , NEW.x , NEW.y , NEW.z , NEW.cq3d , NEW.geometry_corr , NEW.geography_4326 , NEW.survey_date , NEW.topo_survey_type, NEW.surveyor , NEW.comments , NEW.filename , NEW.datasource , NEW.numauto , NEW.creation_ts , NEW.username );
+--}}}
+
+
 
 -- pour voir les points de sondages prévus par rapport à là où ils ont réellement été réalisés:
 CREATE OR REPLACE VIEW dh_collars_diff_project_actual_line                   AS SELECT *, GeomFromEWKT('SRID=' || srid || ';LINESTRING (' || x_pject || ' ' || y_pject || ' ' || z_pject || ', ' || x || ' ' || y || ' ' || z || ')') FROM dh_collars WHERE x_pject IS NOT NULL AND y_pject IS NOT NULL AND z_pject IS NOT NULL;
