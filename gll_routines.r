@@ -4946,7 +4946,7 @@ gll_linutopch_srv_util_delpads: func ["Deletes pads from etherpad-lite" pads [bl
 		url: rejoin ["https://geolllibre.org/pad/p/" p]
 		browse url
 		if (confirm "Deleter ce pad?") [
-			urldel: rejoin ["http://geolllibre.org/pad/api/1/deletePad?apikey=8df54105a3fb53511dd37a9df4c9325971dc2a6f25e349bbe715ea1aa4d11cc4&padID=" p]
+			urldel: rejoin ["http://geolllibre.org/pad/api/1/deletePad?apikey=" geolllibre.org_pad_apikey "&padID=" p]
 			browse urldel
 		] ] ]
 ;}}}
