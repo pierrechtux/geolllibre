@@ -3265,8 +3265,8 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 		; TODO set timestamp to exif timestamp
 		; TODO add geotags, if any gpx?
 		; make symlinks in GeolPDA photos directory:
-		;cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
-		;call_wait_output_error cmd
+		cmd: rejoin ["ln -s " dir_dcim_local now/year "/reduit_700/* " dir_geolpda_local "/photos/"]
+		call_wait_output_error cmd
 		cmd_big: copy ""
 		foreach f ls_photos_device_to_be_transferred [
 			; TODO generally, wherever reduit_700 is read (like below), test if reduit_700 subdirectory exists before trying to read it; if it doesn't, create it.
