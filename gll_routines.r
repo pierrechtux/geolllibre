@@ -3111,13 +3111,24 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 	; archived photos which have already been synchronised, this directory being
 	; ignored:
 	dir_photos_transferred: rejoin [dir_mount_geolpda_android "photos_transferred"]
+	make-dir-mayfail: func [{wrapped make-dir safe routine} directory ][
+		if error? try [
+			make-dir directory ]
+			[
+			; Impossible to make a subdirectory in adb mounted filesystem: 
+			; it sometimes happen, using adbfs, don't know why.
+			; So we do nothing and just put up a flag that tells us not to 
+			; do anything on that side.
+			no_dir_photos_transferred: true
+			]
+	]
 	unless exists? dir_photos_transferred [
-		; directory does not already exists: create it:
-		make-dir dir_photos_transferred ]
+			; directory does not already exists: create it:
+			make-dir-mayfail dir_photos_transferred ]
 	; Make a timestamped subdirectory, in order to avoid, as much as possible,
 	; the "photos_transferred" directory saturation (which may well lock MTP).
 	append dir_photos_transferred rejoin ["/" timestamp_]
-	make-dir dir_photos_transferred
+	make-dir-mayfail dir_photos_transferred
 	; first solution, using rsync: abandoned, as rsync does not seem to cope well with MTP protocol used on recent (as of 2016_09_21__23_23_08) android devices: ; {{{
 	;; TODO: make this platform-independent:
 	;; as is, it will /only work on a platform where rsync is installed and correctly accessible in the $PATH
@@ -3151,13 +3162,16 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 				prin rejoin [to-string f " "]
 				copy-file (to-file rejoin [dir_mount_geolpda_android "photos/" f]) (rejoin [dir_geolpda_local "photos/"])
 			]
-			; Move photos in the dir_photos_transferred directory:
-			; Rebol apparently does not provide a way to move files to directories,
-			; so the shell will do:
-			cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
-			print "On android device, move photo files to an archive directory:"
-			call_wait_output_error cmd
-			;TODO: idea for GeolPDA: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
+			; Unless the android filesystem is writable:
+			unless no_dir_photos_transferred [
+				; Move photos in the dir_photos_transferred directory:
+				; Rebol apparently does not provide a way to move files to directories,
+				; so the shell will do:
+				cmd: rejoin ["mv " dir_mount_geolpda_android "photos/* " dir_photos_transferred "/"]
+				print "On android device, move photo files to an archive directory:"
+				call_wait_output_error cmd
+				;TODO: idea for GeolPDA: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
+			]
 			; Reduce GeolPDA pictures sizes in the local copy:{{{
 			size_max: 700
 			print rejoin ["Reduction of pictures to " size_max " pixels:"]
