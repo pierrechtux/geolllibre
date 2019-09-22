@@ -106,6 +106,8 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 --SET search_path = '$user', 'public';
 --SET search_path = public, pg_catalog;
 
+-- organisation: --TODO make a super-master table, in order to group operations: useful in case of a group of large consultant companies, for instance.
+-- orgid field should be added to all tables downstream, and taken into account in all relationships. Boudiou.
 
 -- x operations:{{{
 
