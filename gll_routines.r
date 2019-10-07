@@ -3990,7 +3990,7 @@ delete_datasource_and_dependant_information:     func      ["Deletes a datasourc
 	sql: rejoin ["DELETE FROM public.lex_datasource WHERE opid = " opid " AND datasource_id = " datasource ";"]
 	print sql
 ] ;}}}
-
+;sqefekjhsqdflkjh²Z
 ; fonctions et objets utilisés pour les structures: géométrie dans l'espace, vecteurs, objets structuraux, etc.
 azimuth_vector:              func      [ {Returns the azimuth of a 3D vector (block! containing 3 numerics), with reference to North = y axis} v [block!]] [;{{{ } } }
 		x: v/1
