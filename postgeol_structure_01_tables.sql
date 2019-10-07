@@ -109,7 +109,7 @@ COMMENT ON SCHEMA backups                             IS 'Just in case, a conven
 -- organisation: --TODO make a super-master table, in order to group operations: useful in case of a group of large consultant companies, for instance.
 -- orgid field should be added to all tables downstream, and taken into account in all relationships. Boudiou.
 
--- x operations:{{{
+--  x operations:{{{
 
 CREATE TABLE public.operations (
     opid            serial PRIMARY KEY NOT NULL,
@@ -168,7 +168,7 @@ COMMENT ON COLUMN public.operations.username                    IS 'User (role) 
 --COMMENT ON COLUMN public.operations.numauto                     IS 'Automatic integer';
 
 --}}}
--- x operation_active:{{{
+--  x operation_active:{{{
 
 
 CREATE TABLE :USER.operation_active (       -- TODO at some point, put back some logic in the SCHEMAs organisation.
@@ -189,7 +189,7 @@ COMMENT ON COLUMN :USER.operation_active.creation_ts                  IS 'Curren
 COMMENT ON COLUMN :USER.operation_active.username                     IS 'User (role) which created data record';
 
 --}}}
--- x field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
+--  x field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
 -- x field_observations:{{{
 
 CREATE TABLE public.field_observations (
@@ -455,7 +455,7 @@ COMMENT ON COLUMN public.surface_samples_grades.username        IS 'User (role) 
 
 --}}}
 --}}}
--- x geochemistry:{{{
+--  x geochemistry:{{{
 -- x geoch_sampling:{{{
 
 CREATE TABLE public.geoch_sampling (
@@ -584,7 +584,7 @@ COMMENT ON COLUMN public.geoch_sampling_grades.au_ppb                  IS 'Au gr
 
 --}}}
 --}}}
--- x geophysics:{{{
+--  x geophysics:{{{
 -- x gpy_mag_ground:{{{
 
 -- SET search_path = public, pg_catalog;
@@ -1738,8 +1738,8 @@ COMMENT ON COLUMN public.dh_sampling_mineralurgy.username              IS 'User 
 
 --}}}
 --}}}
---lots analytiques
--- x analytical data: laboratory analyses: {{{
+--lots analytiques:
+--  x analytical data: laboratory analyses: {{{
 -- x lab_ana_batches_expedition:{{{
 
 SET search_path = public, pg_catalog;
@@ -2123,9 +2123,9 @@ COMMENT ON COLUMN public.lab_ana_qaqc_results.username                 IS 'User 
 --}}}
 --}}}
 --échantillons de contrôle analytique
--- x assays quality control, quality check:{{{
+--  x assays quality control, quality check:{{{
 
--- x qc_sampling:{{{
+--  x qc_sampling:{{{
 -- Name: qc_sampling; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
 --
 CREATE TABLE public.qc_sampling (
@@ -2158,7 +2158,7 @@ COMMENT ON COLUMN public.qc_sampling.creation_ts             IS 'Current date an
 COMMENT ON COLUMN public.qc_sampling.username                IS 'User (role) which created data record';
 
 --}}}
--- x qc_standards{{{
+--  x qc_standards{{{
 
 --
 -- Name: qc_standards; Type: TABLE; Schema: public; Owner: data_admin; Tablespace:
@@ -2215,7 +2215,7 @@ COMMENT ON COLUMN public.qc_standards.username               IS 'User (role) whi
 --}}}
 
 --}}}
--- x occurrences, ancient workings, mines:{{{
+--  x occurrences, ancient workings, mines:{{{
 -- x ancient_workings:{{{
 
 CREATE TABLE public.ancient_workings (
@@ -2292,7 +2292,7 @@ COMMENT ON COLUMN public.occurrences.username                IS 'User (role) whi
 
 --}}}
 --}}}
--- x licences, tenements: {{{
+--  x licences, tenements: {{{
 -- x licences:{{{ TODO "licence" or "license"?...
 -- TODO @#redo with polygons instead of quadrangles; make a field containing EWKT
 
@@ -2365,7 +2365,7 @@ COMMENT ON COLUMN public.licences.username                   IS 'User (role) whi
 
 --}}}
 --}}}
--- x mining, grade control:{{{
+--  x mining, grade control:{{{
 
 -- x grade_ctrl:{{{
 
@@ -2411,7 +2411,7 @@ COMMENT ON COLUMN public.grade_ctrl.username                 IS 'User (role) whi
 --}}}
 
 --}}}
--- x lookup tables, aka lexicons, aka code translation tables:{{{
+--  x lookup tables, aka lexicons, aka code translation tables:{{{
 
 -- x codes: {{{
 
