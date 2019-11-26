@@ -42,6 +42,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ];}}}
 
 DEBUG: false
+flag_ERROR: false
 if DEBUG [; check:  ============================ save 2 tables observations and measurements as csv (no, it is not csv, but just a text dump; it does not matter much) BEFORE: {{{ } } }
 run_query "SELECT * FROM public.field_observations"
 ;write %~/field_observations_avant.csv sql_result_csv
@@ -57,17 +58,17 @@ foreach r sql_result [
 ] ;}}}
 
 ; initialisation: ;{{{ } } }
-if error? try [													; Get routines (and preferences) and database connection
-if error? try [
-do load to-file system/options/home/bin/gll_routines.r			; either from ~/bin,
-] [
-do load to-file %gll_routines.r				 					; or where the current script is located,
-]
-] [
-do load to-file system/options/home/geolllibre/gll_routines.r	; or from ~/geolllibre
-]
-flag_ERROR: false
+if error? try [													; Get routines (and preferences) and database connection:
+ any [
+ do load to-file system/options/home/bin/gll_routines.r			; either from ~/bin,
+ do load to-file system/options/home/gll_routines.r             ; or from home, sweet home,
+ do load to-file %gll_routines.r				 				; or from where the current script is located,
+ do load to-file system/options/home/geolllibre/gll_routines.r	; or from ~/geolllibre/,
+ ] ] [
+ flag_ERROR: true]                                              ; If everything failed, we sadly raise a flag.
 ;}}}
+??? flag_ERROR
+
 
 ; Execution
 print "========================================================================="
