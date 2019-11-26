@@ -75,6 +75,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 ; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
 print catch [
 ; TODO very inelegant code style.  Replace with a loop, a bit like (but better than) in log_send function.
+; TODO even better: with a ANY block, simply.
 if error? try [	do load to-file system/options/home/.gll_preferences
 		throw ".gll_preferences loaded from ~"]
 	[print "-"]
@@ -2993,7 +2994,7 @@ until [
 return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
 ]
 ;}}}
-run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebol code in the clipboard, or just highlighted text in X systems." ; {{{ } } }
+run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebol code when placed in the clipboard (or just highlighted text in X systems)." ; {{{ } } }
 ;Un utilitaire pour faire tourner automatiquement le code Rebol surligné:
  timewait: 0.2
  changed: false
@@ -3002,12 +3003,16 @@ run_clipboard_rebol_code:    does      [ "A utility that automatically runs Rebo
  err: copy []
  write clipboard:// ""
  c: open/binary/no-wait [scheme: 'console]
+ print "*Autorebol running*, waiting for clipboard contents change..."
  print "Press Ctrl-C to stop, and any key to suspend automatic execution of code in the clipboard..."
  enroute: true
  forever [
   if not none? wait/all [c timewait] [
-   ask "Automatic clipboard code execution suspended; press Enter to resume..."
-   print "Automatic clipboard code execution resumed; press any key to suspend..."
+   print "Automatic clipboard code execution suspended.  Doing nothing."
+   ask "press Enter to resume..."
+   print "Automatic clipboard code execution resumed."
+   print "Press Ctrl-C to stop, and any key to suspend automatic execution of code in the clipboard..."
+   print "*Autorebol running*, waiting for clipboard contents change..."
   ]
   code: copy read clipboard://
   if code != code_before [
@@ -3180,10 +3185,22 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 			dir_ori: rejoin [dir_geolpda_local "photos/original"]
 			unless exists? dir_red [ make-dir dir_red ]
 			unless exists? dir_ori [ make-dir dir_ori ]
+			total: length? photos_to_transfer ; Just to add a small progress indicator to the screen; because this process can be lengthy, and the user may think that the process is dead.
+			i: 0
+			prin total                        ; Print a reassuring message.
+			prin " file"
+			unless (total <= 1) [prin "s"]
+			print " to be processed:"
+			prin  "["                          ; Print a sort of progress bar.
+			repeat total [prin "="]
+			print "]"
+			prin  " "
 			foreach f photos_to_transfer [
 				if find f "jpg" [
 					call_wait_output_error rejoin ["convert -geometry " size_max " " dir_geolpda_local "photos/" f " " dir_red "/" f ]
 					call_wait_output_error rejoin ["mv " dir_geolpda_local "photos/" f " " dir_ori]
+					i: i + 1
+					prin "."
 				] ]
 			call_wait_output_error rejoin ["mv " dir_red "/* " dir_geolpda_local "photos/ && rmdir " dir_red]
 			; TODO apply rotation, if any, to file
@@ -4988,3 +5005,4 @@ connection_db
 
 ; et on laisse finalement le champ libre au programme appelant, ou à l'invite interactive.
 ; and we eventually give way to the calling program, or to the shell.
+
