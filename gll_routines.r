@@ -2916,6 +2916,13 @@ debug: false ; il suffit de le mettre à TRUE dans le script à déboguer, et vo
 	]
 ]
 ;}}}
+??_: func [ {Prins a variable name followed by its molded value. (for debugging)} ; {{{ }
+ 'name
+][
+ prin  either word? :name [head insert tail form name reduce [": " mold name: get name]] [mold :name]
+ :name
+]
+;}}}
 debug_print:                 func      [ "Prints out something, just like print, but only if DEBUG is true." ;{{{ } } }
 	val
 ][
