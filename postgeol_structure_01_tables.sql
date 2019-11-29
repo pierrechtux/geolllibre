@@ -189,10 +189,10 @@ COMMENT ON COLUMN :USER.operation_active.creation_ts                  IS 'Curren
 COMMENT ON COLUMN :USER.operation_active.username                     IS 'User (role) which created data record';
 
 --}}}
---  x field work, on surface:{{{ -- discussion: prefix these tables with field_ or surf_ or ?...
--- x field_observations:{{{
-
-CREATE TABLE public.field_observations (
+--  x field work, on surface:{{{ -- discussion ended: prefix these tables with surface_
+-- x surface_observations:{{{
+-- TODO ATTENTION!!! DU REFACTORING À FAIRE DANS TOUTE LA BASE DE CODE!
+CREATE TABLE public.surface_observations (
     opid                integer NOT NULL
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
@@ -226,39 +226,39 @@ CREATE TABLE public.field_observations (
     username            text NOT NULL DEFAULT current_user,
     UNIQUE (opid, obs_id)
 );
-COMMENT ON TABLE  public.field_observations                             IS 'Field observations: geological observations, on outcrops, floats, or any other observations; coherent with GeolPDA';
-COMMENT ON COLUMN public.field_observations.opid                       IS 'Operation identifier';
-COMMENT ON COLUMN public.field_observations.obs_id                     IS 'Observation identifier: usually composed of: (acronym of person)_(year)_(incremental integer)';
-COMMENT ON COLUMN public.field_observations.year                       IS 'Year when observation is done (TODO DROP COLUMN redundant with date field)';
-COMMENT ON COLUMN public.field_observations.date                       IS 'Observation date';
-COMMENT ON COLUMN public.field_observations.waypoint_name              IS 'If relevant, waypoint name from GPS device';
-COMMENT ON COLUMN public.field_observations.srid                       IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
-COMMENT ON COLUMN public.field_observations.x                          IS 'X coordinate (Easting),  in coordinate system srid';
-COMMENT ON COLUMN public.field_observations.y                          IS 'Y coordinate (Northing), in coordinate system srid';
-COMMENT ON COLUMN public.field_observations.z                          IS 'Z coordinate';
-COMMENT ON COLUMN public.field_observations.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the observation point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields';
-COMMENT ON COLUMN public.field_observations.geography_4326             IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
-COMMENT ON COLUMN public.field_observations.description                IS 'Naturalist description';
-COMMENT ON COLUMN public.field_observations.code_litho                 IS 'Lithological code';
-COMMENT ON COLUMN public.field_observations.code_unit                  IS 'Unit code: lithostratigraphic, and/or cartographic';
-COMMENT ON COLUMN public.field_observations.sample_id                  IS 'If relevant, sample identifier';
-COMMENT ON COLUMN public.field_observations.audio                      IS 'Audio recording files, if relevant';
-COMMENT ON COLUMN public.field_observations.photos                     IS 'List of photographs pictures files, if relevant';
-COMMENT ON COLUMN public.field_observations.geologist                  IS 'Geologist or prospector name';
-COMMENT ON COLUMN public.field_observations.device                     IS 'Device used to record data: good old fieldbook, PDA, smartphone, tablet, dictaphone, raw human memory (not recommended), etc.';
-COMMENT ON COLUMN public.field_observations.icon_descr                 IS 'If relevant, icon description from some GPS devices/programs';
-COMMENT ON COLUMN public.field_observations.comments                   IS 'Comments';
-COMMENT ON COLUMN public.field_observations.time                       IS '?';
-COMMENT ON COLUMN public.field_observations.timestamp_epoch_ms         IS 'Timestamp of observation: as defined in GeolPDA devices, as epoch in ms';
-COMMENT ON COLUMN public.field_observations.datasource                 IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN public.field_observations.numauto                    IS 'Automatic integer primary key';
-COMMENT ON COLUMN public.field_observations.creation_ts                IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.field_observations.username                   IS 'User (role) which created data record';
+COMMENT ON TABLE  public.surface_observations                             IS 'Surface, or field, observations: geological observations, on outcrops, floats, or any other observations; coherent with GeolPDA';
+COMMENT ON COLUMN public.surface_observations.opid                       IS 'Operation identifier';
+COMMENT ON COLUMN public.surface_observations.obs_id                     IS 'Observation identifier: usually composed of: (acronym of person)_(year)_(incremental integer)';
+COMMENT ON COLUMN public.surface_observations.year                       IS 'Year when observation is done (TODO DROP COLUMN redundant with date field)';
+COMMENT ON COLUMN public.surface_observations.date                       IS 'Observation date';
+COMMENT ON COLUMN public.surface_observations.waypoint_name              IS 'If relevant, waypoint name from GPS device';
+COMMENT ON COLUMN public.surface_observations.srid                       IS 'Spatial Reference Identifier, or coordinate reference system: see spatial_ref_sys from postgis extension';
+COMMENT ON COLUMN public.surface_observations.x                          IS 'X coordinate (Easting),  in coordinate system srid';
+COMMENT ON COLUMN public.surface_observations.y                          IS 'Y coordinate (Northing), in coordinate system srid';
+COMMENT ON COLUMN public.surface_observations.z                          IS 'Z coordinate';
+COMMENT ON COLUMN public.surface_observations.geometry_corr              IS 'Manually corrected geometry: this is typically used when a GPS location turns out to be wrong, and that elements allow to better define the actual location of the observation point (field measurements, orthophoto mapping, etc.); when not NULL, this field should be used by cartographic VIEWs depending on this relation, instead of x, y fields'; -- TODO reprendre les positions des waypoints au SGR/REU, dont certains avaient été bougés "à la main" dans MapInfect, ce qui amène à avoir des x, y différents de la géométrie. Pour ce cas, on stockera la géométrie de MapInfect dans ce champ et les champs numériques (non précis) dans les champs ci-dessus.
+COMMENT ON COLUMN public.surface_observations.geography_4326             IS 'Geographic position, in longitude-latitude according to WGS84 ellipsoid, aka EPSG 4326';
+COMMENT ON COLUMN public.surface_observations.description                IS 'Naturalist description';
+COMMENT ON COLUMN public.surface_observations.code_litho                 IS 'Lithological code';
+COMMENT ON COLUMN public.surface_observations.code_unit                  IS 'Unit code: lithostratigraphic, and/or cartographic';
+COMMENT ON COLUMN public.surface_observations.sample_id                  IS 'If relevant, sample identifier';
+COMMENT ON COLUMN public.surface_observations.audio                      IS 'Audio recording files, if relevant';
+COMMENT ON COLUMN public.surface_observations.photos                     IS 'List of photographs pictures files, if relevant';
+COMMENT ON COLUMN public.surface_observations.geologist                  IS 'Geologist or prospector name';
+COMMENT ON COLUMN public.surface_observations.device                     IS 'Device used to record data: good old fieldbook, PDA, smartphone, tablet, dictaphone, raw human memory (not recommended), etc.';
+COMMENT ON COLUMN public.surface_observations.icon_descr                 IS 'If relevant, icon description from some GPS devices/programs';
+COMMENT ON COLUMN public.surface_observations.comments                   IS 'Comments';
+COMMENT ON COLUMN public.surface_observations.time                       IS '?';
+COMMENT ON COLUMN public.surface_observations.timestamp_epoch_ms         IS 'Timestamp of observation: as defined in GeolPDA devices, as epoch in ms';
+COMMENT ON COLUMN public.surface_observations.datasource                 IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN public.surface_observations.numauto                    IS 'Automatic integer primary key';
+COMMENT ON COLUMN public.surface_observations.creation_ts                IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.surface_observations.username                   IS 'User (role) which created data record';
 
 --}}}
--- x field_observations_struct_measures:{{{
+-- x surface_observations_struct_measures:{{{
 
-CREATE TABLE public.field_observations_struct_measures (
+CREATE TABLE public.surface_observations_struct_measures (
     opid                integer NOT NULL,
     obs_id              text NOT NULL,
     measure_type        text NOT NULL,
@@ -282,77 +282,77 @@ CREATE TABLE public.field_observations_struct_measures (
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user,
     FOREIGN KEY (opid, obs_id)
-        REFERENCES public.field_observations(opid, obs_id)
+        REFERENCES public.surface_observations(opid, obs_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE  public.field_observations_struct_measures IS 'Structural measurements, related to an observation; coherent with GeolPDA';
-COMMENT ON COLUMN public.field_observations_struct_measures.opid                    IS 'Operation identifier';
-COMMENT ON COLUMN public.field_observations_struct_measures.obs_id                  IS 'Observation identifier: refers to field_observations table';
-COMMENT ON COLUMN public.field_observations_struct_measures.measure_type            IS 'Type of measurement: [P: plane L: line PL: plane line PLM: plane line movement PLMS: plane line movement sure]';
-COMMENT ON COLUMN public.field_observations_struct_measures.device                  IS 'Measuring device: compass, electronic device';
-COMMENT ON COLUMN public.field_observations_struct_measures.structure_type          IS 'Measured structure type: [VEIN , FRACTURE , C , SCHISTOSITY , FOLIATION , MYLONITE , CONTACT , VEIN_FAULT , FOLD_PAX_AX , FOLIATION_LINE , FAULT , CATACLASE , MINERALISED_STRUCTURE]';
-COMMENT ON COLUMN public.field_observations_struct_measures.rotation_matrix         IS '3x3 rotation matrix, fully describing any orientation: initial state: [X axis points East, Y axis points North, Z axis points up] => measurement state = rotation applied. Corresponds to function public static float[] getOrientation (float[] R, float[] values) from android API as described in http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation%28float[],%20float[]%29';
-COMMENT ON COLUMN public.field_observations_struct_measures.north_ref               IS 'North reference for azimuths and directions measurements: [Nm: magnetic North, Ng: geographic North, Nu: UTM north, Nl: local grid Y axis]';
-COMMENT ON COLUMN public.field_observations_struct_measures.direction               IS 'Plane direction, 0-180°';
-COMMENT ON COLUMN public.field_observations_struct_measures.dip                     IS 'Plane dip, 0-90°';
-COMMENT ON COLUMN public.field_observations_struct_measures.dip_quadrant            IS 'Plane dip quadrant, NESW';
-COMMENT ON COLUMN public.field_observations_struct_measures.pitch                   IS 'Pitch of line on plane, 0-90°';
-COMMENT ON COLUMN public.field_observations_struct_measures.pitch_quadrant          IS 'Quadrant of pitch, NESW';
-COMMENT ON COLUMN public.field_observations_struct_measures.movement                IS 'Relative movement of fault/C: [N: normal, I: inverse = R = reverse, D: dextral, S: sinistral]';
-COMMENT ON COLUMN public.field_observations_struct_measures.valid                   IS 'Measure is valid or not (impossible cases = not valid)';
-COMMENT ON COLUMN public.field_observations_struct_measures.comments                IS 'Comments';
-COMMENT ON COLUMN public.field_observations_struct_measures.geolpda_id              IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_id field';
-COMMENT ON COLUMN public.field_observations_struct_measures.geolpda_poi_id          IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_poi_id field';
---COMMENT ON COLUMN public.field_observations_struct_measures.sortgroup               IS 'Sorting group, for discriminated of various phases: a, b, c, ...';
-COMMENT ON COLUMN public.field_observations_struct_measures.sortgroup               IS 'In case of sorting structural measurements using TecTri or similar, letter referring to sort group (corresponding to various phases): a, b, c, ...';
-COMMENT ON COLUMN public.field_observations_struct_measures.datasource              IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN public.field_observations_struct_measures.numauto                 IS 'Automatic integer primary key';
-COMMENT ON COLUMN public.field_observations_struct_measures.creation_ts             IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.field_observations_struct_measures.username                IS 'User (role) which created data record';
+COMMENT ON TABLE  public.surface_observations_struct_measures IS 'Structural measurements, related to an observation; coherent with GeolPDA';
+COMMENT ON COLUMN public.surface_observations_struct_measures.opid                    IS 'Operation identifier';
+COMMENT ON COLUMN public.surface_observations_struct_measures.obs_id                  IS 'Observation identifier: refers to surface_observations table';
+COMMENT ON COLUMN public.surface_observations_struct_measures.measure_type            IS 'Type of measurement: [P: plane L: line PL: plane line PLM: plane line movement PLMS: plane line movement sure]';
+COMMENT ON COLUMN public.surface_observations_struct_measures.device                  IS 'Measuring device: compass, electronic device';
+COMMENT ON COLUMN public.surface_observations_struct_measures.structure_type          IS 'Measured structure type: [VEIN , FRACTURE , C , SCHISTOSITY , FOLIATION , MYLONITE , CONTACT , VEIN_FAULT , FOLD_PAX_AX , FOLIATION_LINE , FAULT , CATACLASE , MINERALISED_STRUCTURE]';
+COMMENT ON COLUMN public.surface_observations_struct_measures.rotation_matrix         IS '3x3 rotation matrix, fully describing any orientation: initial state: [X axis points East, Y axis points North, Z axis points up] => measurement state = rotation applied. Corresponds to function public static float[] getOrientation (float[] R, float[] values) from android API as described in http://developer.android.com/reference/android/hardware/SensorManager.html#getOrientation%28float[],%20float[]%29';
+COMMENT ON COLUMN public.surface_observations_struct_measures.north_ref               IS 'North reference for azimuths and directions measurements: [Nm: magnetic North, Ng: geographic North, Nu: UTM north, Nl: local grid Y axis]';
+COMMENT ON COLUMN public.surface_observations_struct_measures.direction               IS 'Plane direction, 0-180°';
+COMMENT ON COLUMN public.surface_observations_struct_measures.dip                     IS 'Plane dip, 0-90°';
+COMMENT ON COLUMN public.surface_observations_struct_measures.dip_quadrant            IS 'Plane dip quadrant, NESW';
+COMMENT ON COLUMN public.surface_observations_struct_measures.pitch                   IS 'Pitch of line on plane, 0-90°';
+COMMENT ON COLUMN public.surface_observations_struct_measures.pitch_quadrant          IS 'Quadrant of pitch, NESW';
+COMMENT ON COLUMN public.surface_observations_struct_measures.movement                IS 'Relative movement of fault/C: [N: normal, I: inverse = R = reverse, D: dextral, S: sinistral]';
+COMMENT ON COLUMN public.surface_observations_struct_measures.valid                   IS 'Measure is valid or not (impossible cases = not valid)';
+COMMENT ON COLUMN public.surface_observations_struct_measures.comments                IS 'Comments';
+COMMENT ON COLUMN public.surface_observations_struct_measures.geolpda_id              IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_id field';
+COMMENT ON COLUMN public.surface_observations_struct_measures.geolpda_poi_id          IS 'If a GeolPDA was used to measure the orientation, copy of geolpda_poi_id field';
+--COMMENT ON COLUMN public.surface_observations_struct_measures.sortgroup               IS 'Sorting group, for discriminated of various phases: a, b, c, ...';
+COMMENT ON COLUMN public.surface_observations_struct_measures.sortgroup               IS 'In case of sorting structural measurements using TecTri or similar, letter referring to sort group (corresponding to various phases): a, b, c, ...';
+COMMENT ON COLUMN public.surface_observations_struct_measures.datasource              IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN public.surface_observations_struct_measures.numauto                 IS 'Automatic integer primary key';
+COMMENT ON COLUMN public.surface_observations_struct_measures.creation_ts             IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.surface_observations_struct_measures.username                IS 'User (role) which created data record';
 
 --}}}
--- x field_photos:{{{ -- TODO rather make a general-purpose "photos" table, containing all photogaphs, referred by numerous tables through various keys, with integrity references to be implemented carefully.
+-- x surface_photos:{{{ -- TODO rather make a general-purpose "photos" table, containing all photogaphs, referred by numerous tables through various keys, with integrity references to be implemented carefully.
 -- table vide, pour le moment.
 
-CREATE TABLE public.field_photos (
+CREATE TABLE public.surface_photos (
     opid                integer
         REFERENCES public.operations (opid)
         ON UPDATE CASCADE
         ON DELETE CASCADE
         DEFERRABLE INITIALLY DEFERRED,
     pho_id              text NOT NULL,
-    obs_id              text,   -- est-ce bien pertinent de faire cela? Ne serait-ce pas plus opportun de faire une table "photos", qui se fasse pointer par field_observations ou par dh_litho ou par dh_sampling ou par... À voir. <= oui, voilà... cf. supra
+    obs_id              text,   -- est-ce bien pertinent de faire cela? Ne serait-ce pas plus opportun de faire une table "photos", qui se fasse pointer par surface_observations ou par dh_litho ou par dh_sampling ou par... À voir. <= oui, voilà... cf. supra
     filename            text,   --x TODO "file" => reserved word? appears pinkish in vim with SQL highlighting: rename to filename, if necessary? => done
     description         text,
     azim_nm             numeric,   --WARNING, field renamed from az to something a bit more meaningful; however, maybe azim_ng should be preferable: TODO later.
     dip_hz              numeric,   --WARNING, field renamed from dip to something a bit more meaningful.
-    author              text,   --hm, useful? Geologist from field_observations should do it, no? TODO drop this field, if unnecessary.
+    author              text,   --hm, useful? Geologist from surface_observations should do it, no? TODO drop this field, if unnecessary.
     datasource          integer,
     numauto             serial PRIMARY KEY,
     creation_ts         timestamptz DEFAULT now() NOT NULL,
     username            text DEFAULT current_user
-    --FOREIGN KEY (opid, obs_id) REFERENCES public.field_observations(opid, obs_id)
+    --FOREIGN KEY (opid, obs_id) REFERENCES public.surface_observations(opid, obs_id)
     -- => Non: Notons au passage qu'une photo ne va pas forcément avec un point d'observation.
     --         Mais à ce moment, il faudrait lui prévoir un moyen de la géolocaliser?
-    --         On pourrait faire une table points, tout bêtement, où les tables field_observations et field_photos iraient stocker leurs géolocalisations. Hm. TODO y réfléchir. C'est quand même pratique, les struct du C, à la place de ce genre de choses.
+    --         On pourrait faire une table points, tout bêtement, où les tables surface_observations et surface_photos iraient stocker leurs géolocalisations. Hm. TODO y réfléchir. C'est quand même pratique, les struct du C, à la place de ce genre de choses.
 --     FOREIGN KEY (opid) REFERENCES public.operations(opid)
 --       ON DELETE CASCADE
 --       ON UPDATE CASCADE
 --       DEFERRABLE INITIALLY DEFERRED
 );
-COMMENT ON TABLE  public.field_photos IS 'Photographs taken in field, related to an observation';
-COMMENT ON COLUMN public.field_photos.opid                      IS 'Operation identifier';
-COMMENT ON COLUMN public.field_photos.pho_id                    IS 'Photograph identifier';
-COMMENT ON COLUMN public.field_photos.filename                  IS 'Photograph full filename, with relative or full path included; to be made consistent and usable';
-COMMENT ON COLUMN public.field_photos.azim_nm                   IS 'Azimuth of camera axis, refers to magnetic North (°)';
-COMMENT ON COLUMN public.field_photos.dip_hz                    IS 'Dip of camera axis, relative to horizontal (°)';
-COMMENT ON COLUMN public.field_photos.author                    IS 'Photograph author; not very useful, as it generally is the geologist, as defined in field_observations table';
-COMMENT ON COLUMN public.field_photos.datasource                IS 'Datasource identifier, refers to lex_datasource';
-COMMENT ON COLUMN public.field_photos.numauto                   IS 'Automatic integer';
-COMMENT ON COLUMN public.field_photos.creation_ts               IS 'Current date and time stamp when data is loaded in table';
-COMMENT ON COLUMN public.field_photos.username                  IS 'User (role) which created data record';
+COMMENT ON TABLE  public.surface_photos IS 'Photographs taken in field, related to an observation';
+COMMENT ON COLUMN public.surface_photos.opid                      IS 'Operation identifier';
+COMMENT ON COLUMN public.surface_photos.pho_id                    IS 'Photograph identifier';
+COMMENT ON COLUMN public.surface_photos.filename                  IS 'Photograph full filename, with relative or full path included; to be made consistent and usable';
+COMMENT ON COLUMN public.surface_photos.azim_nm                   IS 'Azimuth of camera axis, refers to magnetic North (°)';
+COMMENT ON COLUMN public.surface_photos.dip_hz                    IS 'Dip of camera axis, relative to horizontal (°)';
+COMMENT ON COLUMN public.surface_photos.author                    IS 'Photograph author; not very useful, as it generally is the geologist, as defined in surface_observations table';
+COMMENT ON COLUMN public.surface_photos.datasource                IS 'Datasource identifier, refers to lex_datasource';
+COMMENT ON COLUMN public.surface_photos.numauto                   IS 'Automatic integer';
+COMMENT ON COLUMN public.surface_photos.creation_ts               IS 'Current date and time stamp when data is loaded in table';
+COMMENT ON COLUMN public.surface_photos.username                  IS 'User (role) which created data record';
 
 --}}}
 -- x formations_group_lithos:{{{

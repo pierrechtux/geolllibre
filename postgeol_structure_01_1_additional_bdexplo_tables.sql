@@ -28,6 +28,12 @@ CREATE TABLE public.lab_ana_batches_reception_18_corr (
 
 -- TODO table très vide: contenu à verser, plutôt, dans surface_sampling (SI CE N'EST DÉJÀ FAIT!)
 CREATE TABLE public.field_sampling (  -- Nota bene: field_sampling used to be called rock_sampling; actually, it may encompass much more than just rocks.  Actually, surface_sampling and field_sampling are competing names and notions...  Why not then, name all "field_*" tables "surface_*", or, abbreviated, "surf_*", or "srf_*", or even "sf*"?... TODO discuss these issues quickly, these choices are not so innocent.
+/*
+2019_11_29__18_35_36 Discussion is taking place on this matter:
+surface_* is chosen, after very animated discussions and strongly expressed opinions, divergences, but finally all concerned parties agreed.
+
+
+*/
     opid           integer
       REFERENCES public.operations(opid)
       ON UPDATE CASCADE
