@@ -23,13 +23,14 @@ CREATE OR REPLACE VIEW dh_sampling AS
 -- }}}
 -- o operations_quadrangles:{{{
 -- DROP VIEW IF EXISTS operations_quadrangles;
+
 CREATE OR REPLACE VIEW operations_quadrangles AS
 SELECT *,
-       GeomFromewkt('SRID=4326;POLYGON('||lon_min||' '||lat_max||','
+       GeomFromewkt('SRID=4326;POLYGON(('||lon_min||' '||lat_max||','
                                         ||lon_max||' '||lat_max||','
                                         ||lon_max||' '||lat_min||','
                                         ||lon_min||' '||lat_min||','
-                                        ||lon_min||' '||lat_max||')' )
+                                        ||lon_min||' '||lat_max||'))' )
 FROM operations ORDER BY opid;
 COMMENT ON VIEW operations_quadrangles                IS 'Rectangles geographically traced around all operations';
 
