@@ -2731,7 +2731,7 @@ re
 compare_schemas_2_bdexplos:  function  [ "Compare structure from two running instances of bdexplo" dbhost1 dbname1 dbhost2 dbname2][][ ; {{{ } } }
 	;dbhost1: "autan"  dbname1: "bdexplo"  dbhost2: "autan"  dbname2: "bdexplo_smi"
 	;TODO à déplacer dans un module utilitaire plus général, à distribuer hors gll, pour tout postgresql
-	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin"]
+	schemas_exclus: ["amc" "backups" "bof" "information_schema" "input" "pg_catalog" "pg_toast" "pg_toast_temp_1" "smi" "tanguy" "tmp_a_traiter" "tmp_imports" "tmp_ntoto" "zz_poubelle" "tmp_a_traiter" "pierre" "input" "marie_cecile" "tanguy" "kalvin" "poubelle"]
 
 	; première solution: on fait un pg_dump de la base
 	;   => 	abandonné, le résultat n'est pas trié, et incomparable,
@@ -3116,6 +3116,7 @@ epoch_ms_to_date:            func      [ "Converts directly epoch ms format (pic
 
 ; Functions concerning GeolPDA data management:
 synchronize_geolpda_files: does [ "Synchronises data from files retreived from a GeolPDA"; {{{ } } }
+; TODO split this long routine, by removing all non-geolpda stuff (DCIM), to be treated later on, after synchronize_geolpda_files call
 	print "Synchronization process..."
 			;DONE move the next piece of code in synchronize_geolpda_files (!...) => done. TODO => test
 	; Apparently due to the new MTP protocol used to connect to Android devices,
@@ -3185,7 +3186,7 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 				call_wait_output_error cmd
 				;TODO: idea for GeolPDA: instead of dumping all pictures in one subdirectory, make one subdirectory per day (again, to avoid that pesky directory saturation).
 			]
-			; Reduce GeolPDA pictures sizes in the local copy:{{{ } } }
+			; Reduce GeolPDA pictures sizes in the local copy:
 			size_max: 700
 			print rejoin ["Reduction of pictures to " size_max " pixels:"]
 			dir_red: rejoin [dir_geolpda_local "photos/reduced" ]
@@ -3199,7 +3200,7 @@ synchronize_geolpda_files: does [ "Synchronises data from files retreived from a
 			unless (total <= 1) [prin "s"]
 			print " to be processed:"
 			prin  "["                          ; Print a sort of progress bar.
-			repeat total [prin "="]
+			loop total [prin "="]
 			print "]"
 			prin  " "
 			foreach f photos_to_transfer [
@@ -3590,7 +3591,7 @@ update_field_observations_struct_measures_from_rotation_matrix: function [ ;{{{ 
 	; on va chercher les informations, avec les restrictions si besoin:
 	; gather informations, with restrictions, if necessary:
 	sql_string: copy "SELECT opid, obs_id, rotation_matrix, numauto FROM public.field_observations_struct_measures "
-	if criteria [ append sql_string sql_criteria ]
+	if criteria [ append sql_string rejoin [" WHERE " sql_criteria ]]
 	unless overwrite [
 		either find sql_string "WHERE" [
 			append sql_string " AND "

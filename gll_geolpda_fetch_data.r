@@ -366,8 +366,8 @@ print "commited => end."
 ;input
 ; Restrict the computation to the data that has just been imported.
 ;update_field_observations_struct_measures_from_rotation_matrix /criteria rejoin ["datasource = " datasource]
-; TODO attention! datasource ne semble pas être renseigné tout le temps! Il faudra remettre la ligne précédente, une fois ceci résolu.
-update_field_observations_struct_measures_from_rotation_matrix /criteria rejoin ["creation_ts::date = " to-iso-date now/date]
+; TODO attention! datasource ne semble pas être renseigné tout le temps! Il faudra remettre la ligne précédente, une fois ceci résolu. Pour le moment, on fait avec les données pour lesquelles les enregistrements ont été créés le jour même.
+update_field_observations_struct_measures_from_rotation_matrix/criteria rejoin ["creation_ts::date = '" to-iso-date now/date "'"]
 
 
 ;_______________________________________________________________________________________________________________________________
