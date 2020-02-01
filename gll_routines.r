@@ -2995,7 +2995,7 @@ confirm:                     func      [ "Confirms a user choice." ; gotten from
     question [series!]
 ][
 until [
-	response: ask rejoin [question " (y-o-s-1 or n-N)? " ]
+	response: ask rejoin [question " (y-o-s-a-1 or n-l-0)? " ]
 	parse (lowercase response) [ ["1" | "o" | "n" | "y" | "s" | "0"]]
 ]
 return parse (lowercase response) [ ["o" | "y" | "s" | "1"]]
@@ -3773,7 +3773,7 @@ copy-file:                   func      [ {Copies file from source to destination
 	if (dir? target) [		; target is a directory: check if a file named like source already exists there
 		if ((last (to-string target)) != slash) [append target slash]
 		if (exists? to-file rejoin [target filename]) [
-			if (not (request/confirm rejoin ["Overwrite existing file " target file "?"])) [ return none ]
+			if (not (request/confirm rejoin ["Overwrite existing file " target "?"])) [ return none ]
 		]
 		target: rejoin [target filename]
 	]

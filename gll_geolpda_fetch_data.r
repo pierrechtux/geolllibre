@@ -164,6 +164,7 @@ either (tt = "") [
 
 print "Android geolpda directory contents:"
 print read dir_mount_geolpda_android
+print newline
 
 ; Get the location of the local image of geolpda data:
 ;dir_geolpda_local:         request-dir/title/dir {locate local directory for replication of geolpda data}                        dir_geolpda_local
@@ -175,7 +176,6 @@ print read dir_mount_geolpda_android
 	]
 
 print rejoin ["Mount directory of GeolPDA android device: " tab tab dir_mount_geolpda_android newline "Local directory for GeolPDA data replication: " tab dir_geolpda_local]
-;
 
 ; Get the DCIM pictures location on the mounted filesystem:
 	print {Choose Digital Camera IMages (DCIM) directory to be imported:}
