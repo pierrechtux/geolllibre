@@ -43,6 +43,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 	2.0    	[21-Sep-2018/19:39:10+2:00 {Bof, no more history here: see git log, rather}]
 ]	]
 
+DEBUG: FALSE ; <= TOGGLE TO TRUE IF NECESSARY
 ;;;TODO FONCTION POUR RÉCUPÉRER UNE VARIABLE D'ENVIRONNEMENT, OU UN PARAMÈTRE DE .GLL_PREFERENCES => postponed; strange beheviour from scripts, sometimes not reading environment variables, for unknown reason.
 ;get_env_or_gll_preferences: func ["Function to retreive environment variables or a value from .gll_preferences var] [ ; {{{ } } }
 ;
@@ -73,7 +74,7 @@ This file is part of GeolLLibre software suite: FLOSS dedicated to Earth Science
 
 ; Get preferences (dbname dbhost dbuser passw opid tmp_schema) from .gll_preferences file. Récupération des préférences (dbname dbhost dbuser passw opid tmp_schema) à partir du fichier .gll_preferences: {{{ } } }
 ; .gll_preferences is a plain text file, simply containing variables definition, it is a plain rebol script, intended to be LOADed.
-print catch [
+t: catch [
 ; TODO very inelegant code style.  Replace with a loop, a bit like (but better than) in log_send function.
 ; TODO even better: with a ANY block, simply.
 if error? try [	do load to-file system/options/home/.gll_preferences
@@ -107,6 +108,7 @@ if error? try [ do load to-file system/options/home/.gll_preferences] [
 	dir_oruxmaps_local:  %~/gps/oruxmaps/
 	]
 ]
+if debug [print t]
 ;}}}
 ; Get more preferences from environment variables. Récupération d'autres préférences à partir de variables d'environnement:{{{ } } }
 
@@ -2692,9 +2694,9 @@ connection_db:               does      [ "Connect to database" ;{{{ } } }
 	;do %~/rebol/telech/pgsql-r090/pgsql-protocol.r
 	if error? try 	[
 			db: open to-url rejoin ["pgsql://" dbuser ":" passw "@" dbhost ":" dbport "/" dbname]
-			print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } dbuser]
+			debug_print rejoin [{Connected to database } dbname { hosted by } dbhost { on port } dbport {, logged in as role } dbuser]
 	] 		[
-			print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } dbuser]
+			debug_print rejoin [{Error while trying to connect to database } dbname { hosted by } dbhost { on port } dbport {, as role } dbuser]
 	]
 ] ;}}}
 run_query:                   func      [ "Utility function: sends a SQL query, returns the result as a block named sql_result; sql_result_fields contains the fields" sql] [ ; {{{ } } }
@@ -2904,8 +2906,10 @@ log_send:                    func      [ "Sends information in a log file, such 
 
 
 ; Debug useful utilities:
+; In order to debug: DEBUG just has to be set tu TRUE so that ??? may be used instead of ?? to display variables.  And when everything is fine, DEBUG is just set to TRUE, or even nothing.
 ; Pour déboguer: il suffit de mettre DEBUG à TRUE pour que ??? s'utilise à la place de ?? pour afficher des variables. Et quand on est content, on met DEBUG à FALSE, ou carrément à rien.
-debug: false ; il suffit de le mettre à TRUE dans le script à déboguer, et voilà.
+;debug: false ; To be set to TRUE in the script to be debugged, simply.  Il suffit de le mettre à TRUE dans le script à déboguer, et voilà.
+;(commented out, since it has been defined earlier in this file)
 ???:                         func      [ "Prints a variable name followed by its molded value. (for debugging => only if variable DEBUG is TRUE) (code copied from SOURCE ??)" ;{{{ } } }
 	{}
 	'name
@@ -5000,12 +5004,12 @@ change-dir system/options/path
 
 ; on renseigne un peu l'utilisateur sur la console
 ; print out some information to the user on the console
-print "Gll preferences loaded: "
-?? dbhost
-?? dbname
-?? dbuser
-?? tmp_schema
-print rejoin ["Current working directory: " what-dir ]
+debug_print "Gll preferences loaded: "
+??? dbhost
+??? dbname
+??? dbuser
+??? tmp_schema
+debug_print rejoin ["Current working directory: " what-dir ]
 
 ; on lance la connexion à la base
 ; connect to the database
