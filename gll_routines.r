@@ -2994,45 +2994,7 @@ return true
 ;}}}
 
 
-;3.2. Converting to other bases from base-10
 
-print   base-convert/to-base 99 2   ;; 99 in binary
-;   == "1100011"
-print 1 + 2 + 32 + 64
-print   base-convert/to-base 999 8 ;; 999 in octal
-;   == "1747"
-print   base-convert/to-base 14600926 16  ;; large number in hex
-;   == "DECADE"
-print   base-convert/to-base 1024 29  ;; 1024 in base 29
-;   == "169"
-print   base-convert/to-base 177 "#@"  ;; 177 in base-2 using "#" and "@" rather than 0 and 1
-;   == "@#@@###@"
-
-=>;======== code evaluation output: ========= {{{
-1100011
-
-
-
-print 4 + 32 + 64
-
-
-1747
-DECADE
-169
-@#@@###@
-;========================================== }}}
-
-;3.3. Converting from other bases to base-10
-
-print   base-convert/from-base "4444" 5  ;;"4444" in base 5
-;   == 624
-print   base-convert/from-base "1000000000000000000000001" 2
-;   == 16777217
-print   base-convert/from-base "AA" 31  ;; "AA" in base 31 (310 + 10)
-;   == 320
-
-print base-convert/from-base "1100100" 2
- 
  
 ; Add useful functions:
 ; Manual definition, nah: {{{
@@ -3061,7 +3023,7 @@ foreach [dep basedep] bases [                                  ; dep: departure 
 			def_func: rejoin [funcname {: func ["Converts value from base } basedep { to base } basearr { val]}]
 			either base = dec [
 				append def_func "val ]["
-				
+				print mold def_func
 			]
 			[]
 base-convert/from-base "4444" 5
