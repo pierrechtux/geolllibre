@@ -3198,6 +3198,41 @@ sql_result_csv:              does      [ "Utility function to be run after run_q
 	letter-or-digit: union letter digit
 	letter-or-digit-nospace: exclude letter-or-digit space
 	digit-decimalplace: union digit charset [#"."]
+; TODO implement POSIX stuff as follows:{{{
+
+;Classes de caractères
+;Il est assez courant d’avoir besoin de désigner un caractère parmi un ensemble de caractères comme les
+;majuscules, les minuscules, les chiffres, etc ... La norme POSIX (Portable Operating System Interface
+;UniX) définit un certain nombre de classes de caractères qui font référence à des sous-ensembles de
+;caractères particuliers. Une classe est représentée par un nom qui décrit l’ensemble de caractères en-
+;cadré entre ’[:’ et ’:]’. Voici ces classes et leur significations (certaines ne sont pas vraiment destinées
+;à un usage dans le contexte du développement des noms de fichiers) :
+;[:alnum:]
+;[:alpha:]
+;[:blank:]
+;[:cntrl:]
+;[:digit:]
+;[:graph:]
+;[:lower:]
+;[:print:]
+;[:space:]
+;[:upper:]
+;[:xdigit:]
+;Correspond aux caractères alphabétiques et numériques. Équivalent à A-Za-z0-9
+;Correspond aux lettres. Équivalent à A-Za-z
+;Correspond à un espace ou à une tabulation.
+;Correspond aux caractères de contrôle.
+;Correspond aux chiffres. Équivalent à 0-9
+;Correspond aux caractères de code ASCII compris entre 33 et 126 .
+;Ce sont les caractères graphiques affichables hormis l’espace.
+;Correspond aux lettres minuscules. Équivalent à a-z
+;Correspond aux caractères de code ASCII compris entre 32 et 126.
+;C’est la classe [:graph:] avec l’espace en plus.
+;Correspond aux blancs (espace, tabulation, passage à la ligne, retour chariot,
+;saut de page, tabulation verticale).
+;Correspond aux lettres majuscules. Équivalent à A-Z
+
+;}}}
 ;}}}
 chk_file_exists:             func      [ "Simply checks for the existence of a file" file_in] [ ;{{{ } } }
 	if error? try [
